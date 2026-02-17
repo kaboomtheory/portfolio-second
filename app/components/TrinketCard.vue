@@ -14,7 +14,7 @@ const emit = defineEmits<{
 <template>
   <button
     type="button"
-    class="group w-full overflow-hidden rounded-xl border text-left transition-transform duration-200 hover:-translate-y-1"
+    class="group w-full overflow-hidden rounded border text-left transition-transform duration-200 hover:-translate-y-1"
     :style="{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-secondary)' }"
     @click="emit('select', trinket)"
   >

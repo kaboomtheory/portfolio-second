@@ -42,7 +42,7 @@ useHead(() => ({
         <img
           :src="featuredSection.image"
           :alt="`${project.name} cover`"
-          class="w-full rounded-xl border object-cover"
+          class="w-full rounded border object-cover"
           :style="{ borderColor: 'var(--border)' }"
         >
       </section>
@@ -64,7 +64,7 @@ useHead(() => ({
             v-if="index > 0 || !featuredSection"
             :src="section.image"
             :alt="section.heading"
-            class="w-full rounded-xl border object-cover"
+            class="w-full rounded border object-cover"
             :style="{ borderColor: 'var(--border)' }"
           >
         </article>

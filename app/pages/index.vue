@@ -1,9 +1,10 @@
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
 import type { TrinketItem } from '~/data/trinkets'
 
-const { homeHero, currentStatus, writings, trinkets } = useMockContent()
+const { homeHero, currentStatus, projects, trinkets } = useMockContent()
 
-const featuredWritings = computed(() => writings.slice(0, 2))
+const featuredProjects = computed(() => projects.slice(0, 2))
 const featuredTrinkets = computed(() => trinkets.filter((item) => item.featured).slice(0, 4))
 
 const activeTrinket = ref<TrinketItem | null>(null)
@@ -29,46 +30,47 @@ useHead({
     <section class="page-section reveal-up">
       <h2 class="section-title">Current Status</h2>
       <div class="grid gap-4 md:grid-cols-3">
-        <article
-          v-for="item in currentStatus"
-          :key="item.title"
-          class="card-surface space-y-3 p-4"
-        >
+        <div v-for="item in currentStatus" :key="item.title" class="space-y-2">
           <p class="text-xs uppercase tracking-[0.08em] muted">{{ item.label }}</p>
-          <h3 class="text-xl">{{ item.title }}</h3>
-          <p class="text-sm">{{ item.content }}</p>
-          <div class="grid grid-cols-2 gap-2">
-            <img
-              v-for="image in item.images"
-              :key="image"
-              :src="image"
-              :alt="item.title"
-              class="aspect-[4/3] w-full rounded-md object-cover"
+          <article class="card-surface flex items-center gap-3 p-3">
+            <div
+              v-if="item.icon"
+              class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md"
+              :style="{ backgroundColor: 'var(--bg-tertiary)' }"
             >
-          </div>
-        </article>
+              <Icon :icon="item.icon" class="text-lg" :style="{ color: 'var(--fg-muted)' }" />
+            </div>
+            <img
+              v-else-if="item.images.length"
+              :src="item.images[0]"
+              :alt="item.title"
+              class="h-10 w-10 flex-shrink-0 rounded-md object-cover"
+            >
+            <div class="flex flex-col gap-0.5">
+              <h3 v-if="item.type === 'Logo' && item.title === 'Website'" class="text-sm font-semibold" :style="{ color: 'var(--fg-primary)' }">
+                This sandwich
+              </h3>
+              <h3 v-else-if="item.type !== 'Logo'" class="text-sm font-semibold" :style="{ color: 'var(--fg-primary)' }">
+                {{ item.title }}
+              </h3>
+              <p v-if="item.content" class="text-xs" :style="{ color: 'var(--fg-secondary)' }">{{ item.content }}</p>
+            </div>
+          </article>
+        </div>
       </div>
     </section>
 
     <section class="page-section reveal-up">
       <div class="mb-4 flex items-center justify-between gap-3">
-        <h2 class="section-title mb-0">Latest Articles</h2>
-        <NuxtLink to="/writing" class="eyebrow-link">View All</NuxtLink>
+        <h2 class="section-title mb-0">Latest Projects</h2>
+        <NuxtLink to="/projects" class="eyebrow-link">View All</NuxtLink>
       </div>
       <div class="grid gap-4 md:grid-cols-2">
-        <NuxtLink
-          v-for="item in featuredWritings"
-          :key="item.id"
-          :to="`/writing/${item.id}`"
-          class="card-surface block overflow-hidden transition-colors duration-300"
-        >
-          <img :src="item.heroImage" :alt="item.title" class="aspect-video w-full object-cover transition-opacity duration-500">
-          <div class="space-y-2 p-4">
-            <p class="text-xs uppercase tracking-[0.08em] muted">{{ item.date }}</p>
-            <h3 class="text-xl">{{ item.title }}</h3>
-            <p class="text-sm">{{ item.excerpt }}</p>
-          </div>
-        </NuxtLink>
+        <ProjectCard
+          v-for="item in featuredProjects"
+          :key="item.slug"
+          :project="item"
+        />
       </div>
     </section>
 

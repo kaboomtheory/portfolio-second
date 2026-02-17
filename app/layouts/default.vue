@@ -46,7 +46,7 @@ onBeforeUnmount(() => {
     </aside>
 
     <div class="mt-14 md:ml-64 md:mt-0">
-      <div class="container mx-auto flex min-h-screen flex-col px-5 pb-6 pt-10 sm:px-6 md:max-w-[46.25rem] md:px-0 md:pt-12">
+      <div class="container mx-auto flex min-h-screen flex-col px-5 pb-6 pt-10 sm:px-6 md:max-w-[52rem] md:px-0 md:pt-12">
         <main class="flex-1">
           <slot />
         </main>

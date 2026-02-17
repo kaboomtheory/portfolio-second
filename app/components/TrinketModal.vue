@@ -34,7 +34,7 @@ onBeforeUnmount(() => {
         class="fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4"
         @click.self="emit('close')"
       >
-        <article class="w-full max-w-md overflow-hidden rounded-xl border" :style="{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border)' }">
+        <article class="w-full max-w-md overflow-hidden rounded border" :style="{ backgroundColor: 'var(--bg-primary)', borderColor: 'var(--border)' }">
           <div class="relative">
             <img :src="trinket.image" :alt="trinket.name" class="aspect-square w-full object-cover">
             <button
