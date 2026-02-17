@@ -16,6 +16,7 @@ defineProps<{
       :src="project.thumbnail"
       :alt="project.name"
       class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+      loading="lazy"
     >
     <div
       class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-90"

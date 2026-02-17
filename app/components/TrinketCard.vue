@@ -18,7 +18,7 @@ const emit = defineEmits<{
     :style="{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-secondary)' }"
     @click="emit('select', trinket)"
   >
-    <img :src="trinket.image" :alt="trinket.name" class="aspect-square w-full object-cover">
+    <img :src="trinket.image" :alt="trinket.name" loading="lazy" class="aspect-square w-full object-cover">
     <div class="space-y-1 p-4">
       <p class="text-xs uppercase tracking-[0.08em] muted">{{ trinket.brand }}</p>
       <div class="flex items-center justify-between gap-2">

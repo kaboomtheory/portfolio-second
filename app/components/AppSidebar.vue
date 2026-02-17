@@ -89,8 +89,9 @@ const groupedNav = computed(() => {
             class="inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-300"
             :style="{ backgroundColor: 'var(--bg-tertiary)' }"
             :title="link.label"
+            :aria-label="link.label"
           >
-            <Icon :icon="link.icon" class="text-sm" />
+            <Icon :icon="link.icon" class="text-sm" aria-hidden="true" />
           </a>
         </li>
       </ul>
@@ -107,7 +108,7 @@ const groupedNav = computed(() => {
   margin-right: -0.5rem;
   border-radius: 0.375rem;
   padding: 0.375rem 0.5rem;
-  opacity: 0.3;
+  opacity: 0.6;
   transition: all 0.2s ease;
 }
 
@@ -123,7 +124,7 @@ const groupedNav = computed(() => {
 
 @media (min-width: 768px) {
   .nav-link {
-    opacity: 0.5;
+    opacity: 0.7;
   }
 
   .nav-link.router-link-active,

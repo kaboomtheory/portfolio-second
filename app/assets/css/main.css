@@ -28,6 +28,13 @@
   box-sizing: border-box;
 }
 
+/* Global focus-visible ring for keyboard accessibility */
+*:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
 html,
 body,
 #__nuxt {
@@ -43,6 +50,13 @@ body {
     radial-gradient(circle at 90% 0%, rgba(159, 71, 47, 0.1), transparent 42%),
     var(--bg-primary);
   color: var(--fg-primary);
+}
+
+:root.dark body {
+  background:
+    radial-gradient(circle at 15% 10%, rgba(224, 134, 95, 0.08), transparent 38%),
+    radial-gradient(circle at 90% 0%, rgba(67, 81, 69, 0.15), transparent 42%),
+    var(--bg-primary);
 }
 
 h1,
@@ -77,7 +91,7 @@ a {
 .page-content {
   display: flex;
   flex-direction: column;
-  gap: 1.75rem;
+  gap: 2.25rem;
   padding-bottom: 0.5rem;
 }
 
@@ -104,6 +118,13 @@ a {
   overflow-x: auto;
   border-bottom: 1px solid var(--border);
   padding-bottom: 0.75rem;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
+  mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
+  scrollbar-width: none;
+}
+
+.filter-row::-webkit-scrollbar {
+  display: none;
 }
 
 .filter-pill {
@@ -113,8 +134,10 @@ a {
   font-size: 0.68rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  white-space: nowrap;
   color: var(--fg-muted);
   background-color: transparent;
+  cursor: pointer;
   transition: opacity 180ms ease, background-color 180ms ease, color 180ms ease;
 }
 
@@ -140,13 +163,14 @@ a {
 }
 
 .tag-chip {
-  border: 1px solid var(--border);
+  background-color: var(--bg-tertiary);
   border-radius: 9999px;
-  padding: 0.2rem 0.6rem;
-  font-size: 0.72rem;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: var(--fg-muted);
+  color: var(--fg-secondary);
+  font-weight: 500;
 }
 
 .page-enter-active,
@@ -165,6 +189,7 @@ a {
     opacity: 0;
     transform: translateY(18px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -173,4 +198,68 @@ a {
 
 .reveal-up {
   animation: reveal-up 420ms ease both;
+}
+
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(159, 71, 47, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px rgba(159, 71, 47, 0);
+  }
+}
+
+:root.dark .pulse-glow {
+  animation-name: pulse-glow-dark;
+}
+
+@keyframes pulse-glow-dark {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(224, 134, 95, 0.4);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px rgba(224, 134, 95, 0);
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
+
+@keyframes subtle-bounce {
+
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-2px);
+  }
+}
+
+.btn-attention {
+  animation: subtle-bounce 2s ease-in-out infinite, attention-pulse 3s ease-in-out infinite;
+}
+
+.btn-attention:hover {
+  animation: none;
+}
+
+@keyframes attention-pulse {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.78;
+  }
 }

@@ -15,6 +15,7 @@ useHead({ title: 'About' })
             <img
               :src="aboutMe.avatar"
               :alt="aboutMe.name"
+              loading="lazy"
               class="h-28 w-28 rounded-2xl object-cover"
             >
             <div class="space-y-2">

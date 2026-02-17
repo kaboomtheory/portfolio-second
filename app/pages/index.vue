@@ -22,7 +22,7 @@ useHead({
       <p class="mt-2 text-xl" :style="{ color: 'var(--fg-primary)' }">{{ homeHero.subtitle }}</p>
       <p class="mt-5 max-w-2xl text-base">{{ homeHero.description }}</p>
       <div class="mt-6 flex flex-wrap gap-3">
-        <CtaButton to="/resume" label="View Resume" />
+        <CtaButton to="/resume" label="View Resume" attention />
         <CtaButton href="mailto:hello@example.com" label="Open for Freelance" secondary with-dot />
       </div>
     </section>
@@ -44,13 +44,11 @@ useHead({
               v-else-if="item.images.length"
               :src="item.images[0]"
               :alt="item.title"
+              loading="lazy"
               class="h-10 w-10 flex-shrink-0 rounded-md object-cover"
             >
             <div class="flex flex-col gap-0.5">
-              <h3 v-if="item.type === 'Logo' && item.title === 'Website'" class="text-sm font-semibold" :style="{ color: 'var(--fg-primary)' }">
-                This sandwich
-              </h3>
-              <h3 v-else-if="item.type !== 'Logo'" class="text-sm font-semibold" :style="{ color: 'var(--fg-primary)' }">
+              <h3 class="text-sm font-semibold" :style="{ color: 'var(--fg-primary)' }">
                 {{ item.title }}
               </h3>
               <p v-if="item.content" class="text-xs" :style="{ color: 'var(--fg-secondary)' }">{{ item.content }}</p>
@@ -79,7 +77,7 @@ useHead({
         <h2 class="section-title mb-0">Trinkets</h2>
         <NuxtLink to="/trinkets" class="eyebrow-link">View All</NuxtLink>
       </div>
-      <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
+      <div class="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <TrinketCard
           v-for="item in featuredTrinkets"
           :key="item.id"

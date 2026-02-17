@@ -29,7 +29,7 @@ const emit = defineEmits<{
       <button
         type="button"
         aria-label="Open navigation"
-        class="inline-flex h-6 w-6 items-center justify-center"
+        class="inline-flex h-11 w-11 items-center justify-center -mr-2"
         @click="emit('open')"
       >
         <Icon icon="lucide:menu" class="text-xl" />

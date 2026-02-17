@@ -23,8 +23,8 @@ useHead(() => ({
 <template>
   <div class="page-content">
     <div class="page-section pb-0">
-      <div class="flex justify-end">
-        <NuxtLink to="/projects" class="eyebrow-link">Back to Projects</NuxtLink>
+      <div class="flex justify-start">
+        <NuxtLink to="/projects" class="eyebrow-link">← Back to Projects</NuxtLink>
       </div>
     </div>
 
@@ -39,34 +39,29 @@ useHead(() => ({
       </section>
 
       <section v-if="featuredSection" class="page-section pt-1">
-        <img
+        <ScrollExpandImage
           :src="featuredSection.image"
           :alt="`${project.name} cover`"
-          class="w-full rounded border object-cover"
-          :style="{ borderColor: 'var(--border)' }"
-        >
+        />
       </section>
 
-      <section class="space-y-9">
+      <section class="space-y-16">
         <article
           v-for="(section, index) in caseSections"
           :key="section.heading"
-          class="space-y-4 border-t pt-6"
-          :style="{ borderColor: 'var(--border)' }"
+          class="space-y-8"
         >
-          <div class="flex items-center gap-3 text-[11px] uppercase tracking-[0.11em] muted">
-            <span>{{ String(index + 1).padStart(2, '0') }}</span>
-            <span class="h-px flex-1" :style="{ backgroundColor: 'var(--border)' }" />
+          <div class="space-y-2">
+           <span class="text-[11px] uppercase tracking-[0.11em] muted block mb-2">{{ String(index + 1).padStart(2, '0') }}</span>
+           <h2 class="text-3xl md:text-5xl font-light">{{ section.heading }}</h2>
           </div>
-          <h2 class="text-2xl md:text-[1.75rem]">{{ section.heading }}</h2>
-          <p class="text-base leading-8">{{ section.body }}</p>
-          <img
+          <p class="text-lg leading-relaxed text-[var(--fg-secondary)] max-w-3xl">{{ section.body }}</p>
+          <ScrollExpandImage
             v-if="index > 0 || !featuredSection"
             :src="section.image"
             :alt="section.heading"
-            class="w-full rounded border object-cover"
-            :style="{ borderColor: 'var(--border)' }"
-          >
+            class="mt-8"
+          />
         </article>
       </section>
     </template>

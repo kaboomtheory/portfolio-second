@@ -27,11 +27,22 @@ const hour = computed(() => {
 
 const minute = computed(() => String(now.value.getMinutes()).padStart(2, '0'))
 const meridiem = computed(() => (now.value.getHours() >= 12 ? 'PM' : 'AM'))
+
+const timezoneLabel = computed(() => {
+  try {
+    const tz = Intl.DateTimeFormat('en', { timeZoneName: 'short' })
+      .formatToParts(now.value)
+      .find(p => p.type === 'timeZoneName')
+    return tz?.value || 'Local'
+  } catch {
+    return 'Local'
+  }
+})
 </script>
 
 <template>
   <div class="space-y-1">
-    <p class="text-[12px] uppercase tracking-[0.08em] muted">Local Time (PST)</p>
+    <p class="text-[12px] uppercase tracking-[0.08em] muted">Local Time ({{ timezoneLabel }})</p>
     <p class="text-[12px] font-semibold tracking-[0.05em]" :style="{ color: 'var(--fg-primary)' }">
       {{ dateLabel }} / {{ hour }} : {{ minute }} {{ meridiem }}
     </p>

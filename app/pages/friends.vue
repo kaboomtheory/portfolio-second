@@ -49,7 +49,7 @@ useHead({ title: 'Friends' })
           rel="noopener noreferrer"
           class="card-surface flex gap-4 p-4 transition-transform duration-200 hover:-translate-y-1"
         >
-          <img :src="friend.image" :alt="friend.name" class="h-16 w-16 rounded-lg object-cover">
+          <img :src="friend.image" :alt="friend.name" loading="lazy" class="h-16 w-16 rounded-lg object-cover">
           <div class="space-y-1">
             <h2 class="text-xl">{{ friend.name }}</h2>
             <p class="text-sm">{{ friend.title }}</p>
