@@ -35,6 +35,10 @@
   border-radius: 4px;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 html,
 body,
 #__nuxt {
@@ -50,6 +54,8 @@ body {
     radial-gradient(circle at 90% 0%, rgba(159, 71, 47, 0.1), transparent 42%),
     var(--bg-primary);
   color: var(--fg-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 :root.dark body {

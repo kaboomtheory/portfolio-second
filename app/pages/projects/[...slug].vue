@@ -38,18 +38,18 @@ useHead(() => ({
         </div>
       </section>
 
-      <section v-if="featuredSection" class="page-section pt-1">
+      <section v-if="featuredSection" class="page-section pt-4 md:pt-6">
         <ScrollExpandImage
           :src="featuredSection.image"
           :alt="`${project.name} cover`"
         />
       </section>
 
-      <section class="space-y-16">
+      <section class="space-y-20 md:space-y-24">
         <article
           v-for="(section, index) in caseSections"
           :key="section.heading"
-          class="space-y-8"
+          class="space-y-10 md:space-y-12"
         >
           <div class="space-y-2">
            <span class="text-[11px] uppercase tracking-[0.11em] muted block mb-2">{{ String(index + 1).padStart(2, '0') }}</span>
@@ -60,7 +60,7 @@ useHead(() => ({
             v-if="index > 0 || !featuredSection"
             :src="section.image"
             :alt="section.heading"
-            class="mt-8"
+            class="mt-10 md:mt-12"
           />
         </article>
       </section>
