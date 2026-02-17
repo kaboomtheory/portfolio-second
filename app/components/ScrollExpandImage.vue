@@ -90,6 +90,7 @@ const expandStyle = computed(() => {
   width: 100%;
   border-radius: 12px;
   object-fit: cover;
-  transition: none;
+  will-change: transform, width, height, border-radius;
+  transition: width 0.15s ease-out, height 0.15s ease-out, border-radius 0.15s ease-out, transform 0.15s ease-out;
 }
 </style>

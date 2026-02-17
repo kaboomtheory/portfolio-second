@@ -26,11 +26,17 @@ If any are added later, treat them as higher-priority project instructions and u
 
 - `app/app.vue`: app entry wrapper using layout + page.
 - `app/layouts/default.vue`: desktop sidebar + mobile drawer shell.
-- `app/pages/*`: route files.
+- `app/pages/*`: route files (see full list in Todos.md Phase 4).
 - `app/components/*`: reusable UI building blocks.
-- `app/composables/*`: shared composition logic (`useTheme`, `useMockContent`).
+- `app/composables/*`: shared composition logic.
+  - `useTheme`: theme state management.
+  - `useMockContent`: unified mock data access.
+  - `useScrollExpand`: viewport-centred scroll progress tracking.
+- `app/plugins/*`: client-side plugins.
+  - `theme.client.ts`: theme persistence and DOM sync.
 - `app/middleware/*`: route middleware (`project-protect`).
-- `app/data/*`: typed mock data models and collections.
+- `app/data/*`: typed mock data models.
+  - `home.ts`, `projects.ts`, `trinkets.ts`, `resume.ts`, `friends.ts`, `writing.ts`, `site.ts`.
 - `nuxt.config.ts`: Nuxt config, modules, SPA mode.
 - `Todos.md`: implementation roadmap and optional CMS phase notes.
 
