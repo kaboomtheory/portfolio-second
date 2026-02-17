@@ -1,0 +1,27 @@
+export interface NavItem {
+  group: 'Work' | 'Personal'
+  title: string
+  path: string
+  icon: string
+}
+
+export const profile = {
+  name: 'Avery Holt',
+  role: 'Product + Brand Designer',
+  photo: 'https://picsum.photos/seed/profile-avery/300/300',
+}
+
+export const navItems: NavItem[] = [
+  { group: 'Work', title: 'Home', path: '/', icon: 'lucide:house' },
+  { group: 'Work', title: 'Projects', path: '/projects', icon: 'lucide:pickaxe' },
+  { group: 'Work', title: 'Resume', path: '/resume', icon: 'lucide:file-stack' },
+  { group: 'Personal', title: 'Writing', path: '/writing', icon: 'lucide:pen-line' },
+  { group: 'Personal', title: 'Friends', path: '/friends', icon: 'lucide:users' },
+  { group: 'Personal', title: 'Trinkets', path: '/trinkets', icon: 'lucide:package' },
+]
+
+export const socialLinks = [
+  { label: 'Instagram', icon: 'ri:instagram-fill', href: 'https://instagram.com/' },
+  { label: 'LinkedIn', icon: 'ri:linkedin-fill', href: 'https://linkedin.com/' },
+  { label: 'Threads', icon: 'ri:threads-fill', href: 'https://threads.net/' },
+]
