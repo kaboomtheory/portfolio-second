@@ -5,11 +5,11 @@ interface ScrollExpandOptions {
 }
 
 /**
- * Tracks how much of an element is visible in the viewport and returns
+ * Tracks an element against the viewport center and returns
  * a reactive `progress` value (0 → 1 → 0).
  *
- * progress = 1 when the element is fully visible (or fills the viewport)
- * progress = 0 when the element is fully out of view
+ * progress = 1 when the element center aligns with viewport center
+ * progress = 0 when the element is fully outside viewport bounds
  *
  * Uses a scroll listener + rAF for smooth, efficient updates.
  */
@@ -37,14 +37,21 @@ export function useScrollExpand(
     }
 
     const viewportH = window.innerHeight
-    const visibleTop = Math.max(rect.top, 0)
-    const visibleBottom = Math.min(rect.bottom, viewportH)
-    const visibleHeight = Math.max(0, visibleBottom - visibleTop)
+    const viewportCenterY = viewportH / 2
+    const elementCenterY = rect.top + rect.height / 2
+    const distanceToCenter = Math.abs(elementCenterY - viewportCenterY)
 
-    const targetVisibleHeight = Math.min(rect.height, viewportH)
-    const raw = Math.min(visibleHeight / targetVisibleHeight, 1)
-    const slowed = Math.pow(raw, 1.6)
-    const eased = slowed * slowed * (3 - 2 * slowed)
+    // The element starts contributing once it intersects the viewport,
+    // then ramps smoothly toward the center.
+    const influenceRadius = (viewportH + rect.height) / 2
+    const peakHoldDistance = Math.min(96, influenceRadius * 0.2)
+    const distanceAfterHold = Math.max(0, distanceToCenter - peakHoldDistance)
+    const usableRadius = Math.max(1, influenceRadius - peakHoldDistance)
+    const centered = 1 - Math.min(distanceAfterHold / usableRadius, 1)
+
+    // Remove tiny edge jitter and soften the curve.
+    const edgeClamp = centered <= 0.05 ? 0 : (centered - 0.05) / 0.95
+    const eased = edgeClamp * edgeClamp * (3 - 2 * edgeClamp)
 
     const baseProgress = Math.max(0, Math.min(1, eased))
 

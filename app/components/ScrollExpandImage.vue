@@ -16,6 +16,20 @@ const restRect = ref({ width: 0, left: 0, height: 0 })
 const isLastExpandImage = ref(false)
 let resizeObserver: ResizeObserver | null = null
 
+function getExpandMetrics(originalWidth: number) {
+  const isDesktop = window.matchMedia('(min-width: 768px)').matches
+  const viewportW = window.innerWidth
+  const sidebarW = isDesktop ? 256 : 0
+  const availableWidth = viewportW - sidebarW
+
+  return {
+    isDesktop,
+    sidebarW,
+    availableWidth,
+    maxScale: Math.max(1, availableWidth / originalWidth),
+  }
+}
+
 function updateLastImageState() {
   const el = wrapperRef.value
   if (!el || !import.meta.client) {
@@ -58,49 +72,41 @@ const expandStyle = computed(() => {
   const p = progress.value
   if (p <= 0.001 || !restRect.value.width) return {}
 
-  const viewportW = window.innerWidth
-  const sidebarW = window.matchMedia('(min-width: 768px)').matches ? 256 : 0
-  const availableWidth = viewportW - sidebarW
-
   const originalWidth = restRect.value.width
   const originalLeft = restRect.value.left
+  const motion = p * p * (3 - 2 * p)
+  const { sidebarW, availableWidth, maxScale } = getExpandMetrics(originalWidth)
 
-  const scaleX = 1 + ((availableWidth / originalWidth) - 1) * p
+  const scaleX = 1 + (maxScale - 1) * motion
 
   const availableCenterX = sidebarW + availableWidth / 2
   const originalCenterX = originalLeft + originalWidth / 2
-  const centerOffset = (availableCenterX - originalCenterX) * p
+  const centerOffset = (availableCenterX - originalCenterX) * motion
 
-  const borderRadius = Math.round((1 - p) * 12)
+  const borderRadius = Math.round(12 * (1 - motion))
 
   return {
-    transform: `translateX(${centerOffset.toFixed(1)}px) scale(${scaleX.toFixed(4)})`,
+    transform: `translate3d(${centerOffset.toFixed(1)}px, 0, 0) scale(${scaleX.toFixed(4)})`,
     borderRadius: `${borderRadius}px`,
   }
 })
 
 const wrapperStyle = computed(() => {
   const p = progress.value
-  if (p <= 0.001 || !restRect.value.height) return {}
-
-  const viewportW = window.innerWidth
-  const sidebarW = window.matchMedia('(min-width: 768px)').matches ? 256 : 0
-  const availableWidth = viewportW - sidebarW
+  if (p <= 0.001 || !restRect.value.height || !restRect.value.width) return {}
 
   const originalWidth = restRect.value.width
-  const scaleX = 1 + ((availableWidth / originalWidth) - 1) * p
+  const motion = p * p * (3 - 2 * p)
+  const { isDesktop, maxScale } = getExpandMetrics(originalWidth)
+  const scaleX = 1 + (maxScale - 1) * motion
 
   const extraHeight = restRect.value.height * (scaleX - 1)
-  const maxExtraHeight = restRect.value.height * ((availableWidth / originalWidth) - 1)
-  const breathingRoom = (window.matchMedia('(min-width: 768px)').matches ? 88 : 56) * p
+  const maxExtraHeight = restRect.value.height * Math.max(maxScale - 1, 0)
+  const breathingRoom = (isDesktop ? 72 : 46) * motion
   let marginNeeded = extraHeight + breathingRoom
 
   if (isLastExpandImage.value) {
-    const maxScroll = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
-    const remaining = Math.max(0, maxScroll - window.scrollY)
-    const nearBottomRatio = 1 - Math.min(remaining / (window.innerHeight * 0.9), 1)
-    const bottomGuard = maxExtraHeight * nearBottomRatio + breathingRoom
-
+    const bottomGuard = maxExtraHeight * 0.92 + (isDesktop ? 58 : 40)
     marginNeeded = Math.max(marginNeeded, bottomGuard)
   }
 
@@ -136,7 +142,7 @@ const wrapperStyle = computed(() => {
   width: 100%;
   border-radius: 12px;
   object-fit: cover;
-  will-change: transform;
+  will-change: transform, border-radius;
   transform-origin: top center;
   backface-visibility: hidden;
 }
