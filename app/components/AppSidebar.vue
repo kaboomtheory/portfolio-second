@@ -28,11 +28,8 @@ const groupedNav = computed(() => {
 
 <template>
   <aside
-    class="flex h-full flex-col overflow-hidden rounded-t-2xl md:rounded-lg"
-    :style="{
-      backgroundColor: mobile ? 'var(--bg-primary)' : 'color-mix(in srgb, var(--bg-primary) 94%, transparent)',
-      border: mobile ? 'none' : '1px solid var(--border)',
-    }"
+    class="sidebar"
+    :class="{ 'sidebar--mobile': mobile }"
   >
     <div class="flex-1">
       <div class="flex items-center gap-4 border-b p-5 md:p-4" :style="{ borderColor: 'var(--border)' }">
@@ -100,6 +97,46 @@ const groupedNav = computed(() => {
 </template>
 
 <style scoped>
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 0 1rem 1rem 0;
+  position: relative;
+}
+
+.sidebar::before,
+.sidebar::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  width: 1px;
+  pointer-events: none;
+}
+
+.sidebar::before {
+  top: 0;
+  height: 50%;
+  background: linear-gradient(to bottom, transparent, var(--border));
+}
+
+.sidebar::after {
+  bottom: 0;
+  height: 50%;
+  background: linear-gradient(to top, transparent, var(--border));
+}
+
+.sidebar--mobile {
+  border-radius: 1.5rem 1.5rem 0 0;
+  background-color: var(--bg-primary);
+}
+
+.sidebar--mobile::before,
+.sidebar--mobile::after {
+  display: none;
+}
+
 .nav-link {
   display: flex;
   flex-direction: row;
