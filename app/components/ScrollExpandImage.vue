@@ -12,9 +12,11 @@ const { progress } = useScrollExpand(wrapperRef, {
   initialHoldScroll: props.preExpanded ? 420 : 0,
 })
 
-const restRect = ref({ width: 0, left: 0, height: 0 })
+const restRect = ref({ width: 0, left: 0, height: 0, top: 0 })
 const isLastExpandImage = ref(false)
 let resizeObserver: ResizeObserver | null = null
+
+const opacityProgress = ref(0)
 
 function getExpandMetrics(originalWidth: number) {
   const isDesktop = window.matchMedia('(min-width: 768px)').matches
@@ -45,16 +47,45 @@ function cacheRect() {
   const el = wrapperRef.value
   if (el) {
     const r = el.getBoundingClientRect()
-    restRect.value = { width: r.width, left: r.left, height: r.height }
+    restRect.value = { width: r.width, left: r.left, height: r.height, top: r.top }
   }
+}
+
+function calculateOpacity() {
+  const el = wrapperRef.value
+  if (!el) {
+    opacityProgress.value = 0
+    return
+  }
+
+  const rect = el.getBoundingClientRect()
+  const viewportH = window.innerHeight
+  const elCenter = rect.top + rect.height / 2
+  const viewportCenter = viewportH / 2
+
+  const distanceToCenter = Math.abs(elCenter - viewportCenter)
+  const holdZone = viewportH * 0.25
+  const fadeZone = viewportH * 0.55
+
+  let opacity: number
+  if (distanceToCenter <= holdZone) {
+    opacity = 1
+  } else {
+    const fadeProgress = (distanceToCenter - holdZone) / fadeZone
+    opacity = Math.max(0, 1 - fadeProgress)
+  }
+
+  opacityProgress.value = opacity
 }
 
 onMounted(() => {
   cacheRect()
   updateLastImageState()
+  calculateOpacity()
   requestAnimationFrame(updateLastImageState)
 
   window.addEventListener('resize', cacheRect, { passive: true })
+  window.addEventListener('scroll', calculateOpacity, { passive: true })
 
   if ('ResizeObserver' in window && wrapperRef.value) {
     resizeObserver = new ResizeObserver(cacheRect)
@@ -64,17 +95,22 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   window.removeEventListener('resize', cacheRect)
+  window.removeEventListener('scroll', calculateOpacity)
   resizeObserver?.disconnect()
   resizeObserver = null
 })
 
 const expandStyle = computed(() => {
   const p = progress.value
-  if (p <= 0.001 || !restRect.value.width) return {}
+  const motion = p * p * (3 - 2 * p)
+  const opacity = opacityProgress.value
+
+  if (p <= 0.001 || !restRect.value.width) {
+    return { opacity: opacity.toFixed(3) }
+  }
 
   const originalWidth = restRect.value.width
   const originalLeft = restRect.value.left
-  const motion = p * p * (3 - 2 * p)
   const { sidebarW, availableWidth, maxScale } = getExpandMetrics(originalWidth)
 
   const scaleX = 1 + (maxScale - 1) * motion
@@ -88,6 +124,7 @@ const expandStyle = computed(() => {
   return {
     transform: `translate3d(${centerOffset.toFixed(1)}px, 0, 0) scale(${scaleX.toFixed(4)})`,
     borderRadius: `${borderRadius}px`,
+    opacity: opacity.toFixed(3),
   }
 })
 
@@ -142,8 +179,9 @@ const wrapperStyle = computed(() => {
   width: 100%;
   border-radius: 12px;
   object-fit: cover;
-  will-change: transform, border-radius;
+  will-change: transform, border-radius, opacity;
   transform-origin: top center;
   backface-visibility: hidden;
+  opacity: 0;
 }
 </style>

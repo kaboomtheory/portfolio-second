@@ -28,6 +28,7 @@ If any are added later, treat them as higher-priority project instructions and u
 - `app/layouts/default.vue`: desktop sidebar + mobile drawer shell.
 - `app/pages/*`: route files (see full list in Todos.md Phase 4).
 - `app/components/*`: reusable UI building blocks.
+  - `ScrollExpandImage`: scroll-triggered image animation with scale/center expansion and opacity fade (0 → 1 → 0 based on viewport center proximity).
 - `app/composables/*`: shared composition logic.
   - `useTheme`: theme state management.
   - `useMockContent`: unified mock data access.
@@ -163,7 +164,16 @@ Follow existing style in repository files.
 - Ensure keyboard escape path for overlays/modals.
 - Keep interactive elements focusable and visible in both themes.
 
-## 11) Agent Workflow Checklist
+## 11) ScrollExpandImage Animation
+
+The `ScrollExpandImage` component provides scroll-driven animations:
+
+- **Scale/center expansion**: Images scale outward and horizontally center as they approach the viewport center, controlled by `useScrollExpand` composable.
+- **Opacity fade**: Separate opacity calculation fades images from 0 to 1 as they enter the viewport center, with a hold zone at full opacity, then back to 0 before leaving the viewport.
+- **Pre-expanded mode**: Pass `preExpanded` prop to start images already centered (used for hero images).
+- The component uses its own scroll listener for opacity (`calculateOpacity`) separate from the composable's `progress` value.
+
+## 12) Agent Workflow Checklist
 
 Before coding:
 
