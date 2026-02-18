@@ -43,7 +43,8 @@ export function useScrollExpand(
 
     // The element starts contributing once it intersects the viewport,
     // then ramps smoothly toward the center.
-    const influenceRadius = (viewportH + rect.height) / 2
+    const slowdownFactor = 2.5
+    const influenceRadius = ((viewportH + rect.height) / 2) * slowdownFactor
     const peakHoldDistance = Math.min(96, influenceRadius * 0.2)
     const distanceAfterHold = Math.max(0, distanceToCenter - peakHoldDistance)
     const usableRadius = Math.max(1, influenceRadius - peakHoldDistance)
