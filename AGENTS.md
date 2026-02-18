@@ -137,6 +137,11 @@ Follow existing style in repository files.
 - Use Tailwind utility classes for layout and spacing.
 - Use CSS custom properties from `main.css` for colors/tokens.
 - Keep shared visual tokens centralized in `:root` and `.dark` blocks.
+- Typography:
+  - Body and headings: `'Geist Sans', system-ui, sans-serif`
+  - Code and monospace: `'Geist Mono', ui-monospace, monospace` (via `.mono` class)
+  - Fonts loaded via jsDelivr CDN in `main.css`
+- Fading edge technique: use `::before`/`::after` pseudo-elements with `linear-gradient` for decorative borders that fade to transparent (see `AppSidebar.vue`).
 
 ## 8) Error Handling and Guards
 
