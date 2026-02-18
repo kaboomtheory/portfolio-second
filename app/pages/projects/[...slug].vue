@@ -42,6 +42,7 @@ useHead(() => ({
         <ScrollExpandImage
           :src="featuredSection.image"
           :alt="`${project.name} cover`"
+          :pre-expanded="true"
         />
       </section>
 
@@ -60,6 +61,7 @@ useHead(() => ({
             v-if="index > 0 || !featuredSection"
             :src="section.image"
             :alt="section.heading"
+            :pre-expanded="index === 0 && !featuredSection"
             class="mt-10 md:mt-12"
           />
         </article>

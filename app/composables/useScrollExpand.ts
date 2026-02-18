@@ -1,5 +1,9 @@
 import { ref, onMounted, onBeforeUnmount, type Ref } from 'vue'
 
+interface ScrollExpandOptions {
+  initialHoldScroll?: number
+}
+
 /**
  * Tracks how much of an element is visible in the viewport and returns
  * a reactive `progress` value (0 → 1 → 0).
@@ -9,9 +13,13 @@ import { ref, onMounted, onBeforeUnmount, type Ref } from 'vue'
  *
  * Uses a scroll listener + rAF for smooth, efficient updates.
  */
-export function useScrollExpand(wrapperRef: Ref<HTMLElement | null>) {
+export function useScrollExpand(
+  wrapperRef: Ref<HTMLElement | null>,
+  options: ScrollExpandOptions = {},
+) {
   const progress = ref(0)
   let ticking = false
+  const initialHoldScroll = Math.max(0, options.initialHoldScroll ?? 0)
 
   function calculate() {
     const el = wrapperRef.value
@@ -35,9 +43,19 @@ export function useScrollExpand(wrapperRef: Ref<HTMLElement | null>) {
 
     const targetVisibleHeight = Math.min(rect.height, viewportH)
     const raw = Math.min(visibleHeight / targetVisibleHeight, 1)
-    const eased = raw * raw * (3 - 2 * raw)
+    const slowed = Math.pow(raw, 1.6)
+    const eased = slowed * slowed * (3 - 2 * slowed)
 
-    progress.value = Math.max(0, Math.min(1, eased))
+    const baseProgress = Math.max(0, Math.min(1, eased))
+
+    if (initialHoldScroll > 0) {
+      const holdProgress = 1 - Math.min(window.scrollY / initialHoldScroll, 1)
+      progress.value = Math.max(baseProgress, holdProgress)
+    }
+    else {
+      progress.value = baseProgress
+    }
+
     ticking = false
   }
 

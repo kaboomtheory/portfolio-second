@@ -1,11 +1,16 @@
 <script setup lang="ts">
-const props = defineProps<{
+const props = withDefaults(defineProps<{
   src: string
   alt: string
-}>()
+  preExpanded?: boolean
+}>(), {
+  preExpanded: false,
+})
 
 const wrapperRef = ref<HTMLElement | null>(null)
-const { progress } = useScrollExpand(wrapperRef)
+const { progress } = useScrollExpand(wrapperRef, {
+  initialHoldScroll: props.preExpanded ? 420 : 0,
+})
 
 const restRect = ref({ width: 0, left: 0, height: 0 })
 const isLastExpandImage = ref(false)
