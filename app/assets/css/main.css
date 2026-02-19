@@ -9,8 +9,8 @@
   --fg-secondary: #334155;
   --fg-muted: #64748b;
   --border: #bfdbfe;
-  --accent: #2563eb;
-  --accent-soft: #60a5fa;
+  --accent: #0055ff;
+  --accent-soft: #3388ff;
 }
 
 :root.dark {
@@ -21,8 +21,8 @@
   --fg-secondary: #a3a3a3;
   --fg-muted: #737373;
   --border: #262626;
-  --accent: #3b82f6;
-  --accent-soft: #60a5fa;
+  --accent: #66ccff;
+  --accent-soft: #99ddff;
 }
 
 * {
@@ -67,8 +67,8 @@ body {
   font-family: 'Geist Sans', system-ui, sans-serif;
   background:
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
-    radial-gradient(circle at 15% 10%, rgba(37, 99, 235, 0.08), transparent 38%),
-    radial-gradient(circle at 90% 0%, rgba(96, 165, 250, 0.08), transparent 42%),
+    radial-gradient(circle at 15% 100%, rgb(102, 176, 255, 0.2), #0000 38%),
+    radial-gradient(circle at 90% 0%, rgba(102, 176, 255, 0.2), #54313100 42%),
     var(--bg-primary);
   color: var(--fg-primary);
   -webkit-font-smoothing: antialiased;
@@ -78,8 +78,8 @@ body {
 :root.dark body {
   background:
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
-    radial-gradient(circle at 85% 90%, rgba(29, 78, 216, 0.15), transparent 38%),
-    radial-gradient(circle at 90% 0%, rgba(30, 58, 138, 0.2), transparent 42%),
+    radial-gradient(circle at 15% 90%, rgba(0, 97, 255, 0.21), transparent 38%),
+    radial-gradient(circle at 90% 0%, rgba(0, 97, 255, 0.21), transparent 42%),
     var(--bg-primary);
 }
 

@@ -15,16 +15,23 @@ const { isDark, toggle } = useTheme()
     :title="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
     @click="toggle"
   >
+    <span class="flex w-full justify-between text-sm" :style="{ color: 'var(--fg-muted)' }">
+      <Icon icon="lucide:sun" />
+      <Icon icon="lucide:moon" />
+    </span>
     <span
-      class="absolute h-7 w-7 rounded-full transition-transform"
+      class="absolute left-2 flex h-7 w-7 items-center justify-center rounded-full transition-transform"
       :style="{
         transform: isDark ? 'translateX(38px)' : 'translateX(0)',
         backgroundColor: 'var(--bg-primary)',
+        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
       }"
-    />
-    <span class="relative z-10 flex w-full justify-between text-sm" :style="{ color: 'var(--fg-secondary)' }">
-      <Icon icon="lucide:sun" />
-      <Icon icon="lucide:moon" />
+    >
+      <Icon
+        :icon="isDark ? 'lucide:moon' : 'lucide:sun'"
+        class="text-sm"
+        :style="{ color: 'var(--fg-secondary)' }"
+      />
     </span>
   </button>
 </template>
