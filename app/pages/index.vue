@@ -32,28 +32,30 @@ useHead({
       <div class="grid gap-4 md:grid-cols-3">
         <div v-for="item in currentStatus" :key="item.title" class="space-y-2">
           <p class="text-xs uppercase tracking-[0.08em] muted">{{ item.label }}</p>
-          <article class="card-surface flex items-center gap-3 p-3">
-            <div
-              v-if="item.icon"
-              class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md"
-              :style="{ backgroundColor: 'var(--bg-tertiary)' }"
-            >
-              <Icon :icon="item.icon" class="text-lg" :style="{ color: 'var(--fg-muted)' }" />
+          <SpotlightCard class="p-3">
+            <div class="flex items-center gap-3 h-full">
+              <div
+                v-if="item.icon"
+                class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md"
+                :style="{ backgroundColor: 'var(--bg-tertiary)' }"
+              >
+                <Icon :icon="item.icon" class="text-lg" :style="{ color: 'var(--fg-muted)' }" />
+              </div>
+              <img
+                v-else-if="item.images.length"
+                :src="item.images[0]"
+                :alt="item.title"
+                loading="lazy"
+                class="h-10 w-10 flex-shrink-0 rounded-md object-cover"
+              >
+              <div class="flex flex-col gap-0.5">
+                <h3 class="text-sm font-semibold" :style="{ color: 'var(--fg-primary)' }">
+                  {{ item.title }}
+                </h3>
+                <p v-if="item.content" class="text-xs" :style="{ color: 'var(--fg-secondary)' }">{{ item.content }}</p>
+              </div>
             </div>
-            <img
-              v-else-if="item.images.length"
-              :src="item.images[0]"
-              :alt="item.title"
-              loading="lazy"
-              class="h-10 w-10 flex-shrink-0 rounded-md object-cover"
-            >
-            <div class="flex flex-col gap-0.5">
-              <h3 class="text-sm font-semibold" :style="{ color: 'var(--fg-primary)' }">
-                {{ item.title }}
-              </h3>
-              <p v-if="item.content" class="text-xs" :style="{ color: 'var(--fg-secondary)' }">{{ item.content }}</p>
-            </div>
-          </article>
+          </SpotlightCard>
         </div>
       </div>
     </section>

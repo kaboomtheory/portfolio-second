@@ -7,7 +7,7 @@ const { isDark, toggle } = useTheme()
 <template>
   <button
     type="button"
-    class="relative inline-flex h-9 w-[78px] items-center rounded-full border px-2 transition-colors"
+    class="relative inline-flex h-9 w-[78px] items-center rounded-full border px-2 transition-all duration-300 hover:scale-105 active:scale-95"
     :style="{
       borderColor: 'var(--border)',
       backgroundColor: 'var(--bg-secondary)',

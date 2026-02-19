@@ -1,5 +1,12 @@
 <script setup lang="ts">
 const { scrollTo } = useSmoothScroll()
+const route = useRoute()
+
+watch(() => route.path, () => {
+  nextTick(() => {
+    window.scrollTo(0, 0)
+  })
+})
 
 onMounted(() => {
   document.addEventListener('click', handleAnchorClick)

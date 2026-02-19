@@ -2,27 +2,27 @@
 @import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css');
 
 :root {
-  --bg-primary: #f5f2ea;
-  --bg-secondary: #f0e8d8;
-  --bg-tertiary: #e4d7bb;
-  --fg-primary: #1b1b1a;
-  --fg-secondary: #4f4634;
-  --fg-muted: #766a52;
-  --border: #cfb992;
-  --accent: #9f472f;
-  --accent-soft: #d17a56;
+  --bg-primary: #ffffff;
+  --bg-secondary: #eff6ff;
+  --bg-tertiary: #dbeafe;
+  --fg-primary: #020617;
+  --fg-secondary: #334155;
+  --fg-muted: #64748b;
+  --border: #bfdbfe;
+  --accent: #2563eb;
+  --accent-soft: #60a5fa;
 }
 
 :root.dark {
-  --bg-primary: #131715;
-  --bg-secondary: #1f2622;
-  --bg-tertiary: #2d3832;
-  --fg-primary: #edf0e8;
-  --fg-secondary: #d4dcc9;
-  --fg-muted: #aeb8a0;
-  --border: #435145;
-  --accent: #e0865f;
-  --accent-soft: #f3a17b;
+  --bg-primary: #000000;
+  --bg-secondary: #0a0a0a;
+  --bg-tertiary: #171717;
+  --fg-primary: #f8fafc;
+  --fg-secondary: #a3a3a3;
+  --fg-muted: #737373;
+  --border: #262626;
+  --accent: #3b82f6;
+  --accent-soft: #60a5fa;
 }
 
 * {
@@ -66,8 +66,9 @@ body,
 body {
   font-family: 'Geist Sans', system-ui, sans-serif;
   background:
-    radial-gradient(circle at 15% 10%, rgba(224, 195, 132, 0.2), transparent 38%),
-    radial-gradient(circle at 90% 0%, rgba(159, 71, 47, 0.1), transparent 42%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 15% 10%, rgba(37, 99, 235, 0.08), transparent 38%),
+    radial-gradient(circle at 90% 0%, rgba(96, 165, 250, 0.08), transparent 42%),
     var(--bg-primary);
   color: var(--fg-primary);
   -webkit-font-smoothing: antialiased;
@@ -76,10 +77,13 @@ body {
 
 :root.dark body {
   background:
-    radial-gradient(circle at 15% 10%, rgba(224, 134, 95, 0.08), transparent 38%),
-    radial-gradient(circle at 90% 0%, rgba(67, 81, 69, 0.15), transparent 42%),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
+    radial-gradient(circle at 85% 90%, rgba(29, 78, 216, 0.15), transparent 38%),
+    radial-gradient(circle at 90% 0%, rgba(30, 58, 138, 0.2), transparent 42%),
     var(--bg-primary);
 }
+
+
 
 h1,
 h2,
@@ -186,7 +190,7 @@ pre,
 }
 
 .card-surface {
-  background: color-mix(in srgb, var(--bg-secondary) 92%, transparent);
+  background: transparent;
   border: 1px solid var(--border);
   border-radius: 0.25rem;
 }
@@ -233,11 +237,11 @@ pre,
 
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(159, 71, 47, 0.4);
+    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
   }
 
   50% {
-    box-shadow: 0 0 0 4px rgba(159, 71, 47, 0);
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0);
   }
 }
 
@@ -249,11 +253,11 @@ pre,
 
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(224, 134, 95, 0.4);
+    box-shadow: 0 0 0 0 rgba(29, 78, 216, 0.4);
   }
 
   50% {
-    box-shadow: 0 0 0 4px rgba(224, 134, 95, 0);
+    box-shadow: 0 0 0 4px rgba(29, 78, 216, 0);
   }
 }
 

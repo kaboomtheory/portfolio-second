@@ -8,167 +8,201 @@ useHead({ title: 'About' })
 
 <template>
   <div class="page-content">
-    <section class="page-section reveal-up">
-      <div class="grid gap-8 lg:grid-cols-[1fr_280px]">
-        <div class="space-y-12">
-          <header class="grid gap-6 sm:grid-cols-[auto_1fr] sm:items-center">
-            <img
-              :src="aboutMe.avatar"
-              :alt="aboutMe.name"
-              loading="lazy"
-              class="h-28 w-28 rounded-2xl object-cover"
-            >
-            <div class="space-y-2">
-              <h1 class="text-4xl font-bold tracking-tight" :style="{ color: 'var(--fg-primary)' }">
-                {{ aboutMe.name }}
-              </h1>
-              <p class="text-lg" :style="{ color: 'var(--fg-secondary)' }">{{ aboutMe.role }}</p>
-              <p class="flex items-center gap-1.5 text-sm" :style="{ color: 'var(--fg-muted)' }">
-                <Icon icon="lucide:map-pin" class="text-sm" />
-                {{ aboutMe.location }}
-              </p>
-            </div>
-          </header>
-
-          <p class="text-xl font-medium leading-relaxed" :style="{ color: 'var(--fg-primary)' }">
+    <!-- Hero Section -->
+    <section class="page-section reveal-up pt-6 md:pt-10">
+      <div class="grid gap-12 lg:grid-cols-2 lg:gap-16 items-start">
+        <div class="space-y-8">
+          <div class="space-y-2">
+            <TextReveal
+              tag="h1"
+              :text="aboutMe.name"
+              :delay="0.1"
+              class="text-5xl font-bold tracking-tight md:text-7xl leading-[0.9]"
+              :style="{ color: 'var(--fg-primary)' }"
+            />
+            <TextReveal
+              tag="p"
+              :text="aboutMe.role"
+              :delay="0.3"
+              class="text-2xl md:text-3xl font-light"
+              :style="{ color: 'var(--fg-secondary)' }"
+            />
+          </div>
+          
+          <p class="text-xl md:text-2xl leading-relaxed text-balance" :style="{ color: 'var(--fg-primary)' }">
             {{ aboutMe.intro }}
           </p>
-        </div>
 
-        <aside class="grid grid-cols-2 gap-3 lg:grid-cols-1">
-          <div
-            v-for="fact in aboutMe.facts"
-            :key="fact.label"
-            class="card-surface p-4 text-center"
-          >
-            <p class="text-2xl font-bold tabular-nums" :style="{ color: 'var(--accent)' }">
-              {{ fact.value }}
-            </p>
-            <p class="mt-1 text-xs uppercase tracking-[0.08em]" :style="{ color: 'var(--fg-muted)' }">
-              {{ fact.label }}
-            </p>
+          <div class="flex flex-wrap gap-4 text-sm font-medium tracking-wide uppercase" :style="{ color: 'var(--fg-muted)' }">
+            <span class="flex items-center gap-2">
+              <Icon icon="lucide:map-pin" />
+              {{ aboutMe.location }}
+            </span>
+            <span class="opacity-50">•</span>
+            <span>Available for freelance</span>
           </div>
-        </aside>
-      </div>
-    </section>
+        </div>
 
-    <section class="page-section reveal-up">
-      <h2 class="section-title">Story</h2>
-      <div class="space-y-4">
-        <p
-          v-for="(paragraph, index) in aboutMe.story"
-          :key="index"
-          class="max-w-2xl text-base leading-relaxed"
-          :style="{ color: 'var(--fg-secondary)' }"
-        >
-          {{ paragraph }}
-        </p>
-      </div>
-    </section>
-
-    <section class="page-section reveal-up">
-      <h2 class="section-title">Skills</h2>
-      <div class="grid gap-6 sm:grid-cols-3">
-        <div
-          v-for="skillGroup in aboutMe.skills"
-          :key="skillGroup.category"
-          class="space-y-3"
-        >
-          <h3
-            class="text-sm font-semibold uppercase tracking-[0.08em]"
-            :style="{ color: 'var(--fg-muted)' }"
+        <div class="relative aspect-[4/5] w-full overflow-hidden rounded-sm md:aspect-square lg:aspect-[4/5]">
+          <img
+            :src="aboutMe.avatar"
+            :alt="aboutMe.name"
+            class="h-full w-full object-cover transition-transform duration-700 hover:scale-105"
+            loading="eager"
           >
-            {{ skillGroup.category }}
-          </h3>
-          <ul class="space-y-2">
-            <li
-              v-for="skill in skillGroup.items"
-              :key="skill"
-              class="flex items-center gap-2 text-sm"
-              :style="{ color: 'var(--fg-secondary)' }"
-            >
-              <span class="h-1 w-1 rounded-full" :style="{ backgroundColor: 'var(--accent)' }" />
-              {{ skill }}
-            </li>
-          </ul>
+          <div class="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10" />
         </div>
       </div>
     </section>
 
-    <section class="page-section reveal-up">
-      <h2 class="section-title">Tools</h2>
-      <div class="flex flex-wrap gap-2">
-        <span
-          v-for="tool in aboutMe.tools"
-          :key="tool"
-          class="inline-flex items-center rounded-full px-4 py-2 text-sm font-medium"
-          :style="{
-            backgroundColor: 'var(--bg-tertiary)',
-            color: 'var(--fg-secondary)',
-          }"
-        >
-          {{ tool }}
-        </span>
-      </div>
-    </section>
-
-    <section class="page-section reveal-up">
-      <h2 class="section-title">Interests</h2>
-      <div class="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
+    <!-- Stats Row -->
+    <section class="page-section reveal-up border-y border-[var(--border)] py-8 md:py-12">
+      <div class="grid grid-cols-2 gap-8 md:grid-cols-4">
         <div
-          v-for="interest in aboutMe.interests"
-          :key="interest.label"
-          class="card-surface flex flex-col items-center gap-2 p-4 text-center"
+          v-for="fact in aboutMe.facts"
+          :key="fact.label"
+          class="text-center md:text-left"
         >
-          <Icon
-            :icon="interest.icon"
-            class="text-xl"
-            :style="{ color: 'var(--accent)' }"
-          />
-          <span class="text-xs" :style="{ color: 'var(--fg-secondary)' }">
-            {{ interest.label }}
-          </span>
+          <p class="text-4xl font-bold tabular-nums md:text-5xl" :style="{ color: 'var(--accent)' }">
+            {{ fact.value }}
+          </p>
+          <p class="mt-2 text-xs uppercase tracking-[0.15em] font-medium" :style="{ color: 'var(--fg-muted)' }">
+            {{ fact.label }}
+          </p>
         </div>
       </div>
     </section>
 
+    <!-- Story Section -->
     <section class="page-section reveal-up">
-      <h2 class="section-title">Connect</h2>
-      <div class="grid gap-3 sm:grid-cols-2 md:grid-cols-4">
-        <a
-          href="mailto:hello@example.com"
-          class="card-surface flex items-center gap-3 p-4 transition-transform duration-200 hover:-translate-y-0.5"
-        >
-          <Icon icon="lucide:mail" class="text-lg" :style="{ color: 'var(--fg-muted)' }" />
-          <span class="text-sm">hello@example.com</span>
-        </a>
-        <a
-          href="https://linkedin.com/"
-          target="_blank"
-          rel="noopener"
-          class="card-surface flex items-center gap-3 p-4 transition-transform duration-200 hover:-translate-y-0.5"
-        >
-          <Icon icon="lucide:linkedin" class="text-lg" :style="{ color: 'var(--fg-muted)' }" />
-          <span class="text-sm">LinkedIn</span>
-        </a>
-        <a
-          href="https://twitter.com/"
-          target="_blank"
-          rel="noopener"
-          class="card-surface flex items-center gap-3 p-4 transition-transform duration-200 hover:-translate-y-0.5"
-        >
-          <Icon icon="lucide:twitter" class="text-lg" :style="{ color: 'var(--fg-muted)' }" />
-          <span class="text-sm">Twitter</span>
-        </a>
-        <a
-          href="https://github.com/"
-          target="_blank"
-          rel="noopener"
-          class="card-surface flex items-center gap-3 p-4 transition-transform duration-200 hover:-translate-y-0.5"
-        >
-          <Icon icon="lucide:github" class="text-lg" :style="{ color: 'var(--fg-muted)' }" />
-          <span class="text-sm">GitHub</span>
-        </a>
+      <div class="grid gap-10 md:grid-cols-[1fr_2fr] md:gap-20">
+        <h2 class="text-xl font-medium md:text-2xl" :style="{ color: 'var(--fg-primary)' }">
+          Background
+        </h2>
+        <div class="space-y-6 text-lg leading-relaxed md:text-xl" :style="{ color: 'var(--fg-secondary)' }">
+          <p v-for="(paragraph, index) in aboutMe.story" :key="index">
+            {{ paragraph }}
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Capabilities Section (Skills & Tools) -->
+    <section class="page-section reveal-up">
+      <div class="grid gap-10 md:grid-cols-[1fr_2fr] md:gap-20">
+        <h2 class="text-xl font-medium md:text-2xl" :style="{ color: 'var(--fg-primary)' }">
+          Capabilities
+        </h2>
+        
+        <div class="space-y-12">
+          <!-- Skills Grid -->
+          <div class="grid gap-8 sm:grid-cols-2">
+            <div v-for="skillGroup in aboutMe.skills" :key="skillGroup.category" class="space-y-4">
+              <h3 class="text-sm font-semibold uppercase tracking-[0.1em]" :style="{ color: 'var(--fg-muted)' }">
+                {{ skillGroup.category }}
+              </h3>
+              <ul class="space-y-2">
+                <li
+                  v-for="skill in skillGroup.items"
+                  :key="skill"
+                  class="text-base"
+                  :style="{ color: 'var(--fg-secondary)' }"
+                >
+                  {{ skill }}
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <!-- Tools List -->
+          <div class="space-y-4 pt-8 border-t border-[var(--border)]">
+            <h3 class="text-sm font-semibold uppercase tracking-[0.1em]" :style="{ color: 'var(--fg-muted)' }">
+              Toolkit
+            </h3>
+            <div class="flex flex-wrap gap-x-6 gap-y-2">
+              <span
+                v-for="tool in aboutMe.tools"
+                :key="tool"
+                class="text-base"
+                :style="{ color: 'var(--fg-secondary)' }"
+              >
+                {{ tool }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interests Grid -->
+    <section class="page-section reveal-up">
+      <div class="grid gap-10 md:grid-cols-[1fr_2fr] md:gap-20">
+        <h2 class="text-xl font-medium md:text-2xl" :style="{ color: 'var(--fg-primary)' }">
+          Offline
+        </h2>
+        <div class="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <SpotlightCard
+            v-for="interest in aboutMe.interests"
+            :key="interest.label"
+            class="aspect-square flex flex-col items-center justify-center gap-3 p-4 text-center"
+          >
+            <Icon
+              :icon="interest.icon"
+              class="text-2xl relative z-10"
+              :style="{ color: 'var(--accent)' }"
+            />
+            <span class="text-sm font-medium relative z-10" :style="{ color: 'var(--fg-secondary)' }">
+              {{ interest.label }}
+            </span>
+          </SpotlightCard>
+        </div>
+      </div>
+    </section>
+
+    <!-- Connect Section -->
+    <section class="page-section reveal-up pb-10">
+      <div class="grid gap-10 md:grid-cols-[1fr_2fr] md:gap-20">
+        <h2 class="text-xl font-medium md:text-2xl" :style="{ color: 'var(--fg-primary)' }">
+          Connect
+        </h2>
+        <div class="flex flex-col gap-4 sm:flex-row sm:flex-wrap">
+          <MagneticButton class="group">
+            <a
+              href="mailto:hello@example.com"
+              class="flex items-center gap-3 text-lg transition-colors hover:text-[var(--accent)]"
+              :style="{ color: 'var(--fg-primary)' }"
+            >
+              <span>hello@example.com</span>
+              <Icon icon="lucide:arrow-up-right" class="text-lg opacity-50 group-hover:opacity-100 transition-opacity" />
+            </a>
+          </MagneticButton>
+          <div class="hidden sm:block w-px bg-[var(--border)] h-6 self-center mx-2" />
+          <MagneticButton class="group">
+            <a
+              href="https://linkedin.com/"
+              target="_blank"
+              rel="noopener"
+              class="flex items-center gap-3 text-lg transition-colors hover:text-[var(--accent)]"
+              :style="{ color: 'var(--fg-primary)' }"
+            >
+              <span>LinkedIn</span>
+              <Icon icon="lucide:arrow-up-right" class="text-lg opacity-50 group-hover:opacity-100 transition-opacity" />
+            </a>
+          </MagneticButton>
+          <div class="hidden sm:block w-px bg-[var(--border)] h-6 self-center mx-2" />
+          <MagneticButton class="group">
+            <a
+              href="https://twitter.com/"
+              target="_blank"
+              rel="noopener"
+              class="flex items-center gap-3 text-lg transition-colors hover:text-[var(--accent)]"
+              :style="{ color: 'var(--fg-primary)' }"
+            >
+              <span>Twitter</span>
+              <Icon icon="lucide:arrow-up-right" class="text-lg opacity-50 group-hover:opacity-100 transition-opacity" />
+            </a>
+          </MagneticButton>
+        </div>
       </div>
     </section>
   </div>

@@ -6,8 +6,9 @@ export interface NavItem {
 }
 
 export const profile = {
-  name: 'Avery Holt',
-  role: 'Product + Brand Designer',
+  name: 'Bryan X. Mendez',
+  role: 'Visual Designer',
+  location: 'Los Angeles, CA',
   photo: 'https://picsum.photos/seed/profile-avery/300/300',
 }
 

@@ -17,7 +17,7 @@ const props = withDefaults(
   }
 )
 
-const btnClass = 'inline-flex items-center gap-2 rounded-md border px-4 py-2 text-xs uppercase tracking-[0.1em] transition-opacity hover:opacity-85'
+const btnClass = 'inline-flex items-center gap-2 rounded-md border px-4 py-2 text-xs uppercase tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 origin-center'
 </script>
 
 <template>
@@ -26,10 +26,10 @@ const btnClass = 'inline-flex items-center gap-2 rounded-md border px-4 py-2 tex
     :href="href"
     target="_blank"
     rel="noopener noreferrer"
-    :class="[btnClass, attention && 'btn-attention']"
+    :class="[btnClass, attention && 'btn-attention', secondary && 'hover:bg-[var(--bg-tertiary)]']"
     :style="{
       backgroundColor: secondary ? 'transparent' : 'var(--fg-secondary)',
-      borderColor: 'var(--border)',
+      borderColor: secondary ? 'var(--border)' : 'transparent',
       color: secondary ? 'var(--fg-secondary)' : 'var(--bg-primary)',
     }"
   >
@@ -39,10 +39,10 @@ const btnClass = 'inline-flex items-center gap-2 rounded-md border px-4 py-2 tex
   <NuxtLink
     v-else-if="to"
     :to="to"
-    :class="[btnClass, attention && 'btn-attention']"
+    :class="[btnClass, attention && 'btn-attention', secondary && 'hover:bg-[var(--bg-tertiary)]']"
     :style="{
       backgroundColor: secondary ? 'transparent' : 'var(--fg-secondary)',
-      borderColor: 'var(--border)',
+      borderColor: secondary ? 'var(--border)' : 'transparent',
       color: secondary ? 'var(--fg-secondary)' : 'var(--bg-primary)',
     }"
   >

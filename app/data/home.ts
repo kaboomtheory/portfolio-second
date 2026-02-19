@@ -10,7 +10,7 @@ export interface StatusItem {
 
 export const homeHero = {
   title: 'Designing thoughtful brand and product experiences.',
-  subtitle: 'Based in Orange County, CA.',
+  subtitle: 'Based in Los Angeles, CA.',
   description:
     'This MVP clone uses placeholder content to mirror the structure and rhythm of the original portfolio experience.',
 }
@@ -29,9 +29,9 @@ export interface AboutMeData {
 }
 
 export const aboutMe: AboutMeData = {
-  name: 'Avery Holt',
-  role: 'Product Designer & Creative Technologist',
-  location: 'Orange County, CA',
+  name: 'Bryan X. Mendez',
+  role: 'Visual Designer',
+  location: 'Los Angeles, CA',
   avatar: 'https://picsum.photos/seed/avery-profile/400/400',
   intro: 'I design digital products that feel like they were made for humans, not users.',
   story: [
@@ -63,13 +63,12 @@ export const aboutMe: AboutMeData = {
 
 export const currentStatus: StatusItem[] = [
   {
-    type: 'Logo',
-    label: 'This sandwich',
-    title: 'Website',
+    type: 'Games',
+    label: 'Currently Watching',
+    title: 'A Knight of the Seven Kingdoms',
     content: '',
     link: '',
-    images: [],
-    icon: 'lucide:hard-hat',
+    images: ['/KOTSK.jpg'],
   },
   {
     type: 'Games',
@@ -81,7 +80,7 @@ export const currentStatus: StatusItem[] = [
   },
   {
     type: 'Music',
-    label: 'Current Listens',
+    label: 'Currently Listening',
     title: 'Grace',
     content: 'Jeff Buckley',
     link: '',

@@ -17,6 +17,9 @@ const isLastExpandImage = ref(false)
 let resizeObserver: ResizeObserver | null = null
 
 const opacityProgress = ref(0)
+const needsInitialMeasure = computed(() => {
+  return props.preExpanded && progress.value > 0.001 && !restRect.value.width
+})
 
 function getExpandMetrics(originalWidth: number) {
   const isDesktop = window.matchMedia('(min-width: 768px)').matches
@@ -82,6 +85,7 @@ onMounted(() => {
   cacheRect()
   updateLastImageState()
   calculateOpacity()
+  requestAnimationFrame(cacheRect)
   requestAnimationFrame(updateLastImageState)
 
   window.addEventListener('resize', cacheRect, { passive: true })
@@ -104,6 +108,10 @@ const expandStyle = computed(() => {
   const p = progress.value
   const motion = p * p * (3 - 2 * p)
   const opacity = opacityProgress.value
+
+  if (needsInitialMeasure.value) {
+    return { opacity: '0' }
+  }
 
   if (p <= 0.001 || !restRect.value.width) {
     return { opacity: opacity.toFixed(3) }

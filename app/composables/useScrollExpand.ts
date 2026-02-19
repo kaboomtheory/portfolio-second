@@ -17,9 +17,9 @@ export function useScrollExpand(
   wrapperRef: Ref<HTMLElement | null>,
   options: ScrollExpandOptions = {},
 ) {
-  const progress = ref(0)
-  let ticking = false
   const initialHoldScroll = Math.max(0, options.initialHoldScroll ?? 0)
+  const progress = ref(initialHoldScroll > 0 ? 1 : 0)
+  let ticking = false
 
   function calculate() {
     const el = wrapperRef.value
