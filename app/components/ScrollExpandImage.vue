@@ -8,155 +8,119 @@ const props = withDefaults(defineProps<{
 })
 
 const wrapperRef = ref<HTMLElement | null>(null)
-const { progress } = useScrollExpand(wrapperRef, {
-  initialHoldScroll: props.preExpanded ? 420 : 0,
+const imageRef = ref<HTMLImageElement | null>(null)
+const { progress, visibility } = useScrollExpand(wrapperRef, {
+  preExpanded: props.preExpanded,
+  preloadDistance: 420,
+  centerHold: 96,
+  influenceMultiplier: 1.8,
+  edgeFadeStart: 0.56,
+  edgeFadeEnd: 0.12,
 })
 
-const restRect = ref({ width: 0, left: 0, height: 0, top: 0 })
-const isLastExpandImage = ref(false)
+const metrics = ref({
+  maxScale: 1,
+  centerShiftX: 0,
+  reservedBottom: 64,
+})
+const imageRatio = ref(9 / 16)
+
 let resizeObserver: ResizeObserver | null = null
-
-const opacityProgress = ref(0)
-const needsInitialMeasure = computed(() => {
-  return props.preExpanded && progress.value > 0.001 && !restRect.value.width
-})
 
 function getExpandMetrics(originalWidth: number) {
   const isDesktop = window.matchMedia('(min-width: 768px)').matches
   const viewportW = window.innerWidth
   const sidebarW = isDesktop ? 256 : 0
-  const availableWidth = viewportW - sidebarW
+  const availableWidth = Math.max(1, viewportW - sidebarW)
+  const maxScale = Math.max(1, availableWidth / originalWidth)
 
   return {
     isDesktop,
     sidebarW,
     availableWidth,
-    maxScale: Math.max(1, availableWidth / originalWidth),
+    maxScale,
   }
 }
 
-function updateLastImageState() {
-  const el = wrapperRef.value
-  if (!el || !import.meta.client) {
-    isLastExpandImage.value = false
-    return
-  }
-
-  const wrappers = document.querySelectorAll<HTMLElement>('.scroll-expand-wrapper')
-  isLastExpandImage.value = wrappers.length > 0 && wrappers[wrappers.length - 1] === el
-}
-
-function cacheRect() {
-  const el = wrapperRef.value
-  if (el) {
-    const r = el.getBoundingClientRect()
-    restRect.value = { width: r.width, left: r.left, height: r.height, top: r.top }
-  }
-}
-
-function calculateOpacity() {
+function measure() {
   const el = wrapperRef.value
   if (!el) {
-    opacityProgress.value = 0
     return
   }
 
   const rect = el.getBoundingClientRect()
-  const viewportH = window.innerHeight
-  const elCenter = rect.top + rect.height / 2
-  const viewportCenter = viewportH / 2
-
-  const distanceToCenter = Math.abs(elCenter - viewportCenter)
-  const holdZone = viewportH * 0.25
-  const fadeZone = viewportH * 0.55
-
-  let opacity: number
-  if (distanceToCenter <= holdZone) {
-    opacity = 1
-  } else {
-    const fadeProgress = (distanceToCenter - holdZone) / fadeZone
-    opacity = Math.max(0, 1 - fadeProgress)
+  if (rect.width <= 0) {
+    return
   }
 
-  opacityProgress.value = opacity
+  const { isDesktop, sidebarW, availableWidth, maxScale } = getExpandMetrics(rect.width)
+  const targetCenterX = sidebarW + availableWidth / 2
+  const originalCenterX = rect.left + rect.width / 2
+  const baseHeight = rect.width * imageRatio.value
+  const extraHeight = baseHeight * (maxScale - 1)
+  const reserve = Math.max(
+    isDesktop ? 84 : 56,
+    Math.min(isDesktop ? 520 : 320, extraHeight * 0.9 + (isDesktop ? 36 : 24)),
+  )
+
+  metrics.value = {
+    maxScale,
+    centerShiftX: targetCenterX - originalCenterX,
+    reservedBottom: reserve,
+  }
+}
+
+function onImageLoad() {
+  const img = imageRef.value
+  if (img && img.naturalWidth > 0 && img.naturalHeight > 0) {
+    imageRatio.value = img.naturalHeight / img.naturalWidth
+  }
+
+  measure()
 }
 
 onMounted(() => {
-  cacheRect()
-  updateLastImageState()
-  calculateOpacity()
-  requestAnimationFrame(cacheRect)
-  requestAnimationFrame(updateLastImageState)
+  measure()
+  requestAnimationFrame(measure)
 
-  window.addEventListener('resize', cacheRect, { passive: true })
-  window.addEventListener('scroll', calculateOpacity, { passive: true })
+  window.addEventListener('resize', measure, { passive: true })
 
   if ('ResizeObserver' in window && wrapperRef.value) {
-    resizeObserver = new ResizeObserver(cacheRect)
+    resizeObserver = new ResizeObserver(measure)
     resizeObserver.observe(wrapperRef.value)
   }
 })
 
 onBeforeUnmount(() => {
-  window.removeEventListener('resize', cacheRect)
-  window.removeEventListener('scroll', calculateOpacity)
+  window.removeEventListener('resize', measure)
   resizeObserver?.disconnect()
   resizeObserver = null
 })
 
 const expandStyle = computed(() => {
-  const p = progress.value
-  const motion = p * p * (3 - 2 * p)
-  const opacity = opacityProgress.value
+  const p = Math.max(0, Math.min(1, progress.value))
+  const rampStart = 0.22
+  const t = p <= rampStart ? 0 : (p - rampStart) / (1 - rampStart)
+  const clampedT = Math.max(0, Math.min(1, t))
+  const motion = clampedT * clampedT * (3 - 2 * clampedT)
 
-  if (needsInitialMeasure.value) {
-    return { opacity: '0' }
-  }
+  const scale = 1 + (metrics.value.maxScale - 1) * motion
+  const centerOffset = metrics.value.centerShiftX * motion
 
-  if (p <= 0.001 || !restRect.value.width) {
-    return { opacity: opacity.toFixed(3) }
-  }
+  const opacity = Math.max(0, Math.min(1, visibility.value))
 
-  const originalWidth = restRect.value.width
-  const originalLeft = restRect.value.left
-  const { sidebarW, availableWidth, maxScale } = getExpandMetrics(originalWidth)
-
-  const scaleX = 1 + (maxScale - 1) * motion
-
-  const availableCenterX = sidebarW + availableWidth / 2
-  const originalCenterX = originalLeft + originalWidth / 2
-  const centerOffset = (availableCenterX - originalCenterX) * motion
-
-  const borderRadius = Math.round(12 * (1 - motion))
+  const borderRadius = Math.round(14 - 8 * motion)
 
   return {
-    transform: `translate3d(${centerOffset.toFixed(1)}px, 0, 0) scale(${scaleX.toFixed(4)})`,
+    transform: `translate3d(${centerOffset.toFixed(1)}px, 0, 0) scale(${scale.toFixed(4)})`,
     borderRadius: `${borderRadius}px`,
     opacity: opacity.toFixed(3),
   }
 })
 
 const wrapperStyle = computed(() => {
-  const p = progress.value
-  if (p <= 0.001 || !restRect.value.height || !restRect.value.width) return {}
-
-  const originalWidth = restRect.value.width
-  const motion = p * p * (3 - 2 * p)
-  const { isDesktop, maxScale } = getExpandMetrics(originalWidth)
-  const scaleX = 1 + (maxScale - 1) * motion
-
-  const extraHeight = restRect.value.height * (scaleX - 1)
-  const maxExtraHeight = restRect.value.height * Math.max(maxScale - 1, 0)
-  const breathingRoom = (isDesktop ? 72 : 46) * motion
-  let marginNeeded = extraHeight + breathingRoom
-
-  if (isLastExpandImage.value) {
-    const bottomGuard = maxExtraHeight * 0.92 + (isDesktop ? 58 : 40)
-    marginNeeded = Math.max(marginNeeded, bottomGuard)
-  }
-
   return {
-    marginBottom: `${marginNeeded.toFixed(1)}px`,
+    paddingBottom: `${metrics.value.reservedBottom.toFixed(1)}px`,
   }
 })
 </script>
@@ -164,12 +128,15 @@ const wrapperStyle = computed(() => {
 <template>
   <div ref="wrapperRef" class="scroll-expand-wrapper" :style="wrapperStyle">
     <img
+      ref="imageRef"
       :src="props.src"
       :alt="props.alt"
       class="scroll-expand-img"
       :style="expandStyle"
-      loading="lazy"
-      @load="cacheRect"
+      :loading="props.preExpanded ? 'eager' : 'lazy'"
+      :fetchpriority="props.preExpanded ? 'high' : 'auto'"
+      decoding="async"
+      @load="onImageLoad"
     >
   </div>
 </template>
@@ -178,16 +145,16 @@ const wrapperStyle = computed(() => {
 .scroll-expand-wrapper {
   position: relative;
   overflow: visible;
+  isolation: isolate;
   contain: layout style;
-  overflow-anchor: none;
 }
 
 .scroll-expand-img {
   display: block;
   width: 100%;
-  border-radius: 12px;
+  border-radius: 14px;
   object-fit: cover;
-  will-change: transform, border-radius, opacity;
+  will-change: transform, opacity, border-radius;
   transform-origin: top center;
   backface-visibility: hidden;
   opacity: 0;

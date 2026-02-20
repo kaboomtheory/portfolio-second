@@ -46,7 +46,7 @@ useHead(() => ({
         />
       </section>
 
-      <section class="space-y-20 md:space-y-24">
+      <section class="space-y-24 md:space-y-32">
         <article
           v-for="(section, index) in caseSections"
           :key="section.heading"

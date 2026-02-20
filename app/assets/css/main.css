@@ -126,6 +126,7 @@ pre,
   flex-direction: column;
   gap: 2.25rem;
   padding-bottom: 0.5rem;
+  overflow-anchor: none;
 }
 
 .page-section {

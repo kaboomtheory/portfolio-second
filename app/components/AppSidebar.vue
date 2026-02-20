@@ -146,12 +146,14 @@ const groupedNav = computed(() => {
   border-radius: 0.375rem;
   padding: 0.375rem 0.5rem;
   opacity: 0.6;
+  border-left: 2px solid transparent;
   transition: all 0.2s ease;
 }
 
 .nav-link:hover {
   background-color: var(--bg-tertiary);
   opacity: 0.8;
+  border-left-color: var(--border);
 }
 
 .nav-link.router-link-active,
@@ -167,6 +169,7 @@ const groupedNav = computed(() => {
   .nav-link.router-link-active,
   .nav-link.router-link-exact-active {
     background-color: var(--bg-tertiary);
+    border-left-color: var(--accent);
     opacity: 1;
   }
 }

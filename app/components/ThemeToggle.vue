@@ -15,9 +15,9 @@ const { isDark, toggle } = useTheme()
     :title="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
     @click="toggle"
   >
-    <span class="flex w-full justify-between text-sm" :style="{ color: 'var(--fg-muted)' }">
-      <Icon icon="lucide:sun" />
-      <Icon icon="lucide:moon" />
+    <span class="flex w-full justify-between text-sm items-center px-0.5" :style="{ color: 'var(--fg-muted)' }">
+      <Icon icon="lucide:sun" :class="['transition-all duration-300', isDark ? 'opacity-40 scale-75' : 'opacity-100 scale-100']" />
+      <Icon icon="lucide:moon" :class="['transition-all duration-300', !isDark ? 'opacity-40 scale-75' : 'opacity-100 scale-100']" />
     </span>
     <span
       class="absolute left-2 flex h-7 w-7 items-center justify-center rounded-full transition-transform"
