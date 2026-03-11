@@ -18,7 +18,6 @@ const { progress, visibility } = useScrollExpand(wrapperRef, {
   edgeFadeEnd: 0.12,
 })
 
-<<<<<<< HEAD
 const metrics = ref({
   maxScale: 1,
   centerShiftX: 0,
@@ -29,8 +28,7 @@ const imageRatio = ref(9 / 16)
 let resizeObserver: ResizeObserver | null = null
 
 function getExpandMetrics(originalWidth: number, originalHeight: number) {
->>>>>>> 65a6db27461bdb15bcb8721fcd92b08b2cd4d9fe
-const isDesktop = window.matchMedia('(min-width: 768px)').matches
+  const isDesktop = window.matchMedia('(min-width: 768px)').matches
   const viewportW = window.innerWidth
   const viewportH = window.innerHeight
   const sidebarW = isDesktop ? 256 : 0
@@ -45,33 +43,6 @@ const isDesktop = window.matchMedia('(min-width: 768px)').matches
     isDesktop,
     sidebarW,
     availableWidth,
-    maxScale,
-  }
-}
-
-
-function measure() {
-
-  return {
-    isDesktop,
-    sidebarW,
-    availableWidth,
-<<<<<<< HEAD
-    maxScale: Math.max(1, Math.min(scaleByWidth, scaleByHeight)),
-  }
-}
-
-
-function cacheRect() {
-  const el = wrapperRef.value
-  if (el) {
-    const r = el.getBoundingClientRect()
-    restRect.value = { width: r.width, left: r.left, height: r.height, top: r.top }
-  }
-}
-
-function calculateOpacity() {
-=======
     maxScale,
   }
 }
