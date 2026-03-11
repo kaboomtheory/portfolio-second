@@ -13,7 +13,6 @@ const { progress } = useScrollExpand(wrapperRef, {
 })
 
 const restRect = ref({ width: 0, left: 0, height: 0, top: 0 })
-const isLastExpandImage = ref(false)
 let resizeObserver: ResizeObserver | null = null
 
 const opacityProgress = ref(0)
@@ -21,30 +20,25 @@ const needsInitialMeasure = computed(() => {
   return props.preExpanded && progress.value > 0.001 && !restRect.value.width
 })
 
-function getExpandMetrics(originalWidth: number) {
+function getExpandMetrics(originalWidth: number, originalHeight: number) {
   const isDesktop = window.matchMedia('(min-width: 768px)').matches
   const viewportW = window.innerWidth
+  const viewportH = window.innerHeight
   const sidebarW = isDesktop ? 256 : 0
   const availableWidth = viewportW - sidebarW
+  
+  const maxAvailableHeight = viewportH * 0.99
+  const scaleByWidth = availableWidth / originalWidth
+  const scaleByHeight = originalHeight > 0 ? maxAvailableHeight / originalHeight : scaleByWidth
 
   return {
     isDesktop,
     sidebarW,
     availableWidth,
-    maxScale: Math.max(1, availableWidth / originalWidth),
+    maxScale: Math.max(1, Math.min(scaleByWidth, scaleByHeight)),
   }
 }
 
-function updateLastImageState() {
-  const el = wrapperRef.value
-  if (!el || !import.meta.client) {
-    isLastExpandImage.value = false
-    return
-  }
-
-  const wrappers = document.querySelectorAll<HTMLElement>('.scroll-expand-wrapper')
-  isLastExpandImage.value = wrappers.length > 0 && wrappers[wrappers.length - 1] === el
-}
 
 function cacheRect() {
   const el = wrapperRef.value
@@ -83,10 +77,8 @@ function calculateOpacity() {
 
 onMounted(() => {
   cacheRect()
-  updateLastImageState()
   calculateOpacity()
   requestAnimationFrame(cacheRect)
-  requestAnimationFrame(updateLastImageState)
 
   window.addEventListener('resize', cacheRect, { passive: true })
   window.addEventListener('scroll', calculateOpacity, { passive: true })
@@ -105,7 +97,7 @@ onBeforeUnmount(() => {
 })
 
 const expandStyle = computed(() => {
-  const p = progress.value
+  const p = props.preExpanded ? 1 : progress.value
   const motion = p * p * (3 - 2 * p)
   const opacity = opacityProgress.value
 
@@ -119,7 +111,8 @@ const expandStyle = computed(() => {
 
   const originalWidth = restRect.value.width
   const originalLeft = restRect.value.left
-  const { sidebarW, availableWidth, maxScale } = getExpandMetrics(originalWidth)
+  const originalHeight = restRect.value.height
+  const { sidebarW, availableWidth, maxScale } = getExpandMetrics(originalWidth, originalHeight)
 
   const scaleX = 1 + (maxScale - 1) * motion
 
@@ -137,23 +130,18 @@ const expandStyle = computed(() => {
 })
 
 const wrapperStyle = computed(() => {
-  const p = progress.value
-  if (p <= 0.001 || !restRect.value.height || !restRect.value.width) return {}
+  if (!restRect.value.height || !restRect.value.width) return {}
 
   const originalWidth = restRect.value.width
-  const motion = p * p * (3 - 2 * p)
-  const { isDesktop, maxScale } = getExpandMetrics(originalWidth)
-  const scaleX = 1 + (maxScale - 1) * motion
+  const originalHeight = restRect.value.height
+  const { isDesktop, maxScale } = getExpandMetrics(originalWidth, originalHeight)
 
-  const extraHeight = restRect.value.height * (scaleX - 1)
+  // Always reserve the full max expansion space so the page height stays
+  // constant. Dynamic margin caused a scroll ↔ progress feedback loop
+  // that made scrolling feel "stuck".
   const maxExtraHeight = restRect.value.height * Math.max(maxScale - 1, 0)
-  const breathingRoom = (isDesktop ? 72 : 46) * motion
-  let marginNeeded = extraHeight + breathingRoom
-
-  if (isLastExpandImage.value) {
-    const bottomGuard = maxExtraHeight * 0.92 + (isDesktop ? 58 : 40)
-    marginNeeded = Math.max(marginNeeded, bottomGuard)
-  }
+  const breathingRoom = isDesktop ? 72 : 46
+  const marginNeeded = maxExtraHeight + breathingRoom
 
   return {
     marginBottom: `${marginNeeded.toFixed(1)}px`,
@@ -185,8 +173,10 @@ const wrapperStyle = computed(() => {
 .scroll-expand-img {
   display: block;
   width: 100%;
+  max-height: 99vh;
   border-radius: 12px;
-  object-fit: cover;
+  object-fit: contain;
+  object-position: center top;
   will-change: transform, border-radius, opacity;
   transform-origin: top center;
   backface-visibility: hidden;

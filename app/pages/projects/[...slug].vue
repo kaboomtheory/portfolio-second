@@ -52,15 +52,15 @@ useHead(() => ({
           :key="section.heading"
           class="space-y-10 md:space-y-12"
         >
-          <div class="space-y-2">
+          <div v-if="section.heading" class="space-y-2">
            <span class="text-[11px] uppercase tracking-[0.11em] muted block mb-2">{{ String(index + 1).padStart(2, '0') }}</span>
            <h2 class="text-3xl md:text-5xl font-light">{{ section.heading }}</h2>
           </div>
-          <p class="text-lg leading-relaxed text-[var(--fg-secondary)] max-w-3xl">{{ section.body }}</p>
+          <p v-if="section.body" class="text-lg leading-relaxed text-[var(--fg-secondary)] max-w-3xl">{{ section.body }}</p>
           <ScrollExpandImage
             v-if="index > 0 || !featuredSection"
             :src="section.image"
-            :alt="section.heading"
+            :alt="section.heading || `${project.name} image ${index + 1}`"
             :pre-expanded="index === 0 && !featuredSection"
             class="mt-10 md:mt-12"
           />

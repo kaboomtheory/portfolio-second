@@ -19,6 +19,7 @@ export default defineNuxtPlugin((nuxtApp) => {
 
   rafId = window.requestAnimationFrame(raf)
 
+  // @ts-expect-error - app:beforeUnmount is not in RuntimeNuxtHooks but may exist at runtime
   nuxtApp.hook('app:beforeUnmount', () => {
     window.cancelAnimationFrame(rafId)
     lenis.destroy()

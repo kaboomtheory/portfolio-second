@@ -19,7 +19,8 @@ const groupedNav = computed(() => {
   const groups: Record<string, typeof navItems> = { Work: [], Personal: [] }
 
   for (const item of navItems) {
-    groups[item.group].push(item)
+    if (!groups[item.group]) groups[item.group] = []
+    groups[item.group]!.push(item)
   }
 
   return groups
