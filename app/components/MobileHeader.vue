@@ -2,14 +2,18 @@
 import { Icon } from '@iconify/vue'
 import { profile } from '~/data/site'
 
+defineProps<{
+  isOpen?: boolean
+}>()
+
 const emit = defineEmits<{
-  open: []
+  toggle: []
 }>()
 </script>
 
 <template>
   <header
-    class="fixed inset-x-0 top-0 z-50 border-b p-4 md:hidden"
+    class="fixed inset-x-0 top-0 z-[80] border-b p-4 md:hidden"
     :style="{
       borderColor: 'var(--border)',
       backgroundColor: 'color-mix(in srgb, var(--bg-primary) 90%, transparent)',
@@ -28,11 +32,22 @@ const emit = defineEmits<{
 
       <button
         type="button"
-        aria-label="Open navigation"
+        aria-label="Toggle navigation"
         class="inline-flex h-11 w-11 items-center justify-center -mr-2"
-        @click="emit('open')"
+        @click="emit('toggle')"
       >
-        <Icon icon="lucide:menu" class="text-xl" />
+        <span class="relative flex h-5 w-5 items-center justify-center">
+          <Icon
+            icon="lucide:menu"
+            class="absolute text-xl transition-all duration-300"
+            :class="isOpen ? 'scale-0 opacity-0 rotate-90' : 'scale-100 opacity-100 rotate-0'"
+          />
+          <Icon
+            icon="lucide:x"
+            class="absolute text-xl transition-all duration-300"
+            :class="isOpen ? 'scale-100 opacity-100 rotate-0' : 'scale-0 opacity-0 -rotate-90'"
+          />
+        </span>
       </button>
     </div>
   </header>

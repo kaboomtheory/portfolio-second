@@ -39,7 +39,7 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="min-h-screen">
-    <MobileHeader @open="mobileOpen = true" />
+    <MobileHeader :is-open="mobileOpen" @toggle="mobileOpen = !mobileOpen" />
 
     <aside class="z-40 hidden h-auto p-0 md:fixed md:bottom-0 md:left-0 md:block md:h-screen md:w-64 md:p-4">
       <AppSidebar />

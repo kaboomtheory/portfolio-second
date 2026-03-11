@@ -17,7 +17,7 @@ const props = withDefaults(
   }
 )
 
-const btnClass = 'inline-flex items-center gap-2 rounded-md border px-4 py-2 text-xs uppercase tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 origin-center'
+const btnClass = 'inline-flex items-center gap-2 rounded-md border px-4 py-2 text-xs uppercase tracking-[0.1em] transition-all duration-300 hover:scale-105 active:scale-95 origin-center hover:shadow-lg hover:border-[var(--accent)] dark:hover:shadow-white/5'
 </script>
 
 <template>

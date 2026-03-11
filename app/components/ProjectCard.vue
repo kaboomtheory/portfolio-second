@@ -44,7 +44,7 @@ const handleMouseMove = (e: MouseEvent) => {
       loading="lazy"
     >
     <div
-      class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-80 transition-opacity duration-300 group-hover:opacity-90"
+      class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-100 z-10"
     />
     <div class="absolute inset-x-0 bottom-0 p-5 z-20">
       <div class="flex items-end justify-between gap-3">
