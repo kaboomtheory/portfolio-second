@@ -1,16 +1,17 @@
 import { aboutMe, currentStatus, homeHero } from '~/data/home'
 import { friends } from '~/data/friends'
-import { projectPasswords, projects } from '~/data/projects'
 import { clients, experiences } from '~/data/resume'
 import { trinkets } from '~/data/trinkets'
 
+/**
+ * Static content composable - contains all non-Sanity managed content
+ * For projects, use useSanityProjects() directly instead
+ */
 export function useMockContent() {
   return {
     homeHero,
     currentStatus,
     aboutMe,
-    projects,
-    projectPasswords,
     friends,
     trinkets,
     experiences,

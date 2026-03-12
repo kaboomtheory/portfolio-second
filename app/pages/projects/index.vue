@@ -1,16 +1,19 @@
 <script setup lang="ts">
-const { projects } = useMockContent()
+const { projects, loading } = useSanityProjects()
 
 const selectedCategory = ref('all')
 
-const categories = computed(() => ['all', ...new Set(projects.map((item) => item.category))])
+const categories = computed(() => {
+  const cats = projects.value.map((item) => item.category)
+  return ['all', ...new Set(cats)]
+})
 
 const filteredProjects = computed(() => {
   if (selectedCategory.value === 'all') {
-    return projects
+    return projects.value
   }
 
-  return projects.filter((item) => item.category === selectedCategory.value)
+  return projects.value.filter((item) => item.category === selectedCategory.value)
 })
 
 useHead({ title: 'Projects' })
@@ -24,25 +27,38 @@ useHead({ title: 'Projects' })
     />
 
     <section class="page-section pt-0">
-      <ul class="filter-row">
-        <li v-for="category in categories" :key="category">
-          <button
-            type="button"
-            class="filter-pill"
-            :class="{ 'filter-pill-active': selectedCategory === category }"
-            :style="{
-              opacity: selectedCategory === category ? '1' : '0.78',
-            }"
-            @click="selectedCategory = category"
-          >
-            {{ category === 'all' ? 'All' : category }}
-          </button>
-        </li>
-      </ul>
-
-      <div class="grid gap-4 sm:grid-cols-2">
-        <ProjectCard v-for="project in filteredProjects" :key="project.slug" :project="project" />
+      <!-- Loading state -->
+      <div v-if="loading && projects.length === 0" class="text-center text-gray-500 py-12">
+        Loading projects...
       </div>
+
+      <!-- Empty state -->
+      <div v-else-if="!loading && projects.length === 0" class="text-center text-gray-500 py-12">
+        No projects found. Check Sanity Studio configuration.
+      </div>
+
+      <!-- Projects grid -->
+      <template v-else>
+        <ul class="filter-row">
+          <li v-for="category in categories" :key="category">
+            <button
+              type="button"
+              class="filter-pill"
+              :class="{ 'filter-pill-active': selectedCategory === category }"
+              :style="{
+                opacity: selectedCategory === category ? '1' : '0.78',
+              }"
+              @click="selectedCategory = category"
+            >
+              {{ category === 'all' ? 'All' : category }}
+            </button>
+          </li>
+        </ul>
+
+        <div class="grid gap-4 sm:grid-cols-2">
+          <ProjectCard v-for="project in filteredProjects" :key="project.slug" :project="project" />
+        </div>
+      </template>
     </section>
   </div>
 </template>

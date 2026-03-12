@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__Sanity__read_docs",
+      "mcp__Sanity__search_docs",
+      "Bash(npm install @nuxtjs/sanity @sanity/image-url)",
+      "Bash(npm install)",
+      "Bash(npm run studio)",
+      "Bash(npm run dev)"
+    ]
+  }
+}

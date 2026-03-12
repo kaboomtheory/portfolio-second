@@ -2,9 +2,10 @@
 import { Icon } from '@iconify/vue'
 import type { TrinketItem } from '~/data/trinkets'
 
-const { homeHero, currentStatus, projects, trinkets } = useMockContent()
+const { homeHero, currentStatus, trinkets } = useMockContent()
+const { projects } = useSanityProjects()
 
-const featuredProjects = computed(() => projects.slice(0, 2))
+const featuredProjects = computed(() => projects.value.slice(0, 2))
 const featuredTrinkets = computed(() => trinkets.filter((item) => item.featured).slice(0, 4))
 
 const activeTrinket = ref<TrinketItem | null>(null)

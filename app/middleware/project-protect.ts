@@ -1,4 +1,4 @@
-import { projectPasswords } from '~/data/projects'
+import { useSanityProjects } from '~/composables/useSanityProjects'
 
 export default defineNuxtRouteMiddleware((to) => {
   if (!import.meta.client) {
@@ -8,7 +8,8 @@ export default defineNuxtRouteMiddleware((to) => {
   const source = to.params.slug
   const slug = Array.isArray(source) ? source.join('/') : String(source || '')
 
-  const requiredPassword = projectPasswords[slug]
+  const { projectPasswords } = useSanityProjects()
+  const requiredPassword = projectPasswords.value[slug]
   if (!requiredPassword) {
     return
   }

@@ -7,10 +7,13 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare"
+    "postinstall": "nuxt prepare",
+    "studio": "npm run dev --prefix sanity-studio"
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",
+    "@nuxtjs/sanity": "^2.2.0",
+    "@sanity/image-url": "^2.0.3",
     "lenis": "^1.3.17",
     "nuxt": "^4.3.1",
     "vue": "^3.5.28",
