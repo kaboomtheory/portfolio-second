@@ -67,15 +67,15 @@ function getGalleryStyle(layout?: string): Record<string, string> {
 </script>
 
 <template>
-  <div class="page-content">
-    <div class="page-section pb-0">
+  <div class="page-content project-page">
+    <div class="page-section pb-0 max-w-3xl">
       <div class="flex justify-start">
         <NuxtLink to="/projects" class="eyebrow-link">← Back to Projects</NuxtLink>
       </div>
     </div>
 
     <template v-if="project">
-      <section class="page-section reveal-up pt-2">
+      <section class="page-section reveal-up pt-2 max-w-3xl">
         <h1 class="text-4xl leading-tight md:text-5xl">{{ project.name }}</h1>
         <p class="mt-3 text-lg" :style="{ color: 'var(--fg-primary)' }">{{ project.summary }}</p>
         <p class="mt-5 text-xs uppercase tracking-[0.08em] muted">{{ project.category }} • {{ project.year }}</p>
@@ -85,7 +85,7 @@ function getGalleryStyle(layout?: string): Record<string, string> {
       </section>
 
       <!-- Featured/First Image -->
-      <section v-if="featuredSection" class="page-section pt-4 md:pt-6">
+      <section v-if="featuredSection" class="image-section">
         <ScrollExpandImage
           v-if="featuredSection.type === 'section' || featuredSection.type === 'singleImage'"
           :src="featuredSection.image"
@@ -94,6 +94,7 @@ function getGalleryStyle(layout?: string): Record<string, string> {
         />
         <div
           v-else-if="featuredSection.type === 'imageGallery'"
+          class="image-gallery"
           :style="getGalleryStyle(featuredSection.layout)"
         >
           <ScrollExpandImage
@@ -115,7 +116,7 @@ function getGalleryStyle(layout?: string): Record<string, string> {
             <!-- Text Section -->
             <article
               v-if="section.type === 'textSection' || section.type === 'section' || (!section.type && (section.heading || section.body))"
-              class="space-y-10 md:space-y-12"
+              class="text-section"
             >
               <div v-if="section.heading" class="space-y-2">
                 <span class="text-[11px] uppercase tracking-[0.11em] muted block mb-2">{{ getSectionNumber(caseSections, index) }}</span>
@@ -131,32 +132,28 @@ function getGalleryStyle(layout?: string): Record<string, string> {
             </article>
 
             <!-- Single Image -->
-            <article v-else-if="section.type === 'singleImage'" class="page-section">
+            <article v-else-if="section.type === 'singleImage'" class="image-section">
               <ScrollExpandImage
                 :src="section.image"
                 :alt="section.caption || `${project.name} image`"
-                :class="{
-                  'w-full': section.layout === 'full',
-                }"
               />
-              <p v-if="section.caption" class="mt-4 text-sm text-center muted">{{ section.caption }}</p>
+              <p v-if="section.caption" class="mt-4 text-sm text-center muted max-w-3xl">{{ section.caption }}</p>
             </article>
 
             <!-- Image Gallery -->
-            <article v-else-if="section.type === 'imageGallery'" class="page-section">
-              <div :style="getGalleryStyle(section.layout)">
+            <article v-else-if="section.type === 'imageGallery'" class="image-section">
+              <div class="image-gallery" :style="getGalleryStyle(section.layout)">
                 <ScrollExpandImage
                   v-for="(img, imgIndex) in section.images"
                   :key="imgIndex"
                   :src="img.image"
                   :alt="img.alt || `${project.name} image ${imgIndex + 1}`"
-                  :style="section.layout === 'masonry' ? { breakInside: 'avoid', marginBottom: '1rem' } : {}"
                 />
               </div>
             </article>
 
             <!-- Image + Text Block -->
-            <article v-else-if="section.type === 'imageTextBlock'" class="page-section">
+            <article v-else-if="section.type === 'imageTextBlock'" class="image-text-section">
               <div
                 class="flex flex-col md:flex-row gap-8 md:gap-12 items-center"
                 :class="{ 'md:flex-row-reverse': section.position === 'right' }"
@@ -175,24 +172,21 @@ function getGalleryStyle(layout?: string): Record<string, string> {
             </article>
 
             <!-- Video Embed -->
-            <article v-else-if="section.type === 'videoEmbed'" class="page-section">
-        <div
-          v-else-if="featuredSection.type === 'imageGallery'"
-          :class="getGalleryClass(featuredSection.layout)"
-        >
-          <ScrollExpandImage
-            v-for="(img, imgIndex) in featuredSection.images"
-            :key="imgIndex"
-            :src="img.image"
-            :alt="img.alt || `${project.name} image ${imgIndex + 1}`"
-            :pre-expanded="true"
-          />
-        </div>
+            <article v-else-if="section.type === 'videoEmbed'" class="text-section">
+              <div class="aspect-video w-full max-w-4xl mx-auto rounded-lg overflow-hidden">
+                <iframe
+                  :src="section.url"
+                  class="w-full h-full"
+                  frameborder="0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowfullscreen
+                />
+              </div>
               <p v-if="section.caption" class="mt-4 text-sm text-center muted">{{ section.caption }}</p>
             </article>
 
             <!-- Quote -->
-            <article v-else-if="section.type === 'quote'" class="page-section max-w-3xl mx-auto text-center">
+            <article v-else-if="section.type === 'quote'" class="text-section max-w-3xl mx-auto text-center">
               <blockquote class="text-2xl md:text-3xl font-light italic leading-relaxed">
                 "{{ section.body }}"
               </blockquote>
@@ -202,7 +196,7 @@ function getGalleryStyle(layout?: string): Record<string, string> {
             </article>
 
             <!-- Stats Row -->
-            <article v-else-if="section.type === 'statsRow'" class="page-section">
+            <article v-else-if="section.type === 'statsRow'" class="text-section">
               <div class="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
                 <div v-for="(stat, statIndex) in section.stats" :key="statIndex">
                   <div class="text-3xl md:text-4xl font-light">{{ stat.value }}</div>
@@ -223,9 +217,42 @@ function getGalleryStyle(layout?: string): Record<string, string> {
       </section>
     </template>
 
-    <section v-else class="card-surface p-5">
+    <section v-else class="card-surface p-5 max-w-3xl">
       <h2 class="text-2xl">Project Not Found</h2>
       <p class="mt-2">This placeholder route does not include the requested case study.</p>
     </section>
   </div>
 </template>
+
+<style scoped>
+.project-page {
+  max-width: 100%;
+}
+
+.text-section {
+  padding: 1.25rem 0;
+  max-width: 64rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.image-section {
+  padding: 1.25rem 0;
+  width: 100%;
+  max-width: 90rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.image-text-section {
+  padding: 1.25rem 0;
+  width: 100%;
+  max-width: 72rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.image-gallery {
+  gap: 1rem;
+}
+</style>
