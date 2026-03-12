@@ -94,7 +94,7 @@ function getGalleryStyle(layout?: string): Record<string, string> {
         />
         <div
           v-else-if="featuredSection.type === 'imageGallery'"
-          :class="getGalleryClass(featuredSection.layout)"
+          :style="getGalleryStyle(featuredSection.layout)"
         >
           <ScrollExpandImage
             v-for="(img, imgIndex) in featuredSection.images"
@@ -144,13 +144,13 @@ function getGalleryStyle(layout?: string): Record<string, string> {
 
             <!-- Image Gallery -->
             <article v-else-if="section.type === 'imageGallery'" class="page-section">
-              <div :class="getGalleryClass(section.layout)">
+              <div :style="getGalleryStyle(section.layout)">
                 <ScrollExpandImage
                   v-for="(img, imgIndex) in section.images"
                   :key="imgIndex"
                   :src="img.image"
                   :alt="img.alt || `${project.name} image ${imgIndex + 1}`"
-                  :class="{ 'break-inside-avoid mb-4': section.layout === 'masonry' }"
+                  :style="section.layout === 'masonry' ? { breakInside: 'avoid', marginBottom: '1rem' } : {}"
                 />
               </div>
             </article>
