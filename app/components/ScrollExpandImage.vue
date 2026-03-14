@@ -3,15 +3,13 @@ const props = withDefaults(defineProps<{
   src: string
   alt: string
   preExpanded?: boolean
-  height?: string
 }>(), {
   preExpanded: false,
-  height: '95vh',
 })
 
 const wrapperRef = ref<HTMLElement | null>(null)
-const imageRef = ref<HTMLImageElement | null>(null)
 const { progress, visibility } = useScrollExpand(wrapperRef, {
+  preExpanded: props.preExpanded,
   preloadDistance: 420,
   centerHold: 96,
   influenceMultiplier: 1.8,
@@ -19,13 +17,12 @@ const { progress, visibility } = useScrollExpand(wrapperRef, {
   edgeFadeEnd: 0.12,
 })
 
-function onImageLoad() {
-  // Image loaded
-}
-
 const expandStyle = computed(() => {
-  const motion = progress.value * progress.value * (3 - 2 * progress.value)
+  const p = props.preExpanded ? 1 : progress.value
+  const motion = p * p * (3 - 2 * p)
+
   const opacity = Math.max(0, Math.min(1, visibility.value))
+
   const borderRadius = Math.round(14 - 8 * motion)
 
   return {
@@ -36,9 +33,8 @@ const expandStyle = computed(() => {
 </script>
 
 <template>
-  <div ref="wrapperRef" class="scroll-expand-wrapper" :style="{ height: props.height }">
+  <div ref="wrapperRef" class="scroll-expand-wrapper">
     <img
-      ref="imageRef"
       :src="props.src"
       :alt="props.alt"
       class="scroll-expand-img"
@@ -46,7 +42,6 @@ const expandStyle = computed(() => {
       :loading="props.preExpanded ? 'eager' : 'lazy'"
       :fetchpriority="props.preExpanded ? 'high' : 'auto'"
       decoding="async"
-      @load="onImageLoad"
     >
   </div>
 </template>
@@ -62,7 +57,6 @@ const expandStyle = computed(() => {
 .scroll-expand-img {
   display: block;
   width: 100%;
-  height: 100%;
   border-radius: 14px;
   object-fit: cover;
   will-change: opacity, border-radius;

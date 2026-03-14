@@ -55,7 +55,7 @@ useHead({ title: 'Projects' })
           </li>
         </ul>
 
-        <div class="grid gap-4 sm:grid-cols-2">
+        <div class="grid gap-5 sm:grid-cols-2 md:gap-6">
           <ProjectCard v-for="project in filteredProjects" :key="project.slug" :project="project" />
         </div>
       </template>
