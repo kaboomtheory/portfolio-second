@@ -84,6 +84,15 @@ function getGalleryStyle(layout?: string): Record<string, string> {
         </div>
       </section>
 
+      <!-- Hero Image -->
+      <section v-if="project.heroImage" class="page-section pt-2 md:pt-4">
+        <ScrollExpandImage
+          :src="project.heroImage"
+          :alt="`${project.name} hero`"
+          :pre-expanded="true"
+        />
+      </section>
+
       <!-- Featured/First Image -->
       <section v-if="featuredSection" class="page-section pt-2 md:pt-4">
         <ScrollExpandImage

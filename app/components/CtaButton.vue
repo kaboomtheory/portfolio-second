@@ -35,6 +35,7 @@ const btnClass = 'inline-flex items-center gap-2 rounded-md border px-4 py-2 tex
   >
     <span v-if="withDot" class="inline-block h-2 w-2 rounded-full pulse-glow" :style="{ backgroundColor: 'var(--accent)' }" />
     {{ label }}
+    <span class="sr-only">(opens in new tab)</span>
   </a>
   <NuxtLink
     v-else-if="to"

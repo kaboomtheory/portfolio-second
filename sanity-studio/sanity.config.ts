@@ -11,7 +11,10 @@ export default defineConfig({
       structure: (S) =>
         S.list()
           .title('Content')
-          .items([S.documentTypeListItem('project').title('Projects')]),
+          .items([
+            S.documentTypeListItem('project').title('Projects'),
+            S.documentTypeListItem('statusItem').title('Status Items'),
+          ]),
     }),
   ],
 

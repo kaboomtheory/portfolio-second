@@ -23,7 +23,7 @@ const emit = defineEmits<{
       <p class="text-xs uppercase tracking-[0.08em] muted">{{ trinket.brand }}</p>
       <div class="flex items-center justify-between gap-2">
         <h3 class="text-lg">{{ trinket.name }}</h3>
-        <Icon icon="lucide:arrow-up-right" class="text-base" :style="{ color: 'var(--fg-muted)' }" />
+        <Icon icon="lucide:arrow-up-right" class="text-base" :style="{ color: 'var(--fg-muted)' }" aria-hidden="true" />
       </div>
     </div>
   </button>

@@ -39,15 +39,16 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="min-h-screen">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
     <MobileHeader :is-open="mobileOpen" @toggle="mobileOpen = !mobileOpen" />
 
     <aside class="z-40 hidden h-auto p-0 md:fixed md:bottom-0 md:left-0 md:block md:h-screen md:w-64 md:p-4">
       <AppSidebar />
     </aside>
 
-    <div class="mt-14 md:ml-64 md:mt-0">
-      <div class="container mx-auto flex min-h-screen flex-col px-5 pb-6 pt-10 sm:px-6 md:max-w-[52rem] md:px-0 md:pt-12">
-        <main class="flex-1">
+    <div class="mt-14 md:ml-64 md:mt-0" :inert="mobileOpen ? '' : undefined">
+      <div class="container mx-auto flex min-h-screen flex-col px-5 pb-6 pt-10 sm:px-6 md:max-w-[72rem] md:px-0 md:pt-12">
+        <main id="main-content" class="flex-1" tabindex="-1">
           <slot />
         </main>
         <AppFooter />

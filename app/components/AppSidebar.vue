@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { navItems, profile, socialLinks } from '~/data/site'
+import { useSanityStatus } from '~/composables/useSanityStatus'
 
 withDefaults(
   defineProps<{
@@ -25,6 +26,8 @@ const groupedNav = computed(() => {
 
   return groups
 })
+
+const { statusItems } = useSanityStatus()
 </script>
 
 <template>
@@ -73,6 +76,44 @@ const groupedNav = computed(() => {
           </section>
         </template>
       </nav>
+
+      <div v-if="statusItems?.length" class="px-5 pb-5 md:px-4 md:pb-4">
+        <div class="mb-3 flex items-center gap-2">
+          <div class="h-1.5 w-1.5 rounded-full bg-[var(--accent)] animate-pulse" style="opacity: 0.8;"></div>
+          <h3 class="text-[12px] font-semibold uppercase tracking-[0.1em] muted">Status</h3>
+        </div>
+        <ul class="space-y-1">
+          <li v-for="item in statusItems" :key="item.title">
+            <component 
+              :is="item.link ? 'a' : 'div'" 
+              :href="item.link ? item.link : undefined"
+              :target="item.link ? '_blank' : undefined"
+              :rel="item.link ? 'noopener noreferrer' : undefined"
+              class="group flex items-center gap-3 rounded-md p-2 -mx-2 transition-all duration-200 hover:bg-[var(--bg-tertiary)] cursor-pointer"
+            >
+              <div class="relative flex h-9 w-9 flex-shrink-0 items-center justify-center overflow-hidden rounded-md bg-[var(--bg-secondary)] ring-1 ring-inset ring-[var(--border)] transition-transform duration-300 group-hover:scale-105 group-hover:shadow-sm">
+                <img 
+                  v-if="item.images && item.images.length"
+                  :src="item.images[0]" 
+                  :alt="item.title"
+                  class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
+                />
+                <Icon 
+                  v-else-if="item.icon" 
+                  :icon="item.icon" 
+                  class="text-lg text-[var(--fg-muted)] transition-colors duration-300 group-hover:text-[var(--accent)]" 
+                />
+              </div>
+              
+              <div class="flex flex-col justify-center min-w-0 py-0.5">
+                <span class="text-[9px] font-bold uppercase tracking-[0.08em] text-[var(--fg-muted)] mb-[2px]">{{ item.label }}</span>
+                <span class="text-xs font-semibold leading-tight break-words transition-colors duration-200 group-hover:text-[var(--accent)]" :style="{ color: 'var(--fg-primary)' }">{{ item.title }}</span>
+                <span v-if="item.content" class="text-[10px] mt-[2px] break-words text-[var(--fg-secondary)]">{{ item.content }}</span>
+              </div>
+            </component>
+          </li>
+        </ul>
+      </div>
     </div>
 
     <div class="space-y-4 border-t p-5 pt-4 md:p-4" :style="{ borderColor: 'var(--border)' }">
@@ -86,7 +127,6 @@ const groupedNav = computed(() => {
             rel="noopener noreferrer"
             class="inline-flex h-8 w-8 items-center justify-center rounded-full transition-colors duration-300"
             :style="{ backgroundColor: 'var(--bg-tertiary)' }"
-            :title="link.label"
             :aria-label="link.label"
           >
             <Icon :icon="link.icon" class="text-sm" aria-hidden="true" />

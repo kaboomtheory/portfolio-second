@@ -12,12 +12,13 @@ const { isDark, toggle } = useTheme()
       borderColor: 'var(--border)',
       backgroundColor: 'var(--bg-secondary)',
     }"
-    :title="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+    :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
+    :aria-pressed="isDark"
     @click="toggle"
   >
     <span class="flex w-full justify-between text-sm items-center px-0.5" :style="{ color: 'var(--fg-muted)' }">
-      <Icon icon="lucide:sun" :class="['transition-all duration-300', isDark ? 'opacity-40 scale-75' : 'opacity-100 scale-100']" />
-      <Icon icon="lucide:moon" :class="['transition-all duration-300', !isDark ? 'opacity-40 scale-75' : 'opacity-100 scale-100']" />
+      <Icon icon="lucide:sun" :class="['transition-all duration-300', isDark ? 'opacity-40 scale-75' : 'opacity-100 scale-100']" aria-hidden="true" />
+      <Icon icon="lucide:moon" :class="['transition-all duration-300', !isDark ? 'opacity-40 scale-75' : 'opacity-100 scale-100']" aria-hidden="true" />
     </span>
     <span
       class="absolute left-2 flex h-7 w-7 items-center justify-center rounded-full transition-transform"
@@ -31,6 +32,7 @@ const { isDark, toggle } = useTheme()
         :icon="isDark ? 'lucide:moon' : 'lucide:sun'"
         class="text-sm"
         :style="{ color: 'var(--fg-secondary)' }"
+        aria-hidden="true"
       />
     </span>
   </button>

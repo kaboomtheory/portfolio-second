@@ -6,6 +6,15 @@ export default defineNuxtConfig({
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sanity'],
   css: ['~/assets/css/main.css'],
 
+  app: {
+    head: {
+      htmlAttrs: { lang: 'en' },
+      meta: [
+        { name: 'description', content: 'Portfolio of Bryan X. Mendez - Visual Designer based in Los Angeles, CA.' },
+      ],
+    },
+  },
+
   sanity: {
     projectId: process.env.SANITY_PROJECT_ID,
     dataset: process.env.SANITY_DATASET || 'production',

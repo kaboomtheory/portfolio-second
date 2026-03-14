@@ -2,7 +2,7 @@
 import { Icon } from '@iconify/vue'
 import type { TrinketItem } from '~/data/trinkets'
 
-const { homeHero, currentStatus, trinkets } = useMockContent()
+const { homeHero, trinkets } = useMockContent()
 const { projects } = useSanityProjects()
 
 const featuredProjects = computed(() => projects.value.slice(0, 2))
@@ -25,39 +25,6 @@ useHead({
       <div class="mt-6 flex flex-wrap gap-3">
         <CtaButton to="/resume" label="View Resume" attention />
         <CtaButton href="mailto:hello@example.com" label="Open for Freelance" secondary with-dot />
-      </div>
-    </section>
-
-    <section class="page-section reveal-up">
-      <h2 class="section-title">Current Status</h2>
-      <div class="grid gap-4 md:grid-cols-3">
-        <div v-for="item in currentStatus" :key="item.title" class="space-y-2">
-          <p class="text-xs uppercase tracking-[0.08em] muted">{{ item.label }}</p>
-          <SpotlightCard class="p-3">
-            <div class="flex items-center gap-3 h-full">
-              <div
-                v-if="item.icon"
-                class="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-md"
-                :style="{ backgroundColor: 'var(--bg-tertiary)' }"
-              >
-                <Icon :icon="item.icon" class="text-lg" :style="{ color: 'var(--fg-muted)' }" />
-              </div>
-              <img
-                v-else-if="item.images.length"
-                :src="item.images[0]"
-                :alt="item.title"
-                loading="lazy"
-                class="h-10 w-10 flex-shrink-0 rounded-md object-cover"
-              >
-              <div class="flex flex-col gap-0.5">
-                <h3 class="text-sm font-semibold" :style="{ color: 'var(--fg-primary)' }">
-                  {{ item.title }}
-                </h3>
-                <p v-if="item.content" class="text-xs" :style="{ color: 'var(--fg-secondary)' }">{{ item.content }}</p>
-              </div>
-            </div>
-          </SpotlightCard>
-        </div>
       </div>
     </section>
 
