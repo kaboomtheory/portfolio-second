@@ -1,14 +1,8 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-import type { TrinketItem } from '~/data/trinkets'
-
-const { homeHero, trinkets } = useMockContent()
+const { homeHero } = useMockContent()
 const { projects } = useSanityProjects()
 
 const featuredProjects = computed(() => projects.value)
-const featuredTrinkets = computed(() => trinkets.filter((item) => item.featured).slice(0, 4))
-
-const activeTrinket = ref<TrinketItem | null>(null)
 
 const getProjectCardClass = (index: number, total: number) => {
   if (index === total - 1 && total > 1) {
@@ -52,10 +46,7 @@ useHead({
     </section>
 
     <section class="page-section reveal-up">
-      <div class="mb-4 flex items-center justify-between gap-3">
-        <h2 class="section-title mb-0">Latest Projects</h2>
-        <NuxtLink to="/projects" class="eyebrow-link">View All</NuxtLink>
-      </div>
+      <h2 class="section-title">Latest Projects</h2>
       <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 auto-rows-[300px] grid-flow-dense">
         <ProjectCard
           v-for="(item, index) in featuredProjects"
@@ -65,22 +56,5 @@ useHead({
         />
       </div>
     </section>
-
-    <section class="page-section reveal-up">
-      <div class="mb-4 flex items-center justify-between gap-3">
-        <h2 class="section-title mb-0">Trinkets</h2>
-        <NuxtLink to="/trinkets" class="eyebrow-link">View All</NuxtLink>
-      </div>
-      <div class="grid grid-cols-2 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-        <TrinketCard
-          v-for="item in featuredTrinkets"
-          :key="item.id"
-          :trinket="item"
-          @select="activeTrinket = item"
-        />
-      </div>
-    </section>
-
-    <TrinketModal :open="Boolean(activeTrinket)" :trinket="activeTrinket" @close="activeTrinket = null" />
   </div>
 </template>

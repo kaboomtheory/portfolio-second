@@ -15,16 +15,7 @@ const emit = defineEmits<{
   navigate: []
 }>()
 
-const groupedNav = computed(() => {
-  const groups: Record<string, typeof navItems> = { Work: [], Personal: [] }
 
-  for (const item of navItems) {
-    if (!groups[item.group]) groups[item.group] = []
-    groups[item.group]!.push(item)
-  }
-
-  return groups
-})
 </script>
 
 <template>
@@ -42,36 +33,17 @@ const groupedNav = computed(() => {
       </div>
 
       <nav class="px-5 py-3 md:p-4 md:pt-3">
-        <template v-if="mobile">
-          <ul class="space-y-1">
-            <li v-for="item in navItems" :key="item.path">
-              <NuxtLink
-                :to="item.path"
-                class="nav-link text-lg font-semibold"
-                @click="emit('navigate')"
-              >
-                {{ item.title }}
-              </NuxtLink>
-            </li>
-          </ul>
-        </template>
-
-        <template v-else>
-          <section v-for="(items, groupName) in groupedNav" :key="groupName" class="mb-5 last:mb-0">
-            <h3 class="mb-2 text-[12px] font-semibold uppercase tracking-[0.1em] muted">{{ groupName }}</h3>
-            <ul class="space-y-1">
-              <li v-for="item in items" :key="item.path">
-                <NuxtLink
-                  :to="item.path"
-                  class="nav-link text-sm font-semibold"
-                  @click="emit('navigate')"
-                >
-                  {{ item.title }}
-                </NuxtLink>
-              </li>
-            </ul>
-          </section>
-        </template>
+        <ul class="space-y-1">
+          <li v-for="item in navItems" :key="item.path">
+            <NuxtLink
+              :to="item.path"
+              :class="mobile ? 'nav-link text-lg font-semibold' : 'nav-link text-sm font-semibold'"
+              @click="emit('navigate')"
+            >
+              {{ item.title }}
+            </NuxtLink>
+          </li>
+        </ul>
       </nav>
     </div>
 

@@ -30,11 +30,10 @@ const handleMouseMove = (e: MouseEvent) => {
     :to="`/projects/${project.slug}`"
     @mousemove="handleMouseMove"
   >
-    <!-- Spotlight Overlay -->
     <div
       class="pointer-events-none absolute -inset-px z-30 opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       :style="{
-        background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.1), transparent 40%)`
+        background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.15), transparent 40%)`
       }"
     />
 
@@ -44,9 +43,7 @@ const handleMouseMove = (e: MouseEvent) => {
       class="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
       loading="lazy"
     >
-    <div
-      class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/90 via-black/40 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-100 z-10"
-    />
+    <div class="absolute inset-x-0 bottom-0 h-3/4 bg-gradient-to-t from-black/80 via-black/30 to-transparent opacity-90 transition-opacity duration-300 group-hover:opacity-100 z-10" />
     <div class="absolute inset-x-0 bottom-0 p-5 md:p-6 z-20">
       <div class="flex items-end justify-between gap-3">
         <div class="space-y-1">
