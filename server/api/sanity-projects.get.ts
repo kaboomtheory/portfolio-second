@@ -4,7 +4,7 @@ export default defineEventHandler(async (event) => {
   const dataset = config.sanity?.dataset || process.env.SANITY_DATASET || 'production'
   const apiVersion = config.sanity?.apiVersion || process.env.SANITY_API_VERSION || '2025-01-01'
 
-  const query = `*[_type == "project" && defined(slug.current)]|order(name asc){
+  const query = `*[_type == "project" && defined(slug.current)]|order(order asc, name asc){
     _id,
     _type,
     name,
@@ -21,7 +21,8 @@ export default defineEventHandler(async (event) => {
     projectUrl,
     heroImage,
     color,
-    collaborators
+    collaborators,
+    order
   }`
 
   const url = `https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}?query=${encodeURIComponent(query)}`

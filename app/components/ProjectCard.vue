@@ -2,8 +2,9 @@
 import { Icon } from '@iconify/vue'
 import type { ProjectItem } from '~/data/projects'
 
-defineProps<{
+const props = defineProps<{
   project: ProjectItem
+  class?: string
 }>()
 
 const cardRef = ref<HTMLElement | null>(null)
@@ -21,13 +22,13 @@ const handleMouseMove = (e: MouseEvent) => {
 <template>
   <NuxtLink
     ref="cardRef"
-    class="group relative block aspect-[3/2] overflow-hidden rounded-lg"
-    :to="`/projects/${project.slug}`"
-    @mousemove="handleMouseMove"
+    :class="['group relative block overflow-hidden rounded-lg', props.class]"
     :style="{
       '--mouse-x': `${mouseX}px`,
       '--mouse-y': `${mouseY}px`
     }"
+    :to="`/projects/${project.slug}`"
+    @mousemove="handleMouseMove"
   >
     <!-- Spotlight Overlay -->
     <div

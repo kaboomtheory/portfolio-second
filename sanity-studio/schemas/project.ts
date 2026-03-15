@@ -19,6 +19,13 @@ export const project = defineType({
       title: 'Project Name',
       validation: (rule) => rule.required(),
     }),
+    defineField({
+      name: 'order',
+      type: 'number',
+      title: 'Display Order',
+      description: 'Controls position on homepage mosaic (0 = first). Leave empty to sort alphabetically.',
+      initialValue: 0,
+    }),
 
     // === Categorization ===
     defineField({

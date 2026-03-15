@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import { useSanityStatus } from '~/composables/useSanityStatus'
 
 const { aboutMe } = useMockContent()
+const { statusItems } = useSanityStatus()
 
 useHead({ title: 'About' })
 </script>
@@ -51,6 +53,49 @@ useHead({ title: 'About' })
             loading="eager"
           >
           <div class="absolute inset-0 ring-1 ring-inset ring-black/10 dark:ring-white/10" />
+        </div>
+      </div>
+    </section>
+
+    <!-- Status Section -->
+    <section v-if="statusItems?.length" class="page-section reveal-up border-y border-[var(--border)] py-8 md:py-12">
+      <div class="grid gap-10 md:grid-cols-[1fr_2fr] md:gap-20">
+        <h2 class="text-xl font-medium md:text-2xl" :style="{ color: 'var(--fg-primary)' }">
+          Status
+        </h2>
+        <div class="grid gap-4 sm:grid-cols-2">
+          <SpotlightCard
+            v-for="item in statusItems"
+            :key="item.title"
+            class="flex items-center gap-4 p-4"
+          >
+            <a
+              v-if="item.link"
+              :href="item.link"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="absolute inset-0 z-20"
+            />
+            <div class="relative flex h-12 w-12 flex-shrink-0 items-center justify-center overflow-hidden rounded-md bg-[var(--bg-tertiary)] ring-1 ring-inset ring-[var(--border)] z-10">
+              <img 
+                v-if="item.images && item.images.length"
+                :src="item.images[0]" 
+                :alt="item.title"
+                class="h-full w-full object-cover"
+              />
+              <Icon 
+                v-else-if="item.icon" 
+                :icon="item.icon" 
+                class="text-xl text-[var(--fg-muted)]" 
+              />
+            </div>
+            
+            <div class="flex flex-col justify-center min-w-0 relative z-10">
+              <span class="text-[10px] font-bold uppercase tracking-[0.08em] text-[var(--fg-muted)]">{{ item.label }}</span>
+              <span class="text-base font-semibold leading-tight break-words mt-1" :style="{ color: 'var(--fg-primary)' }">{{ item.title }}</span>
+              <span v-if="item.content" class="text-sm mt-1 break-words text-[var(--fg-secondary)]">{{ item.content }}</span>
+            </div>
+          </SpotlightCard>
         </div>
       </div>
     </section>

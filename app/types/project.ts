@@ -139,6 +139,7 @@ export interface SanityProjectItem {
   password?: string
   tags?: string[]
   sections?: ContentBlock[]
+  order?: number
   // Metadata
   client?: string
   role?: string
@@ -159,6 +160,7 @@ export interface ProjectItem {
   protected?: boolean
   tags?: string[]
   sections: ProjectStorySection[]
+  order?: number
   // Metadata
   client?: string
   role?: string

@@ -87,6 +87,7 @@ export function useSanityProjects() {
       protected: project.protected || false,
       tags: project.tags || [],
       sections: (project.sections || []).map(mapSection),
+      order: project.order,
       client: project.client,
       role: project.role,
       projectUrl: project.projectUrl,
