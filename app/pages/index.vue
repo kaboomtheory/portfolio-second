@@ -4,27 +4,27 @@ const { projects } = useSanityProjects()
 
 const featuredProjects = computed(() => projects.value)
 
-const getProjectCardClass = (index: number, total: number) => {
-  if (index === total - 1 && total > 1) {
-    return 'md:col-span-2 lg:col-span-3 row-span-1'
-  }
+const gridPatterns = [
+  'md:col-span-2 lg:col-span-2 row-span-2',
+  'md:col-span-1 lg:col-span-1 row-span-1',
+  'md:col-span-1 lg:col-span-1 row-span-1',
+  'md:col-span-2 lg:col-span-2 row-span-1',
+  'md:col-span-1 lg:col-span-1 row-span-2',
+  'md:col-span-1 lg:col-span-1 row-span-1',
+  'md:col-span-1 lg:col-span-1 row-span-1',
+  'md:col-span-1 lg:col-span-1 row-span-1',
+]
 
-  const lastFew = index >= total - 3
-  if (lastFew && index !== total - 1) {
-    return 'md:col-span-1 lg:col-span-1 row-span-1'
+function getStablePatternIndex(slug: string): number {
+  let hash = 0
+  for (let i = 0; i < slug.length; i++) {
+    hash = ((hash << 5) - hash + slug.charCodeAt(i)) | 0
   }
+  return Math.abs(hash) % gridPatterns.length
+}
 
-  const pattern = [
-    'md:col-span-2 lg:col-span-2 row-span-2',
-    'md:col-span-1 lg:col-span-1 row-span-1',
-    'md:col-span-1 lg:col-span-1 row-span-1',
-    'md:col-span-2 lg:col-span-2 row-span-1',
-    'md:col-span-1 lg:col-span-1 row-span-2',
-    'md:col-span-1 lg:col-span-1 row-span-1',
-    'md:col-span-1 lg:col-span-1 row-span-1',
-    'md:col-span-1 lg:col-span-1 row-span-1',
-  ]
-  return pattern[index % pattern.length]
+const getProjectCardClass = (slug: string) => {
+  return gridPatterns[getStablePatternIndex(slug)]
 }
 
 useHead({
@@ -47,14 +47,43 @@ useHead({
 
     <section class="page-section reveal-up">
       <h2 class="section-title">Latest Projects</h2>
-      <div class="grid grid-cols-1 gap-4 gap-y-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-[300px] grid-flow-dense">
+      <TransitionGroup
+        tag="div"
+        name="project-grid"
+        class="grid grid-cols-1 gap-4 gap-y-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-[300px] grid-flow-dense"
+      >
         <ProjectCard
-          v-for="(item, index) in featuredProjects"
+          v-for="item in featuredProjects"
           :key="item.slug"
           :project="item"
-          :class="getProjectCardClass(index, featuredProjects.length)"
+          :class="getProjectCardClass(item.slug)"
         />
-      </div>
+      </TransitionGroup>
     </section>
   </div>
 </template>
+
+<style scoped>
+.project-grid-enter-active {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.project-grid-leave-active {
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  position: absolute;
+}
+
+.project-grid-enter-from {
+  opacity: 0;
+  transform: scale(0.92) translateY(20px);
+}
+
+.project-grid-leave-to {
+  opacity: 0;
+  transform: scale(0.92);
+}
+
+.project-grid-move {
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style>
