@@ -1,7 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const router = useRouter()
-const { projectPasswords } = useMockContent()
+const { projectPasswords } = useSanityProjects()
 
 const password = ref('')
 const error = ref('')
@@ -14,7 +14,7 @@ const slug = computed(() => {
 
 function submit() {
   error.value = ''
-  const expected = projectPasswords[slug.value]
+  const expected = projectPasswords.value[slug.value]
 
   if (!expected) {
     router.push('/projects')

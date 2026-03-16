@@ -58,7 +58,7 @@ Do not edit generated/build artifacts:
 
 - Install deps: `npm install`
 - Prepare Nuxt types: runs automatically in `postinstall` (`nuxt prepare`)
-- Dev server: `npm run dev`
+- Dev server: `npm run dev` (check if already running before starting)
 - Production build: `npm run build`
 - Generate static output: `npm run generate`
 - Preview production build: `npm run preview`
@@ -190,3 +190,13 @@ When introducing new tooling:
 
 - Add scripts in `package.json` (`lint`, `test`, `test:watch`, etc.).
 - Update this AGENTS.md with exact commands, including single-test examples.
+
+## 13) Development Server Usage
+
+When testing changes that require the development server:
+
+- First check if a dev server is already running with `ps aux | grep nuxt` or similar command
+- If no server is running, start it with `npm run dev`
+- If a server is already running, use it directly without restarting
+- The server typically runs on `http://localhost:3000` by default
+- Always verify the server is accessible before proceeding with testing
