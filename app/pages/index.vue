@@ -47,7 +47,7 @@ useHead({
 
     <section class="page-section reveal-up">
       <h2 class="section-title">Latest Projects</h2>
-      <div class="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 auto-rows-[300px] grid-flow-dense">
+      <div class="grid grid-cols-1 gap-4 gap-y-6 md:grid-cols-2 lg:grid-cols-3 auto-rows-[300px] grid-flow-dense">
         <ProjectCard
           v-for="(item, index) in featuredProjects"
           :key="item.slug"
