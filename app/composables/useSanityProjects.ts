@@ -1,7 +1,7 @@
-import type { SanityProjectItem, ProjectItem, ContentBlock } from '~/types/project'
+import type { SanityProjectItem, ProjectItem, ContentBlock, ProjectStorySection } from '~/types/project'
 import { buildImageUrl } from '~/utils/sanity'
 
-function mapSection(section: ContentBlock): { heading?: string; body?: string; image?: string; caption?: string; type?: string; layout?: string; images?: Array<{ image: string; alt?: string; caption?: string }>; position?: string; url?: string; author?: string; role?: string; stats?: Array<{ value: string; label: string }>; size?: string } {
+function mapSection(section: ContentBlock): ProjectStorySection {
   switch (section._type) {
     case 'textSection':
       return {

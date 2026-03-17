@@ -20,14 +20,10 @@ const words = computed(() => props.text.split(' '))
       <span
         v-for="(word, i) in words"
         :key="i"
-        class="inline-block overflow-hidden"
+        class="inline-block animate-reveal"
+        :style="{ animationDelay: `${delay + i * 0.08}s` }"
       >
-        <span
-          class="inline-block animate-reveal"
-          :style="{ animationDelay: `${delay + i * 0.1}s` }"
-        >
-          {{ word }}
-        </span>
+        {{ word }}
       </span>
     </span>
   </component>
@@ -36,18 +32,17 @@ const words = computed(() => props.text.split(' '))
 <style scoped>
 @keyframes reveal {
   0% {
-    transform: translateY(110%);
     opacity: 0;
+    transform: translateY(12px);
   }
   100% {
-    transform: translateY(0);
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
 .animate-reveal {
-  transform: translateY(110%);
   opacity: 0;
-  animation: reveal 0.8s cubic-bezier(0.2, 0.65, 0.3, 0.9) forwards;
+  animation: reveal 0.7s cubic-bezier(0.2, 0.65, 0.3, 0.9) forwards;
 }
 </style>

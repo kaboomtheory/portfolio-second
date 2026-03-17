@@ -175,9 +175,26 @@ export interface ProjectItem {
 }
 
 export interface ProjectStorySection {
+  type?: 'textSection' | 'singleImage' | 'imageGallery' | 'imageTextBlock' | 'videoEmbed' | 'quote' | 'statsRow' | 'spacer' | 'section'
   heading?: string
   body?: string
   image?: string
+  caption?: string
+  layout?: 'full' | 'large' | 'medium' | 'two-col' | 'three-col' | 'four-col' | 'masonry' | 'left' | 'right'
+  images?: Array<{
+    image: string
+    alt?: string
+    caption?: string
+  }>
+  position?: 'left' | 'right'
+  url?: string
+  author?: string
+  role?: string
+  stats?: Array<{
+    value: string
+    label: string
+  }>
+  size?: 'small' | 'medium' | 'large'
 }
 
 // Adapter to convert Sanity project to legacy interface

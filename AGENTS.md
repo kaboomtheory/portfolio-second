@@ -28,11 +28,12 @@ If any are added later, treat them as higher-priority project instructions and u
 - `app/layouts/default.vue`: desktop sidebar + mobile drawer shell.
 - `app/pages/*`: route files (see full list in Todos.md Phase 4).
 - `app/components/*`: reusable UI building blocks.
-  - `ScrollExpandImage`: scroll-triggered image animation with scale/center expansion and opacity fade (0 → 1 → 0 based on viewport center proximity).
+  - `ScrollExpandImage`: scroll-triggered image animation with scale and opacity effects.
 - `app/composables/*`: shared composition logic.
   - `useTheme`: theme state management.
   - `useMockContent`: unified mock data access.
-  - `useScrollExpand`: viewport-centred scroll progress tracking.
+  - `useScrollReveal`: IntersectionObserver-based fade/slide animations.
+  - `useScrollExpand`: viewport-centred scroll progress tracking for scale/opacity.
 - `app/plugins/*`: client-side plugins.
   - `theme.client.ts`: theme persistence and DOM sync.
 - `app/middleware/*`: route middleware (`project-protect`).
@@ -164,14 +165,25 @@ Follow existing style in repository files.
 - Ensure keyboard escape path for overlays/modals.
 - Keep interactive elements focusable and visible in both themes.
 
-## 11) ScrollExpandImage Animation
+## 11) Scroll Animation System
 
-The `ScrollExpandImage` component provides scroll-driven animations:
+The project pages use a scroll-driven animation system with these components:
 
-- **Scale/center expansion**: Images scale outward and horizontally center as they approach the viewport center, controlled by `useScrollExpand` composable.
-- **Opacity fade**: Separate opacity calculation fades images from 0 to 1 as they enter the viewport center, with a hold zone at full opacity, then back to 0 before leaving the viewport.
-- **Pre-expanded mode**: Pass `preExpanded` prop to start images already centered (used for hero images).
-- The component uses its own scroll listener for opacity (`calculateOpacity`) separate from the composable's `progress` value.
+### Composables
+
+- **`useScrollReveal`** (`app/composables/useScrollReveal.ts`): IntersectionObserver-based fade/slide animations. Returns `elementRef`, `isVisible` for single elements. Also exports `useScrollRevealGroup` for staggered children animations.
+- **`useScrollExpand`** (`app/composables/useScrollExpand.ts`): Viewport-center-based scale/opacity calculations. Returns `progress`, `scale`, `isCentered`. Also exports `useScrollOpacity` for separate opacity fade logic.
+
+### Components
+
+- **`ScrollExpandImage`** (`app/components/ScrollExpandImage.vue`): Image with scroll-driven scale and opacity. Props: `src`, `alt`, `caption`, `layout` (full/large/medium), `preExpanded`, `minScale`, `maxScale`.
+
+### Project Page Animation Flow
+
+1. Hero header uses `useScrollReveal` for initial fade-in
+2. Section container uses `useScrollRevealGroup` for staggered section reveals
+3. Images use `ScrollExpandImage` component for scale/opacity effects as they approach viewport center
+4. All animations respect `prefers-reduced-motion`
 
 ## 12) Agent Workflow Checklist
 
