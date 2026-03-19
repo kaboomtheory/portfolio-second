@@ -2,17 +2,10 @@
 import { Icon } from '@iconify/vue'
 import { useSanityStatus } from '~/composables/useSanityStatus'
 
-const { aboutMe } = useMockContent()
+const { aboutMe, experiences, clients } = useMockContent()
 const { statusItems } = useSanityStatus()
 
 useHead({ title: 'About' })
-
-const socialLinks = [
-  { label: 'Email', href: 'mailto:hello@example.com', icon: 'lucide:mail' },
-  { label: 'LinkedIn', href: 'https://linkedin.com/', icon: 'lucide:linkedin' },
-  { label: 'Twitter', href: 'https://twitter.com/', icon: 'lucide:twitter' },
-  { label: 'GitHub', href: 'https://github.com/', icon: 'lucide:github' },
-]
 
 const skillIcons: Record<string, string> = {
   'Product Strategy': 'lucide:target',
@@ -37,6 +30,70 @@ const timeline = [
   { year: '2021', title: 'Design + Engineering', desc: 'Building products at the intersection' },
   { year: 'Now', title: 'Crafting Experiences', desc: 'Making digital products feel human' },
 ]
+
+// Animated stat counters
+const statsRef = ref<HTMLElement | null>(null)
+const statsAnimated = ref(false)
+const displayValues = ref<string[]>(aboutMe.facts.map(() => '0'))
+
+const parseStatValue = (val: string) => {
+  const match = val.match(/^([\d,]+)(.*)$/)
+  if (!match) return null
+  return { num: parseInt(match[1].replace(/,/g, ''), 10), suffix: match[2] }
+}
+
+const animateCountUp = () => {
+  if (statsAnimated.value) return
+  statsAnimated.value = true
+
+  aboutMe.facts.forEach((fact, i) => {
+    const parsed = parseStatValue(fact.value)
+    if (!parsed) {
+      displayValues.value[i] = fact.value
+      return
+    }
+
+    const duration = 1200
+    const start = performance.now()
+    const { num, suffix } = parsed
+
+    const step = (now: number) => {
+      const elapsed = now - start
+      const progress = Math.min(elapsed / duration, 1)
+      const eased = 1 - Math.pow(1 - progress, 3) // ease-out cubic
+      const current = Math.round(eased * num)
+      displayValues.value[i] = current.toLocaleString() + suffix
+      if (progress < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  })
+}
+
+let statsObserver: IntersectionObserver | null = null
+
+watch(statsRef, (el) => {
+  if (!el || statsObserver) return
+  if (!import.meta.client) return
+
+  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (prefersReduced) {
+    displayValues.value = aboutMe.facts.map(f => f.value)
+    return
+  }
+
+  statsObserver = new IntersectionObserver(
+    ([entry]) => {
+      if (entry.isIntersecting) {
+        animateCountUp()
+        statsObserver?.disconnect()
+      }
+    },
+    { threshold: 0.3 }
+  )
+  statsObserver.observe(el)
+}, { immediate: true })
+
+onUnmounted(() => statsObserver?.disconnect())
 </script>
 
 <template>
@@ -180,46 +237,64 @@ const timeline = [
       </div>
     </section>
 
+    <!-- Experience Section -->
+    <section class="experience-section reveal-up">
+      <div class="section-header">
+        <span class="section-number">03</span>
+        <h2 class="section-title">Experience</h2>
+      </div>
+
+      <div class="experience-list">
+        <article
+          v-for="(item, index) in experiences"
+          :key="`${item.company}-${item.year}`"
+          class="experience-card"
+          :style="{ '--delay': `${index * 0.1}s` }"
+        >
+          <img :src="item.image" :alt="item.company" loading="lazy" class="experience-logo" />
+          <div class="experience-info">
+            <p class="experience-company">{{ item.company }}</p>
+            <h3 class="experience-title">{{ item.title }}</h3>
+            <p class="experience-desc">{{ item.description }}</p>
+          </div>
+          <span class="experience-year">{{ item.year }}</span>
+        </article>
+      </div>
+    </section>
+
+    <!-- Clients Section -->
+    <section class="clients-section reveal-up">
+      <div class="section-header">
+        <span class="section-number">04</span>
+        <h2 class="section-title">Selected Clients</h2>
+      </div>
+
+      <div class="clients-list">
+        <article
+          v-for="(client, index) in clients"
+          :key="client.name"
+          class="client-card"
+          :style="{ '--delay': `${index * 0.1}s` }"
+        >
+          <h3 class="client-name">{{ client.name }}</h3>
+          <div class="client-tags">
+            <span v-for="tag in client.tags" :key="tag" class="client-tag">{{ tag }}</span>
+          </div>
+          <span class="client-year">{{ client.year }}</span>
+        </article>
+      </div>
+    </section>
+
     <!-- Stats Row -->
-    <section class="stats-section reveal-up">
+    <section ref="statsRef" class="stats-section reveal-up">
       <div class="stats-grid">
-        <div v-for="fact in aboutMe.facts" :key="fact.label" class="stat-item">
-          <span class="stat-value">{{ fact.value }}</span>
+        <div v-for="(fact, index) in aboutMe.facts" :key="fact.label" class="stat-item">
+          <span class="stat-value">{{ displayValues[index] }}</span>
           <span class="stat-label">{{ fact.label }}</span>
         </div>
       </div>
     </section>
 
-    <!-- Connect Section -->
-    <section class="connect-section reveal-up">
-      <div class="connect-content">
-        <div class="connect-header">
-          <span class="section-number">03</span>
-          <h2 class="connect-title">Let's Connect</h2>
-          <p class="connect-subtitle">Have a project in mind? I'd love to hear about it.</p>
-        </div>
-        
-        <div class="connect-actions">
-          <a href="mailto:hello@example.com" class="connect-primary-btn">
-            <Icon icon="lucide:mail" />
-            <span>hello@example.com</span>
-            <Icon icon="lucide:arrow-up-right" class="ml-auto opacity-50" />
-          </a>
-          
-          <div class="connect-socials">
-            <a v-for="link in socialLinks" :key="link.label" :href="link.href" target="_blank" rel="noopener" class="social-link">
-              <Icon :icon="link.icon" />
-              <span class="sr-only">{{ link.label }}</span>
-            </a>
-          </div>
-        </div>
-        
-        <div class="connect-availability">
-          <span class="availability-indicator" />
-          <span>Currently accepting new projects starting April 2025</span>
-        </div>
-      </div>
-    </section>
   </div>
 </template>
 
@@ -435,17 +510,17 @@ const timeline = [
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 1rem;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--bg-secondary);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: 0.375rem;
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid var(--border);
   transition: all 0.2s ease;
 }
 
 .ticker-item:hover {
-  background: rgba(255, 255, 255, 0.12);
-  border-color: rgba(255, 255, 255, 0.2);
+  background: var(--bg-tertiary);
+  border-color: var(--accent);
 }
 
 .ticker-image {
@@ -726,6 +801,159 @@ const timeline = [
   color: var(--fg-primary);
 }
 
+/* Experience Section */
+.experience-section {
+  padding: 3rem 0;
+}
+
+.experience-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.experience-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  transition: border-color 0.2s ease;
+  animation: slide-in 0.5s ease-out backwards;
+  animation-delay: var(--delay);
+}
+
+.experience-card:hover {
+  border-color: var(--accent);
+}
+
+@media (min-width: 768px) {
+  .experience-card {
+    grid-template-columns: auto 1fr auto;
+    align-items: start;
+    padding: 1.5rem;
+  }
+}
+
+.experience-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 0.375rem;
+  object-fit: cover;
+  border: 1px solid var(--border);
+}
+
+.experience-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.experience-company {
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--fg-muted);
+}
+
+.experience-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--fg-primary);
+}
+
+.experience-desc {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--fg-secondary);
+  margin-top: 0.25rem;
+}
+
+.experience-year {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'Geist Mono', monospace;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* Clients Section */
+.clients-section {
+  padding: 3rem 0;
+}
+
+.clients-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.client-card {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  padding: 1.25rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  transition: border-color 0.2s ease;
+  animation: slide-in 0.5s ease-out backwards;
+  animation-delay: var(--delay);
+}
+
+.client-card:hover {
+  border-color: var(--accent);
+}
+
+@media (min-width: 768px) {
+  .client-card {
+    grid-template-columns: 1fr 2fr auto;
+    align-items: center;
+    padding: 1.5rem;
+  }
+}
+
+.client-name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--fg-primary);
+}
+
+.client-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.client-tag {
+  padding: 0.375rem 0.875rem;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--fg-secondary);
+  background: var(--bg-primary);
+  border: 1px solid var(--border);
+  border-radius: 9999px;
+  transition: all 0.2s ease;
+}
+
+.client-tag:hover {
+  border-color: var(--accent);
+  color: var(--fg-primary);
+}
+
+.client-year {
+  font-size: 0.7rem;
+  font-weight: 700;
+  font-family: 'Geist Mono', monospace;
+  letter-spacing: 0.05em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
 /* Stats Section */
 .stats-section {
   padding: 2.5rem 0;
@@ -769,119 +997,4 @@ const timeline = [
   margin-top: 0.5rem;
 }
 
-/* Connect Section */
-.connect-section {
-  padding: 3rem 0 4rem;
-}
-
-.connect-content {
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-  border-radius: 1rem;
-  padding: 2.5rem;
-  border: 1px solid var(--border);
-  text-align: center;
-}
-
-@media (min-width: 768px) {
-  .connect-content {
-    padding: 3.5rem;
-  }
-}
-
-.connect-header {
-  margin-bottom: 2rem;
-}
-
-.connect-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--fg-primary);
-  margin-top: 0.25rem;
-}
-
-.connect-subtitle {
-  font-size: 1rem;
-  color: var(--fg-muted);
-  margin-top: 0.5rem;
-}
-
-.connect-actions {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.connect-primary-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 1rem 2rem;
-  background: var(--fg-primary);
-  color: var(--bg-primary);
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 9999px;
-  transition: all 0.3s ease;
-  width: fit-content;
-}
-
-.connect-primary-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
-}
-
-.connect-primary-btn svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.connect-socials {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.social-link {
-  width: 44px;
-  height: 44px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 9999px;
-  color: var(--fg-secondary);
-  transition: all 0.2s ease;
-}
-
-.social-link:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  transform: translateY(-2px);
-}
-
-.social-link svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.connect-availability {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-  font-size: 0.8rem;
-  color: var(--fg-muted);
-  padding: 0.5rem 1rem;
-  background: var(--bg-primary);
-  border-radius: 9999px;
-}
-
-.availability-indicator {
-  width: 8px;
-  height: 8px;
-  background: #22c55e;
-  border-radius: 50%;
-  animation: pulse-dot 2s ease-in-out infinite;
-}
 </style>

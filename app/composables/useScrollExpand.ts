@@ -22,7 +22,7 @@ export function useScrollExpand(
   const scrollY = ref(0)
   const minProgress = ref(preExpanded ? 1 : 0)
   const hasScrolled = ref(false)
-  const TRANSITION_RANGE = 850 // Pixels over which to transition from full to scroll-based
+  const TRANSITION_RANGE = 1200 // Pixels over which to transition from full to scroll-based
   let rafId: number | null = null
 
   // Smooth factor: 1 at top, 0 after TRANSITION_RANGE
@@ -57,7 +57,7 @@ export function useScrollExpand(
     const viewportCenter = viewportHeight / 2
 
     const distanceFromCenter = elementCenter - viewportCenter
-    const maxDistance = viewportHeight * 0.8 // Increased from 0.5 for slower fade
+    const maxDistance = viewportHeight * 0.95 // Wider range for more gradual scale fade
 
     const normalizedDistance = Math.abs(distanceFromCenter) / maxDistance
 
@@ -125,7 +125,7 @@ export function useScrollOpacity(
   const minOpacity = ref(preExpanded ? 1 : 0)
   const hasScrolled = ref(false)
   const scrollY = ref(0)
-  const TRANSITION_RANGE = 850 // Pixels over which to transition from full to scroll-based
+  const TRANSITION_RANGE = 1200 // Pixels over which to transition from full to scroll-based
   let rafId: number | null = null
 
   // Smooth factor: 1 at top, 0 after TRANSITION_RANGE
@@ -157,8 +157,8 @@ export function useScrollOpacity(
     const viewportCenter = viewportHeight / 2
 
     const distanceFromCenter = elementCenter - viewportCenter
-    const maxDistance = viewportHeight * 0.7 // Increased from 0.4 for slower fade
-    const bufferZone = maxDistance * 0.3 // Increased from 0.2 for longer full-opacity zone
+    const maxDistance = viewportHeight * 0.85 // Wider range for more gradual opacity fade
+    const bufferZone = maxDistance * 0.4 // Larger zone where opacity stays at 1
 
     if (Math.abs(distanceFromCenter) < bufferZone) {
       opacity.value = 1

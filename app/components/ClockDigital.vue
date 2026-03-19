@@ -1,4 +1,6 @@
 <script setup lang="ts">
+withDefaults(defineProps<{ compact?: boolean }>(), { compact: false })
+
 const now = ref(new Date())
 let timer: ReturnType<typeof setInterval> | null = null
 
@@ -41,10 +43,19 @@ const timezoneLabel = computed(() => {
 </script>
 
 <template>
-  <div class="space-y-1">
-    <p class="text-[12px] uppercase tracking-[0.08em] muted">Local Time ({{ timezoneLabel }})</p>
-    <p class="text-[12px] font-semibold tracking-[0.05em]" :style="{ color: 'var(--fg-primary)' }">
-      {{ dateLabel }} / {{ hour }} : {{ minute }} {{ meridiem }}
-    </p>
-  </div>
+  <span v-if="compact" class="clock-compact">
+    {{ hour }}:{{ minute }} {{ meridiem }}
+  </span>
+  <p v-else class="text-[12px] font-semibold tracking-[0.05em]" :style="{ color: 'var(--fg-primary)' }">
+    {{ dateLabel }} / {{ hour }} : {{ minute }} {{ meridiem }}
+  </p>
 </template>
+
+<style scoped>
+.clock-compact {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--fg-muted);
+}
+</style>

@@ -10,11 +10,11 @@ export const profile = {
   role: 'Visual Designer',
   location: 'Los Angeles, CA',
   photo: 'https://picsum.photos/seed/profile-avery/300/300',
+  email: 'hello@bryanxmendez.com',
 }
 
 export const navItems: NavItem[] = [
   { group: 'Work', title: 'Home', path: '/', icon: 'lucide:house' },
-  { group: 'Work', title: 'Resume', path: '/resume', icon: 'lucide:file-stack' },
   { group: 'Personal', title: 'About', path: '/about', icon: 'lucide:user' },
 ]
 

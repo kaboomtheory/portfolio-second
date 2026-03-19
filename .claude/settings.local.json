@@ -6,7 +6,9 @@
       "Bash(npm install @nuxtjs/sanity @sanity/image-url)",
       "Bash(npm install)",
       "Bash(npm run studio)",
-      "Bash(npm run dev)"
+      "Bash(npm run dev)",
+      "Bash(node -e \"console.log\\(Object.keys\\(require\\(''./package.json''\\).scripts\\)\\)\")",
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }

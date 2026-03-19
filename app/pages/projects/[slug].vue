@@ -6,7 +6,6 @@ definePageMeta({
 })
 
 const route = useRoute()
-const router = useRouter()
 const { projects, loading } = useSanityProjects()
 
 const slug = computed(() => {
@@ -52,14 +51,13 @@ const firstImageSectionIndex = computed(() => {
 <template>
   <div v-if="project" class="page-content">
     <section class="page-section">
-      <button
-        type="button"
-        class="mb-8 flex items-center gap-2 text-sm transition-colors hover:text-[var(--accent)]"
+      <NuxtLink
+        to="/"
+        class="mb-8 inline-flex items-center gap-2 text-sm transition-colors hover:text-[var(--accent)]"
         :style="{ color: 'var(--fg-muted)' }"
-        @click="router.back()"
       >
-        <span>← Back</span>
-      </button>
+        <span>← Back to Projects</span>
+      </NuxtLink>
 
       <div class="hero-header">
         <p class="text-xs uppercase tracking-[0.12em]" :style="{ color: 'var(--fg-muted)' }">

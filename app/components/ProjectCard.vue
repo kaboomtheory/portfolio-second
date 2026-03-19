@@ -54,6 +54,7 @@ const handleMouseMove = (e: MouseEvent) => {
           <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-60 transition-opacity duration-700 ease-out group-hover:opacity-0" />
           <div class="absolute inset-0 opacity-0 transition-opacity duration-700 ease-out delay-75 group-hover:opacity-100 bg-gradient-to-br from-[var(--accent)]/5 via-transparent to-[var(--accent)]/5" />
           <div class="thumbnail-sheen absolute inset-0 z-10" />
+          <span v-if="project.category" class="category-badge">{{ project.category }}</span>
         </div>
         <div class="mt-3 flex shrink-0 items-start justify-between gap-3 px-1">
           <div class="space-y-1.5">
@@ -248,6 +249,31 @@ const handleMouseMove = (e: MouseEvent) => {
     background-position: -200% 0;
     opacity: 0;
   }
+}
+
+.category-badge {
+  position: absolute;
+  top: 0.625rem;
+  left: 0.625rem;
+  z-index: 20;
+  padding: 0.25rem 0.625rem;
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 9999px;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: all 0.4s ease;
+}
+
+.project-card-ethereal:hover .category-badge {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 .arrow-btn {
