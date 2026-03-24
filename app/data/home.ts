@@ -8,13 +8,30 @@ export interface StatusItem {
   icon?: string
 }
 
+/** One hero tagline line: plain segments + optional emphasized phrase */
+export interface HomeHeroTaglineLine {
+  segments: { text: string; em?: boolean }[]
+}
+
 export const homeHero = {
   title: 'Bryan X. Mendez',
-  /** Tagline split so decorative glyphs can be wrapped for motion (see home hero). */
-  taglineStart:
-    'is a multidisciplinary graphic designer with a sharp eye for brand identity',
-  taglineMid: ', a passion for bold typography',
-  taglineEnd: ', and a knack for making brands impossible to ignore',
+  /** Scannable lines; `em` renders as strong for key terms */
+  taglines: [
+    {
+      segments: [
+        { text: 'Multidisciplinary graphic designer in Los Angeles, focused on ' },
+        { text: 'brand identity', em: true },
+        { text: ', packaging, and digital experiences.' },
+      ],
+    },
+    {
+      segments: [
+        { text: 'Especially ' },
+        { text: 'bold typography', em: true },
+        { text: ', clear systems, and work that feels intentional.' },
+      ],
+    },
+  ] satisfies HomeHeroTaglineLine[],
   description: '',
 }
 
@@ -28,7 +45,6 @@ export interface AboutMeData {
   skills: { category: string; items: string[] }[]
   tools: string[]
   interests: { icon: string; label: string }[]
-  facts: { label: string; value: string }[]
 }
 
 export const aboutMe: AboutMeData = {
@@ -45,9 +61,18 @@ export const aboutMe: AboutMeData = {
   skills: [
     { category: 'Design', items: ['Branding', 'Logo Design', 'Print Design', 'Packaging Design', 'Visual Design'] },
     { category: 'Digital', items: ['Web Design', 'UX Design', 'CSS/HTML', 'Photo Manipulation', 'Stable Diffusion'] },
-    { category: 'Tools & Software', items: ['Figma', 'Framer', 'Adobe Creative Suite', 'Blender', 'Easy Catalog'] },
   ],
-  tools: ['Adobe Photoshop', 'Adobe Illustrator', 'Adobe InDesign', 'Figma', 'Framer', 'Blender'],
+  /** Software only (disciplines live under skills) */
+  tools: [
+    'Adobe Photoshop',
+    'Adobe Illustrator',
+    'Adobe InDesign',
+    'Adobe Creative Suite',
+    'Figma',
+    'Framer',
+    'Blender',
+    'Easy Catalog',
+  ],
   interests: [
     { icon: 'lucide:camera', label: 'Film Photography' },
     { icon: 'lucide:mountain', label: 'Hiking' },
@@ -55,12 +80,6 @@ export const aboutMe: AboutMeData = {
     { icon: 'lucide:book-open', label: 'Sci-Fi Novels' },
     { icon: 'lucide:gamepad-2', label: 'Indie Games' },
     { icon: 'lucide:coffee', label: 'Specialty Coffee' },
-  ],
-  facts: [
-    { label: 'Years Designing', value: '8+' },
-    { label: 'Brand Projects', value: '90+' },
-    { label: 'Client Satisfaction', value: '100%' },
-    { label: 'Skills', value: '21' },
   ],
 }
 

@@ -29,7 +29,7 @@ function tryAgain() {
 
 <template>
   <NuxtLayout name="default">
-    <div class="page-content py-16 text-center">
+    <div class="error-panel page-content py-16 text-center">
       <p
         class="text-xs font-medium uppercase tracking-[0.14em]"
         :style="{ color: 'var(--fg-muted)' }"
@@ -77,3 +77,15 @@ function tryAgain() {
     </div>
   </NuxtLayout>
 </template>
+
+<style scoped>
+.error-panel {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 36rem;
+  padding: 2.5rem 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+}
+</style>

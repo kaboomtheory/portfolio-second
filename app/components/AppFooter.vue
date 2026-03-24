@@ -9,6 +9,9 @@ import { profile, socialLinks } from '~/data/site'
     <div class="connect-content">
       <h2 class="connect-title">Let's Connect</h2>
       <p class="connect-subtitle">Have a project in mind? I'd love to hear about it.</p>
+      <p class="connect-context">
+        Based in {{ profile.location }} · Open to remote-friendly collaborations
+      </p>
 
       <div class="connect-actions">
         <a :href="`mailto:${profile.email}`" class="connect-primary-btn">
@@ -68,6 +71,13 @@ import { profile, socialLinks } from '~/data/site'
   font-size: 1rem;
   color: var(--fg-muted);
   margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.connect-context {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--fg-muted);
   margin-bottom: 2rem;
 }
 

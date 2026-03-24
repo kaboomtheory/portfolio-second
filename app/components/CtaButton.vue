@@ -138,19 +138,12 @@ const handleMouseMove = (e: MouseEvent) => {
     0 0 36px color-mix(in srgb, var(--emphasis-soft) 18%, transparent);
 }
 
-.cta-button.btn-attention:hover {
-  border-color: var(--emphasis);
-  box-shadow:
-    0 0 20px color-mix(in srgb, var(--emphasis) 28%, transparent),
-    0 0 36px color-mix(in srgb, var(--emphasis-soft) 22%, transparent);
-}
-
 .cta-button:not(.btn-attention):hover {
-  transform: scale(1.05);
+  transform: scale(1.02);
 }
 
 .cta-button:not(.btn-attention):active {
-  transform: scale(0.95);
+  transform: scale(0.98);
 }
 
 .cta-button-secondary:hover {
@@ -164,52 +157,23 @@ const handleMouseMove = (e: MouseEvent) => {
   display: none;
 }
 
-/* Attention CTA: emphasis hue (rose-mauve), not base brown */
+/* Attention CTA: single clear emphasis (no idle pulse) */
 .btn-attention {
   position: relative;
   font-weight: 600;
   padding: 0.5rem 1.25rem;
-  box-shadow:
-    0 0 20px color-mix(in srgb, var(--emphasis) 35%, transparent),
-    0 0 40px color-mix(in srgb, var(--emphasis-soft) 18%, transparent);
-}
-
-.btn-attention::before {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: inherit;
-  background: linear-gradient(45deg, var(--emphasis), var(--emphasis-soft), var(--emphasis));
-  opacity: 0;
-  z-index: -1;
-  animation: attention-glow 2.5s ease-in-out infinite;
-  filter: blur(12px);
-}
-
-@keyframes attention-glow {
-  0%, 100% {
-    opacity: 0.3;
-    transform: scale(1.02);
-  }
-  50% {
-    opacity: 0.7;
-    transform: scale(1.05);
-  }
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--emphasis) 35%, transparent);
 }
 
 .btn-attention:hover {
-  transform: scale(1.06);
+  border-color: var(--emphasis);
+  transform: scale(1.02);
   box-shadow:
-    0 0 28px color-mix(in srgb, var(--emphasis) 50%, transparent),
-    0 0 56px color-mix(in srgb, var(--emphasis-soft) 28%, transparent);
+    0 0 24px color-mix(in srgb, var(--emphasis) 28%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--emphasis) 45%, transparent);
 }
 
 .btn-attention:active {
   transform: scale(0.98);
-}
-
-.btn-attention:hover::before {
-  animation: none;
-  opacity: 0;
 }
 </style>

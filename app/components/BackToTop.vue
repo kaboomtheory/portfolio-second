@@ -4,7 +4,7 @@ import { Icon } from '@iconify/vue'
 const isVisible = ref(false)
 
 const onScroll = () => {
-  isVisible.value = window.scrollY > 400
+  isVisible.value = window.scrollY > 280
 }
 
 const scrollToTop = () => {

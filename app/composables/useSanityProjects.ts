@@ -97,6 +97,12 @@ export function useSanityProjects() {
     }))
   })
 
+  const orderedProjects = computed<ProjectItem[]>(() => {
+    const list = [...projects.value]
+    list.sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+    return list
+  })
+
   const projectPasswords = computed<Record<string, string>>(() => {
     if (!rawPasswords.value) return {}
     return rawPasswords.value || {}
@@ -104,6 +110,7 @@ export function useSanityProjects() {
 
   return {
     projects,
+    orderedProjects,
     projectPasswords,
     loading,
     error,

@@ -2,11 +2,16 @@
 const { scrollTo } = useSmoothScroll()
 const route = useRoute()
 
-watch(() => route.path, () => {
-  nextTick(() => {
-    window.scrollTo(0, 0)
-  })
-})
+watch(
+  () => route.path,
+  () => {
+    nextTick(() => {
+      window.scrollTo(0, 0)
+      const main = document.getElementById('main-content')
+      main?.focus({ preventScroll: true })
+    })
+  },
+)
 
 onMounted(() => {
   document.addEventListener('click', handleAnchorClick)
@@ -31,6 +36,11 @@ const handleAnchorClick = (e: MouseEvent) => {
 
 <template>
   <div class="app-shell">
+    <NuxtLoadingIndicator
+      color="var(--emphasis)"
+      :height="2"
+      :duration="3000"
+    />
     <NuxtRouteAnnouncer />
     <NuxtLayout>
       <NuxtPage :transition="{ name: 'page', mode: 'out-in' }" />

@@ -26,8 +26,8 @@ const skillIcons: Record<string, string> = {
 }
 
 const timeline = [
-  { year: '2017', title: 'B.A. Graphic Design', desc: 'Graduated from Cal State Northridge' },
-  { year: '2017', title: 'IntersectLA', desc: '20+ creatives, 10+ campaigns, 100% client satisfaction' },
+  { year: '2017', season: 'Spring', title: 'B.A. Graphic Design', desc: 'Graduated from Cal State Northridge' },
+  { year: '2017', season: 'Fall', title: 'IntersectLA', desc: '20+ creatives, 10+ campaigns, collaborative studio campaigns' },
   { year: '2018', title: 'Independent Work', desc: 'Branding, packaging, and print across industries' },
   { year: '2024', title: 'NAXA Electronics', desc: '90+ brand projects for Victor and Emerson, CES 2025' },
 ]
@@ -67,6 +67,16 @@ const timeline = [
           <p class="hero-intro">
             {{ aboutMe.intro }}
           </p>
+          <div class="hero-about-ctas">
+            <CtaButton
+              href="/Bryan_Mendez_resume_2025-1.pdf"
+              label="Download Resume"
+              attention
+              download
+            >
+              <template #icon><Icon icon="lucide:download" class="text-sm" /></template>
+            </CtaButton>
+          </div>
         </div>
         
         <div class="hero-visual">
@@ -103,18 +113,6 @@ const timeline = [
       </div>
     </section>
 
-    <!-- Resume Download -->
-    <section class="resume-download-section reveal-up">
-      <CtaButton
-        href="/Bryan_Mendez_resume_2025-1.pdf"
-        label="Download Resume"
-        attention
-        download
-      >
-        <template #icon><Icon icon="lucide:download" class="text-sm" /></template>
-      </CtaButton>
-    </section>
-
     <!-- Timeline Section -->
     <section class="timeline-section reveal-up">
       <div class="section-header">
@@ -130,9 +128,16 @@ const timeline = [
         </div>
         
         <div class="timeline-track">
-          <div v-for="(item, index) in timeline" :key="item.year" class="timeline-item" :style="{ '--delay': `${index * 0.15}s` }">
+          <div
+            v-for="(item, index) in timeline"
+            :key="`${item.year}-${item.title}`"
+            class="timeline-item"
+            :style="{ '--delay': `${index * 0.15}s` }"
+          >
             <div class="timeline-marker">
-              <span class="timeline-year">{{ item.year }}</span>
+              <span class="timeline-year">
+                {{ item.year }}<template v-if="'season' in item && item.season"> · {{ item.season }}</template>
+              </span>
               <div class="timeline-dot" />
             </div>
             <div class="timeline-content">
@@ -169,40 +174,53 @@ const timeline = [
       </div>
     </section>
 
-    <!-- Capabilities Section -->
-    <section class="capabilities-section reveal-up">
-      <div class="section-header">
-        <span class="section-number">03</span>
-        <h2 class="section-title">Capabilities</h2>
-      </div>
-      
-      <div class="capabilities-grid">
-        <div v-for="skillGroup in aboutMe.skills" :key="skillGroup.category" class="skill-category">
-          <h3 class="skill-category-title">
-            <Icon :icon="skillGroup.category === 'Design' ? 'lucide:palette' : skillGroup.category === 'Development' ? 'lucide:code-2' : 'lucide:sparkles'" />
-            {{ skillGroup.category }}
+    <!-- Capabilities Section (full-bleed background) -->
+    <div class="capabilities-bleed reveal-up">
+      <section class="capabilities-section">
+        <div class="section-header">
+          <span class="section-number">03</span>
+          <h2 class="section-title">Capabilities</h2>
+          <p class="section-lede">
+            Disciplines I practice day to day, plus the software I use to ship work.
+          </p>
+        </div>
+
+        <div class="capabilities-grid">
+          <div v-for="skillGroup in aboutMe.skills" :key="skillGroup.category" class="skill-category">
+            <h3 class="skill-category-title">
+              <Icon
+                :icon="
+                  skillGroup.category === 'Design'
+                    ? 'lucide:palette'
+                    : skillGroup.category === 'Development'
+                      ? 'lucide:code-2'
+                      : 'lucide:sparkles'
+                "
+              />
+              {{ skillGroup.category }}
+            </h3>
+            <div class="skill-items">
+              <SpotlightCard v-for="skill in skillGroup.items" :key="skill" class="skill-item">
+                <Icon :icon="skillIcons[skill] || 'lucide:check'" class="skill-icon" />
+                <span>{{ skill }}</span>
+              </SpotlightCard>
+            </div>
+          </div>
+        </div>
+
+        <div class="tools-section">
+          <h3 class="tools-title">
+            <Icon icon="lucide:wrench" />
+            Software
           </h3>
-          <div class="skill-items">
-            <SpotlightCard v-for="skill in skillGroup.items" :key="skill" class="skill-item">
-              <Icon :icon="skillIcons[skill] || 'lucide:check'" class="skill-icon" />
-              <span>{{ skill }}</span>
-            </SpotlightCard>
+          <div class="tools-grid">
+            <div v-for="tool in aboutMe.tools" :key="tool" class="tool-item">
+              {{ tool }}
+            </div>
           </div>
         </div>
-      </div>
-      
-      <div class="tools-section">
-        <h3 class="tools-title">
-          <Icon icon="lucide:wrench" />
-          Toolkit
-        </h3>
-        <div class="tools-grid">
-          <div v-for="tool in aboutMe.tools" :key="tool" class="tool-item">
-            {{ tool }}
-          </div>
-        </div>
-      </div>
-    </section>
+      </section>
+    </div>
 
   </div>
 </template>
@@ -301,6 +319,10 @@ const timeline = [
   line-height: 1.6;
   color: var(--fg-secondary);
   max-width: 32rem;
+}
+
+.hero-about-ctas {
+  margin-top: 1.5rem;
 }
 
 .hero-visual {
@@ -409,7 +431,7 @@ const timeline = [
 }
 
 .ticker-label {
-  font-size: 0.6rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--fg-muted);
@@ -442,22 +464,25 @@ const timeline = [
   margin-top: 0.25rem;
 }
 
+.section-lede {
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--fg-muted);
+  margin-top: 0.75rem;
+  max-width: 36rem;
+}
+
 .section-subtitle {
   font-size: 1rem;
   color: var(--fg-muted);
   margin-top: 0.5rem;
 }
 
-/* Resume Download */
-.resume-download-section {
-  padding: 0.5rem 0 1.5rem;
-  display: flex;
-  justify-content: center;
-}
-
 /* Timeline Section */
 .timeline-section {
-  padding: 3rem 0;
+  padding: 4rem 0 3.5rem;
+  border-top: 1px solid var(--border);
+  margin-top: 1rem;
 }
 
 .timeline-grid {
@@ -519,7 +544,7 @@ const timeline = [
 }
 
 .timeline-year {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   font-family: 'Geist Mono', monospace;
   color: var(--accent);
@@ -550,20 +575,25 @@ const timeline = [
   color: var(--fg-muted);
 }
 
-/* Capabilities Section */
+/* Capabilities — full-bleed without negative margin on inner container */
+.capabilities-bleed {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-top: 2rem;
+  overflow-x: clip;
+  box-sizing: border-box;
+}
+
 .capabilities-section {
-  padding: 3rem 0;
+  padding: 4rem 1.25rem;
   background: var(--bg-secondary);
-  margin: 0 -1rem;
-  padding-left: 1rem;
-  padding-right: 1rem;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
 }
 
 @media (min-width: 768px) {
   .capabilities-section {
-    margin: 0 -2rem;
-    padding-left: 2rem;
-    padding-right: 2rem;
+    padding: 4.5rem 2rem;
   }
 }
 
@@ -574,7 +604,7 @@ const timeline = [
 
 @media (min-width: 768px) {
   .capabilities-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
@@ -657,7 +687,7 @@ const timeline = [
 
 .tool-item {
   padding: 0.5rem 1rem;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--fg-secondary);
   background: var(--bg-primary);
@@ -673,7 +703,8 @@ const timeline = [
 
 /* Experience Section */
 .experience-section {
-  padding: 3rem 0;
+  padding: 4rem 0 3.5rem;
+  border-top: 1px solid var(--border);
 }
 
 .experience-list {
@@ -722,7 +753,7 @@ const timeline = [
 }
 
 .experience-company {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.08em;
@@ -743,7 +774,7 @@ const timeline = [
 }
 
 .experience-year {
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   font-family: 'Geist Mono', monospace;
   letter-spacing: 0.05em;

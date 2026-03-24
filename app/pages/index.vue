@@ -2,10 +2,28 @@
 import { Icon } from '@iconify/vue'
 import { socialLinks, profile } from '~/data/site'
 
-const { homeHero } = useMockContent()
-const { projects, loading } = useSanityProjects()
+const { homeHero, aboutMe } = useMockContent()
+const { orderedProjects, loading } = useSanityProjects()
 
-const featuredProjects = computed(() => projects.value)
+const filterCategory = ref<string>('all')
+
+const categoryOptions = computed(() => {
+  const set = new Set<string>()
+  for (const p of orderedProjects.value) {
+    const c = p.category?.trim()
+    if (c) set.add(c)
+  }
+  return Array.from(set).sort((a, b) => a.localeCompare(b))
+})
+
+const filteredProjects = computed(() => {
+  if (filterCategory.value === 'all') return orderedProjects.value
+  return orderedProjects.value.filter((p) => p.category === filterCategory.value)
+})
+
+const showFilters = computed(
+  () => !loading.value && categoryOptions.value.length > 0,
+)
 
 const getAnimationDelay = (index: number) => {
   const baseDelay = 0.12
@@ -13,8 +31,7 @@ const getAnimationDelay = (index: number) => {
 }
 
 useHead({
-  title: 'Selected Works',
-  titleTemplate: '%s / Placeholder Portfolio',
+  title: 'Selected work',
 })
 </script>
 
@@ -24,11 +41,20 @@ useHead({
     <section class="page-section">
       <h1 class="hero-statement hero-fade-in">
         <span class="hero-name-row">
-          <TextReveal tag="span" :text="homeHero.title" class="hero-name" />
           <span class="hero-name-divider" aria-hidden="true">✦</span>
+          <TextReveal tag="span" :text="homeHero.title" class="hero-name" />
         </span>
         <span class="hero-tagline">
-          {{ homeHero.taglineStart }}<span class="sym sym-pen" aria-hidden="true">☻</span>{{ homeHero.taglineMid }}<span class="sym sym-star" aria-hidden="true">¶</span>{{ homeHero.taglineEnd }}<span class="sym sym-cloud" aria-hidden="true">★</span>
+          <p
+            v-for="(line, lineIndex) in homeHero.taglines"
+            :key="lineIndex"
+            class="hero-tagline-line"
+          >
+            <template v-for="(seg, segIndex) in line.segments" :key="segIndex">
+              <strong v-if="seg.em" class="hero-tagline-em">{{ seg.text }}</strong>
+              <template v-else>{{ seg.text }}</template>
+            </template>
+          </p>
         </span>
       </h1>
       <div class="mt-6 flex flex-wrap items-center gap-3 hero-fade-in hero-delay-2">
@@ -53,14 +79,52 @@ useHead({
           </a>
         </div>
       </div>
+      <p class="hero-intro mt-8 max-w-2xl text-base leading-relaxed hero-fade-in hero-delay-2">
+        {{ aboutMe.intro }}
+      </p>
     </section>
 
     <!-- Projects Section -->
-    <section class="page-section">
+    <section class="page-section projects-section">
       <div class="mb-5 md:mb-6">
-        <p class="text-xs uppercase tracking-[0.12em] text-[var(--accent-soft)] mb-1 section-eyebrow">Selected Work</p>
-        <h2 class="section-title">Latest Projects</h2>
+        <h2 class="section-title text-2xl font-semibold tracking-tight md:text-3xl">
+          Selected work
+        </h2>
+        <p class="mt-2 max-w-xl text-sm leading-relaxed text-[var(--fg-muted)]">
+          Case studies and client projects — filtered by type when available.
+        </p>
       </div>
+
+      <div
+        v-if="showFilters"
+        class="mb-6 flex flex-wrap gap-2"
+        role="tablist"
+        aria-label="Filter projects by category"
+      >
+        <button
+          type="button"
+          role="tab"
+          :aria-selected="filterCategory === 'all'"
+          class="filter-pill"
+          :class="{ 'filter-pill--active': filterCategory === 'all' }"
+          @click="filterCategory = 'all'"
+        >
+          All
+        </button>
+        <button
+          v-for="cat in categoryOptions"
+          :key="cat"
+          type="button"
+          role="tab"
+          :aria-selected="filterCategory === cat"
+          class="filter-pill"
+          :class="{ 'filter-pill--active': filterCategory === cat }"
+          @click="filterCategory = cat"
+        >
+          {{ cat }}
+        </button>
+      </div>
+
       <!-- Skeleton Loading -->
       <div v-if="loading" class="project-grid-skeleton">
         <div v-for="i in 6" :key="i" class="skeleton-card">
@@ -73,13 +137,27 @@ useHead({
         </div>
       </div>
 
-      <!-- Project Grid: single enter animation on cards (no TransitionGroup double-fade) -->
+      <div
+        v-else-if="filteredProjects.length === 0"
+        class="empty-projects rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-6 py-14 text-center"
+      >
+        <Icon
+          icon="lucide:folder-open"
+          class="mx-auto mb-4 h-10 w-10 text-[var(--fg-muted)]"
+          aria-hidden="true"
+        />
+        <p class="text-base font-medium text-[var(--fg-primary)]">No projects to show yet</p>
+        <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-[var(--fg-muted)]">
+          New work will appear here once it is published. Try a different filter or check back soon.
+        </p>
+      </div>
+
       <div
         v-else
         class="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-7"
       >
         <ProjectCard
-          v-for="(item, index) in featuredProjects"
+          v-for="(item, index) in filteredProjects"
           :key="item.slug"
           :project="item"
           :style="{ animationDelay: `${getAnimationDelay(index)}s` }"
@@ -120,63 +198,74 @@ useHead({
   color: var(--emphasis);
   font-weight: 400;
   line-height: 1;
-  animation: sym-spin 8s linear infinite;
 }
 
 .hero-tagline {
   display: block;
-  font-size: clamp(1rem, 1.4vw + 0.4rem, 1.375rem);
-  font-weight: 400;
-  line-height: 1.6;
-  color: var(--fg-secondary);
-  letter-spacing: -0.01em;
   max-width: 42rem;
 }
 
-.sym {
-  display: inline-block;
-  color: var(--emphasis);
-  vertical-align: middle;
-  margin: 0 0.2em;
-  line-height: 1;
+.hero-tagline-line {
+  margin: 0;
+  font-size: clamp(1rem, 1.4vw + 0.4rem, 1.375rem);
+  font-weight: 400;
+  line-height: 1.55;
+  color: var(--fg-secondary);
+  letter-spacing: -0.01em;
 }
 
-.sym-pen {
-  animation: sym-wiggle 3s ease-in-out infinite;
-  transform-origin: bottom center;
+.hero-tagline-line + .hero-tagline-line {
+  margin-top: 0.5rem;
 }
 
-.sym-star {
-  animation: sym-spin 6s linear infinite;
+.hero-tagline-em {
+  font-weight: 600;
+  color: var(--fg-primary);
 }
 
-.sym-cloud {
-  animation: sym-float 4s ease-in-out infinite;
+.hero-intro {
+  color: var(--fg-secondary);
 }
 
-@keyframes sym-wiggle {
-  0%, 100% { transform: rotate(-8deg); }
-  50% { transform: rotate(8deg); }
+.filter-pill {
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  padding: 0.4rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--fg-secondary);
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    background-color 0.2s ease;
 }
 
-@keyframes sym-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.filter-pill:hover {
+  border-color: var(--emphasis);
+  color: var(--fg-primary);
 }
 
-@keyframes sym-float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
+.filter-pill--active {
+  border-color: var(--emphasis);
+  background: color-mix(in srgb, var(--emphasis) 12%, var(--bg-secondary));
+  color: var(--fg-primary);
+}
+
+.projects-section {
+  padding-top: 0.5rem;
+}
+
+.section-title {
+  color: var(--fg-primary);
 }
 
 /* Hero fade-in animations */
 .hero-fade-in {
   opacity: 0;
   animation: hero-fade-in 0.8s cubic-bezier(0.2, 0.65, 0.3, 0.9) forwards;
-}
-
-.hero-delay-1 {
-  animation-delay: 0.4s;
 }
 
 .hero-delay-2 {
@@ -192,12 +281,6 @@ useHead({
     opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Section eyebrow animation */
-.section-eyebrow {
-  opacity: 0;
-  animation: hero-fade-in 0.6s cubic-bezier(0.2, 0.65, 0.3, 0.9) 0.6s forwards;
 }
 
 /* Staggered card entry */
@@ -259,7 +342,10 @@ useHead({
   border: 1px solid var(--border);
   font-size: 1rem;
   color: var(--fg-muted);
-  transition: color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  transition:
+    color 0.2s ease,
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
 }
 
 .hero-social-link:hover {
@@ -307,23 +393,19 @@ useHead({
 }
 
 @keyframes skeleton-shimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .hero-fade-in,
-  .project-card-enter,
-  .section-eyebrow {
+  .project-card-enter {
     animation: none;
     opacity: 1;
-  }
-
-  .hero-name-divider,
-  .sym-pen,
-  .sym-star,
-  .sym-cloud {
-    animation: none;
   }
 
   .project-card-enter {

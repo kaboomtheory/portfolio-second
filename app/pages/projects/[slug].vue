@@ -1,27 +1,43 @@
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
 import { useScrollRevealGroup } from '~/composables/useScrollReveal'
+import type { ProjectItem, ProjectStorySection } from '~/types/project'
 
 definePageMeta({
   middleware: 'project-protect'
 })
 
 const route = useRoute()
-const { projects, loading } = useSanityProjects()
+const { orderedProjects, loading } = useSanityProjects()
 
 const slug = computed(() => {
   const source = route.params.slug
   return Array.isArray(source) ? source[0] : String(source || '')
 })
 
-const project = computed(() => 
-  projects.value.find(p => p.slug === slug.value)
+const project = computed(() => orderedProjects.value.find((p) => p.slug === slug.value))
+
+const projectIndex = computed(() =>
+  orderedProjects.value.findIndex((p) => p.slug === slug.value),
 )
+
+const prevProject = computed((): ProjectItem | null => {
+  const i = projectIndex.value
+  if (i <= 0) return null
+  return orderedProjects.value[i - 1] ?? null
+})
+
+const nextProject = computed((): ProjectItem | null => {
+  const i = projectIndex.value
+  if (i < 0 || i >= orderedProjects.value.length - 1) return null
+  return orderedProjects.value[i + 1] ?? null
+})
 
 watchEffect(() => {
   if (!loading.value && !project.value) {
     throw createError({
       statusCode: 404,
-      statusMessage: 'Project Not Found'
+      statusMessage: 'Project Not Found',
     })
   }
 })
@@ -30,8 +46,9 @@ useHead({
   title: () => project.value?.name || 'Project',
 })
 
-const sectionCount = computed(() => project.value?.sections?.length || 0)
-const { containerRef: sectionsContainerRef, visibleItems } = useScrollRevealGroup(sectionCount.value, {
+/** Upper bound for scroll-reveal slots (Sanity sections vary). */
+const revealSlotCount = 48
+const { containerRef: sectionsContainerRef, visibleItems } = useScrollRevealGroup(revealSlotCount, {
   threshold: 0.1,
   rootMargin: '0px 0px -80px 0px',
   staggerDelay: 80,
@@ -39,17 +56,35 @@ const { containerRef: sectionsContainerRef, visibleItems } = useScrollRevealGrou
 
 const firstImageSectionIndex = computed(() => {
   if (!project.value?.sections) return -1
-  return project.value.sections.findIndex((section) => 
+  return project.value.sections.findIndex((section) =>
     section.type === 'singleImage' ||
     section.type === 'imageGallery' ||
     section.type === 'imageTextBlock' ||
-    ((section.type === 'section' || !section.type) && section.image)
+    ((section.type === 'section' || !section.type) && section.image),
   )
 })
+
+function isMediaSection(section: ProjectStorySection): boolean {
+  if (section.type === 'singleImage' || section.type === 'imageGallery' || section.type === 'imageTextBlock') {
+    return true
+  }
+  if (section.type === 'videoEmbed') return true
+  if (section.type === 'statsRow') return true
+  if (section.type === 'section' || !section.type) return Boolean(section.image)
+  return false
+}
 </script>
 
 <template>
-  <div v-if="project" class="page-content">
+  <div v-if="loading" class="page-content py-16">
+    <div class="project-detail-skeleton animate-pulse space-y-6" aria-busy="true" aria-label="Loading project">
+      <div class="h-4 w-32 rounded bg-[var(--bg-tertiary)]" />
+      <div class="h-10 max-w-md rounded bg-[var(--bg-tertiary)]" />
+      <div class="h-20 max-w-2xl rounded bg-[var(--bg-tertiary)]" />
+      <div class="mt-10 aspect-[4/3] max-w-4xl rounded-xl bg-[var(--bg-tertiary)]" />
+    </div>
+  </div>
+  <div v-else-if="project" class="page-content">
     <section class="page-section">
       <NuxtLink
         to="/"
@@ -81,12 +116,15 @@ const firstImageSectionIndex = computed(() => {
         </div>
       </div>
 
-      <div ref="sectionsContainerRef" class="space-y-20 content-flow">
+      <div ref="sectionsContainerRef" class="project-sections-stack content-flow">
         <section
           v-for="(section, index) in project.sections"
           :key="index"
           class="project-section"
-          :class="{ 'is-visible': visibleItems[index] }"
+          :class="{
+            'is-visible': visibleItems[index],
+            'project-section--media': isMediaSection(section),
+          }"
         >
           <!-- Text Section -->
           <div v-if="section.type === 'textSection' || (!section.type && (section.heading || section.body))" class="max-w-3xl">
@@ -214,6 +252,38 @@ const firstImageSectionIndex = computed(() => {
           </div>
         </section>
       </div>
+
+      <nav
+        class="project-pager mt-14 flex flex-col gap-4 border-t border-[var(--border)] pt-10 md:flex-row md:items-center md:justify-between"
+        aria-label="Project navigation"
+      >
+        <NuxtLink
+          v-if="prevProject"
+          :to="`/projects/${prevProject.slug}`"
+          class="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-[var(--emphasis)]"
+          :style="{ color: 'var(--fg-secondary)' }"
+        >
+          <Icon icon="lucide:arrow-left" class="h-4 w-4 shrink-0" aria-hidden="true" />
+          <span>
+            <span class="block text-xs uppercase tracking-[0.1em] text-[var(--fg-muted)]">Previous</span>
+            {{ prevProject.name }}
+          </span>
+        </NuxtLink>
+        <span v-else class="hidden md:block md:w-40" />
+
+        <NuxtLink
+          v-if="nextProject"
+          :to="`/projects/${nextProject.slug}`"
+          class="inline-flex items-center gap-2 text-right text-sm font-medium transition-colors hover:text-[var(--emphasis)] md:ml-auto"
+          :style="{ color: 'var(--fg-secondary)' }"
+        >
+          <span>
+            <span class="block text-xs uppercase tracking-[0.1em] text-[var(--fg-muted)]">Next</span>
+            {{ nextProject.name }}
+          </span>
+          <Icon icon="lucide:arrow-right" class="h-4 w-4 shrink-0" aria-hidden="true" />
+        </NuxtLink>
+      </nav>
     </section>
   </div>
 </template>
@@ -248,6 +318,28 @@ const firstImageSectionIndex = computed(() => {
 
 .gallery-grid {
   display: grid;
+}
+
+.project-sections-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+@media (min-width: 768px) {
+  .project-sections-stack {
+    gap: 3rem;
+  }
+}
+
+.project-section--media + .project-section--media {
+  margin-top: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .project-section--media + .project-section--media {
+    margin-top: 1rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

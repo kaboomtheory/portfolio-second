@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
-import type { ProjectItem } from '~/data/projects'
+import type { ProjectItem } from '~/types/project'
 
 const props = defineProps<{
   project: ProjectItem
   class?: string
 }>()
 
-const displayTags = computed(() => props.project.tags.slice(0, 4))
+const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 </script>
 
 <template>
@@ -58,6 +58,11 @@ const displayTags = computed(() => props.project.tags.slice(0, 4))
             <span class="project-card-tag">{{ tag }}</span>
           </li>
         </ul>
+
+        <p class="project-card-cta">
+          <span class="project-card-cta-label">View project</span>
+          <Icon icon="lucide:arrow-right" class="project-card-cta-icon" aria-hidden="true" />
+        </p>
       </div>
     </NuxtLink>
   </div>
@@ -73,8 +78,8 @@ const displayTags = computed(() => props.project.tags.slice(0, 4))
 }
 
 .project-card-meta {
-  font-size: 0.6875rem;
-  line-height: 1.25;
+  font-size: 0.75rem;
+  line-height: 1.3;
 }
 
 .project-card-link:hover {
@@ -92,11 +97,38 @@ const displayTags = computed(() => props.project.tags.slice(0, 4))
   border: 1px solid var(--border);
   background: var(--bg-primary);
   padding: 0.2rem 0.55rem;
-  font-size: 0.625rem;
+  font-size: 0.75rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--fg-secondary);
+}
+
+.project-card-cta {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  transition: color 0.2s ease, transform 0.2s ease;
+}
+
+.project-card-cta-icon {
+  width: 1rem;
+  height: 1rem;
+  transition: transform 0.2s ease;
+}
+
+.project-card-link:hover .project-card-cta {
+  color: var(--emphasis);
+}
+
+.project-card-link:hover .project-card-cta-icon {
+  transform: translateX(3px);
 }
 
 @media (prefers-reduced-motion: reduce) {
