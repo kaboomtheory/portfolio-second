@@ -1,4 +1,5 @@
-type ThemeMode = 'light' | 'dark'
+import type { ThemeMode } from '~/utils/theme'
+import { getInitialTheme, hasStoredColorMode } from '~/utils/theme'
 
 function applyTheme(mode: ThemeMode) {
   document.documentElement.dataset.theme = mode
@@ -6,21 +7,19 @@ function applyTheme(mode: ThemeMode) {
 }
 
 export default defineNuxtPlugin(() => {
-  const theme = useState<ThemeMode>('theme-mode', () => 'dark')
-
-  const saved = localStorage.getItem('color-mode')
-  if (saved === 'light' || saved === 'dark') {
-    theme.value = saved
-  }
+  const theme = useState<ThemeMode>('theme-mode', () => getInitialTheme())
 
   applyTheme(theme.value)
 
-  watch(
-    theme,
-    (value) => {
-      localStorage.setItem('color-mode', value)
-      applyTheme(value)
-    },
-    { immediate: true }
-  )
+  watch(theme, (value) => {
+    applyTheme(value)
+  })
+
+  if (import.meta.client && !hasStoredColorMode()) {
+    const mq = window.matchMedia('(prefers-color-scheme: dark)')
+    const onSchemeChange = () => {
+      theme.value = mq.matches ? 'dark' : 'light'
+    }
+    mq.addEventListener('change', onSchemeChange)
+  }
 })

@@ -27,7 +27,7 @@ const handleMouseMove = (e: MouseEvent) => {
     <div
       class="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 group-hover:opacity-100"
       :style="{
-        background: `radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), var(--accent-soft), transparent 40%)`,
+        background: `radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), color-mix(in srgb, var(--accent-soft) 90%, var(--emphasis) 10%), transparent 40%)`,
         opacity: 0.15
       }"
     />

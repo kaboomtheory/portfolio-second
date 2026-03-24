@@ -62,7 +62,7 @@ useHead({ title: 'Password Protected Project' })
           </div>
         </label>
 
-        <p v-if="error" class="text-xs" :style="{ color: 'var(--accent)' }">{{ error }}</p>
+        <p v-if="error" class="text-xs" :style="{ color: 'var(--danger)' }">{{ error }}</p>
 
         <button
           type="submit"

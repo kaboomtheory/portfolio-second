@@ -194,7 +194,7 @@ Before coding:
 
 After coding:
 
-- Run `npm run build`.
+- You do **not** need to run `npm run build` after every change; use it when a production build check is useful (e.g., larger refactors, config or dependency edits, or when the user asks).
 - If tests exist later, run relevant test command(s).
 - Do not commit generated directories (`.nuxt`, `.output`).
 

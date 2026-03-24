@@ -2,102 +2,39 @@
 import { Icon } from '@iconify/vue'
 import { useSanityStatus } from '~/composables/useSanityStatus'
 
-const { aboutMe, experiences, clients } = useMockContent()
+const { aboutMe, experiences } = useMockContent()
 const { statusItems } = useSanityStatus()
 
 useHead({ title: 'About' })
 
 const skillIcons: Record<string, string> = {
-  'Product Strategy': 'lucide:target',
-  'Design Systems': 'lucide:layers',
-  'Prototyping': 'lucide:play',
-  'User Research': 'lucide:users',
+  'Branding': 'lucide:badge',
+  'Logo Design': 'lucide:pen-tool',
+  'Print Design': 'lucide:printer',
+  'Packaging Design': 'lucide:package',
   'Visual Design': 'lucide:palette',
-  'Vue/Nuxt': 'lucide:hexagon',
-  'React': 'lucide:atom',
-  'TypeScript': 'lucide:file-code',
-  'Tailwind CSS': 'lucide:wind',
-  'Motion Design': 'lucide:sparkles',
-  'Figma Wizardry': 'lucide:wand-2',
-  'Presentation Design': 'lucide:presentation',
-  'Workshop Facilitation': 'lucide:users-2',
-  'Coffee Making': 'lucide:coffee',
+  'Web Design': 'lucide:layout',
+  'UX Design': 'lucide:users',
+  'CSS/HTML': 'lucide:code-2',
+  'Photo Manipulation': 'lucide:image',
+  'Stable Diffusion': 'lucide:sparkles',
+  'Figma': 'lucide:figma',
+  'Framer': 'lucide:layers',
+  'Adobe Creative Suite': 'lucide:wand-2',
+  'Blender': 'lucide:box',
+  'Easy Catalog': 'lucide:book-open',
 }
 
 const timeline = [
-  { year: '2017', title: 'Started in Architecture', desc: 'Thinking about how people move through spaces' },
-  { year: '2019', title: 'Shifted to Digital', desc: 'Discovered the same principles apply to screens' },
-  { year: '2021', title: 'Design + Engineering', desc: 'Building products at the intersection' },
-  { year: 'Now', title: 'Crafting Experiences', desc: 'Making digital products feel human' },
+  { year: '2017', title: 'B.A. Graphic Design', desc: 'Graduated from Cal State Northridge' },
+  { year: '2017', title: 'IntersectLA', desc: '20+ creatives, 10+ campaigns, 100% client satisfaction' },
+  { year: '2018', title: 'Independent Work', desc: 'Branding, packaging, and print across industries' },
+  { year: '2024', title: 'NAXA Electronics', desc: '90+ brand projects for Victor and Emerson, CES 2025' },
 ]
-
-// Animated stat counters
-const statsRef = ref<HTMLElement | null>(null)
-const statsAnimated = ref(false)
-const displayValues = ref<string[]>(aboutMe.facts.map(() => '0'))
-
-const parseStatValue = (val: string) => {
-  const match = val.match(/^([\d,]+)(.*)$/)
-  if (!match) return null
-  return { num: parseInt(match[1].replace(/,/g, ''), 10), suffix: match[2] }
-}
-
-const animateCountUp = () => {
-  if (statsAnimated.value) return
-  statsAnimated.value = true
-
-  aboutMe.facts.forEach((fact, i) => {
-    const parsed = parseStatValue(fact.value)
-    if (!parsed) {
-      displayValues.value[i] = fact.value
-      return
-    }
-
-    const duration = 1200
-    const start = performance.now()
-    const { num, suffix } = parsed
-
-    const step = (now: number) => {
-      const elapsed = now - start
-      const progress = Math.min(elapsed / duration, 1)
-      const eased = 1 - Math.pow(1 - progress, 3) // ease-out cubic
-      const current = Math.round(eased * num)
-      displayValues.value[i] = current.toLocaleString() + suffix
-      if (progress < 1) requestAnimationFrame(step)
-    }
-    requestAnimationFrame(step)
-  })
-}
-
-let statsObserver: IntersectionObserver | null = null
-
-watch(statsRef, (el) => {
-  if (!el || statsObserver) return
-  if (!import.meta.client) return
-
-  const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  if (prefersReduced) {
-    displayValues.value = aboutMe.facts.map(f => f.value)
-    return
-  }
-
-  statsObserver = new IntersectionObserver(
-    ([entry]) => {
-      if (entry.isIntersecting) {
-        animateCountUp()
-        statsObserver?.disconnect()
-      }
-    },
-    { threshold: 0.3 }
-  )
-  statsObserver.observe(el)
-}, { immediate: true })
-
-onUnmounted(() => statsObserver?.disconnect())
 </script>
 
 <template>
-  <div class="page-content">
+  <div class="page-content content-flow">
     <!-- Hero Section -->
     <section class="hero-section reveal-up">
       <div class="hero-grid">
@@ -142,13 +79,6 @@ onUnmounted(() => statsObserver?.disconnect())
             >
             <div class="avatar-ring" />
           </div>
-          
-          <div class="floating-stats">
-            <div v-for="(fact, i) in aboutMe.facts.slice(0, 2)" :key="fact.label" class="floating-stat" :style="{ '--delay': `${i * 0.2}s` }">
-              <span class="floating-stat-value">{{ fact.value }}</span>
-              <span class="floating-stat-label">{{ fact.label }}</span>
-            </div>
-          </div>
         </div>
       </div>
     </section>
@@ -171,6 +101,18 @@ onUnmounted(() => statsObserver?.disconnect())
           </div>
         </div>
       </div>
+    </section>
+
+    <!-- Resume Download -->
+    <section class="resume-download-section reveal-up">
+      <CtaButton
+        href="/Bryan_Mendez_resume_2025-1.pdf"
+        label="Download Resume"
+        attention
+        download
+      >
+        <template #icon><Icon icon="lucide:download" class="text-sm" /></template>
+      </CtaButton>
     </section>
 
     <!-- Timeline Section -->
@@ -202,10 +144,35 @@ onUnmounted(() => statsObserver?.disconnect())
       </div>
     </section>
 
+    <!-- Experience Section -->
+    <section class="experience-section reveal-up">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Experience</h2>
+      </div>
+
+      <div class="experience-list">
+        <article
+          v-for="(item, index) in experiences"
+          :key="`${item.company}-${item.year}`"
+          class="experience-card"
+          :style="{ '--delay': `${index * 0.1}s` }"
+        >
+          <img :src="item.image" :alt="item.company" loading="lazy" class="experience-logo" />
+          <div class="experience-info">
+            <p class="experience-company">{{ item.company }}</p>
+            <h3 class="experience-title">{{ item.title }}</h3>
+            <p class="experience-desc">{{ item.description }}</p>
+          </div>
+          <span class="experience-year">{{ item.year }}</span>
+        </article>
+      </div>
+    </section>
+
     <!-- Capabilities Section -->
     <section class="capabilities-section reveal-up">
       <div class="section-header">
-        <span class="section-number">02</span>
+        <span class="section-number">03</span>
         <h2 class="section-title">Capabilities</h2>
       </div>
       
@@ -233,64 +200,6 @@ onUnmounted(() => statsObserver?.disconnect())
           <div v-for="tool in aboutMe.tools" :key="tool" class="tool-item">
             {{ tool }}
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Experience Section -->
-    <section class="experience-section reveal-up">
-      <div class="section-header">
-        <span class="section-number">03</span>
-        <h2 class="section-title">Experience</h2>
-      </div>
-
-      <div class="experience-list">
-        <article
-          v-for="(item, index) in experiences"
-          :key="`${item.company}-${item.year}`"
-          class="experience-card"
-          :style="{ '--delay': `${index * 0.1}s` }"
-        >
-          <img :src="item.image" :alt="item.company" loading="lazy" class="experience-logo" />
-          <div class="experience-info">
-            <p class="experience-company">{{ item.company }}</p>
-            <h3 class="experience-title">{{ item.title }}</h3>
-            <p class="experience-desc">{{ item.description }}</p>
-          </div>
-          <span class="experience-year">{{ item.year }}</span>
-        </article>
-      </div>
-    </section>
-
-    <!-- Clients Section -->
-    <section class="clients-section reveal-up">
-      <div class="section-header">
-        <span class="section-number">04</span>
-        <h2 class="section-title">Selected Clients</h2>
-      </div>
-
-      <div class="clients-list">
-        <article
-          v-for="(client, index) in clients"
-          :key="client.name"
-          class="client-card"
-          :style="{ '--delay': `${index * 0.1}s` }"
-        >
-          <h3 class="client-name">{{ client.name }}</h3>
-          <div class="client-tags">
-            <span v-for="tag in client.tags" :key="tag" class="client-tag">{{ tag }}</span>
-          </div>
-          <span class="client-year">{{ client.year }}</span>
-        </article>
-      </div>
-    </section>
-
-    <!-- Stats Row -->
-    <section ref="statsRef" class="stats-section reveal-up">
-      <div class="stats-grid">
-        <div v-for="(fact, index) in aboutMe.facts" :key="fact.label" class="stat-item">
-          <span class="stat-value">{{ displayValues[index] }}</span>
-          <span class="stat-label">{{ fact.label }}</span>
         </div>
       </div>
     </section>
@@ -332,7 +241,7 @@ onUnmounted(() => statsObserver?.disconnect())
   font-weight: 600;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--fg-muted);
+  color: var(--emphasis);
   margin-bottom: 1.5rem;
   padding: 0.5rem 1rem;
   background: var(--bg-secondary);
@@ -343,7 +252,7 @@ onUnmounted(() => statsObserver?.disconnect())
 .availability-dot {
   width: 8px;
   height: 8px;
-  background: #22c55e;
+  background: var(--status-available);
   border-radius: 50%;
   animation: pulse-dot 2s ease-in-out infinite;
 }
@@ -431,52 +340,6 @@ onUnmounted(() => statsObserver?.disconnect())
   transform: rotate(3deg);
 }
 
-.floating-stats {
-  position: absolute;
-  right: -1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-  z-index: 2;
-}
-
-.floating-stat {
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.75rem 1rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  animation: float-in 0.6s ease-out backwards;
-  animation-delay: var(--delay);
-}
-
-@keyframes float-in {
-  from {
-    opacity: 0;
-    transform: translateX(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
-
-.floating-stat-value {
-  display: block;
-  font-size: 1.25rem;
-  font-weight: 700;
-  color: var(--accent);
-}
-
-.floating-stat-label {
-  font-size: 0.65rem;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--fg-muted);
-}
-
 /* Ticker Section */
 .ticker-section {
   padding: 1.5rem 0;
@@ -520,7 +383,7 @@ onUnmounted(() => statsObserver?.disconnect())
 
 .ticker-item:hover {
   background: var(--bg-tertiary);
-  border-color: var(--accent);
+  border-color: var(--emphasis);
 }
 
 .ticker-image {
@@ -583,6 +446,13 @@ onUnmounted(() => statsObserver?.disconnect())
   font-size: 1rem;
   color: var(--fg-muted);
   margin-top: 0.5rem;
+}
+
+/* Resume Download */
+.resume-download-section {
+  padding: 0.5rem 0 1.5rem;
+  display: flex;
+  justify-content: center;
 }
 
 /* Timeline Section */
@@ -797,7 +667,7 @@ onUnmounted(() => statsObserver?.disconnect())
 }
 
 .tool-item:hover {
-  border-color: var(--accent);
+  border-color: var(--emphasis);
   color: var(--fg-primary);
 }
 
@@ -826,7 +696,7 @@ onUnmounted(() => statsObserver?.disconnect())
 }
 
 .experience-card:hover {
-  border-color: var(--accent);
+  border-color: var(--emphasis);
 }
 
 @media (min-width: 768px) {
@@ -879,122 +749,6 @@ onUnmounted(() => statsObserver?.disconnect())
   letter-spacing: 0.05em;
   color: var(--accent);
   white-space: nowrap;
-}
-
-/* Clients Section */
-.clients-section {
-  padding: 3rem 0;
-}
-
-.clients-list {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.client-card {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
-  padding: 1.25rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  transition: border-color 0.2s ease;
-  animation: slide-in 0.5s ease-out backwards;
-  animation-delay: var(--delay);
-}
-
-.client-card:hover {
-  border-color: var(--accent);
-}
-
-@media (min-width: 768px) {
-  .client-card {
-    grid-template-columns: 1fr 2fr auto;
-    align-items: center;
-    padding: 1.5rem;
-  }
-}
-
-.client-name {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--fg-primary);
-}
-
-.client-tags {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.client-tag {
-  padding: 0.375rem 0.875rem;
-  font-size: 0.8rem;
-  font-weight: 500;
-  color: var(--fg-secondary);
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 9999px;
-  transition: all 0.2s ease;
-}
-
-.client-tag:hover {
-  border-color: var(--accent);
-  color: var(--fg-primary);
-}
-
-.client-year {
-  font-size: 0.7rem;
-  font-weight: 700;
-  font-family: 'Geist Mono', monospace;
-  letter-spacing: 0.05em;
-  color: var(--accent);
-  white-space: nowrap;
-}
-
-/* Stats Section */
-.stats-section {
-  padding: 2.5rem 0;
-}
-
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.5rem;
-}
-
-@media (min-width: 768px) {
-  .stats-grid {
-    grid-template-columns: repeat(4, 1fr);
-  }
-}
-
-.stat-item {
-  text-align: center;
-  padding: 1.5rem 1rem;
-  background: var(--bg-secondary);
-  border-radius: 0.5rem;
-  border: 1px solid var(--border);
-}
-
-.stat-value {
-  display: block;
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--accent);
-  line-height: 1;
-  font-family: 'Geist Mono', monospace;
-}
-
-.stat-label {
-  display: block;
-  font-size: 0.7rem;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--fg-muted);
-  margin-top: 0.5rem;
 }
 
 </style>

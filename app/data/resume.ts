@@ -14,53 +14,45 @@ export interface ClientItem {
 
 export const experiences: ExperienceItem[] = [
   {
-    title: 'Senior Product Designer',
-    company: 'You.com',
-    year: '2025 - Present',
+    title: 'Graphic Designer',
+    company: 'NAXA Electronics',
+    year: '2024 - Present',
     description:
-      'Designed conversational AI surfaces focused on answer trust, task continuity, and multimodal interactions.',
-    image: 'https://picsum.photos/seed/logo-you/120/120',
+      'Led brand and marketing asset design for the Victor and Emerson product lines, including packaging for 20+ new products, retail materials for Amazon and Walmart, redesigned Shopify landing and product pages, and catalogs and sales sheets for CES 2025.',
+    image: 'https://picsum.photos/seed/logo-naxa/120/120',
   },
   {
-    title: 'Senior Product Designer II',
-    company: 'Mosaic Finance',
-    year: '2023 - 2025',
+    title: 'Freelance Graphic Designer',
+    company: 'Freelance',
+    year: '2018 - 2024',
     description:
-      'Led product strategy and interface architecture for planning workflows, model views, and executive reporting.',
-    image: 'https://picsum.photos/seed/logo-mosaic/120/120',
+      'Freelance graphic design on client projects spanning branding, logo design, packaging, print layout, and brochures for small businesses, YouTube creators, and companies in cosmetics and finance.',
+    image: 'https://picsum.photos/seed/logo-freelance/120/120',
   },
   {
-    title: 'Design Manager',
-    company: 'AuditBoard',
-    year: '2021 - 2023',
+    title: 'Graphic Designer',
+    company: 'IntersectLA (Formerly VISCOM)',
+    year: '2017 - 2018',
     description:
-      'Managed brand and digital initiatives across events, campaigns, and key product launch moments.',
-    image: 'https://picsum.photos/seed/logo-audit/120/120',
-  },
-  {
-    title: 'Founding Designer',
-    company: 'A Parent Media Co.',
-    year: '2018 - 2021',
-    description:
-      'Built early product and brand foundations for a family-focused streaming platform spanning multiple devices.',
-    image: 'https://picsum.photos/seed/logo-apmc/120/120',
+      'Collaborated with a team of 20+ creatives to execute strategies across 10+ projects with a 100% client satisfaction rate. Developed print, digital, and social media assets spanning posters, banners, and branded content.',
+    image: 'https://picsum.photos/seed/logo-intersect/120/120',
   },
 ]
 
 export const clients: ClientItem[] = [
   {
-    name: 'Northbound Studio',
-    tags: ['Brand Systems', 'Website'],
-    year: '2026',
-  },
-  {
-    name: 'Lumen Therapeutics',
-    tags: ['Product Strategy', 'UX'],
+    name: 'Victor & Emerson — CES 2025',
+    tags: ['Print', 'Catalogs', 'Salesheets'],
     year: '2025',
   },
   {
-    name: 'Pilotwave',
-    tags: ['Design Ops', 'Prototyping'],
+    name: 'Amazon & Walmart Retail',
+    tags: ['Marketing Assets', 'Packaging', 'Web'],
     year: '2024',
+  },
+  {
+    name: 'IntersectLA — Creative Campaigns',
+    tags: ['Print', 'Digital', 'Social Media'],
+    year: '2017',
   },
 ]

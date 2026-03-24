@@ -94,7 +94,7 @@ import { profile, socialLinks } from '~/data/site'
 
 .connect-primary-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: var(--shadow-lg);
 }
 
 .connect-primary-btn svg {
@@ -125,8 +125,8 @@ import { profile, socialLinks } from '~/data/site'
 }
 
 .social-link:hover {
-  border-color: var(--accent);
-  color: var(--accent);
+  border-color: var(--emphasis);
+  color: var(--emphasis);
   transform: translateY(-2px);
 }
 
@@ -141,7 +141,7 @@ import { profile, socialLinks } from '~/data/site'
   gap: 0.5rem;
   margin-top: 1.5rem;
   font-size: 0.8rem;
-  color: var(--fg-muted);
+  color: var(--emphasis);
   padding: 0.5rem 1rem;
   background: var(--bg-primary);
   border-radius: 9999px;
@@ -150,7 +150,7 @@ import { profile, socialLinks } from '~/data/site'
 .availability-indicator {
   width: 8px;
   height: 8px;
-  background: #22c55e;
+  background: var(--status-available);
   border-radius: 50%;
   animation: pulse-dot 2s ease-in-out infinite;
 }

@@ -7,303 +7,105 @@ const props = defineProps<{
   class?: string
 }>()
 
-const cardRef = ref<HTMLElement | null>(null)
-const mouseX = ref(0)
-const mouseY = ref(0)
-
-const handleMouseMove = (e: MouseEvent) => {
-  if (!cardRef.value) return
-  const rect = cardRef.value.getBoundingClientRect()
-  mouseX.value = e.clientX - rect.left
-  mouseY.value = e.clientY - rect.top
-}
+const displayTags = computed(() => props.project.tags.slice(0, 4))
 </script>
 
 <template>
-  <div :class="['project-card-ethereal group relative rounded-xl transition-all duration-700 ease-out aspect-square', props.class]">
-    <div class="project-card-glass" />
-    <div class="project-card-glow" />
-    <div class="project-card-shimmer" />
-    <div class="project-card-border" />
-
+  <div :class="['project-card group relative', props.class]">
     <NuxtLink
-      ref="cardRef"
-      class="relative z-10 block h-full p-2.5"
-      :style="{
-        '--mouse-x': `${mouseX}px`,
-        '--mouse-y': `${mouseY}px`
-      }"
+      class="project-card-link flex h-full flex-col rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-3 shadow-sm transition-[border-color,box-shadow,transform] duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--emphasis)]"
       :to="`/projects/${project.slug}`"
-      @mousemove="handleMouseMove"
     >
-      <div
-        class="pointer-events-none absolute -inset-px z-30 rounded-xl opacity-0 transition-opacity duration-700 ease-out group-hover:opacity-100"
-        :style="{
-          background: `radial-gradient(600px circle at var(--mouse-x) var(--mouse-y), rgba(255,255,255,0.15), transparent 50%)`
-        }"
-      />
+      <div class="relative min-h-0 shrink-0 overflow-hidden rounded-lg aspect-[4/3]">
+        <img
+          :src="project.thumbnail"
+          :alt="project.name"
+          class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+          loading="lazy"
+        >
+      </div>
 
-      <div class="flex h-full flex-col">
-        <div class="relative min-h-0 flex-1 overflow-hidden rounded-lg">
-          <img
-            :src="project.thumbnail"
-            :alt="project.name"
-            class="h-full w-full object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
-            loading="lazy"
-          >
-          <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-60 transition-opacity duration-700 ease-out group-hover:opacity-0" />
-          <div class="absolute inset-0 opacity-0 transition-opacity duration-700 ease-out delay-75 group-hover:opacity-100 bg-gradient-to-br from-[var(--accent)]/5 via-transparent to-[var(--accent)]/5" />
-          <div class="thumbnail-sheen absolute inset-0 z-10" />
-          <span v-if="project.category" class="category-badge">{{ project.category }}</span>
-        </div>
-        <div class="mt-3 flex shrink-0 items-start justify-between gap-3 px-1">
-          <div class="space-y-1.5">
-            <p class="text-[0.65rem] uppercase tracking-[0.12em] text-[var(--fg-muted)] transition-colors duration-500 ease-out group-hover:text-[var(--fg-secondary)]">
-              {{ project.category }} • {{ project.year }}
+      <div class="mt-4 flex min-h-0 flex-1 flex-col gap-2.5 px-0.5 pb-0.5">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0 flex-1 space-y-1">
+            <p
+              v-if="project.category || project.year"
+              class="project-card-meta font-medium uppercase tracking-[0.1em] text-[var(--accent-soft)]"
+            >
+              <template v-if="project.category">{{ project.category }}</template>
+              <template v-if="project.category && project.year"> · </template>
+              <template v-if="project.year">{{ project.year }}</template>
             </p>
-            <h3 class="text-xl font-semibold text-[var(--fg-primary)] transition-all duration-500 ease-out group-hover:text-[var(--accent)]">
+            <h3 class="text-lg font-semibold leading-snug tracking-tight text-[var(--fg-primary)] transition-colors duration-300 group-hover:text-[var(--emphasis)] md:text-xl">
               {{ project.name }}
             </h3>
           </div>
-          <span
-            class="arrow-btn flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-full text-[var(--fg-muted)] transition-all duration-500 ease-out group-hover:bg-[var(--accent)] group-hover:text-[var(--bg-primary)] group-hover:shadow-[0_0_20px_var(--accent)/60,0_0_40px_var(--accent)/30] group-hover:rotate-45 group-hover:[translate:2px_-2px]"
-          >
-            <Icon icon="lucide:arrow-up-right" class="text-lg transition-transform duration-300" />
-          </span>
         </div>
+
+        <p
+          v-if="project.summary"
+          class="line-clamp-2 text-sm leading-relaxed text-[var(--fg-secondary)]"
+        >
+          {{ project.summary }}
+        </p>
+
+        <ul
+          v-if="displayTags.length"
+          class="mt-auto flex list-none flex-wrap gap-1.5 p-0"
+          aria-label="Project tags"
+        >
+          <li v-for="tag in displayTags" :key="tag">
+            <span class="project-card-tag">{{ tag }}</span>
+          </li>
+        </ul>
       </div>
     </NuxtLink>
   </div>
 </template>
 
 <style scoped>
-.project-card-ethereal {
-  --glow-color: var(--accent);
-  --glass-bg: rgba(255, 255, 255, 0.08);
-  --glass-border: rgba(255, 255, 255, 0.12);
+.project-card {
   transform: translateY(0);
 }
 
-:root.dark .project-card-ethereal {
-  --glass-bg: rgba(255, 255, 255, 0.04);
-  --glass-border: rgba(255, 255, 255, 0.08);
+.project-card-link {
+  height: 100%;
 }
 
-.project-card-ethereal:hover {
-  transform: translateY(-6px);
+.project-card-meta {
+  font-size: 0.6875rem;
+  line-height: 1.25;
 }
 
-.project-card-glass {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--glass-bg);
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
-  z-index: 0;
-  transition: background 0.7s ease-out;
+.project-card-link:hover {
+  border-color: color-mix(in srgb, var(--emphasis) 35%, var(--border));
+  box-shadow:
+    0 12px 28px -16px color-mix(in srgb, var(--fg-primary) 18%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--emphasis) 12%, transparent),
+    0 0 32px -12px color-mix(in srgb, var(--accent-2) 14%, transparent);
+  transform: translateY(-4px);
 }
 
-.project-card-ethereal:hover .project-card-glass {
-  background: rgba(255, 255, 255, 0.12);
-}
-
-:root.dark .project-card-ethereal:hover .project-card-glass {
-  background: rgba(255, 255, 255, 0.08);
-}
-
-.project-card-border {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  border: 1px solid var(--glass-border);
-  z-index: 2;
-  pointer-events: none;
-  transition: border-color 0.7s ease-out;
-}
-
-.project-card-ethereal:hover .project-card-border {
-  border-color: color-mix(in srgb, var(--accent) 40%, transparent);
-}
-
-.project-card-glow {
-  position: absolute;
-  inset: -1px;
-  border-radius: inherit;
-  background: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--glow-color) 15%, transparent),
-    transparent 40%,
-    transparent 60%,
-    color-mix(in srgb, var(--glow-color) 10%, transparent)
-  );
-  opacity: 0.4;
-  z-index: 0;
-  animation: ethereal-breathe 8s ease-in-out infinite;
-  transition: opacity 0.7s ease-out, filter 0.7s ease-out;
-}
-
-.project-card-ethereal:hover .project-card-glow {
-  opacity: 0.85;
-  animation: ethereal-pulse 2.5s ease-out forwards;
-}
-
-.project-card-shimmer {
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: linear-gradient(
-    105deg,
-    transparent 40%,
-    color-mix(in srgb, var(--glow-color) 8%, transparent) 45%,
-    color-mix(in srgb, var(--glow-color) 15%, transparent) 50%,
-    color-mix(in srgb, var(--glow-color) 8%, transparent) 55%,
-    transparent 60%
-  );
-  background-size: 200% 100%;
-  background-position: 200% 0;
-  opacity: 0.3;
-  z-index: 1;
-  animation: shimmer-idle 12s ease-in-out infinite;
-  pointer-events: none;
-  transition: opacity 0.7s ease-out;
-}
-
-.project-card-ethereal:hover .project-card-shimmer {
-  opacity: 1;
-  animation: shimmer-slide 2s ease-out forwards;
-}
-
-@keyframes shimmer-idle {
-  0%, 100% {
-    background-position: 200% 0;
-    opacity: 0.15;
-  }
-  50% {
-    background-position: 100% 0;
-    opacity: 0.35;
-  }
-}
-
-@keyframes ethereal-breathe {
-  0%, 100% {
-    opacity: 0.25;
-    filter: blur(22px);
-  }
-  50% {
-    opacity: 0.45;
-    filter: blur(28px);
-  }
-}
-
-@keyframes ethereal-pulse {
-  0% {
-    opacity: 0.6;
-    filter: blur(18px);
-  }
-  50% {
-    opacity: 0.95;
-    filter: blur(24px);
-  }
-  100% {
-    opacity: 0.85;
-    filter: blur(20px);
-  }
-}
-
-@keyframes shimmer-slide {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-.thumbnail-sheen {
-  background: linear-gradient(
-    105deg,
-    transparent 35%,
-    rgba(255, 255, 255, 0.5) 50%,
-    transparent 65%
-  );
-  background-size: 200% 100%;
-  background-position: 200% 0;
-  opacity: 0;
-  pointer-events: none;
-}
-
-.project-card-ethereal:hover .thumbnail-sheen {
-  animation: thumbnail-sheen 1.8s ease-out forwards;
-}
-
-@keyframes thumbnail-sheen {
-  0% {
-    background-position: 200% 0;
-    opacity: 0.9;
-  }
-  50% {
-    opacity: 0.7;
-  }
-  100% {
-    background-position: -200% 0;
-    opacity: 0;
-  }
-}
-
-.category-badge {
-  position: absolute;
-  top: 0.625rem;
-  left: 0.625rem;
-  z-index: 20;
-  padding: 0.25rem 0.625rem;
-  font-size: 0.6rem;
+.project-card-tag {
+  display: inline-block;
+  border-radius: 9999px;
+  border: 1px solid var(--border);
+  background: var(--bg-primary);
+  padding: 0.2rem 0.55rem;
+  font-size: 0.625rem;
   font-weight: 600;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #fff;
-  background: rgba(0, 0, 0, 0.5);
-  backdrop-filter: blur(8px);
-  -webkit-backdrop-filter: blur(8px);
-  border-radius: 9999px;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: all 0.4s ease;
-}
-
-.project-card-ethereal:hover .category-badge {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.arrow-btn {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-}
-
-:root.dark .arrow-btn {
-  background: rgba(255, 255, 255, 0.04);
-  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: var(--fg-secondary);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .project-card-ethereal,
-  .project-card-glow,
-  .project-card-shimmer,
-  .thumbnail-sheen {
-    animation: none;
-  }
-
-  .project-card-ethereal:hover {
+  .project-card-link:hover {
     transform: none;
   }
-}
 
-@supports not (backdrop-filter: blur(20px)) {
-  .project-card-glass {
-    background: var(--bg-tertiary);
+  .project-card-link img {
+    transition: none;
   }
 }
 </style>

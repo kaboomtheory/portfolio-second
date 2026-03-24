@@ -51,8 +51,8 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 }
 
 .back-to-top:hover {
-  color: var(--accent);
-  border-color: var(--accent);
+  color: var(--emphasis);
+  border-color: var(--emphasis);
   transform: translateY(-2px);
 }
 

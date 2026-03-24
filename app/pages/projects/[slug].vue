@@ -53,14 +53,14 @@ const firstImageSectionIndex = computed(() => {
     <section class="page-section">
       <NuxtLink
         to="/"
-        class="mb-8 inline-flex items-center gap-2 text-sm transition-colors hover:text-[var(--accent)]"
+        class="mb-8 inline-flex items-center gap-2 text-sm transition-colors hover:text-[var(--emphasis)]"
         :style="{ color: 'var(--fg-muted)' }"
       >
         <span>← Back to Projects</span>
       </NuxtLink>
 
       <div class="hero-header">
-        <p class="text-xs uppercase tracking-[0.12em]" :style="{ color: 'var(--fg-muted)' }">
+        <p class="text-xs uppercase tracking-[0.12em]" :style="{ color: 'var(--accent-soft)' }">
           {{ project.category }} • {{ project.year }}
         </p>
         <h1 class="mt-2 text-4xl font-bold md:text-5xl" :style="{ color: 'var(--fg-primary)' }">
@@ -81,7 +81,7 @@ const firstImageSectionIndex = computed(() => {
         </div>
       </div>
 
-      <div ref="sectionsContainerRef" class="space-y-20">
+      <div ref="sectionsContainerRef" class="space-y-20 content-flow">
         <section
           v-for="(section, index) in project.sections"
           :key="index"
@@ -171,7 +171,7 @@ const firstImageSectionIndex = computed(() => {
 
           <!-- Quote -->
           <div v-else-if="section.type === 'quote'" class="mx-auto max-w-3xl">
-            <blockquote class="border-l-4 pl-6 text-2xl italic" :style="{ borderColor: 'var(--accent)', color: 'var(--fg-primary)' }">
+            <blockquote class="border-l-4 pl-6 text-2xl italic" :style="{ borderColor: 'var(--emphasis)', color: 'var(--fg-primary)' }">
               "{{ section.body }}"
             </blockquote>
             <div v-if="section.author" class="mt-4 pl-6">
@@ -183,7 +183,7 @@ const firstImageSectionIndex = computed(() => {
           <!-- Stats Row -->
           <div v-else-if="section.type === 'statsRow'" class="flex flex-wrap justify-center gap-8 md:gap-16">
             <div v-for="(stat, statIndex) in section.stats" :key="statIndex" class="text-center">
-              <p class="text-4xl font-bold" :style="{ color: 'var(--fg-primary)' }">{{ stat.value }}</p>
+              <p class="text-4xl font-bold" :style="{ color: 'var(--emphasis)' }">{{ stat.value }}</p>
               <p class="mt-1 text-sm uppercase tracking-wide" :style="{ color: 'var(--fg-muted)' }">{{ stat.label }}</p>
             </div>
           </div>

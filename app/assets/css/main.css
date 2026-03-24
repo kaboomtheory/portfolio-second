@@ -1,39 +1,85 @@
-@import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css');
 @import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css');
 
+/*
+  Color roles:
+  - --accent* = base brand brown (links, borders, calm interactive chrome, structure)
+  - --emphasis* = rose-mauve mixed from same warm axis as accent (only high-salience “look here”)
+  Atmosphere uses color-mix(accent, emphasis) so background never reads as two unrelated hues.
+*/
 :root {
-  --bg-primary: #ffffff;
-  --bg-secondary: #eff6ff;
-  --bg-tertiary: #dbeafe;
-  --fg-primary: #020617;
-  --fg-secondary: #334155;
-  --fg-muted: #64748b;
-  --border: #bfdbfe;
-  --accent: #0055ff;
-  --accent-soft: #3388ff;
+  --bg-primary: #f8f4ef;
+  --bg-secondary: #efe8df;
+  --bg-tertiary: #e2d8cd;
+  --fg-primary: #1c1611;
+  --fg-secondary: #52483f;
+  /* Darkened from #75685c for ~4.5:1 on --bg-primary (WCAG AA body text) */
+  --fg-muted: #5c5045;
+  --border: #c9b8a8;
+  --accent: #5c3f30;
+  --accent-soft: #7a5a46;
+  /* Decorative: page wash + gradients only; not a secondary action color in UI */
+  --accent-2: #455f52;
+  --accent-2-soft: #5a7568;
+  --on-accent: #f8f4ef;
+  --on-accent-muted: #e8ddd2;
+  /* Mauve-rose pulled toward accent (less magenta than a standalone pink) */
+  --emphasis: #a73d48;
+  --emphasis-soft: #bb5d68;
+  --on-emphasis: #f8f4ef;
+  --on-emphasis-muted: #f0e0da;
+  /* Single warm wash for body gradients (brown + hint of emphasis) */
+  --wash-warm: color-mix(in srgb, var(--accent) 82%, var(--emphasis) 18%);
+  /* Availability / online (muted green, theme-aware) */
+  --status-available: #2f6a47;
+  /* Inline errors, form validation (warm brick) */
+  --danger: #9a3f38;
+  /* Elevation from foreground hue so shadows track light/dark */
+  --shadow-sm: 0 1px 3px color-mix(in srgb, var(--fg-primary) 10%, transparent);
+  --shadow-md: 0 4px 12px color-mix(in srgb, var(--fg-primary) 10%, transparent);
+  --shadow-lg: 0 8px 24px color-mix(in srgb, var(--fg-primary) 14%, transparent);
 }
 
 :root.dark {
-  --bg-primary: #000000;
-  --bg-secondary: #0a0a0a;
-  --bg-tertiary: #171717;
-  --fg-primary: #f8fafc;
-  --fg-secondary: #a3a3a3;
-  --fg-muted: #888888;
-  --border: #262626;
-  --accent: #66ccff;
-  --accent-soft: #99ddff;
+  --bg-primary: #0f0c09;
+  --bg-secondary: #1a1510;
+  --bg-tertiary: #261f18;
+  --fg-primary: #f7f1ea;
+  --fg-secondary: #d8cdc1;
+  /* Slightly lifted for ~4.5:1 on --bg-primary */
+  --fg-muted: #b5a69a;
+  --border: #3d3329;
+  --accent: #c4a27c;
+  --accent-soft: #d9bc9a;
+  --accent-2: #8fa89a;
+  --accent-2-soft: #a8bdb0;
+  --on-accent: #0f0c09;
+  --on-accent-muted: #2a231c;
+  /* Dusty rose blended with tan accent so it feels like a highlight, not a second palette */
+  --emphasis: #eca49c;
+  --emphasis-soft: #f2b9ae;
+  --on-emphasis: #0f0c09;
+  --on-emphasis-muted: #2a221c;
+  --wash-warm: color-mix(in srgb, var(--accent) 72%, var(--emphasis) 28%);
+  --status-available: #5ebd8a;
+  --danger: #e8a89e;
+  --shadow-sm: 0 1px 3px color-mix(in srgb, var(--fg-primary) 8%, transparent);
+  --shadow-md: 0 4px 12px color-mix(in srgb, var(--fg-primary) 12%, transparent);
+  --shadow-lg: 0 8px 24px color-mix(in srgb, var(--fg-primary) 18%, transparent);
 }
 
 * {
   box-sizing: border-box;
 }
 
-/* Global focus-visible ring for keyboard accessibility */
+/* Global focus-visible ring: accent tuned to meet ~3:1 vs page bg for non-text UI */
 *:focus-visible {
-  outline: 2px solid var(--accent);
+  outline: 2px solid var(--emphasis);
   outline-offset: 2px;
   border-radius: 4px;
+}
+
+:root.dark *:focus-visible {
+  outline-color: var(--emphasis-soft);
 }
 
 .skip-link {
@@ -41,7 +87,7 @@
   top: -40px;
   left: 0;
   background: var(--accent);
-  color: white;
+  color: var(--on-accent);
   padding: 8px 16px;
   z-index: 100;
   text-decoration: none;
@@ -99,11 +145,12 @@ body,
 }
 
 body {
-  font-family: 'Geist Sans', system-ui, sans-serif;
+  font-family: 'Figtree', system-ui, sans-serif;
   background:
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
-    radial-gradient(circle at 15% 100%, rgb(102, 176, 255, 0.2), #0000 38%),
-    radial-gradient(circle at 90% 0%, rgba(102, 176, 255, 0.2), #54313100 42%),
+    radial-gradient(circle at 15% 100%, color-mix(in srgb, var(--wash-warm) 22%, transparent), transparent 38%),
+    radial-gradient(circle at 90% 0%, color-mix(in srgb, var(--accent-2) 18%, transparent), transparent 42%),
+    radial-gradient(circle at 0% 55%, color-mix(in srgb, var(--wash-warm) 14%, transparent), transparent 40%),
     var(--bg-primary);
   color: var(--fg-primary);
   -webkit-font-smoothing: antialiased;
@@ -113,8 +160,9 @@ body {
 :root.dark body {
   background:
     url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
-    radial-gradient(circle at 15% 90%, rgba(0, 97, 255, 0.21), transparent 38%),
-    radial-gradient(circle at 90% 0%, rgba(0, 97, 255, 0.21), transparent 42%),
+    radial-gradient(circle at 15% 90%, color-mix(in srgb, var(--wash-warm) 20%, transparent), transparent 38%),
+    radial-gradient(circle at 90% 0%, color-mix(in srgb, var(--accent-2) 15%, transparent), transparent 42%),
+    radial-gradient(circle at 0% 50%, color-mix(in srgb, var(--wash-warm) 12%, transparent), transparent 42%),
     var(--bg-primary);
 }
 
@@ -124,10 +172,20 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Geist Sans', system-ui, sans-serif;
-  font-weight: 600;
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-optical-sizing: auto;
+  font-weight: 700;
+  letter-spacing: -0.03em;
   margin: 0;
   color: var(--fg-primary);
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 650;
+  letter-spacing: -0.02em;
 }
 
 p {
@@ -140,8 +198,39 @@ a {
   text-decoration: none;
 }
 
+/* Body-copy links: wrap prose blocks with .content-flow (see pages: about, index hero, project sections) */
+.content-flow a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+
+.content-flow a:hover {
+  color: var(--accent-soft);
+  text-decoration-color: var(--accent-soft);
+}
+
+.content-flow a.cta-button,
+.content-flow a.project-card-link,
+.content-flow a.nav-link,
+.content-flow a.navbar-brand {
+  color: inherit;
+  text-decoration: none;
+}
+
+.content-flow a.cta-button:hover {
+  text-decoration: none;
+}
+
 .muted {
   color: var(--fg-muted);
+}
+
+/* Use sparingly: same hue family as attention CTA / nav active */
+.text-emphasis {
+  color: var(--emphasis);
 }
 
 code,
@@ -171,11 +260,20 @@ pre,
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fg-muted);
-  transition: opacity 180ms ease;
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease;
 }
 
 .eyebrow-link:hover {
-  opacity: 0.78;
+  color: var(--fg-secondary);
+  border-bottom-color: color-mix(in srgb, var(--emphasis) 45%, transparent);
+}
+
+.eyebrow-link:focus-visible {
+  border-bottom-color: var(--emphasis);
 }
 
 .filter-row {
@@ -205,16 +303,26 @@ pre,
   color: var(--fg-muted);
   background-color: transparent;
   cursor: pointer;
-  transition: opacity 180ms ease, background-color 180ms ease, color 180ms ease;
+  font-weight: 500;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .filter-pill:hover {
-  opacity: 0.82;
+  color: var(--fg-secondary);
+  border-color: color-mix(in srgb, var(--emphasis) 35%, var(--border));
+  background-color: color-mix(in srgb, var(--bg-tertiary) 55%, transparent);
 }
 
 .filter-pill-active {
   background-color: var(--bg-tertiary);
   color: var(--fg-primary);
+  border-color: var(--emphasis);
+  font-weight: 700;
+  box-shadow: inset 0 -2px 0 0 var(--emphasis);
 }
 
 .section-title {
@@ -271,11 +379,11 @@ pre,
 
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 45%, transparent);
   }
 
   50% {
-    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 0%, transparent);
   }
 }
 
@@ -287,16 +395,48 @@ pre,
 
   0%,
   100% {
-    box-shadow: 0 0 0 0 rgba(29, 78, 216, 0.4);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 40%, transparent);
   }
 
   50% {
-    box-shadow: 0 0 0 4px rgba(29, 78, 216, 0);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+}
+
+@keyframes pulse-glow-emphasis {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--emphasis) 45%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--emphasis) 0%, transparent);
+  }
+}
+
+@keyframes pulse-glow-emphasis-dark {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--emphasis-soft) 40%, transparent);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--emphasis-soft) 0%, transparent);
   }
 }
 
 .pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
+}
+
+.btn-attention .pulse-glow {
+  animation: pulse-glow-emphasis 2s ease-in-out infinite;
+}
+
+:root.dark .btn-attention .pulse-glow {
+  animation: pulse-glow-emphasis-dark 2s ease-in-out infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {

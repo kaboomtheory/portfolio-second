@@ -25,7 +25,7 @@ const { isDark, toggle } = useTheme()
       :style="{
         transform: isDark ? 'translateX(38px)' : 'translateX(0)',
         backgroundColor: 'var(--bg-primary)',
-        boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+        boxShadow: 'var(--shadow-sm)',
       }"
     >
       <Icon

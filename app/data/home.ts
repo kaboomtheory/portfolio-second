@@ -9,10 +9,13 @@ export interface StatusItem {
 }
 
 export const homeHero = {
-  title: 'Designing thoughtful brand and product experiences.',
-  subtitle: 'Based in Los Angeles, CA.',
-  description:
-    'This MVP clone uses placeholder content to mirror the structure and rhythm of the original portfolio experience.',
+  title: 'Bryan X. Mendez',
+  /** Tagline split so decorative glyphs can be wrapped for motion (see home hero). */
+  taglineStart:
+    'is a multidisciplinary graphic designer with a sharp eye for brand identity',
+  taglineMid: ', a passion for bold typography',
+  taglineEnd: ', and a knack for making brands impossible to ignore',
+  description: '',
 }
 
 export interface AboutMeData {
@@ -30,21 +33,21 @@ export interface AboutMeData {
 
 export const aboutMe: AboutMeData = {
   name: 'Bryan X. Mendez',
-  role: 'Visual Designer',
+  role: 'Graphic Designer',
   location: 'Los Angeles, CA',
   avatar: 'https://picsum.photos/seed/avery-profile/400/400',
-  intro: 'I design digital products that feel like they were made for humans, not users.',
+  intro:
+    'I work on brand identities, packaging, and digital experiences, with a focus on craft, clarity, and work that feels intentional.',
   story: [
-    'My journey started in architecture—thinking about how people move through physical spaces. Eventually I realized the same principles apply to digital ones, just with faster iteration cycles and way less concrete.',
-    'Now I spend my time at the intersection of design and engineering, building products that are both beautiful and functional. I believe the best design is invisible—it just works.',
-    'When I\'m not pushing pixels, you\'ll find me exploring hiking trails, experimenting with film photography, or diving down some obscure Wikipedia rabbit hole at 2am.',
+    'I studied Graphic Design at Cal State Northridge, where I got my first taste of collaborative creative work developing print, digital, and social media campaigns at IntersectLA alongside a team of 20+ creatives.',
+    'From there I spent several years honing my craft across branding, packaging, and visual identity before landing at NAXA Electronics, where I now lead brand design for the Victor and Emerson product lines. My work spans marketing assets for major retail platforms, product packaging, Shopify storefronts, and sales materials for events like CES.',
   ],
   skills: [
-    { category: 'Design', items: ['Product Strategy', 'Design Systems', 'Prototyping', 'User Research', 'Visual Design'] },
-    { category: 'Development', items: ['Vue/Nuxt', 'React', 'TypeScript', 'Tailwind CSS', 'Motion Design'] },
-    { category: 'Other', items: ['Figma Wizardry', 'Presentation Design', 'Workshop Facilitation', 'Coffee Making'] },
+    { category: 'Design', items: ['Branding', 'Logo Design', 'Print Design', 'Packaging Design', 'Visual Design'] },
+    { category: 'Digital', items: ['Web Design', 'UX Design', 'CSS/HTML', 'Photo Manipulation', 'Stable Diffusion'] },
+    { category: 'Tools & Software', items: ['Figma', 'Framer', 'Adobe Creative Suite', 'Blender', 'Easy Catalog'] },
   ],
-  tools: ['Figma', 'VS Code', 'Blender', 'After Effects', 'Notion', 'Arc Browser'],
+  tools: ['Adobe Photoshop', 'Adobe Illustrator', 'Adobe InDesign', 'Figma', 'Framer', 'Blender'],
   interests: [
     { icon: 'lucide:camera', label: 'Film Photography' },
     { icon: 'lucide:mountain', label: 'Hiking' },
@@ -54,10 +57,10 @@ export const aboutMe: AboutMeData = {
     { icon: 'lucide:coffee', label: 'Specialty Coffee' },
   ],
   facts: [
-    { label: 'Years Designing', value: '7+' },
-    { label: 'Projects Shipped', value: '50+' },
-    { label: 'Coffee Consumed', value: '∞' },
-    { label: 'Git Commits', value: '2,847' },
+    { label: 'Years Designing', value: '8+' },
+    { label: 'Brand Projects', value: '90+' },
+    { label: 'Client Satisfaction', value: '100%' },
+    { label: 'Skills', value: '21' },
   ],
 }
 

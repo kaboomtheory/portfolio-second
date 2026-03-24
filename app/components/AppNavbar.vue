@@ -193,7 +193,7 @@ onUnmounted(() => {
   width: 0;
   opacity: 0;
   border-radius: 9999px;
-  background-color: color-mix(in srgb, var(--accent) 15%, transparent);
+  background-color: color-mix(in srgb, var(--wash-warm) 22%, transparent);
   transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               opacity 0.25s ease;
@@ -229,7 +229,7 @@ onUnmounted(() => {
 }
 
 .nav-link.router-link-exact-active {
-  color: var(--accent);
+  color: var(--emphasis);
   font-weight: 600;
 }
 

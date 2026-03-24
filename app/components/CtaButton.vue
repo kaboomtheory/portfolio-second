@@ -9,6 +9,7 @@ const props = withDefaults(
     secondary?: boolean
     withDot?: boolean
     attention?: boolean
+    download?: boolean
   }>(),
   {
     to: undefined,
@@ -16,6 +17,7 @@ const props = withDefaults(
     secondary: false,
     withDot: false,
     attention: false,
+    download: false,
   }
 )
 
@@ -36,24 +38,29 @@ const handleMouseMove = (e: MouseEvent) => {
   <a
     v-if="href"
     :href="href"
-    target="_blank"
-    rel="noopener noreferrer"
+    :target="download ? undefined : '_blank'"
+    :rel="download ? undefined : 'noopener noreferrer'"
+    :download="download || undefined"
     :class="[btnClass, attention && 'btn-attention', secondary && 'cta-button-secondary']"
     :style="{
-      backgroundColor: secondary ? 'transparent' : (attention ? 'var(--accent)' : 'var(--fg-secondary)'),
-      borderColor: secondary ? 'var(--border)' : (attention ? 'var(--accent)' : 'transparent'),
-      color: secondary ? 'var(--fg-secondary)' : 'var(--bg-primary)',
+      backgroundColor: secondary ? 'transparent' : (attention ? 'var(--emphasis)' : 'var(--fg-secondary)'),
+      borderColor: secondary ? 'var(--border)' : (attention ? 'var(--emphasis)' : 'transparent'),
+      color: secondary ? 'var(--fg-secondary)' : (attention ? 'var(--on-emphasis)' : 'var(--bg-primary)'),
       '--mouse-x': `${mouseX}%`,
       '--mouse-y': `${mouseY}%`
     }"
     @mousemove="handleMouseMove"
   >
-    <span v-if="withDot" class="inline-block h-2 w-2 rounded-full pulse-glow" :style="{ backgroundColor: 'var(--accent)' }" />
+    <span
+      v-if="withDot"
+      class="inline-block h-2 w-2 rounded-full pulse-glow"
+      :style="{ backgroundColor: attention ? 'var(--emphasis)' : 'var(--emphasis)' }"
+    />
     <slot name="icon">
       <span class="icon-wrapper" />
     </slot>
     {{ label }}
-    <span class="sr-only">(opens in new tab)</span>
+    <span v-if="!download" class="sr-only">(opens in new tab)</span>
     <span class="cta-button-glow" />
   </a>
   <NuxtLink
@@ -61,15 +68,19 @@ const handleMouseMove = (e: MouseEvent) => {
     :to="to"
     :class="[btnClass, attention && 'btn-attention', secondary && 'cta-button-secondary']"
     :style="{
-      backgroundColor: secondary ? 'transparent' : (attention ? 'var(--accent)' : 'var(--fg-secondary)'),
-      borderColor: secondary ? 'var(--border)' : (attention ? 'var(--accent)' : 'transparent'),
-      color: secondary ? 'var(--fg-secondary)' : 'var(--bg-primary)',
+      backgroundColor: secondary ? 'transparent' : (attention ? 'var(--emphasis)' : 'var(--fg-secondary)'),
+      borderColor: secondary ? 'var(--border)' : (attention ? 'var(--emphasis)' : 'transparent'),
+      color: secondary ? 'var(--fg-secondary)' : (attention ? 'var(--on-emphasis)' : 'var(--bg-primary)'),
       '--mouse-x': `${mouseX}%`,
       '--mouse-y': `${mouseY}%`
     }"
     @mousemove="handleMouseMove"
   >
-    <span v-if="withDot" class="inline-block h-2 w-2 rounded-full pulse-glow" :style="{ backgroundColor: 'var(--accent)' }" />
+    <span
+      v-if="withDot"
+      class="inline-block h-2 w-2 rounded-full pulse-glow"
+      :style="{ backgroundColor: attention ? 'var(--emphasis)' : 'var(--emphasis)' }"
+    />
     <slot name="icon">
       <span class="icon-wrapper" />
     </slot>
@@ -91,7 +102,7 @@ const handleMouseMove = (e: MouseEvent) => {
 
 .cta-button-secondary:hover {
   background-color: var(--bg-tertiary);
-  border-color: var(--accent);
+  border-color: var(--emphasis);
 }
 
 /* Glow effect on hover */
@@ -100,7 +111,7 @@ const handleMouseMove = (e: MouseEvent) => {
   inset: 0;
   background: radial-gradient(
     circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    var(--accent-soft),
+    color-mix(in srgb, var(--accent-soft) 55%, var(--accent-2-soft) 45%),
     transparent 60%
   );
   opacity: 0;
@@ -108,15 +119,30 @@ const handleMouseMove = (e: MouseEvent) => {
   pointer-events: none;
 }
 
+.btn-attention .cta-button-glow {
+  background: radial-gradient(
+    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
+    color-mix(in srgb, var(--emphasis-soft) 55%, var(--emphasis) 45%),
+    transparent 60%
+  );
+}
+
 .cta-button:hover .cta-button-glow {
   opacity: 0.15;
 }
 
-.cta-button:hover {
-  border-color: var(--accent);
+.cta-button:hover:not(.btn-attention) {
+  border-color: var(--emphasis);
   box-shadow:
-    0 0 20px color-mix(in srgb, var(--accent) 30%, transparent),
-    0 0 40px color-mix(in srgb, var(--accent) 15%, transparent);
+    0 0 20px color-mix(in srgb, var(--emphasis) 22%, transparent),
+    0 0 36px color-mix(in srgb, var(--emphasis-soft) 18%, transparent);
+}
+
+.cta-button.btn-attention:hover {
+  border-color: var(--emphasis);
+  box-shadow:
+    0 0 20px color-mix(in srgb, var(--emphasis) 28%, transparent),
+    0 0 36px color-mix(in srgb, var(--emphasis-soft) 22%, transparent);
 }
 
 .cta-button:not(.btn-attention):hover {
@@ -129,8 +155,8 @@ const handleMouseMove = (e: MouseEvent) => {
 
 .cta-button-secondary:hover {
   box-shadow:
-    0 0 15px color-mix(in srgb, var(--accent) 20%, transparent),
-    0 0 30px color-mix(in srgb, var(--accent) 10%, transparent);
+    0 0 15px color-mix(in srgb, var(--emphasis) 20%, transparent),
+    0 0 30px color-mix(in srgb, var(--emphasis) 10%, transparent);
 }
 
 /* Icon wrapper to maintain spacing */
@@ -138,14 +164,14 @@ const handleMouseMove = (e: MouseEvent) => {
   display: none;
 }
 
-/* Attention styles – stronger emphasis */
+/* Attention CTA: emphasis hue (rose-mauve), not base brown */
 .btn-attention {
   position: relative;
   font-weight: 600;
   padding: 0.5rem 1.25rem;
   box-shadow:
-    0 0 20px color-mix(in srgb, var(--accent) 35%, transparent),
-    0 0 40px color-mix(in srgb, var(--accent) 15%, transparent);
+    0 0 20px color-mix(in srgb, var(--emphasis) 35%, transparent),
+    0 0 40px color-mix(in srgb, var(--emphasis-soft) 18%, transparent);
 }
 
 .btn-attention::before {
@@ -153,7 +179,7 @@ const handleMouseMove = (e: MouseEvent) => {
   position: absolute;
   inset: -3px;
   border-radius: inherit;
-  background: linear-gradient(45deg, var(--accent), var(--accent-soft), var(--accent));
+  background: linear-gradient(45deg, var(--emphasis), var(--emphasis-soft), var(--emphasis));
   opacity: 0;
   z-index: -1;
   animation: attention-glow 2.5s ease-in-out infinite;
@@ -174,8 +200,8 @@ const handleMouseMove = (e: MouseEvent) => {
 .btn-attention:hover {
   transform: scale(1.06);
   box-shadow:
-    0 0 28px color-mix(in srgb, var(--accent) 50%, transparent),
-    0 0 56px color-mix(in srgb, var(--accent) 25%, transparent);
+    0 0 28px color-mix(in srgb, var(--emphasis) 50%, transparent),
+    0 0 56px color-mix(in srgb, var(--emphasis-soft) 28%, transparent);
 }
 
 .btn-attention:active {
