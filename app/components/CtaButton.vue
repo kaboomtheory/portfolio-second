@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
 
 const props = withDefaults(
   defineProps<{
@@ -10,6 +10,7 @@ const props = withDefaults(
     withDot?: boolean
     attention?: boolean
     download?: boolean
+    preserveCase?: boolean
   }>(),
   {
     to: undefined,
@@ -18,10 +19,18 @@ const props = withDefaults(
     withDot: false,
     attention: false,
     download: false,
+    preserveCase: false,
   }
 )
 
-const btnClass = 'cta-button inline-flex items-center gap-2 rounded-md border px-4 py-2 text-xs uppercase tracking-[0.1em] transition-all duration-300 origin-center'
+const isMailto = computed(() => Boolean(props.href?.toLowerCase().startsWith('mailto:')))
+
+const btnClass = computed(() =>
+  [
+    'cta-button inline-flex items-center gap-2 rounded-md border px-4 py-2 text-xs tracking-[0.1em] transition-all duration-300 origin-center',
+    props.preserveCase ? 'cta-button--preserve-case' : 'uppercase',
+  ].join(' '),
+)
 
 const mouseX = ref(50)
 const mouseY = ref(50)
@@ -38,8 +47,8 @@ const handleMouseMove = (e: MouseEvent) => {
   <a
     v-if="href"
     :href="href"
-    :target="download ? undefined : '_blank'"
-    :rel="download ? undefined : 'noopener noreferrer'"
+    :target="download || isMailto ? undefined : '_blank'"
+    :rel="download || isMailto ? undefined : 'noopener noreferrer'"
     :download="download || undefined"
     :class="[btnClass, attention && 'btn-attention', secondary && 'cta-button-secondary']"
     :style="{
@@ -53,14 +62,17 @@ const handleMouseMove = (e: MouseEvent) => {
   >
     <span
       v-if="withDot"
-      class="inline-block h-2 w-2 rounded-full pulse-glow"
-      :style="{ backgroundColor: attention ? 'var(--emphasis)' : 'var(--emphasis)' }"
+      :class="[
+        'inline-block h-2 w-2 rounded-full',
+        secondary ? 'cta-status-dot' : 'pulse-glow',
+      ]"
+      :style="secondary ? undefined : { backgroundColor: 'var(--emphasis)' }"
     />
     <slot name="icon">
       <span class="icon-wrapper" />
     </slot>
     {{ label }}
-    <span v-if="!download" class="sr-only">(opens in new tab)</span>
+    <span v-if="!download && !isMailto" class="sr-only">(opens in new tab)</span>
     <span class="cta-button-glow" />
   </a>
   <NuxtLink
@@ -78,8 +90,11 @@ const handleMouseMove = (e: MouseEvent) => {
   >
     <span
       v-if="withDot"
-      class="inline-block h-2 w-2 rounded-full pulse-glow"
-      :style="{ backgroundColor: attention ? 'var(--emphasis)' : 'var(--emphasis)' }"
+      :class="[
+        'inline-block h-2 w-2 rounded-full',
+        secondary ? 'cta-status-dot' : 'pulse-glow',
+      ]"
+      :style="secondary ? undefined : { backgroundColor: 'var(--emphasis)' }"
     />
     <slot name="icon">
       <span class="icon-wrapper" />
@@ -94,6 +109,40 @@ const handleMouseMove = (e: MouseEvent) => {
   position: relative;
   overflow: hidden;
   border-color: transparent;
+}
+
+.cta-button--preserve-case {
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 500;
+}
+
+/* Same token + pulse rhythm as about page `.availability-dot` */
+.cta-status-dot {
+  flex-shrink: 0;
+  background: var(--status-available);
+  animation: cta-status-dot-pulse 2s ease-in-out infinite;
+}
+
+@keyframes cta-status-dot-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  50% {
+    opacity: 0.6;
+    transform: scale(1.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-status-dot {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }
 
 .cta-button-secondary {

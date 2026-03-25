@@ -2,8 +2,18 @@
 import { Icon } from '@iconify/vue'
 import { socialLinks, profile } from '~/data/site'
 
-const { homeHero, aboutMe } = useMockContent()
+const { homeHero } = useMockContent()
 const { orderedProjects, loading } = useSanityProjects()
+const { homePage: cmsHome } = useSanityHome()
+
+const heroTitle = computed(() => cmsHome.value?.hero.title || homeHero.title)
+const heroTaglines = computed(() =>
+  cmsHome.value?.hero.taglines?.length ? cmsHome.value.hero.taglines : homeHero.taglines,
+)
+const heroEmail = computed(() => cmsHome.value?.email || profile.email)
+const heroSocialLinks = computed(() =>
+  cmsHome.value?.socialLinks?.length ? cmsHome.value.socialLinks : socialLinks,
+)
 
 const filterCategory = ref<string>('all')
 
@@ -42,11 +52,11 @@ useHead({
       <h1 class="hero-statement hero-fade-in">
         <span class="hero-name-row">
           <span class="hero-name-divider" aria-hidden="true">✦</span>
-          <TextReveal tag="span" :text="homeHero.title" class="hero-name" />
+          <TextReveal tag="span" :text="heroTitle" class="hero-name" />
         </span>
         <span class="hero-tagline">
           <p
-            v-for="(line, lineIndex) in homeHero.taglines"
+            v-for="(line, lineIndex) in heroTaglines"
             :key="lineIndex"
             class="hero-tagline-line"
           >
@@ -61,13 +71,18 @@ useHead({
         <CtaButton to="/about" label="View Resume" attention>
           <template #icon><Icon icon="lucide:file-text" class="text-sm" /></template>
         </CtaButton>
-        <CtaButton :href="`mailto:${profile.email}`" label="Open for Work" secondary with-dot>
+        <CtaButton
+          :href="`mailto:${heroEmail}`"
+          label="OPEN TO WORK"
+          secondary
+          with-dot
+        >
           <template #icon><Icon icon="lucide:mail" class="text-sm" /></template>
         </CtaButton>
         <span class="hero-divider" aria-hidden="true" />
         <div class="hero-socials">
           <a
-            v-for="link in socialLinks"
+            v-for="link in heroSocialLinks"
             :key="link.label"
             :href="link.href"
             target="_blank"
@@ -79,9 +94,6 @@ useHead({
           </a>
         </div>
       </div>
-      <p class="hero-intro mt-8 max-w-2xl text-base leading-relaxed hero-fade-in hero-delay-2">
-        {{ aboutMe.intro }}
-      </p>
     </section>
 
     <!-- Projects Section -->

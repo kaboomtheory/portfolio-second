@@ -12,6 +12,25 @@ export default defineConfig({
         S.list()
           .title('Content')
           .items([
+            S.listItem()
+              .title('Home Page')
+              .id('homePage')
+              .child(
+                S.editor()
+                  .id('homePage')
+                  .schemaType('homePage')
+                  .documentId('homePage'),
+              ),
+            S.listItem()
+              .title('About Page')
+              .id('aboutPage')
+              .child(
+                S.editor()
+                  .id('aboutPage')
+                  .schemaType('aboutPage')
+                  .documentId('aboutPage'),
+              ),
+            S.divider(),
             S.documentTypeListItem('project').title('Projects'),
             S.documentTypeListItem('statusItem').title('Status Items'),
           ]),

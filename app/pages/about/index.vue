@@ -1,36 +1,53 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { useSanityStatus } from '~/composables/useSanityStatus'
+import { useSanityAbout } from '~/composables/useSanityAbout'
 
-const { aboutMe, experiences } = useMockContent()
+const { aboutMe: fallbackAboutMe, experiences: fallbackExperiences } = useMockContent()
 const { statusItems } = useSanityStatus()
+const { aboutPage } = useSanityAbout()
 
 useHead({ title: 'About' })
 
-const skillIcons: Record<string, string> = {
-  'Branding': 'lucide:badge',
-  'Logo Design': 'lucide:pen-tool',
-  'Print Design': 'lucide:printer',
-  'Packaging Design': 'lucide:package',
-  'Visual Design': 'lucide:palette',
-  'Web Design': 'lucide:layout',
-  'UX Design': 'lucide:users',
-  'CSS/HTML': 'lucide:code-2',
-  'Photo Manipulation': 'lucide:image',
-  'Stable Diffusion': 'lucide:sparkles',
-  'Figma': 'lucide:figma',
-  'Framer': 'lucide:layers',
-  'Adobe Creative Suite': 'lucide:wand-2',
-  'Blender': 'lucide:box',
-  'Easy Catalog': 'lucide:book-open',
-}
+// CMS data with fallback to hardcoded content
+const hero = computed(() => aboutPage.value?.hero || {
+  name: fallbackAboutMe.name,
+  role: fallbackAboutMe.role,
+  location: fallbackAboutMe.location,
+  avatar: fallbackAboutMe.avatar,
+  availabilityText: 'Available for freelance',
+})
 
-const timeline = [
-  { year: '2017', season: 'Spring', title: 'B.A. Graphic Design', desc: 'Graduated from Cal State Northridge' },
-  { year: '2017', season: 'Fall', title: 'IntersectLA', desc: '20+ creatives, 10+ campaigns, collaborative studio campaigns' },
-  { year: '2018', title: 'Independent Work', desc: 'Branding, packaging, and print across industries' },
-  { year: '2024', title: 'NAXA Electronics', desc: '90+ brand projects for Victor and Emerson, CES 2025' },
-]
+const story = computed(() =>
+  aboutPage.value?.story?.length ? aboutPage.value.story : fallbackAboutMe.story,
+)
+
+const experienceItems = computed(() =>
+  aboutPage.value?.experiences?.length ? aboutPage.value.experiences : fallbackExperiences,
+)
+
+const capabilities = computed(() => {
+  if (aboutPage.value?.capabilities?.length) return aboutPage.value.capabilities
+  // Fallback: merge old skills + tools into flat shape
+  return [
+    ...fallbackAboutMe.skills.flatMap((g) =>
+      g.items.map((name) => ({ name, category: g.category })),
+    ),
+    ...fallbackAboutMe.tools.map((name) => ({ name, category: 'Software' })),
+  ]
+})
+
+const groupedCapabilities = computed(() => {
+  const groups: Record<string, string[]> = {}
+  for (const cap of capabilities.value) {
+    (groups[cap.category] ??= []).push(cap.name)
+  }
+  return Object.entries(groups).map(([category, items]) => ({ category, items }))
+})
+
+const resumeHref = computed(() =>
+  aboutPage.value?.resumeUrl || '/Bryan_Mendez_resume_2025-1.pdf',
+)
 </script>
 
 <template>
@@ -41,49 +58,51 @@ const timeline = [
         <div class="hero-content">
           <div class="hero-eyebrow">
             <span class="availability-dot" />
-            <span>Available for freelance</span>
+            <span>{{ hero.availabilityText || 'Available for freelance' }}</span>
           </div>
-          
+
           <TextReveal
             tag="h1"
-            :text="aboutMe.name"
+            :text="hero.name"
             :delay="0.1"
             class="hero-name"
           />
-          
+
           <div class="hero-role-wrap">
             <TextReveal
               tag="p"
-              :text="aboutMe.role"
+              :text="hero.role"
               :delay="0.3"
               class="hero-role"
             />
             <span class="hero-location">
               <Icon icon="lucide:map-pin" class="inline w-4 h-4" />
-              {{ aboutMe.location }}
+              {{ hero.location }}
             </span>
           </div>
-          
-          <p class="hero-intro">
-            {{ aboutMe.intro }}
-          </p>
+
+          <div class="hero-story">
+            <p v-for="(paragraph, index) in story" :key="index" class="story-paragraph">
+              {{ paragraph }}
+            </p>
+          </div>
           <div class="hero-about-ctas">
             <CtaButton
-              href="/Bryan_Mendez_resume_2025-1.pdf"
+              :href="resumeHref"
               label="Download Resume"
               attention
-              download
+              target="_blank"
             >
               <template #icon><Icon icon="lucide:download" class="text-sm" /></template>
             </CtaButton>
           </div>
         </div>
-        
+
         <div class="hero-visual">
           <div class="avatar-container">
             <img
-              :src="aboutMe.avatar"
-              :alt="aboutMe.name"
+              :src="hero.avatar"
+              :alt="hero.name"
               class="avatar-image"
               loading="eager"
             >
@@ -113,52 +132,16 @@ const timeline = [
       </div>
     </section>
 
-    <!-- Timeline Section -->
-    <section class="timeline-section reveal-up">
-      <div class="section-header">
-        <span class="section-number">01</span>
-        <h2 class="section-title">Background</h2>
-      </div>
-      
-      <div class="timeline-grid">
-        <div class="timeline-story">
-          <p v-for="(paragraph, index) in aboutMe.story" :key="index" class="story-paragraph">
-            {{ paragraph }}
-          </p>
-        </div>
-        
-        <div class="timeline-track">
-          <div
-            v-for="(item, index) in timeline"
-            :key="`${item.year}-${item.title}`"
-            class="timeline-item"
-            :style="{ '--delay': `${index * 0.15}s` }"
-          >
-            <div class="timeline-marker">
-              <span class="timeline-year">
-                {{ item.year }}<template v-if="'season' in item && item.season"> · {{ item.season }}</template>
-              </span>
-              <div class="timeline-dot" />
-            </div>
-            <div class="timeline-content">
-              <h3 class="timeline-title">{{ item.title }}</h3>
-              <p class="timeline-desc">{{ item.desc }}</p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
     <!-- Experience Section -->
     <section class="experience-section reveal-up">
       <div class="section-header">
-        <span class="section-number">02</span>
+        <span class="section-number">01</span>
         <h2 class="section-title">Experience</h2>
       </div>
 
       <div class="experience-list">
         <article
-          v-for="(item, index) in experiences"
+          v-for="(item, index) in experienceItems"
           :key="`${item.company}-${item.year}`"
           class="experience-card"
           :style="{ '--delay': `${index * 0.1}s` }"
@@ -174,53 +157,27 @@ const timeline = [
       </div>
     </section>
 
-    <!-- Capabilities Section (full-bleed background) -->
-    <div class="capabilities-bleed reveal-up">
-      <section class="capabilities-section">
-        <div class="section-header">
-          <span class="section-number">03</span>
-          <h2 class="section-title">Capabilities</h2>
-          <p class="section-lede">
-            Disciplines I practice day to day, plus the software I use to ship work.
-          </p>
-        </div>
+    <!-- Capabilities Section -->
+    <section class="capabilities-section reveal-up">
+      <div class="section-header">
+        <span class="section-number">02</span>
+        <h2 class="section-title">Capabilities</h2>
+        <p class="section-lede">
+          Disciplines I practice day to day, plus the software I use to ship work.
+        </p>
+      </div>
 
-        <div class="capabilities-grid">
-          <div v-for="skillGroup in aboutMe.skills" :key="skillGroup.category" class="skill-category">
-            <h3 class="skill-category-title">
-              <Icon
-                :icon="
-                  skillGroup.category === 'Design'
-                    ? 'lucide:palette'
-                    : skillGroup.category === 'Development'
-                      ? 'lucide:code-2'
-                      : 'lucide:sparkles'
-                "
-              />
-              {{ skillGroup.category }}
-            </h3>
-            <div class="skill-items">
-              <SpotlightCard v-for="skill in skillGroup.items" :key="skill" class="skill-item">
-                <Icon :icon="skillIcons[skill] || 'lucide:check'" class="skill-icon" />
-                <span>{{ skill }}</span>
-              </SpotlightCard>
-            </div>
+      <div class="capabilities-grid">
+        <div v-for="group in groupedCapabilities" :key="group.category" class="capability-group">
+          <h3 class="capability-group-title">{{ group.category }}</h3>
+          <div class="capability-tags">
+            <span v-for="item in group.items" :key="item" class="capability-tag">
+              {{ item }}
+            </span>
           </div>
         </div>
-
-        <div class="tools-section">
-          <h3 class="tools-title">
-            <Icon icon="lucide:wrench" />
-            Software
-          </h3>
-          <div class="tools-grid">
-            <div v-for="tool in aboutMe.tools" :key="tool" class="tool-item">
-              {{ tool }}
-            </div>
-          </div>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
 
   </div>
 </template>
@@ -314,11 +271,17 @@ const timeline = [
   border-radius: 9999px;
 }
 
-.hero-intro {
-  font-size: 1.25rem;
-  line-height: 1.6;
+.hero-story {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.story-paragraph {
+  font-size: 1.125rem;
+  line-height: 1.7;
   color: var(--fg-secondary);
-  max-width: 32rem;
+  max-width: 36rem;
 }
 
 .hero-about-ctas {
@@ -478,53 +441,6 @@ const timeline = [
   margin-top: 0.5rem;
 }
 
-/* Timeline Section */
-.timeline-section {
-  padding: 4rem 0 3.5rem;
-  border-top: 1px solid var(--border);
-  margin-top: 1rem;
-}
-
-.timeline-grid {
-  display: grid;
-  gap: 3rem;
-}
-
-@media (min-width: 768px) {
-  .timeline-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 4rem;
-  }
-}
-
-.timeline-story {
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-}
-
-.story-paragraph {
-  font-size: 1.125rem;
-  line-height: 1.7;
-  color: var(--fg-secondary);
-}
-
-.timeline-track {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  padding-left: 1rem;
-  border-left: 2px solid var(--border);
-}
-
-.timeline-item {
-  display: grid;
-  grid-template-columns: auto 1fr;
-  gap: 1rem;
-  animation: slide-in 0.5s ease-out backwards;
-  animation-delay: var(--delay);
-}
-
 @keyframes slide-in {
   from {
     opacity: 0;
@@ -536,156 +452,38 @@ const timeline = [
   }
 }
 
-.timeline-marker {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5rem;
-}
-
-.timeline-year {
-  font-size: 0.75rem;
-  font-weight: 700;
-  font-family: 'Geist Mono', monospace;
-  color: var(--accent);
-  white-space: nowrap;
-}
-
-.timeline-dot {
-  width: 10px;
-  height: 10px;
-  background: var(--accent);
-  border-radius: 50%;
-  box-shadow: 0 0 0 4px var(--bg-primary);
-}
-
-.timeline-content {
-  padding-bottom: 0.5rem;
-}
-
-.timeline-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--fg-primary);
-  margin-bottom: 0.25rem;
-}
-
-.timeline-desc {
-  font-size: 0.875rem;
-  color: var(--fg-muted);
-}
-
-/* Capabilities — full-bleed without negative margin on inner container */
-.capabilities-bleed {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-top: 2rem;
-  overflow-x: clip;
-  box-sizing: border-box;
-}
-
 .capabilities-section {
-  padding: 4rem 1.25rem;
-  background: var(--bg-secondary);
+  padding: 4rem 0 3.5rem;
   border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
-}
-
-@media (min-width: 768px) {
-  .capabilities-section {
-    padding: 4.5rem 2rem;
-  }
 }
 
 .capabilities-grid {
   display: grid;
   gap: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
 }
 
-@media (min-width: 768px) {
-  .capabilities-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-.skill-category {
+.capability-group {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-}
-
-.skill-category-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--fg-muted);
-}
-
-.skill-category-title svg {
-  width: 1rem;
-  height: 1rem;
-  color: var(--accent);
-}
-
-.skill-items {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-}
-
-.skill-item {
-  display: flex;
-  align-items: center;
   gap: 0.75rem;
-  padding: 0.625rem 0.875rem;
-  font-size: 0.875rem;
-  color: var(--fg-secondary);
-  cursor: default;
 }
 
-.skill-icon {
-  width: 1rem;
-  height: 1rem;
-  color: var(--accent);
-  opacity: 0.7;
-  flex-shrink: 0;
-}
-
-.tools-section {
-  margin-top: 2.5rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--border);
-}
-
-.tools-title {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+.capability-group-title {
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
   color: var(--fg-muted);
-  margin-bottom: 1rem;
 }
 
-.tools-title svg {
-  width: 0.875rem;
-  height: 0.875rem;
-  color: var(--accent);
-}
-
-.tools-grid {
+.capability-tags {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
 }
 
-.tool-item {
+.capability-tag {
   padding: 0.5rem 1rem;
   font-size: 0.75rem;
   font-weight: 500;
@@ -696,7 +494,7 @@ const timeline = [
   transition: all 0.2s ease;
 }
 
-.tool-item:hover {
+.capability-tag:hover {
   border-color: var(--emphasis);
   color: var(--fg-primary);
 }
@@ -742,8 +540,10 @@ const timeline = [
   width: 48px;
   height: 48px;
   border-radius: 0.375rem;
-  object-fit: cover;
+  object-fit: contain;
+  padding: 4px;
   border: 1px solid var(--border);
+  background: var(--bg-primary);
 }
 
 .experience-info {
