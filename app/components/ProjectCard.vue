@@ -13,14 +13,14 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 <template>
   <div :class="['project-card group relative', props.class]">
     <NuxtLink
-      class="project-card-link flex h-full flex-col rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] p-3 shadow-sm transition-[border-color,box-shadow,transform] duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--emphasis)]"
+      class="project-card-link flex h-full flex-col rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-3 shadow-sm transition-[border-color,box-shadow,transform] duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--emphasis)]"
       :to="`/projects/${project.slug}`"
     >
       <div class="relative min-h-0 shrink-0 overflow-hidden rounded-lg aspect-[4/3]">
         <img
           :src="project.thumbnail"
           :alt="project.name"
-          class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-[1.03]"
+          class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
           loading="lazy"
         >
       </div>
@@ -55,7 +55,7 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
           aria-label="Project tags"
         >
           <li v-for="tag in displayTags" :key="tag">
-            <span class="project-card-tag">{{ tag }}</span>
+            <span class="pill">{{ tag }}</span>
           </li>
         </ul>
 
@@ -89,19 +89,6 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
     0 0 0 1px color-mix(in srgb, var(--emphasis) 12%, transparent),
     0 0 32px -12px color-mix(in srgb, var(--accent-2) 14%, transparent);
   transform: translateY(-4px);
-}
-
-.project-card-tag {
-  display: inline-block;
-  border-radius: 9999px;
-  border: 1px solid var(--border);
-  background: var(--bg-primary);
-  padding: 0.2rem 0.55rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--fg-secondary);
 }
 
 .project-card-cta {

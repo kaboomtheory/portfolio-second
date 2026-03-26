@@ -80,3 +80,13 @@ Disciplines I practice day to day, plus the software I use to ship work.
 - Framer
 - Blender
 - Easy Catalog
+
+
+HOMEPAGE:
+Multidisciplinary graphic designer in Los Angeles, focused on brand identity, packaging, and digital experiences.
+
+Especially bold typography, clear systems, and work that feels intentional.
+
+View Resume
+Open for Work(opens in new tab)
+I work on brand identities, packaging, and digital experiences, with a focus on craft, clarity, and work that feels intentional.

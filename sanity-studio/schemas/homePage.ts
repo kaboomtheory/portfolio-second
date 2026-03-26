@@ -97,7 +97,7 @@ export const homePage = defineType({
               name: 'icon',
               type: 'string',
               title: 'Icon',
-              description: 'Iconify icon identifier, e.g. ri:instagram-fill, ri:linkedin-fill',
+              description: 'Iconify icon identifier, e.g. ri:linkedin-fill, lucide:github',
               validation: (rule) => rule.required(),
             }),
             defineField({

@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { profile, socialLinks } from '~/data/site'
+
+const linkedinHref = computed(() => {
+  const found = socialLinks.find((l) => /linkedin/i.test(l.label))
+  return found?.href ?? 'https://www.linkedin.com/'
+})
 </script>
 
 <template>
@@ -14,23 +19,20 @@ import { profile, socialLinks } from '~/data/site'
       </p>
 
       <div class="connect-actions">
-        <a :href="`mailto:${profile.email}`" class="connect-primary-btn">
-          <Icon icon="lucide:mail" />
-          <span>{{ profile.email }}</span>
-          <Icon icon="lucide:arrow-up-right" class="btn-arrow" aria-hidden="true" />
+        <a :href="`mailto:${profile.email}`" class="connect-action-btn">
+          <Icon icon="lucide:mail" class="connect-action-icon" aria-hidden="true" />
+          <span class="connect-action-text">{{ profile.email }}</span>
         </a>
-
-        <div class="connect-socials">
-          <a v-for="link in socialLinks" :key="link.label" :href="link.href" target="_blank" rel="noopener" class="social-link">
-            <Icon :icon="link.icon" />
-            <span class="sr-only">{{ link.label }}</span>
-          </a>
-        </div>
-      </div>
-
-      <div class="connect-availability">
-        <span class="availability-indicator" />
-        <span>Currently accepting new projects</span>
+        <a
+          :href="linkedinHref"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="connect-action-btn"
+        >
+          <Icon icon="ri:linkedin-fill" class="connect-action-icon" aria-hidden="true" />
+          <span class="connect-action-text">LinkedIn</span>
+          <span class="sr-only">(opens in new tab)</span>
+        </a>
       </div>
     </div>
 
@@ -49,15 +51,15 @@ import { profile, socialLinks } from '~/data/site'
 
 .connect-content {
   background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
-  border-radius: 1rem;
-  padding: 2.5rem;
+  border-radius: var(--radius-card);
+  padding: var(--space-xl);
   border: 1px solid var(--border);
   text-align: center;
 }
 
 @media (min-width: 768px) {
   .connect-content {
-    padding: 3.5rem;
+    padding: var(--space-2xl);
   }
 }
 
@@ -84,90 +86,63 @@ import { profile, socialLinks } from '~/data/site'
 .connect-actions {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 1.5rem;
-}
-
-.connect-primary-btn {
-  display: inline-flex;
-  align-items: center;
   gap: 0.75rem;
-  padding: 1rem 2rem;
-  background: var(--fg-primary);
-  color: var(--bg-primary);
-  font-size: 1rem;
-  font-weight: 600;
-  border-radius: 9999px;
-  transition: all 0.3s ease;
-  width: fit-content;
+  width: 100%;
+  max-width: 36rem;
+  margin-inline: auto;
 }
 
-.connect-primary-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-lg);
+@media (min-width: 480px) {
+  .connect-actions {
+    flex-direction: row;
+    align-items: stretch;
+  }
 }
 
-.connect-primary-btn svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-
-.btn-arrow {
-  opacity: 0.5;
-}
-
-.connect-socials {
-  display: flex;
-  gap: 0.75rem;
-}
-
-.social-link {
-  width: 44px;
-  height: 44px;
+.connect-action-btn {
+  flex: 1 1 0;
+  min-height: 3rem;
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.375rem;
+  border: 1px solid color-mix(in srgb, var(--border) 65%, var(--fg-muted) 35%);
   background: var(--bg-primary);
-  border: 1px solid var(--border);
-  border-radius: 9999px;
-  color: var(--fg-secondary);
-  transition: all 0.2s ease;
+  color: var(--fg-primary);
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  transition:
+    border-color 0.2s ease,
+    background-color 0.2s ease,
+    transform 0.25s ease,
+    box-shadow 0.25s ease;
 }
 
-.social-link:hover {
+.connect-action-btn:hover {
   border-color: var(--emphasis);
-  color: var(--emphasis);
+  background: var(--bg-secondary);
   transform: translateY(-2px);
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--emphasis) 12%, transparent);
 }
 
-.social-link svg {
+.connect-action-icon {
   width: 1.25rem;
   height: 1.25rem;
+  flex-shrink: 0;
+  color: var(--fg-secondary);
 }
 
-.connect-availability {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-top: 1.5rem;
-  font-size: 0.8rem;
+.connect-action-btn:hover .connect-action-icon {
   color: var(--emphasis);
-  padding: 0.5rem 1rem;
-  background: var(--bg-primary);
-  border-radius: 9999px;
 }
 
-.availability-indicator {
-  width: 8px;
-  height: 8px;
-  background: var(--status-available);
-  border-radius: 50%;
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.2); }
+.connect-action-text {
+  min-width: 0;
+  text-align: center;
+  word-break: break-word;
 }
 
 .footer-bottom {

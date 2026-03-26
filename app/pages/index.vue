@@ -11,9 +11,12 @@ const heroTaglines = computed(() =>
   cmsHome.value?.hero.taglines?.length ? cmsHome.value.hero.taglines : homeHero.taglines,
 )
 const heroEmail = computed(() => cmsHome.value?.email || profile.email)
-const heroSocialLinks = computed(() =>
-  cmsHome.value?.socialLinks?.length ? cmsHome.value.socialLinks : socialLinks,
-)
+
+const linkedinHref = computed(() => {
+  const list = cmsHome.value?.socialLinks?.length ? cmsHome.value.socialLinks : socialLinks
+  const found = list.find((l) => /linkedin/i.test(l.label))
+  return found?.href ?? 'https://www.linkedin.com/'
+})
 
 const filterCategory = ref<string>('all')
 
@@ -68,41 +71,38 @@ useHead({
         </span>
       </h1>
       <div class="mt-6 flex flex-wrap items-center gap-3 hero-fade-in hero-delay-2">
-        <CtaButton to="/about" label="View Resume" attention>
+        <CtaButton to="/about" label="View Resume" attention preserve-case>
           <template #icon><Icon icon="lucide:file-text" class="text-sm" /></template>
         </CtaButton>
         <CtaButton
           :href="`mailto:${heroEmail}`"
-          label="OPEN TO WORK"
+          label="Open To Work"
           secondary
+          elevated-secondary
           with-dot
+          preserve-case
         >
           <template #icon><Icon icon="lucide:mail" class="text-sm" /></template>
         </CtaButton>
-        <span class="hero-divider" aria-hidden="true" />
-        <div class="hero-socials">
-          <a
-            v-for="link in heroSocialLinks"
-            :key="link.label"
-            :href="link.href"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hero-social-link"
-            :aria-label="link.label"
-          >
-            <Icon :icon="link.icon" aria-hidden="true" />
-          </a>
-        </div>
+        <CtaButton
+          :href="linkedinHref"
+          label="LinkedIn"
+          secondary
+          elevated-secondary
+          preserve-case
+        >
+          <template #icon><Icon icon="ri:linkedin-fill" class="text-sm" /></template>
+        </CtaButton>
       </div>
     </section>
 
     <!-- Projects Section -->
     <section class="page-section projects-section">
       <div class="mb-5 md:mb-6">
-        <h2 class="section-title text-2xl font-semibold tracking-tight md:text-3xl">
+        <h2 class="section-title">
           Selected work
         </h2>
-        <p class="mt-2 max-w-xl text-sm leading-relaxed text-[var(--fg-muted)]">
+        <p class="mt-2 max-w-xl text-sm leading-relaxed text-muted">
           Case studies and client projects — filtered by type when available.
         </p>
       </div>
@@ -239,39 +239,8 @@ useHead({
   color: var(--fg-secondary);
 }
 
-.filter-pill {
-  border-radius: 9999px;
-  border: 1px solid var(--border);
-  background: var(--bg-secondary);
-  padding: 0.4rem 0.9rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--fg-secondary);
-  transition:
-    border-color 0.2s ease,
-    color 0.2s ease,
-    background-color 0.2s ease;
-}
-
-.filter-pill:hover {
-  border-color: var(--emphasis);
-  color: var(--fg-primary);
-}
-
-.filter-pill--active {
-  border-color: var(--emphasis);
-  background: color-mix(in srgb, var(--emphasis) 12%, var(--bg-secondary));
-  color: var(--fg-primary);
-}
-
 .projects-section {
-  padding-top: 0.5rem;
-}
-
-.section-title {
-  color: var(--fg-primary);
+  padding-top: var(--space-sm);
 }
 
 /* Hero fade-in animations */
@@ -327,43 +296,6 @@ useHead({
     grid-template-columns: repeat(3, 1fr);
     gap: 1.75rem;
   }
-}
-
-.hero-divider {
-  display: inline-block;
-  width: 1px;
-  height: 1.5rem;
-  background-color: var(--border);
-  align-self: center;
-  flex-shrink: 0;
-}
-
-.hero-socials {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-}
-
-.hero-social-link {
-  display: inline-flex;
-  height: 2rem;
-  width: 2rem;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9999px;
-  border: 1px solid var(--border);
-  font-size: 1rem;
-  color: var(--fg-muted);
-  transition:
-    color 0.2s ease,
-    border-color 0.2s ease,
-    box-shadow 0.2s ease;
-}
-
-.hero-social-link:hover {
-  color: var(--emphasis);
-  border-color: var(--emphasis);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--emphasis) 20%, transparent);
 }
 
 /* Skeleton loading */

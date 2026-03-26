@@ -19,7 +19,5 @@ export const navItems: NavItem[] = [
 ]
 
 export const socialLinks = [
-  { label: 'Instagram', icon: 'ri:instagram-fill', href: 'https://instagram.com/' },
   { label: 'LinkedIn', icon: 'ri:linkedin-fill', href: 'https://linkedin.com/' },
-  { label: 'Threads', icon: 'ri:threads-fill', href: 'https://threads.net/' },
 ]

@@ -11,6 +11,8 @@ const props = withDefaults(
     attention?: boolean
     download?: boolean
     preserveCase?: boolean
+    /** Stronger fill + text contrast for secondary (e.g. hero CTAs) */
+    elevatedSecondary?: boolean
   }>(),
   {
     to: undefined,
@@ -20,10 +22,25 @@ const props = withDefaults(
     attention: false,
     download: false,
     preserveCase: false,
+    elevatedSecondary: false,
   }
 )
 
 const isMailto = computed(() => Boolean(props.href?.toLowerCase().startsWith('mailto:')))
+
+const secondaryBg = computed(() =>
+  props.secondary && props.elevatedSecondary ? 'var(--bg-secondary)' : 'transparent',
+)
+
+const secondaryFg = computed(() =>
+  props.secondary && props.elevatedSecondary ? 'var(--fg-primary)' : 'var(--fg-secondary)',
+)
+
+const secondaryBorder = computed(() =>
+  props.secondary && props.elevatedSecondary
+    ? 'color-mix(in srgb, var(--border) 65%, var(--fg-muted) 35%)'
+    : 'var(--border)',
+)
 
 const btnClass = computed(() =>
   [
@@ -52,9 +69,9 @@ const handleMouseMove = (e: MouseEvent) => {
     :download="download || undefined"
     :class="[btnClass, attention && 'btn-attention', secondary && 'cta-button-secondary']"
     :style="{
-      backgroundColor: secondary ? 'transparent' : (attention ? 'var(--emphasis)' : 'var(--fg-secondary)'),
-      borderColor: secondary ? 'var(--border)' : (attention ? 'var(--emphasis)' : 'transparent'),
-      color: secondary ? 'var(--fg-secondary)' : (attention ? 'var(--on-emphasis)' : 'var(--bg-primary)'),
+      backgroundColor: secondary ? secondaryBg : (attention ? 'var(--emphasis)' : 'var(--fg-secondary)'),
+      borderColor: secondary ? secondaryBorder : (attention ? 'var(--emphasis)' : 'transparent'),
+      color: secondary ? secondaryFg : (attention ? 'var(--on-emphasis)' : 'var(--bg-primary)'),
       '--mouse-x': `${mouseX}%`,
       '--mouse-y': `${mouseY}%`
     }"
@@ -80,9 +97,9 @@ const handleMouseMove = (e: MouseEvent) => {
     :to="to"
     :class="[btnClass, attention && 'btn-attention', secondary && 'cta-button-secondary']"
     :style="{
-      backgroundColor: secondary ? 'transparent' : (attention ? 'var(--emphasis)' : 'var(--fg-secondary)'),
-      borderColor: secondary ? 'var(--border)' : (attention ? 'var(--emphasis)' : 'transparent'),
-      color: secondary ? 'var(--fg-secondary)' : (attention ? 'var(--on-emphasis)' : 'var(--bg-primary)'),
+      backgroundColor: secondary ? secondaryBg : (attention ? 'var(--emphasis)' : 'var(--fg-secondary)'),
+      borderColor: secondary ? secondaryBorder : (attention ? 'var(--emphasis)' : 'transparent'),
+      color: secondary ? secondaryFg : (attention ? 'var(--on-emphasis)' : 'var(--bg-primary)'),
       '--mouse-x': `${mouseX}%`,
       '--mouse-y': `${mouseY}%`
     }"
@@ -164,7 +181,7 @@ const handleMouseMove = (e: MouseEvent) => {
     transparent 60%
   );
   opacity: 0;
-  transition: opacity 0.4s ease;
+  transition: opacity 0.3s ease;
   pointer-events: none;
 }
 

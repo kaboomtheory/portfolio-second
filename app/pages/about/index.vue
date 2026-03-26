@@ -106,7 +106,6 @@ const resumeHref = computed(() =>
               class="avatar-image"
               loading="eager"
             >
-            <div class="avatar-ring" />
           </div>
         </div>
       </div>
@@ -185,7 +184,7 @@ const resumeHref = computed(() =>
 <style scoped>
 /* Hero Section */
 .hero-section {
-  padding: 2rem 0 3rem;
+  padding: var(--space-xl) 0;
   min-height: 70vh;
   display: flex;
   align-items: center;
@@ -256,7 +255,7 @@ const resumeHref = computed(() =>
 
 .hero-role {
   font-size: 1.5rem;
-  font-weight: 300;
+  font-weight: 400;
   color: var(--fg-secondary);
 }
 
@@ -295,7 +294,6 @@ const resumeHref = computed(() =>
 }
 
 .avatar-container {
-  position: relative;
   width: 280px;
   height: 340px;
 }
@@ -312,17 +310,6 @@ const resumeHref = computed(() =>
   height: 100%;
   object-fit: cover;
   border-radius: 0.5rem;
-  position: relative;
-  z-index: 1;
-}
-
-.avatar-ring {
-  position: absolute;
-  inset: -12px;
-  border: 2px solid var(--accent);
-  border-radius: 0.75rem;
-  opacity: 0.3;
-  transform: rotate(3deg);
 }
 
 /* Ticker Section */
@@ -361,9 +348,9 @@ const resumeHref = computed(() =>
   background: var(--bg-secondary);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border-radius: 0.375rem;
+  border-radius: var(--radius-card);
   border: 1px solid var(--border);
-  transition: all 0.2s ease;
+  transition: border-color 200ms ease, background-color 200ms ease;
 }
 
 .ticker-item:hover {
@@ -409,7 +396,7 @@ const resumeHref = computed(() =>
 
 /* Section Headers */
 .section-header {
-  margin-bottom: 2rem;
+  margin-bottom: var(--space-xl);
 }
 
 .section-number {
@@ -421,9 +408,6 @@ const resumeHref = computed(() =>
 }
 
 .section-title {
-  font-size: 1.75rem;
-  font-weight: 600;
-  color: var(--fg-primary);
   margin-top: 0.25rem;
 }
 
@@ -453,7 +437,7 @@ const resumeHref = computed(() =>
 }
 
 .capabilities-section {
-  padding: 4rem 0 3.5rem;
+  padding: var(--space-2xl) 0 var(--space-xl);
   border-top: 1px solid var(--border);
 }
 
@@ -491,7 +475,7 @@ const resumeHref = computed(() =>
   background: var(--bg-primary);
   border: 1px solid var(--border);
   border-radius: 9999px;
-  transition: all 0.2s ease;
+  transition: border-color 200ms ease, color 200ms ease;
 }
 
 .capability-tag:hover {
@@ -501,8 +485,7 @@ const resumeHref = computed(() =>
 
 /* Experience Section */
 .experience-section {
-  padding: 4rem 0 3.5rem;
-  border-top: 1px solid var(--border);
+  padding: var(--space-2xl) 0 var(--space-xl);
 }
 
 .experience-list {
@@ -518,8 +501,8 @@ const resumeHref = computed(() =>
   padding: 1.25rem;
   background: var(--bg-secondary);
   border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  transition: border-color 0.2s ease;
+  border-radius: var(--radius-card);
+  transition: border-color 200ms ease;
   animation: slide-in 0.5s ease-out backwards;
   animation-delay: var(--delay);
 }
