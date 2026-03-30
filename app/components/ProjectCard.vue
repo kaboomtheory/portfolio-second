@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 import type { ProjectItem } from '~/types/project'
 
 const props = defineProps<{
@@ -26,21 +25,9 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
       </div>
 
       <div class="mt-4 flex min-h-0 flex-1 flex-col gap-2.5 px-0.5 pb-0.5">
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0 flex-1 space-y-1">
-            <p
-              v-if="project.category || project.year"
-              class="project-card-meta font-medium uppercase tracking-[0.1em] text-[var(--accent-soft)]"
-            >
-              <template v-if="project.category">{{ project.category }}</template>
-              <template v-if="project.category && project.year"> · </template>
-              <template v-if="project.year">{{ project.year }}</template>
-            </p>
-            <h3 class="text-lg font-semibold leading-snug tracking-tight text-[var(--fg-primary)] transition-colors duration-300 group-hover:text-[var(--emphasis)] md:text-xl">
-              {{ project.name }}
-            </h3>
-          </div>
-        </div>
+        <h3 class="min-w-0 text-lg font-semibold leading-snug tracking-tight text-[var(--fg-primary)] transition-colors duration-300 group-hover:text-[var(--emphasis)] md:text-xl">
+          {{ project.name }}
+        </h3>
 
         <p
           v-if="project.summary"
@@ -58,11 +45,6 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
             <span class="pill">{{ tag }}</span>
           </li>
         </ul>
-
-        <p class="project-card-cta">
-          <span class="project-card-cta-label">View project</span>
-          <Icon icon="lucide:arrow-right" class="project-card-cta-icon" aria-hidden="true" />
-        </p>
       </div>
     </NuxtLink>
   </div>
@@ -79,43 +61,11 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
   -webkit-backdrop-filter: blur(16px);
 }
 
-.project-card-meta {
-  font-size: 0.75rem;
-  line-height: 1.3;
-}
-
 .project-card-link:hover {
   box-shadow:
     0 12px 28px -16px color-mix(in srgb, var(--fg-primary) 18%, transparent),
     0 0 32px -12px color-mix(in srgb, var(--accent-2) 14%, transparent);
   transform: translateY(-4px);
-}
-
-.project-card-cta {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  margin-top: 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  color: var(--fg-muted);
-  transition: color 0.2s ease, transform 0.2s ease;
-}
-
-.project-card-cta-icon {
-  width: 1rem;
-  height: 1rem;
-  transition: transform 0.2s ease;
-}
-
-.project-card-link:hover .project-card-cta {
-  color: var(--emphasis);
-}
-
-.project-card-link:hover .project-card-cta-icon {
-  transform: translateX(3px);
 }
 
 @media (prefers-reduced-motion: reduce) {

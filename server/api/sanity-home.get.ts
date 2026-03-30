@@ -7,7 +7,7 @@ export default defineCachedEventHandler(async () => {
     socialLinks
   }`) || null
 }, {
-  maxAge: 600,
+  maxAge: 5,
   swr: true,
   staleMaxAge: 3600,
   name: 'sanity-home',

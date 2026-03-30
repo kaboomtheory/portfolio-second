@@ -53,10 +53,7 @@ useHead({
     <!-- Hero Section -->
     <section class="page-section">
       <h1 class="hero-statement hero-fade-in">
-        <span class="hero-name-row">
-          <span class="hero-name-divider" aria-hidden="true">✦</span>
-          <TextReveal tag="span" :text="heroTitle" class="hero-name" />
-        </span>
+        <TextReveal tag="span" :text="heroTitle" class="hero-name" />
         <span class="hero-tagline">
           <p
             v-for="(line, lineIndex) in heroTaglines"
@@ -189,27 +186,13 @@ useHead({
   gap: 1rem;
 }
 
-.hero-name-row {
-  display: flex;
-  align-items: center;
-  gap: 0.4em;
-  line-height: 1.1;
-}
-
 .hero-name {
-  font-size: clamp(2.5rem, 6vw, 4.5rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--fg-primary);
-}
-
-.hero-name-divider {
   display: inline-block;
-  flex-shrink: 0;
-  font-size: clamp(1.5rem, 3.5vw, 2.75rem);
-  color: var(--emphasis);
-  font-weight: 400;
-  line-height: 1;
+  line-height: 1.2;
+  font-size: clamp(1.5rem, 2.8vw + 0.35rem, 2.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--fg-primary);
 }
 
 .hero-tagline {

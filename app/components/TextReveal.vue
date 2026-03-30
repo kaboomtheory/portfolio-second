@@ -11,11 +11,18 @@ const props = withDefaults(defineProps<Props>(), {
 })
 
 const words = computed(() => props.text.split(' '))
+
+/** h1–h6: single aria-label, no sr-only (avoids duplicate text in DOM / screen readers). */
+const isHeadingTag = computed(() => /^h[1-6]$/i.test(props.tag))
 </script>
 
 <template>
-  <component :is="tag" class="text-reveal">
-    <span class="sr-only">{{ text }}</span>
+  <component
+    :is="tag"
+    class="text-reveal"
+    :aria-label="isHeadingTag ? text : undefined"
+  >
+    <span v-if="!isHeadingTag" class="sr-only">{{ text }}</span>
     <span aria-hidden="true" class="flex flex-wrap gap-x-[0.25em] gap-y-1">
       <span
         v-for="(word, i) in words"

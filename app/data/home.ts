@@ -37,8 +37,6 @@ export const homeHero = {
 
 export interface AboutMeData {
   name: string
-  role: string
-  location: string
   avatar: string
   intro: string
   story: string[]
@@ -49,8 +47,6 @@ export interface AboutMeData {
 
 export const aboutMe: AboutMeData = {
   name: 'Bryan X. Mendez',
-  role: 'Graphic Designer',
-  location: 'Los Angeles, CA',
   avatar: 'https://picsum.photos/seed/avery-profile/400/400',
   intro:
     'I work on brand identities, packaging, and digital experiences, with a focus on craft, clarity, and work that feels intentional.',

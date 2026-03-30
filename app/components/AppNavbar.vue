@@ -113,28 +113,50 @@ onUnmounted(() => {
   pointer-events: auto;
 }
 
+@keyframes navbar-pill-glow {
+  from {
+    box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+
+  to {
+    box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+}
+
+@keyframes navbar-pill-glow-dark {
+  from {
+    box-shadow: 0 0 16px color-mix(in srgb, var(--accent-soft) 14%, transparent);
+  }
+
+  to {
+    box-shadow: 0 0 26px color-mix(in srgb, var(--accent-soft) 24%, transparent);
+  }
+}
+
 /* Single pill */
 .pill {
   display: flex;
   align-items: center;
-  gap: 0.375rem;
+  gap: 0.625rem;
   border-radius: 9999px;
-  padding: 0.375rem 0.5rem;
+  padding: 0.5rem 0.625rem;
   background-color: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   min-width: 0;
+  animation: navbar-pill-glow 6s ease-in-out infinite alternate;
 }
 
 :root.dark .pill {
   background-color: rgba(10, 15, 30, 0.6);
+  animation-name: navbar-pill-glow-dark;
 }
 
 /* Brand */
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.75rem;
   flex-shrink: 0;
   transition: opacity 0.2s ease;
 }
@@ -144,15 +166,15 @@ onUnmounted(() => {
 }
 
 .navbar-brand-avatar {
-  height: 2rem;
-  width: 2rem;
+  height: 2.25rem;
+  width: 2.25rem;
   border-radius: 9999px;
   object-fit: cover;
   flex-shrink: 0;
 }
 
 .navbar-brand-name {
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   font-weight: 500;
   letter-spacing: 0.01em;
   color: var(--fg-primary);
@@ -170,7 +192,7 @@ onUnmounted(() => {
 .pill-nav {
   display: flex;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.5rem;
   position: relative;
 }
 
@@ -194,9 +216,9 @@ onUnmounted(() => {
 .nav-link {
   display: inline-flex;
   align-items: center;
-  padding: 0.375rem 0.625rem;
+  padding: 0.4rem 0.75rem;
   border-radius: 9999px;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   font-weight: 400;
   letter-spacing: 0.01em;
   color: var(--fg-secondary);
@@ -208,8 +230,8 @@ onUnmounted(() => {
 
 @media (min-width: 640px) {
   .nav-link {
-    padding: 0.4rem 1rem;
-    font-size: 0.8rem;
+    padding: 0.5rem 1.125rem;
+    font-size: 0.875rem;
   }
 }
 
@@ -226,6 +248,15 @@ onUnmounted(() => {
 @media (prefers-reduced-motion: reduce) {
   .nav-blob {
     transition: none;
+  }
+
+  .pill {
+    animation: none;
+    box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 16%, transparent);
+  }
+
+  :root.dark .pill {
+    box-shadow: 0 0 20px color-mix(in srgb, var(--accent-soft) 18%, transparent);
   }
 }
 

@@ -17,17 +17,6 @@ export const aboutPage = defineType({
           validation: (rule) => rule.required(),
         }),
         defineField({
-          name: 'role',
-          type: 'string',
-          title: 'Role',
-          validation: (rule) => rule.required(),
-        }),
-        defineField({
-          name: 'location',
-          type: 'string',
-          title: 'Location',
-        }),
-        defineField({
           name: 'avatar',
           type: 'image',
           title: 'Avatar',
@@ -145,7 +134,7 @@ export const aboutPage = defineType({
   preview: {
     select: {
       title: 'hero.name',
-      subtitle: 'hero.role',
+      subtitle: 'hero.availabilityText',
       media: 'hero.avatar',
     },
   },

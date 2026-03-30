@@ -3,8 +3,6 @@ import { buildImageUrl } from '~/utils/sanity'
 
 interface SanityAboutHero {
   name: string
-  role: string
-  location: string
   avatar?: SanityImage
   availabilityText?: string
 }
@@ -32,8 +30,6 @@ interface SanityAboutPage {
 
 export interface AboutHero {
   name: string
-  role: string
-  location: string
   avatar: string | null
   availabilityText: string
 }
@@ -64,8 +60,6 @@ export function useSanityAbout() {
       hero: raw.value.hero
         ? {
             name: raw.value.hero.name,
-            role: raw.value.hero.role,
-            location: raw.value.hero.location,
             avatar: raw.value.hero.avatar ? buildImageUrl(raw.value.hero.avatar) : null,
             availabilityText: raw.value.hero.availabilityText || 'Available for freelance',
           } as AboutHero

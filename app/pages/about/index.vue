@@ -10,12 +10,20 @@ const { aboutPage } = useSanityAbout()
 useHead({ title: 'About' })
 
 // CMS data with fallback to hardcoded content
-const hero = computed(() => aboutPage.value?.hero || {
-  name: fallbackAboutMe.name,
-  role: fallbackAboutMe.role,
-  location: fallbackAboutMe.location,
-  avatar: fallbackAboutMe.avatar,
-  availabilityText: 'Available for freelance',
+const hero = computed(() => {
+  const fromCms = aboutPage.value?.hero
+  if (fromCms) {
+    return {
+      name: fromCms.name,
+      avatar: fromCms.avatar ?? fallbackAboutMe.avatar,
+      availabilityText: fromCms.availabilityText || 'Available for freelance',
+    }
+  }
+  return {
+    name: fallbackAboutMe.name,
+    avatar: fallbackAboutMe.avatar,
+    availabilityText: 'Available for freelance',
+  }
 })
 
 const story = computed(() =>
@@ -51,14 +59,20 @@ const resumeHref = computed(() =>
 </script>
 
 <template>
-  <div class="page-content content-flow">
+  <div class="page-content content-flow about-page">
     <!-- Hero Section -->
     <section class="hero-section reveal-up">
       <div class="hero-grid">
         <div class="hero-content">
-          <div class="hero-eyebrow">
-            <span class="availability-dot" />
-            <span>{{ hero.availabilityText || 'Available for freelance' }}</span>
+          <div class="hero-about-ctas">
+            <CtaButton
+              :href="resumeHref"
+              label="Download Resume"
+              attention
+              target="_blank"
+            >
+              <template #icon><Icon icon="lucide:download" class="text-sm" /></template>
+            </CtaButton>
           </div>
 
           <TextReveal
@@ -69,32 +83,16 @@ const resumeHref = computed(() =>
           />
 
           <div class="hero-role-wrap">
-            <TextReveal
-              tag="p"
-              :text="hero.role"
-              :delay="0.3"
-              class="hero-role"
-            />
-            <span class="hero-location">
-              <Icon icon="lucide:map-pin" class="inline w-4 h-4" />
-              {{ hero.location }}
-            </span>
+            <div class="hero-eyebrow">
+              <span class="availability-dot" />
+              <span>{{ hero.availabilityText || 'Available for freelance' }}</span>
+            </div>
           </div>
 
           <div class="hero-story">
             <p v-for="(paragraph, index) in story" :key="index" class="story-paragraph">
               {{ paragraph }}
             </p>
-          </div>
-          <div class="hero-about-ctas">
-            <CtaButton
-              :href="resumeHref"
-              label="Download Resume"
-              attention
-              target="_blank"
-            >
-              <template #icon><Icon icon="lucide:download" class="text-sm" /></template>
-            </CtaButton>
           </div>
         </div>
 
@@ -145,7 +143,13 @@ const resumeHref = computed(() =>
           class="experience-card"
           :style="{ '--delay': `${index * 0.1}s` }"
         >
-          <img :src="item.image" :alt="item.company" loading="lazy" class="experience-logo" />
+          <img
+            v-if="item.image"
+            :src="item.image"
+            :alt="item.company"
+            loading="lazy"
+            class="experience-logo"
+          >
           <div class="experience-info">
             <p class="experience-company">{{ item.company }}</p>
             <h3 class="experience-title">{{ item.title }}</h3>
@@ -182,10 +186,15 @@ const resumeHref = computed(() =>
 </template>
 
 <style scoped>
+/* Page stack: section padding + consistent gap (avoid piling 2xl + gap + 2xl) */
+.about-page {
+  gap: var(--space-2xl);
+}
+
 /* Hero Section */
 .hero-section {
-  padding: var(--space-xl) 0;
-  min-height: 70vh;
+  padding: var(--space-lg) 0 var(--space-xl);
+  min-height: min(70vh, 52rem);
   display: flex;
   align-items: center;
 }
@@ -204,7 +213,10 @@ const resumeHref = computed(() =>
 }
 
 .hero-content {
-  space-y: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-lg);
 }
 
 .hero-eyebrow {
@@ -216,8 +228,8 @@ const resumeHref = computed(() =>
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--emphasis);
-  margin-bottom: 1.5rem;
   padding: 0.5rem 1rem;
+  flex-shrink: 0;
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -247,44 +259,22 @@ const resumeHref = computed(() =>
   line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--fg-primary);
-  margin-bottom: 1rem;
+  margin: 0;
 }
 
 .hero-role-wrap {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
-  margin-bottom: 1.5rem;
-}
-
-.hero-role {
-  font-size: 1.5rem;
-  font-weight: 400;
-  color: var(--fg-secondary);
-}
-
-.hero-location {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  font-size: 0.875rem;
-  color: var(--fg-muted);
-  padding: 0.35rem 0.75rem;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 9999px;
-}
-
-:root.dark .hero-location {
-  background: rgba(10, 15, 30, 0.6);
+  gap: var(--space-md);
+  margin: 0;
 }
 
 .hero-story {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-lg);
+  margin-top: var(--space-sm);
 }
 
 .story-paragraph {
@@ -295,7 +285,7 @@ const resumeHref = computed(() =>
 }
 
 .hero-about-ctas {
-  margin-top: 1.5rem;
+  margin: 0;
 }
 
 .hero-visual {
@@ -325,7 +315,7 @@ const resumeHref = computed(() =>
 
 /* Ticker Section */
 .ticker-section {
-  padding: 1.5rem 0;
+  padding: var(--space-lg) 0;
   overflow: hidden;
 }
 
@@ -346,7 +336,7 @@ const resumeHref = computed(() =>
 
 .ticker-content {
   display: flex;
-  gap: 2rem;
+  gap: var(--space-xl);
 }
 
 .ticker-item {
@@ -403,7 +393,7 @@ const resumeHref = computed(() =>
 
 /* Section Headers */
 .section-header {
-  margin-bottom: var(--space-xl);
+  margin-bottom: var(--space-lg);
 }
 
 .section-number {
@@ -444,12 +434,12 @@ const resumeHref = computed(() =>
 }
 
 .capabilities-section {
-  padding: var(--space-2xl) 0 var(--space-xl);
+  padding: 0 0 var(--space-2xl);
 }
 
 .capabilities-grid {
   display: grid;
-  gap: 2rem;
+  gap: var(--space-xl);
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
 }
 
@@ -502,13 +492,13 @@ const resumeHref = computed(() =>
 
 /* Experience Section */
 .experience-section {
-  padding: var(--space-2xl) 0 var(--space-xl);
+  padding: 0 0 var(--space-xl);
 }
 
 .experience-list {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: var(--space-md);
 }
 
 .experience-card {
