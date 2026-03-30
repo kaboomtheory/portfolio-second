@@ -46,8 +46,8 @@ useHead({ title: 'Password Protected Project' })
           <div class="relative">
             <input
               v-model="password"
-              class="w-full rounded-md border px-3 py-2 pr-12 outline-none"
-              :style="{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-primary)' }"
+              class="w-full rounded-md px-3 py-2 pr-12 outline-none"
+              :style="{ backgroundColor: 'var(--bg-primary)' }"
               :type="reveal ? 'text' : 'password'"
               placeholder="Enter password"
             >
@@ -66,8 +66,8 @@ useHead({ title: 'Password Protected Project' })
 
         <button
           type="submit"
-          class="rounded-md border px-4 py-2 text-xs uppercase tracking-[0.08em]"
-          :style="{ borderColor: 'var(--border)', backgroundColor: 'var(--bg-tertiary)' }"
+          class="rounded-md px-4 py-2 text-xs uppercase tracking-[0.08em]"
+          :style="{ backgroundColor: 'var(--bg-tertiary)' }"
         >
           Let me in
         </button>

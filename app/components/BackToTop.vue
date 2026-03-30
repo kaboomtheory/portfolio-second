@@ -41,8 +41,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  border: 1px solid var(--border);
-  background: color-mix(in srgb, var(--bg-primary) 85%, transparent);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
   color: var(--fg-secondary);
@@ -50,9 +49,12 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   transition: all 0.2s ease;
 }
 
+:root.dark .back-to-top {
+  background: rgba(10, 15, 30, 0.6);
+}
+
 .back-to-top:hover {
   color: var(--emphasis);
-  border-color: var(--emphasis);
   transform: translateY(-2px);
 }
 

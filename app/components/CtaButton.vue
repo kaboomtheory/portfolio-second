@@ -29,22 +29,16 @@ const props = withDefaults(
 const isMailto = computed(() => Boolean(props.href?.toLowerCase().startsWith('mailto:')))
 
 const secondaryBg = computed(() =>
-  props.secondary && props.elevatedSecondary ? 'var(--bg-secondary)' : 'transparent',
+  props.secondary && props.elevatedSecondary ? 'var(--btn-secondary-bg)' : 'transparent',
 )
 
 const secondaryFg = computed(() =>
   props.secondary && props.elevatedSecondary ? 'var(--fg-primary)' : 'var(--fg-secondary)',
 )
 
-const secondaryBorder = computed(() =>
-  props.secondary && props.elevatedSecondary
-    ? 'color-mix(in srgb, var(--border) 65%, var(--fg-muted) 35%)'
-    : 'var(--border)',
-)
-
 const btnClass = computed(() =>
   [
-    'cta-button inline-flex items-center gap-2 rounded-md border px-4 py-2 text-xs tracking-[0.1em] transition-all duration-300 origin-center',
+    'cta-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-xs tracking-[0.1em] transition-all duration-300 origin-center',
     props.preserveCase ? 'cta-button--preserve-case' : 'uppercase',
   ].join(' '),
 )
@@ -69,9 +63,8 @@ const handleMouseMove = (e: MouseEvent) => {
     :download="download || undefined"
     :class="[btnClass, attention && 'btn-attention', secondary && 'cta-button-secondary']"
     :style="{
-      backgroundColor: secondary ? secondaryBg : (attention ? 'var(--emphasis)' : 'var(--fg-secondary)'),
-      borderColor: secondary ? secondaryBorder : (attention ? 'var(--emphasis)' : 'transparent'),
-      color: secondary ? secondaryFg : (attention ? 'var(--on-emphasis)' : 'var(--bg-primary)'),
+      backgroundColor: secondary ? secondaryBg : (attention ? 'var(--btn-attention-bg)' : 'var(--btn-primary-bg)'),
+      color: secondary ? secondaryFg : (attention ? 'var(--btn-attention-fg)' : 'var(--btn-primary-fg)'),
       '--mouse-x': `${mouseX}%`,
       '--mouse-y': `${mouseY}%`
     }"
@@ -97,9 +90,8 @@ const handleMouseMove = (e: MouseEvent) => {
     :to="to"
     :class="[btnClass, attention && 'btn-attention', secondary && 'cta-button-secondary']"
     :style="{
-      backgroundColor: secondary ? secondaryBg : (attention ? 'var(--emphasis)' : 'var(--fg-secondary)'),
-      borderColor: secondary ? secondaryBorder : (attention ? 'var(--emphasis)' : 'transparent'),
-      color: secondary ? secondaryFg : (attention ? 'var(--on-emphasis)' : 'var(--bg-primary)'),
+      backgroundColor: secondary ? secondaryBg : (attention ? 'var(--btn-attention-bg)' : 'var(--btn-primary-bg)'),
+      color: secondary ? secondaryFg : (attention ? 'var(--btn-attention-fg)' : 'var(--btn-primary-fg)'),
       '--mouse-x': `${mouseX}%`,
       '--mouse-y': `${mouseY}%`
     }"
@@ -125,7 +117,6 @@ const handleMouseMove = (e: MouseEvent) => {
 .cta-button {
   position: relative;
   overflow: hidden;
-  border-color: transparent;
 }
 
 .cta-button--preserve-case {
@@ -163,12 +154,12 @@ const handleMouseMove = (e: MouseEvent) => {
 }
 
 .cta-button-secondary {
-  border-color: var(--border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .cta-button-secondary:hover {
-  background-color: var(--bg-tertiary);
-  border-color: var(--emphasis);
+  background-color: var(--btn-secondary-bg);
 }
 
 /* Glow effect on hover */
@@ -185,23 +176,14 @@ const handleMouseMove = (e: MouseEvent) => {
   pointer-events: none;
 }
 
-.btn-attention .cta-button-glow {
-  background: radial-gradient(
-    circle at var(--mouse-x, 50%) var(--mouse-y, 50%),
-    color-mix(in srgb, var(--emphasis-soft) 55%, var(--emphasis) 45%),
-    transparent 60%
-  );
-}
-
 .cta-button:hover .cta-button-glow {
   opacity: 0.15;
 }
 
 .cta-button:hover:not(.btn-attention) {
-  border-color: var(--emphasis);
   box-shadow:
-    0 0 20px color-mix(in srgb, var(--emphasis) 22%, transparent),
-    0 0 36px color-mix(in srgb, var(--emphasis-soft) 18%, transparent);
+    0 0 20px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 0 36px color-mix(in srgb, var(--accent-soft) 18%, transparent);
 }
 
 .cta-button:not(.btn-attention):hover {
@@ -214,8 +196,8 @@ const handleMouseMove = (e: MouseEvent) => {
 
 .cta-button-secondary:hover {
   box-shadow:
-    0 0 15px color-mix(in srgb, var(--emphasis) 20%, transparent),
-    0 0 30px color-mix(in srgb, var(--emphasis) 10%, transparent);
+    0 0 15px color-mix(in srgb, var(--accent) 20%, transparent),
+    0 0 30px color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 /* Icon wrapper to maintain spacing */
@@ -228,15 +210,13 @@ const handleMouseMove = (e: MouseEvent) => {
   position: relative;
   font-weight: 600;
   padding: 0.5rem 1.25rem;
-  box-shadow: 0 0 0 1px color-mix(in srgb, var(--emphasis) 35%, transparent);
+  box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
 .btn-attention:hover {
-  border-color: var(--emphasis);
   transform: scale(1.02);
   box-shadow:
-    0 0 24px color-mix(in srgb, var(--emphasis) 28%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--emphasis) 45%, transparent);
+    0 0 24px color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
 .btn-attention:active {

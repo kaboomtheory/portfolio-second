@@ -67,10 +67,8 @@ onUnmounted(() => {
       <div class="pill">
         <NuxtLink to="/" class="navbar-brand">
           <img :src="profile.photo" :alt="profile.name" class="navbar-brand-avatar">
-          <span class="navbar-brand-name">{{ profile.name }}</span>
+          <span class="navbar-brand-name mono">{{ profile.name }}</span>
         </NuxtLink>
-
-        <span class="pill-divider" />
 
         <nav ref="pillNav" class="pill-nav">
           <span ref="blob" class="nav-blob" />
@@ -78,13 +76,12 @@ onUnmounted(() => {
             v-for="item in navItems"
             :key="item.path"
             :to="item.path"
-            class="nav-link"
+            class="nav-link mono"
           >
             {{ item.title }}
           </NuxtLink>
         </nav>
 
-        <span class="pill-divider" />
         <ThemeToggle />
       </div>
     </div>
@@ -121,13 +118,16 @@ onUnmounted(() => {
   display: flex;
   align-items: center;
   gap: 0.375rem;
-  border: 1px solid var(--border);
   border-radius: 9999px;
   padding: 0.375rem 0.5rem;
-  background-color: color-mix(in srgb, var(--bg-primary) 85%, transparent);
+  background-color: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   min-width: 0;
+}
+
+:root.dark .pill {
+  background-color: rgba(10, 15, 30, 0.6);
 }
 
 /* Brand */
@@ -148,15 +148,13 @@ onUnmounted(() => {
   width: 2rem;
   border-radius: 9999px;
   object-fit: cover;
-  border: 2px solid var(--border);
-  padding: 2px;
   flex-shrink: 0;
 }
 
 .navbar-brand-name {
   font-size: 0.8rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+  font-weight: 500;
+  letter-spacing: 0.01em;
   color: var(--fg-primary);
   white-space: nowrap;
 }
@@ -166,15 +164,6 @@ onUnmounted(() => {
   .navbar-brand-name {
     display: none;
   }
-}
-
-/* Divider */
-.pill-divider {
-  width: 1px;
-  height: 1.25rem;
-  background-color: var(--border);
-  margin: 0 0.125rem;
-  flex-shrink: 0;
 }
 
 /* Nav links */
@@ -193,7 +182,8 @@ onUnmounted(() => {
   width: 0;
   opacity: 0;
   border-radius: 9999px;
-  background-color: color-mix(in srgb, var(--wash-warm) 22%, transparent);
+  background-color: var(--bg-secondary);
+  box-shadow: 0 2px 8px color-mix(in srgb, var(--fg-primary) 5%, transparent);
   transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
               opacity 0.25s ease;
@@ -207,8 +197,8 @@ onUnmounted(() => {
   padding: 0.375rem 0.625rem;
   border-radius: 9999px;
   font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.02em;
+  font-weight: 400;
+  letter-spacing: 0.01em;
   color: var(--fg-secondary);
   white-space: nowrap;
   transition: color 0.2s ease, background-color 0.2s ease;
@@ -229,7 +219,7 @@ onUnmounted(() => {
 }
 
 .nav-link.router-link-exact-active {
-  color: var(--emphasis);
+  color: var(--fg-primary);
   font-weight: 600;
 }
 

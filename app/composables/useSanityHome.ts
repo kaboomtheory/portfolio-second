@@ -34,7 +34,10 @@ export interface HomePageData {
 }
 
 export function useSanityHome() {
-  const { data: raw, pending: loading, error, refresh } = useLazyFetch<SanityHomePage | null>('/api/sanity-home')
+  const { data: raw, pending: loading, error, refresh } = useFetch<SanityHomePage | null>('/api/sanity-home', {
+    key: 'sanity-home',
+    getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
+  })
 
   const homePage = computed<HomePageData | null>(() => {
     if (!raw.value) return null

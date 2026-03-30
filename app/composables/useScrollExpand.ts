@@ -166,7 +166,7 @@ export function useScrollOpacity(
       const normalizedDistance = (Math.abs(distanceFromCenter) - bufferZone) / (maxDistance - bufferZone)
       // Apply easing for more gradual transition
       const easedDistance = normalizedDistance * normalizedDistance
-      opacity.value = Math.max(0, Math.min(1, 1 - easedDistance))
+      opacity.value = Math.max(0.25, Math.min(1, 1 - easedDistance))
     }
 
     if (preExpanded && hasScrolled.value) {

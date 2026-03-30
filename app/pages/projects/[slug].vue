@@ -207,7 +207,7 @@ function isMediaSection(section: ProjectStorySection): boolean {
 
           <!-- Quote -->
           <div v-else-if="section.type === 'quote'" class="mx-auto max-w-3xl">
-            <blockquote class="project-quote border-l-4 pl-6 text-2xl italic">
+            <blockquote class="project-quote pl-6 text-2xl italic">
               "{{ section.body }}"
             </blockquote>
             <div v-if="section.author" class="mt-4 pl-6">
@@ -252,7 +252,7 @@ function isMediaSection(section: ProjectStorySection): boolean {
       </div>
 
       <nav
-        class="project-pager mt-14 flex flex-col gap-4 border-t border-[var(--border)] pt-10 md:flex-row md:items-center md:justify-between"
+        class="project-pager mt-14 flex flex-col gap-4 pt-10 md:flex-row md:items-center md:justify-between"
         aria-label="Project navigation"
       >
         <NuxtLink
@@ -313,7 +313,6 @@ function isMediaSection(section: ProjectStorySection): boolean {
 }
 
 .project-quote {
-  border-color: var(--emphasis);
   color: var(--fg-primary);
 }
 

@@ -13,7 +13,10 @@ interface SanityStatusItem {
 }
 
 export function useSanityStatus() {
-  const { data: rawStatus, pending: loading, error, refresh } = useLazyFetch<SanityStatusItem[]>('/api/sanity-status')
+  const { data: rawStatus, pending: loading, error, refresh } = useFetch<SanityStatusItem[]>('/api/sanity-status', {
+    key: 'sanity-status',
+    getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
+  })
 
   const statusItems = computed<StatusItem[]>(() => {
     if (!rawStatus.value || !Array.isArray(rawStatus.value)) return []

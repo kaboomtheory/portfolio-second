@@ -36,6 +36,7 @@ const handleAnchorClick = (e: MouseEvent) => {
 
 <template>
   <div class="app-shell">
+    <AmbientOrbs />
     <NuxtLoadingIndicator
       color="var(--emphasis)"
       :height="2"
@@ -43,7 +44,20 @@ const handleAnchorClick = (e: MouseEvent) => {
     />
     <NuxtRouteAnnouncer />
     <NuxtLayout>
-      <NuxtPage :transition="{ name: 'page', mode: 'out-in' }" />
+      <NuxtPage :page-key="route => route.fullPath" :transition="{ name: 'page', mode: 'out-in' }" />
     </NuxtLayout>
   </div>
 </template>
+
+<style scoped>
+.app-shell {
+  position: relative;
+  isolation: isolate;
+  min-height: 100%;
+}
+
+.app-shell > :not(.ambient-orbs) {
+  position: relative;
+  z-index: 1;
+}
+</style>

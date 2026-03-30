@@ -52,7 +52,10 @@ export interface AboutCapability {
 }
 
 export function useSanityAbout() {
-  const { data: raw, pending: loading, error, refresh } = useLazyFetch<SanityAboutPage | null>('/api/sanity-about')
+  const { data: raw, pending: loading, error, refresh } = useFetch<SanityAboutPage | null>('/api/sanity-about', {
+    key: 'sanity-about',
+    getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
+  })
 
   const aboutPage = computed(() => {
     if (!raw.value) return null

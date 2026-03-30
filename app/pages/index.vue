@@ -71,12 +71,12 @@ useHead({
         </span>
       </h1>
       <div class="mt-6 flex flex-wrap items-center gap-3 hero-fade-in hero-delay-2">
-        <CtaButton to="/about" label="View Resume" attention preserve-case>
+        <CtaButton to="/about" label="VIEW RESUME" attention preserve-case>
           <template #icon><Icon icon="lucide:file-text" class="text-sm" /></template>
         </CtaButton>
         <CtaButton
           :href="`mailto:${heroEmail}`"
-          label="Open To Work"
+          label="OPEN TO WORK"
           secondary
           elevated-secondary
           with-dot
@@ -86,7 +86,7 @@ useHead({
         </CtaButton>
         <CtaButton
           :href="linkedinHref"
-          label="LinkedIn"
+          label="LINKEDIN"
           secondary
           elevated-secondary
           preserve-case
@@ -151,7 +151,7 @@ useHead({
 
       <div
         v-else-if="filteredProjects.length === 0"
-        class="empty-projects rounded-xl border border-[var(--border)] bg-[var(--bg-secondary)] px-6 py-14 text-center"
+        class="empty-projects rounded-xl bg-[var(--bg-secondary)] px-6 py-14 text-center"
       >
         <Icon
           icon="lucide:folder-open"
@@ -193,7 +193,7 @@ useHead({
   display: flex;
   align-items: center;
   gap: 0.4em;
-  line-height: 1.05;
+  line-height: 1.1;
 }
 
 .hero-name {
@@ -301,7 +301,6 @@ useHead({
 /* Skeleton loading */
 .skeleton-card {
   border-radius: 0.75rem;
-  border: 1px solid var(--border);
   background: var(--bg-secondary);
   overflow: hidden;
 }

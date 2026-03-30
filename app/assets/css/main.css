@@ -1,130 +1,94 @@
+@import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css');
 @import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css');
-
-/* Animated gradient drift – positions interpolate via @property */
-@property --gx1 {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 15%;
-}
-@property --gy1 {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 95%;
-}
-@property --gx2 {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 90%;
-}
-@property --gy2 {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 0%;
-}
-@property --gx3 {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 0%;
-}
-@property --gy3 {
-  syntax: '<percentage>';
-  inherits: false;
-  initial-value: 52%;
-}
-
-@keyframes drift {
-  0%, 100% {
-    --gx1: 15%;  --gy1: 95%;
-    --gx2: 90%;  --gy2: 0%;
-    --gx3: 0%;   --gy3: 52%;
-  }
-  33% {
-    --gx1: 40%;  --gy1: 65%;
-    --gx2: 55%;  --gy2: 25%;
-    --gx3: 25%;  --gy3: 30%;
-  }
-  66% {
-    --gx1: 5%;   --gy1: 100%;
-    --gx2: 80%;  --gy2: 10%;
-    --gx3: 10%;  --gy3: 75%;
-  }
-}
 
 /*
   Color roles:
-  - --accent* = base brand brown (links, borders, calm interactive chrome, structure)
-  - --emphasis* = rose-mauve mixed from same warm axis as accent (only high-salience “look here”)
-  Atmosphere uses color-mix(accent, emphasis) so background never reads as two unrelated hues.
+  - --accent* = primary interactive blue (links, focus, CTAs)
+  - --accent-2* = deeper blue (shadows, secondary chrome) — same family, darker step
+  - --emphasis* = aliases of --accent* for semantic “look here” usage; split later if CTAs need a distinct hue
+  Stays cohesive with the blue gradient background.
 */
 :root {
-  --bg-primary: #f8f4ef;
-  --bg-secondary: #efe8df;
-  --bg-tertiary: #e2d8cd;
-  --fg-primary: #1c1611;
-  --fg-secondary: #52483f;
-  /* Darkened from #75685c for ~4.5:1 on --bg-primary (WCAG AA body text) */
-  --fg-muted: #5c5045;
-  --border: #c9b8a8;
-  --accent: #5c3f30;
-  --accent-soft: #7a5a46;
-  /* Decorative: page wash + gradients only; not a secondary action color in UI */
-  --accent-2: #455f52;
-  --accent-2-soft: #5a7568;
-  --on-accent: #f8f4ef;
-  --on-accent-muted: #e8ddd2;
-  /* Mauve-rose pulled toward accent (less magenta than a standalone pink) */
-  --emphasis: #a73d48;
-  --emphasis-soft: #bb5d68;
-  --on-emphasis: #f8f4ef;
-  --on-emphasis-muted: #f0e0da;
-  /* Single warm wash for body gradients (brown + hint of emphasis) */
-  --wash-warm: color-mix(in srgb, var(--accent) 82%, var(--emphasis) 18%);
-  /* Availability / online (muted green, theme-aware) */
-  --status-available: #2f6a47;
-  /* Inline errors, form validation (warm brick) */
-  --danger: #9a3f38;
-  /* Elevation from foreground hue so shadows track light/dark */
-  --shadow-sm: 0 1px 3px color-mix(in srgb, var(--fg-primary) 10%, transparent);
-  --shadow-md: 0 4px 12px color-mix(in srgb, var(--fg-primary) 10%, transparent);
-  --shadow-lg: 0 8px 24px color-mix(in srgb, var(--fg-primary) 14%, transparent);
+  /* ── Surfaces: blue-tinted frosted glass ── */
+  --bg-primary: rgba(61, 125, 186, 0.18);
+  --bg-secondary: rgba(61, 125, 186, 0.12);
+  --bg-tertiary: rgba(61, 125, 186, 0.07);
+  /* ── Foreground: dark text for the light-top gradient ── */
+  --fg-primary: #0a1628;
+  --fg-secondary: #2a3f5c;
+  --fg-muted: #425a78;
+  /* ── Borders (match primary text for edges) ── */
+  --border: var(--fg-primary);
+  /* ── Brand blues (single ramp + one darker pair) ── */
+  --accent: #3d7dba;
+  --accent-soft: #5a94c8;
+  --accent-2: #2e6fa0;
+  --accent-2-soft: #4a88b8;
+  --on-accent: #ffffff;
+  --on-accent-muted: #e0ecf8;
+  --emphasis: var(--accent);
+  --emphasis-soft: var(--accent-soft);
+  --on-emphasis: var(--on-accent);
+  --on-emphasis-muted: var(--on-accent-muted);
+  --status-available: #1a8a4a;
+  --danger: #c53030;
+  /* ── Button fills ── */
+  --btn-primary-bg: #2a5080;
+  --btn-primary-fg: #ffffff;
+  --btn-attention-bg: var(--accent);
+  --btn-attention-fg: #ffffff;
+  --btn-secondary-bg: rgba(255, 255, 255, 0.6);
+  /* ── Shadows: blue-tinted ── */
+  --shadow-sm: 0 1px 3px rgba(0, 20, 60, 0.10);
+  --shadow-md: 0 4px 12px rgba(0, 20, 60, 0.12);
+  --shadow-lg: 0 8px 24px rgba(0, 20, 60, 0.16);
 }
 
 :root.dark {
-  --bg-primary: #0f0c09;
-  --bg-secondary: #1a1510;
-  --bg-tertiary: #261f18;
-  --fg-primary: #f7f1ea;
-  --fg-secondary: #d8cdc1;
-  /* Slightly lifted for ~4.5:1 on --bg-primary */
-  --fg-muted: #b5a69a;
-  --border: #3d3329;
-  --accent: #c4a27c;
-  --accent-soft: #d9bc9a;
-  --accent-2: #8fa89a;
-  --accent-2-soft: #a8bdb0;
-  --on-accent: #0f0c09;
-  --on-accent-muted: #2a231c;
-  /* Dusty rose blended with tan accent so it feels like a highlight, not a second palette */
-  --emphasis: #eca49c;
-  --emphasis-soft: #f2b9ae;
-  --on-emphasis: #0f0c09;
-  --on-emphasis-muted: #2a221c;
-  --wash-warm: color-mix(in srgb, var(--accent) 72%, var(--emphasis) 28%);
-  --status-available: #5ebd8a;
-  --danger: #e8a89e;
-  --shadow-sm: 0 1px 3px color-mix(in srgb, var(--fg-primary) 8%, transparent);
-  --shadow-md: 0 4px 12px color-mix(in srgb, var(--fg-primary) 12%, transparent);
-  --shadow-lg: 0 8px 24px color-mix(in srgb, var(--fg-primary) 18%, transparent);
+  --bg-primary: rgba(61, 125, 186, 0.22);
+  --bg-secondary: rgba(61, 125, 186, 0.15);
+  --bg-tertiary: rgba(61, 125, 186, 0.08);
+  --fg-primary: #f0f4f8;
+  --fg-secondary: #cdd9e8;
+  --fg-muted: #8fabbf;
+  --border: var(--fg-primary);
+  --accent: #5a94c8;
+  --accent-soft: #7aade6;
+  --accent-2: #4a88b8;
+  --accent-2-soft: #6aa0d0;
+  --on-accent: #0a0f1a;
+  --on-accent-muted: #1a2540;
+  --emphasis: var(--accent);
+  --emphasis-soft: var(--accent-soft);
+  --on-emphasis: var(--on-accent);
+  --on-emphasis-muted: var(--on-accent-muted);
+  --status-available: #4ade80;
+  --danger: #f87171;
+  /* ── Button fills ── */
+  --btn-primary-bg: #5a94c8;
+  --btn-primary-fg: #0a1628;
+  --btn-attention-bg: #6aa4d8;
+  --btn-attention-fg: #0a1628;
+  --btn-secondary-bg: rgba(10, 15, 30, 0.6);
+  --shadow-sm: 0 1px 3px rgba(0, 10, 30, 0.25);
+  --shadow-md: 0 4px 12px rgba(0, 10, 30, 0.30);
+  --shadow-lg: 0 8px 24px rgba(0, 10, 30, 0.35);
 }
 
 /* ── Spacing scale ── */
 :root {
-  --space-xs: 0.25rem;   /* 4px */
-  --space-sm: 0.5rem;    /* 8px */
-  --space-md: 1rem;       /* 16px */
-  --space-lg: 1.5rem;     /* 24px */
-  --space-xl: 2.5rem;     /* 40px */
-  --space-2xl: 4rem;      /* 64px */
+  --space-xs: 0.25rem;
+  /* 4px */
+  --space-sm: 0.5rem;
+  /* 8px */
+  --space-md: 1rem;
+  /* 16px */
+  --space-lg: 1.5rem;
+  /* 24px */
+  --space-xl: 2.5rem;
+  /* 40px */
+  --space-2xl: 4rem;
+  /* 64px */
   --radius-card: 0.5rem;
 }
 
@@ -206,26 +170,61 @@ body,
 }
 
 body {
-  font-family: 'Figtree', system-ui, sans-serif;
-  animation: drift 50s ease-in-out infinite;
-  background:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
-    radial-gradient(circle at var(--gx1) var(--gy1), color-mix(in srgb, var(--wash-warm) 34%, transparent), transparent 50%),
-    radial-gradient(circle at var(--gx2) var(--gy2), color-mix(in srgb, var(--accent-2) 28%, transparent), transparent 52%),
-    radial-gradient(circle at var(--gx3) var(--gy3), color-mix(in srgb, var(--wash-warm) 24%, transparent), transparent 48%),
-    var(--bg-primary);
+  font-family: 'Geist Sans', system-ui, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
+  background-color: #c0d8ec;
   color: var(--fg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.9;
+  background-image: linear-gradient(210deg,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(244, 248, 252, 1) 10%,
+      rgba(228, 240, 250, 1) 25%,
+      rgba(208, 228, 244, 1) 45%,
+      rgba(192, 216, 236, 1) 70%,
+      rgba(176, 206, 230, 1) 100%);
+}
+
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  opacity: 0.12;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+:root.dark body::before {
+  opacity: 0.8;
+  background-image: linear-gradient(200deg,
+      rgba(8, 8, 16, 1) 40%,
+      rgba(11, 41, 110, 1) 100%);
+}
+
+:root.dark body::after {
+  opacity: 0.2;
+}
+
+#__nuxt {
+  position: relative;
+  z-index: 1;
+}
+
 :root.dark body {
-  background:
-    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='4.5' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E"),
-    radial-gradient(circle at var(--gx1) var(--gy1), color-mix(in srgb, var(--wash-warm) 30%, transparent), transparent 50%),
-    radial-gradient(circle at var(--gx2) var(--gy2), color-mix(in srgb, var(--accent-2) 22%, transparent), transparent 52%),
-    radial-gradient(circle at var(--gx3) var(--gy3), color-mix(in srgb, var(--wash-warm) 20%, transparent), transparent 48%),
-    var(--bg-primary);
+  background-color: #080810;
 }
 
 h1,
@@ -234,8 +233,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
-  font-optical-sizing: auto;
+  font-family: 'Geist Sans', system-ui, sans-serif;
   font-weight: 700;
   letter-spacing: -0.03em;
   margin: 0;
@@ -247,7 +245,7 @@ h4,
 h5,
 h6 {
   font-weight: 650;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.012em;
 }
 
 p {
@@ -298,6 +296,7 @@ a {
 }
 
 .text-meta {
+  font-family: 'Geist Mono', ui-monospace, monospace;
   font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
@@ -308,7 +307,7 @@ a {
 .text-section-title {
   font-size: 1.75rem;
   font-weight: 650;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.012em;
   color: var(--fg-primary);
 }
 
@@ -347,24 +346,25 @@ pre,
 }
 
 .eyebrow-link {
-  font-size: 0.72rem;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fg-muted);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  transition:
-    color 180ms ease,
-    border-color 180ms ease;
+  text-underline-offset: 0.2em;
+  transition: color 180ms ease, text-decoration-color 180ms ease;
 }
 
 .eyebrow-link:hover {
   color: var(--fg-secondary);
-  border-bottom-color: color-mix(in srgb, var(--emphasis) 45%, transparent);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--fg-primary) 45%, transparent);
 }
 
 .eyebrow-link:focus-visible {
-  border-bottom-color: var(--emphasis);
+  text-decoration: underline;
+  text-decoration-color: var(--fg-primary);
 }
 
 .filter-row {
@@ -372,7 +372,6 @@ pre,
   display: flex;
   gap: 0.45rem;
   overflow-x: auto;
-  border-bottom: 1px solid var(--border);
   padding-bottom: 0.75rem;
   -webkit-mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
   mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
@@ -387,8 +386,8 @@ pre,
 .pill,
 .tag-chip,
 .filter-pill {
+  font-family: 'Geist Mono', ui-monospace, monospace;
   display: inline-block;
-  border: 1px solid var(--border);
   border-radius: 9999px;
   padding: 0.35rem 0.75rem;
   font-size: 0.75rem;
@@ -398,44 +397,63 @@ pre,
   white-space: nowrap;
   color: var(--fg-secondary);
   background: var(--bg-primary);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 /* Interactive variant (filter buttons) */
 .filter-pill {
   cursor: pointer;
   font-weight: 600;
-  background: var(--bg-secondary);
+  background-color: rgba(255, 255, 255, 0.6);
+  border: 1px solid transparent;
+  box-shadow: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   transition:
     background-color 200ms ease,
     color 200ms ease,
-    border-color 200ms ease;
+    box-shadow 200ms ease;
+}
+
+:root.dark .filter-pill {
+  background-color: rgba(10, 15, 30, 0.6);
 }
 
 .filter-pill:hover {
   color: var(--fg-primary);
-  border-color: color-mix(in srgb, var(--emphasis) 35%, var(--border));
-  background-color: color-mix(in srgb, var(--bg-tertiary) 55%, transparent);
+  background-color: color-mix(in srgb, var(--fg-primary) 6%, rgba(255, 255, 255, 0.6));
+}
+
+:root.dark .filter-pill:hover {
+  background-color: color-mix(in srgb, white 8%, rgba(10, 15, 30, 0.6));
 }
 
 .filter-pill-active,
 .filter-pill--active {
-  background-color: color-mix(in srgb, var(--emphasis) 12%, var(--bg-secondary));
+  background-color: rgba(255, 255, 255, 0.6);
   color: var(--fg-primary);
-  border-color: var(--emphasis);
   font-weight: 700;
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+:root.dark .filter-pill-active,
+:root.dark .filter-pill--active {
+  background-color: rgba(10, 15, 30, 0.6);
 }
 
 .section-title {
   font-size: 1.75rem;
   font-weight: 650;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.012em;
   margin-bottom: var(--space-md);
 }
 
 .card-surface {
-  background: transparent;
-  border: 1px solid var(--border);
+  background: var(--bg-secondary);
   border-radius: var(--radius-card);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .page-enter-active,
@@ -493,43 +511,20 @@ pre,
   }
 }
 
-@keyframes pulse-glow-emphasis {
-
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--emphasis) 45%, transparent);
-  }
-
-  50% {
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--emphasis) 0%, transparent);
-  }
-}
-
-@keyframes pulse-glow-emphasis-dark {
-
-  0%,
-  100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--emphasis-soft) 40%, transparent);
-  }
-
-  50% {
-    box-shadow: 0 0 0 4px color-mix(in srgb, var(--emphasis-soft) 0%, transparent);
-  }
-}
-
 .pulse-glow {
   animation: pulse-glow 2s ease-in-out infinite;
 }
 
 .btn-attention .pulse-glow {
-  animation: pulse-glow-emphasis 2s ease-in-out infinite;
+  animation: pulse-glow 2s ease-in-out infinite;
 }
 
 :root.dark .btn-attention .pulse-glow {
-  animation: pulse-glow-emphasis-dark 2s ease-in-out infinite;
+  animation-name: pulse-glow-dark;
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

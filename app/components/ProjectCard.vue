@@ -13,7 +13,7 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 <template>
   <div :class="['project-card group relative', props.class]">
     <NuxtLink
-      class="project-card-link flex h-full flex-col rounded-lg border border-[var(--border)] bg-[var(--bg-secondary)] p-3 shadow-sm transition-[border-color,box-shadow,transform] duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--emphasis)]"
+      class="project-card-link flex h-full flex-col rounded-lg bg-[var(--bg-secondary)] p-3 shadow-sm transition-[box-shadow,transform] duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--fg-primary)]"
       :to="`/projects/${project.slug}`"
     >
       <div class="relative min-h-0 shrink-0 overflow-hidden rounded-lg aspect-[4/3]">
@@ -75,6 +75,8 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 
 .project-card-link {
   height: 100%;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .project-card-meta {
@@ -83,10 +85,8 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 }
 
 .project-card-link:hover {
-  border-color: color-mix(in srgb, var(--emphasis) 35%, var(--border));
   box-shadow:
     0 12px 28px -16px color-mix(in srgb, var(--fg-primary) 18%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--emphasis) 12%, transparent),
     0 0 32px -12px color-mix(in srgb, var(--accent-2) 14%, transparent);
   transform: translateY(-4px);
 }

@@ -71,8 +71,14 @@ function mapSection(section: ContentBlock): ProjectStorySection {
 }
 
 export function useSanityProjects() {
-  const { data: rawProjects, pending: loading, error, refresh } = useLazyFetch<SanityProjectItem[]>('/api/sanity-projects')
-  const { data: rawPasswords } = useLazyFetch<Record<string, string>>('/api/sanity-passwords')
+  const { data: rawProjects, pending: loading, error, refresh } = useFetch<SanityProjectItem[]>('/api/sanity-projects', {
+    key: 'sanity-projects',
+    getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
+  })
+  const { data: rawPasswords } = useFetch<Record<string, string>>('/api/sanity-passwords', {
+    key: 'sanity-passwords',
+    getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
+  })
 
   const projects = computed<ProjectItem[]>(() => {
     if (!rawProjects.value || !Array.isArray(rawProjects.value)) return []

@@ -51,9 +51,8 @@ function tryAgain() {
       <div class="mt-10 flex flex-wrap items-center justify-center gap-3">
         <button
           type="button"
-          class="rounded-md border px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.1em] transition-colors"
+          class="rounded-md px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.1em] transition-colors"
           :style="{
-            borderColor: 'var(--border)',
             backgroundColor: 'var(--bg-tertiary)',
             color: 'var(--fg-primary)',
           }"
@@ -63,9 +62,8 @@ function tryAgain() {
         </button>
         <button
           type="button"
-          class="rounded-md border px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.1em] transition-opacity hover:opacity-90"
+          class="rounded-md px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.1em] transition-opacity hover:opacity-90"
           :style="{
-            borderColor: 'var(--emphasis)',
             backgroundColor: 'var(--emphasis)',
             color: 'var(--on-emphasis)',
           }"
@@ -85,7 +83,6 @@ function tryAgain() {
   max-width: 36rem;
   padding: 2.5rem 1.5rem;
   border-radius: 1rem;
-  border: 1px solid var(--border);
   background: var(--bg-secondary);
 }
 </style>

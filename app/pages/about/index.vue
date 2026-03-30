@@ -218,9 +218,14 @@ const resumeHref = computed(() =>
   color: var(--emphasis);
   margin-bottom: 1.5rem;
   padding: 0.5rem 1rem;
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 9999px;
-  border: 1px solid var(--border);
+}
+
+:root.dark .hero-eyebrow {
+  background: rgba(10, 15, 30, 0.6);
 }
 
 .availability-dot {
@@ -239,7 +244,7 @@ const resumeHref = computed(() =>
 .hero-name {
   font-size: clamp(3rem, 8vw, 5.5rem);
   font-weight: 700;
-  line-height: 0.95;
+  line-height: 1.05;
   letter-spacing: -0.03em;
   color: var(--fg-primary);
   margin-bottom: 1rem;
@@ -266,8 +271,14 @@ const resumeHref = computed(() =>
   font-size: 0.875rem;
   color: var(--fg-muted);
   padding: 0.35rem 0.75rem;
-  background: var(--bg-tertiary);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 9999px;
+}
+
+:root.dark .hero-location {
+  background: rgba(10, 15, 30, 0.6);
 }
 
 .hero-story {
@@ -315,8 +326,6 @@ const resumeHref = computed(() =>
 /* Ticker Section */
 .ticker-section {
   padding: 1.5rem 0;
-  border-top: 1px solid var(--border);
-  border-bottom: 1px solid var(--border);
   overflow: hidden;
 }
 
@@ -349,13 +358,11 @@ const resumeHref = computed(() =>
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-radius: var(--radius-card);
-  border: 1px solid var(--border);
-  transition: border-color 200ms ease, background-color 200ms ease;
+  transition: background-color 200ms ease;
 }
 
 .ticker-item:hover {
   background: var(--bg-tertiary);
-  border-color: var(--emphasis);
 }
 
 .ticker-image {
@@ -438,7 +445,6 @@ const resumeHref = computed(() =>
 
 .capabilities-section {
   padding: var(--space-2xl) 0 var(--space-xl);
-  border-top: 1px solid var(--border);
 }
 
 .capabilities-grid {
@@ -472,15 +478,26 @@ const resumeHref = computed(() =>
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--fg-secondary);
-  background: var(--bg-primary);
-  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   border-radius: 9999px;
-  transition: border-color 200ms ease, color 200ms ease;
+  transition:
+    color 200ms ease,
+    background-color 200ms ease;
+}
+
+:root.dark .capability-tag {
+  background: rgba(10, 15, 30, 0.6);
 }
 
 .capability-tag:hover {
-  border-color: var(--emphasis);
   color: var(--fg-primary);
+  background-color: color-mix(in srgb, var(--fg-primary) 6%, rgba(255, 255, 255, 0.6));
+}
+
+:root.dark .capability-tag:hover {
+  background-color: color-mix(in srgb, white 8%, rgba(10, 15, 30, 0.6));
 }
 
 /* Experience Section */
@@ -500,15 +517,11 @@ const resumeHref = computed(() =>
   gap: 1rem;
   padding: 1.25rem;
   background: var(--bg-secondary);
-  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   border-radius: var(--radius-card);
-  transition: border-color 200ms ease;
   animation: slide-in 0.5s ease-out backwards;
   animation-delay: var(--delay);
-}
-
-.experience-card:hover {
-  border-color: var(--emphasis);
 }
 
 @media (min-width: 768px) {
@@ -525,7 +538,6 @@ const resumeHref = computed(() =>
   border-radius: 0.375rem;
   object-fit: contain;
   padding: 4px;
-  border: 1px solid var(--border);
   background: var(--bg-primary);
 }
 

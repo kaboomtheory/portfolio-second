@@ -50,11 +50,16 @@ const linkedinHref = computed(() => {
 }
 
 .connect-content {
-  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-tertiary) 100%);
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
   border-radius: var(--radius-card);
   padding: var(--space-xl);
-  border: 1px solid var(--border);
   text-align: center;
+}
+
+:root.dark .connect-content {
+  background: rgba(8, 15, 30, 0.75);
 }
 
 @media (min-width: 768px) {
@@ -108,24 +113,31 @@ const linkedinHref = computed(() => {
   gap: 0.5rem;
   padding: 0.75rem 1rem;
   border-radius: 0.375rem;
-  border: 1px solid color-mix(in srgb, var(--border) 65%, var(--fg-muted) 35%);
-  background: var(--bg-primary);
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
   color: var(--fg-primary);
   font-size: 0.8125rem;
   font-weight: 600;
   letter-spacing: 0.02em;
   transition:
-    border-color 0.2s ease,
     background-color 0.2s ease,
     transform 0.25s ease,
     box-shadow 0.25s ease;
 }
 
+:root.dark .connect-action-btn {
+  background: rgba(10, 15, 30, 0.6);
+}
+
 .connect-action-btn:hover {
-  border-color: var(--emphasis);
-  background: var(--bg-secondary);
+  background: rgba(255, 255, 255, 0.6);
   transform: translateY(-2px);
   box-shadow: 0 8px 24px color-mix(in srgb, var(--emphasis) 12%, transparent);
+}
+
+:root.dark .connect-action-btn:hover {
+  background: rgba(10, 15, 30, 0.6);
 }
 
 .connect-action-icon {
@@ -153,7 +165,6 @@ const linkedinHref = computed(() => {
   gap: 1rem;
   padding: 1rem 0;
   margin-top: 1.5rem;
-  border-top: 1px solid var(--border);
   font-size: 0.75rem;
   color: var(--fg-muted);
 }
