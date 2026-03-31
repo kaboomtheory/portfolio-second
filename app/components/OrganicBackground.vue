@@ -14,7 +14,7 @@ const lightPreset = {
 const darkPreset = {
   color1: '#000000',
   color2: '#000000',
-  color3: '#024a7b',
+  color3: '#215aa6',
   color4: '#000000',
 }
 
