@@ -36,7 +36,9 @@ const handleAnchorClick = (e: MouseEvent) => {
 
 <template>
   <div class="app-shell">
-    <AmbientOrbs />
+    <OrganicBackground />
+    <div class="grain-overlay" aria-hidden="true" />
+    <div class="gradient-overlay" aria-hidden="true" />
     <NuxtLoadingIndicator
       color="var(--emphasis)"
       :height="2"
@@ -56,8 +58,33 @@ const handleAnchorClick = (e: MouseEvent) => {
   min-height: 100%;
 }
 
-.app-shell > :not(.ambient-orbs) {
+.app-shell
+  > :not(.organic-background-root):not(.grain-overlay):not(.gradient-overlay) {
   position: relative;
   z-index: 1;
+}
+
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/grain.gif');
+  background-repeat: repeat;
+  background-size: 100px 100px;
+  opacity: 0.03;
+  mix-blend-mode: screen;
+}
+
+.gradient-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(to bottom, transparent 0%, white 100%);
+}
+
+:global(html.dark .gradient-overlay) {
+  background: linear-gradient(to bottom, transparent 0%, black 100%);
 }
 </style>

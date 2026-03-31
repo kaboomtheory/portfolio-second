@@ -14,7 +14,9 @@
       "Bash(xargs ls:*)",
       "Bash(find . -name tailwind.config.* -not -path ./node_modules/* -not -path ./.claude/*)",
       "Bash(grep -r tailwindcss . --include=*.ts --include=*.json --include=*.config.*)",
-      "Bash(grep -r \"tailwind\\\\|extend\" . --include=*.ts --include=*.js --include=*.config.*)"
+      "Bash(grep -r \"tailwind\\\\|extend\" . --include=*.ts --include=*.js --include=*.config.*)",
+      "Bash(grep -E \"\\\\.vue$\")",
+      "Bash(npm uninstall:*)"
     ]
   }
 }

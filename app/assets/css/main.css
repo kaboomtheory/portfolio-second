@@ -179,45 +179,6 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.85;
-  background-image: linear-gradient(200deg,
-      rgba(255, 255, 255, 1) 40%,
-      rgba(208, 228, 244, 1) 100%);
-}
-
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  /* Light mode: multiply reads as darker specks on the bright gradient */
-  mix-blend-mode: multiply;
-  opacity: 0.35;
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
-  background-repeat: repeat;
-  background-size: 256px 256px;
-}
-
-:root.dark body::before {
-  opacity: 0.8;
-  background-image: linear-gradient(200deg,
-      rgba(8, 8, 16, 1) 40%,
-      rgba(11, 41, 110, 1) 100%);
-}
-
-:root.dark body::after {
-  /* Avoid multiply on dark UI — it would crush midtones */
-  mix-blend-mode: normal;
-  opacity: 0.2;
-}
-
 #__nuxt {
   position: relative;
   z-index: 1;
