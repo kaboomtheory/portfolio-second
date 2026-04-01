@@ -170,16 +170,60 @@ let material: THREE.ShaderMaterial | null = null
 let geometry: THREE.PlaneGeometry | null = null
 let animationId: number | null = null
 
+/** Matches theme CSS / view transition duration */
+const COLOR_BLEND_SEC = 0.65
+
+const colorBlend = {
+  t: 1,
+  from: [
+    new THREE.Color(),
+    new THREE.Color(),
+    new THREE.Color(),
+    new THREE.Color(),
+  ],
+  to: [
+    new THREE.Color(),
+    new THREE.Color(),
+    new THREE.Color(),
+    new THREE.Color(),
+  ],
+}
+
+let pendingPreset: typeof lightPreset | null = null
+
+const colorUniformKeys = ['uColor1', 'uColor2', 'uColor3', 'uColor4'] as const
+
 function applyPreset(preset: { color1: string; color2: string; color3: string; color4: string }) {
   if (!material) return
-  material.uniforms.uColor1.value.set(preset.color1)
-  material.uniforms.uColor2.value.set(preset.color2)
-  material.uniforms.uColor3.value.set(preset.color3)
-  material.uniforms.uColor4.value.set(preset.color4)
+  material.uniforms.uColor1!.value.set(preset.color1)
+  material.uniforms.uColor2!.value.set(preset.color2)
+  material.uniforms.uColor3!.value.set(preset.color3)
+  material.uniforms.uColor4!.value.set(preset.color4)
+}
+
+function startColorBlend(preset: typeof lightPreset) {
+  if (!material) return
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    applyPreset(preset)
+    colorBlend.t = 1
+    return
+  }
+  for (let i = 0; i < 4; i++) {
+    const key = colorUniformKeys[i]!
+    colorBlend.from[i]!.copy(material.uniforms[key]!.value)
+    colorBlend.to[i]!.set(preset[`color${i + 1}` as 'color1'])
+  }
+  colorBlend.t = 0
 }
 
 watch(isDark, (dark) => {
-  applyPreset(dark ? darkPreset : lightPreset)
+  const preset = dark ? darkPreset : lightPreset
+  if (!material) {
+    pendingPreset = preset
+    return
+  }
+  pendingPreset = null
+  startColorBlend(preset)
 })
 
 onMounted(() => {
@@ -221,20 +265,25 @@ onMounted(() => {
   // Freeze animation if user prefers reduced motion
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
   if (reducedMotion.matches) {
-    material.uniforms.uSpeed.value = 0
+    material.uniforms.uSpeed!.value = 0
   }
   reducedMotion.addEventListener('change', (e) => {
-    if (material) material.uniforms.uSpeed.value = e.matches ? 0 : sharedParams.speed
+    if (material) material.uniforms.uSpeed!.value = e.matches ? 0 : sharedParams.speed
   })
 
   geometry = new THREE.PlaneGeometry(2, 2)
   const mesh = new THREE.Mesh(geometry, material)
   scene.add(mesh)
 
+  if (pendingPreset) {
+    startColorBlend(pendingPreset)
+    pendingPreset = null
+  }
+
   const onResize = () => {
     if (!renderer || !material) return
     renderer.setSize(window.innerWidth, window.innerHeight)
-    material.uniforms.uResolution.value.set(window.innerWidth, window.innerHeight)
+    material.uniforms.uResolution!.value.set(window.innerWidth, window.innerHeight)
   }
   window.addEventListener('resize', onResize)
 
@@ -243,7 +292,17 @@ onMounted(() => {
   const animate = () => {
     animationId = requestAnimationFrame(animate)
     if (!material || !renderer) return
-    material.uniforms.uTime.value = clock.getElapsedTime()
+    const dt = clock.getDelta()
+    material.uniforms.uTime!.value = clock.elapsedTime
+    if (colorBlend.t < 1) {
+      colorBlend.t = Math.min(1, colorBlend.t + dt / COLOR_BLEND_SEC)
+      const e = 1 - (1 - colorBlend.t) ** 3
+      for (let i = 0; i < 4; i++) {
+        const key = colorUniformKeys[i]!
+        const u = material.uniforms[key]!.value
+        u.copy(colorBlend.from[i]!).lerp(colorBlend.to[i]!, e)
+      }
+    }
     renderer.render(scene, camera)
   }
   animate()

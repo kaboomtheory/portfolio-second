@@ -61,7 +61,12 @@ const handleMouseMove = (e: MouseEvent) => {
     :target="download || isMailto ? undefined : '_blank'"
     :rel="download || isMailto ? undefined : 'noopener noreferrer'"
     :download="download || undefined"
-    :class="[btnClass, attention && 'btn-attention', secondary && 'cta-button-secondary']"
+    :class="[
+      btnClass,
+      attention && 'btn-attention',
+      secondary && 'cta-button-secondary',
+      secondary && elevatedSecondary && 'cta-button-secondary--elevated',
+    ]"
     :style="{
       backgroundColor: secondary ? secondaryBg : (attention ? 'var(--btn-attention-bg)' : 'var(--btn-primary-bg)'),
       color: secondary ? secondaryFg : (attention ? 'var(--btn-attention-fg)' : 'var(--btn-primary-fg)'),
@@ -88,7 +93,12 @@ const handleMouseMove = (e: MouseEvent) => {
   <NuxtLink
     v-else-if="to"
     :to="to"
-    :class="[btnClass, attention && 'btn-attention', secondary && 'cta-button-secondary']"
+    :class="[
+      btnClass,
+      attention && 'btn-attention',
+      secondary && 'cta-button-secondary',
+      secondary && elevatedSecondary && 'cta-button-secondary--elevated',
+    ]"
     :style="{
       backgroundColor: secondary ? secondaryBg : (attention ? 'var(--btn-attention-bg)' : 'var(--btn-primary-bg)'),
       color: secondary ? secondaryFg : (attention ? 'var(--btn-attention-fg)' : 'var(--btn-primary-fg)'),
@@ -158,8 +168,22 @@ const handleMouseMove = (e: MouseEvent) => {
   -webkit-backdrop-filter: blur(12px);
 }
 
+.cta-button-secondary--elevated {
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px var(--chrome-ring-idle);
+}
+
 .cta-button-secondary:hover {
   background-color: var(--btn-secondary-bg);
+}
+
+.cta-button.cta-button-secondary--elevated:hover {
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px var(--chrome-ring-idle),
+    0 0 15px color-mix(in srgb, var(--accent) 20%, transparent),
+    0 0 30px color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 /* Glow effect on hover */
@@ -194,7 +218,7 @@ const handleMouseMove = (e: MouseEvent) => {
   transform: scale(0.98);
 }
 
-.cta-button-secondary:hover {
+.cta-button-secondary:hover:not(.cta-button-secondary--elevated) {
   box-shadow:
     0 0 15px color-mix(in srgb, var(--accent) 20%, transparent),
     0 0 30px color-mix(in srgb, var(--accent) 10%, transparent);

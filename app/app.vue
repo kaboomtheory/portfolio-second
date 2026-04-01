@@ -84,7 +84,13 @@ const handleAnchorClick = (e: MouseEvent) => {
   background: linear-gradient(to bottom, transparent 0%, white 100%);
 }
 
+@media (prefers-reduced-motion: no-preference) {
+  .gradient-overlay {
+    transition: background 0.65s ease;
+  }
+}
+
 :global(html.dark .gradient-overlay) {
-  background: linear-gradient(to bottom, transparent 0%, black 100%);
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 65%);
 }
 </style>

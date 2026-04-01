@@ -35,20 +35,58 @@ const { isDark, toggle } = useTheme()
       />
     </span>
     <span
-      class="pointer-events-none absolute left-2 z-10 flex h-7 w-7 items-center justify-center rounded-full transition-transform"
+      class="theme-toggle-pill pointer-events-none absolute left-2 z-10 flex h-7 w-7 items-center justify-center rounded-full transition-transform duration-500 ease-[cubic-bezier(0.34,1.2,0.64,1)]"
       :style="{
         transform: isDark ? 'translateX(38px)' : 'translateX(0)',
         backgroundColor: isDark ? 'rgba(10, 15, 30, 0.85)' : 'rgba(255, 255, 255, 0.9)',
         boxShadow: 'var(--shadow-sm)',
       }"
     >
-      <Icon
-        :key="isDark ? 'moon' : 'sun'"
-        :icon="isDark ? 'lucide:moon' : 'lucide:sun'"
-        class="h-4 w-4 shrink-0"
-        :style="{ color: 'var(--fg-secondary)' }"
-        aria-hidden="true"
-      />
+      <span
+        class="theme-toggle-icon-wrap relative h-4 w-4 shrink-0"
+        :class="{ 'theme-toggle-icon-wrap--dark': isDark }"
+      >
+        <Icon
+          icon="lucide:sun"
+          class="theme-toggle-orbit-icon theme-toggle-orbit-icon--sun absolute left-1/2 top-1/2 h-4 w-4"
+          :style="{ color: 'var(--fg-secondary)' }"
+          aria-hidden="true"
+        />
+        <Icon
+          icon="lucide:moon"
+          class="theme-toggle-orbit-icon theme-toggle-orbit-icon--moon absolute left-1/2 top-1/2 h-4 w-4"
+          :style="{ color: 'var(--fg-secondary)' }"
+          aria-hidden="true"
+        />
+      </span>
     </span>
   </button>
 </template>
+
+<style scoped>
+.theme-toggle-orbit-icon {
+  transition:
+    transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1),
+    opacity 0.4s ease;
+}
+
+.theme-toggle-orbit-icon--sun {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0deg) scale(1);
+}
+
+.theme-toggle-orbit-icon--moon {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(-90deg) scale(0);
+}
+
+.theme-toggle-icon-wrap--dark .theme-toggle-orbit-icon--sun {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(90deg) scale(0);
+}
+
+.theme-toggle-icon-wrap--dark .theme-toggle-orbit-icon--moon {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0deg) scale(1);
+}
+</style>

@@ -1,13 +1,53 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import type { StatusItem } from '~/data/home'
+import { profile } from '~/data/site'
 import { useSanityStatus } from '~/composables/useSanityStatus'
 import { useSanityAbout } from '~/composables/useSanityAbout'
 
 const { aboutMe: fallbackAboutMe, experiences: fallbackExperiences } = useMockContent()
+const { homePage: cmsHome } = useSanityHome()
 const { statusItems } = useSanityStatus()
 const { aboutPage } = useSanityAbout()
 
 useHead({ title: 'About' })
+
+/** After mount, may switch to one loop for prefers-reduced-motion (SSR stays doubled for hydration match). */
+const reduceTickerMotion = ref(false)
+
+let motionPreferenceQuery: MediaQueryList | null = null
+
+function syncReduceTickerMotion() {
+  if (!import.meta.client || !motionPreferenceQuery) return
+  reduceTickerMotion.value = motionPreferenceQuery.matches
+}
+
+onMounted(() => {
+  motionPreferenceQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  syncReduceTickerMotion()
+  motionPreferenceQuery.addEventListener('change', syncReduceTickerMotion)
+})
+
+onUnmounted(() => {
+  motionPreferenceQuery?.removeEventListener('change', syncReduceTickerMotion)
+})
+
+const tickerCells = computed(() => {
+  const items = statusItems.value
+  const repeats = reduceTickerMotion.value ? 1 : 2
+  const out: { item: StatusItem; key: string; showSep: boolean }[] = []
+  for (let r = 0; r < repeats; r++) {
+    for (let i = 0; i < items.length; i++) {
+      const isLast = r === repeats - 1 && i === items.length - 1
+      out.push({
+        item: items[i]!,
+        key: `ticker-${r}-${i}`,
+        showSep: !isLast,
+      })
+    }
+  }
+  return out
+})
 
 // CMS data with fallback to hardcoded content
 const hero = computed(() => {
@@ -56,6 +96,15 @@ const groupedCapabilities = computed(() => {
 const resumeHref = computed(() =>
   aboutPage.value?.resumeUrl || '/Bryan_Mendez_resume_2025-1.pdf',
 )
+
+const heroEmail = computed(() => cmsHome.value?.email || profile.email)
+
+const availabilityMailto = computed(() => `mailto:${heroEmail.value}`)
+
+/** Match home hero OPEN TO WORK: all-caps label with preserve-case typography */
+const availabilityCtaLabel = computed(() =>
+  (hero.value.availabilityText || 'Available for freelance').toLocaleUpperCase('en-US'),
+)
 </script>
 
 <template>
@@ -83,10 +132,16 @@ const resumeHref = computed(() =>
           />
 
           <div class="hero-role-wrap">
-            <div class="hero-eyebrow">
-              <span class="availability-dot" />
-              <span>{{ hero.availabilityText || 'Available for freelance' }}</span>
-            </div>
+            <CtaButton
+              :href="availabilityMailto"
+              :label="availabilityCtaLabel"
+              secondary
+              elevated-secondary
+              with-dot
+              preserve-case
+            >
+              <template #icon><Icon icon="lucide:mail" class="text-sm" /></template>
+            </CtaButton>
           </div>
 
           <div class="hero-story">
@@ -112,18 +167,24 @@ const resumeHref = computed(() =>
     <!-- Status Ticker -->
     <section v-if="statusItems?.length" class="ticker-section reveal-up">
       <div class="ticker-wrapper">
-        <div class="ticker-track">
+        <div
+          class="ticker-track"
+          :class="{ 'ticker-track--marquee': !reduceTickerMotion }"
+        >
           <div class="ticker-content">
-            <div v-for="item in [...statusItems, ...statusItems]" :key="`${item.title}-${Math.random()}`" class="ticker-item">
-              <div class="ticker-image">
-                <img v-if="item.images?.length" :src="item.images[0]" :alt="item.title" />
-                <Icon v-else-if="item.icon" :icon="item.icon" class="w-5 h-5 text-[var(--fg-muted)]" />
+            <template v-for="cell in tickerCells" :key="cell.key">
+              <div class="ticker-item">
+                <div class="ticker-image">
+                  <img v-if="cell.item.images?.length" :src="cell.item.images[0]" :alt="cell.item.title" />
+                  <Icon v-else-if="cell.item.icon" :icon="cell.item.icon" class="w-5 h-5 text-[var(--fg-muted)]" />
+                </div>
+                <div class="ticker-info">
+                  <span class="ticker-label">{{ cell.item.label }}</span>
+                  <span class="ticker-title">{{ cell.item.title }}</span>
+                </div>
               </div>
-              <div class="ticker-info">
-                <span class="ticker-label">{{ item.label }}</span>
-                <span class="ticker-title">{{ item.title }}</span>
-              </div>
-            </div>
+              <span v-if="cell.showSep" class="ticker-sep" aria-hidden="true">·</span>
+            </template>
           </div>
         </div>
       </div>
@@ -219,40 +280,6 @@ const resumeHref = computed(() =>
   gap: var(--space-lg);
 }
 
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--emphasis);
-  padding: 0.5rem 1rem;
-  flex-shrink: 0;
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  border-radius: 9999px;
-}
-
-:root.dark .hero-eyebrow {
-  background: rgba(10, 15, 30, 0.6);
-}
-
-.availability-dot {
-  width: 8px;
-  height: 8px;
-  background: var(--status-available);
-  border-radius: 50%;
-  animation: pulse-dot 2s ease-in-out infinite;
-}
-
-@keyframes pulse-dot {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.6; transform: scale(1.2); }
-}
-
 .hero-name {
   font-size: clamp(3rem, 8vw, 5.5rem);
   font-weight: 700;
@@ -315,18 +342,55 @@ const resumeHref = computed(() =>
 
 /* Ticker Section */
 .ticker-section {
-  padding: var(--space-lg) 0;
+  padding: var(--space-md) var(--space-md);
   overflow: hidden;
+  border-radius: var(--radius-card);
+  border: 1px solid color-mix(in srgb, var(--border) 12%, transparent);
+  box-shadow: var(--shadow-sm);
+  background: color-mix(in srgb, var(--bg-secondary) 55%, transparent);
 }
 
 .ticker-wrapper {
   position: relative;
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 2.5rem,
+    #000 calc(100% - 2.5rem),
+    transparent
+  );
+  mask-image: linear-gradient(
+    to right,
+    transparent,
+    #000 2.5rem,
+    #000 calc(100% - 2.5rem),
+    transparent
+  );
+}
+
+.ticker-wrapper:hover .ticker-track--marquee {
+  animation-play-state: paused;
 }
 
 .ticker-track {
   display: flex;
+  --ticker-duration: 40s;
+}
+
+.ticker-track--marquee {
   width: max-content;
-  animation: ticker-scroll 30s linear infinite;
+  animation: ticker-scroll var(--ticker-duration) linear infinite;
+}
+
+@media (max-width: 640px) {
+  .ticker-track {
+    --ticker-duration: 56s;
+  }
+}
+
+.ticker-track:not(.ticker-track--marquee) {
+  width: 100%;
+  max-width: 100%;
 }
 
 @keyframes ticker-scroll {
@@ -336,7 +400,27 @@ const resumeHref = computed(() =>
 
 .ticker-content {
   display: flex;
-  gap: var(--space-xl);
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: var(--space-lg);
+}
+
+.ticker-track:not(.ticker-track--marquee) .ticker-content {
+  flex-wrap: wrap;
+  justify-content: center;
+  row-gap: var(--space-md);
+  width: 100%;
+}
+
+.ticker-sep {
+  flex-shrink: 0;
+  align-self: center;
+  font-size: 1.25rem;
+  line-height: 1;
+  font-weight: 300;
+  color: var(--fg-muted);
+  opacity: 0.45;
+  user-select: none;
 }
 
 .ticker-item {
@@ -379,9 +463,11 @@ const resumeHref = computed(() =>
 
 .ticker-label {
   font-size: 0.75rem;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-weight: 700;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
-  letter-spacing: 0.1em;
-  color: var(--fg-muted);
+  color: var(--accent);
 }
 
 .ticker-title {
