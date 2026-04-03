@@ -23,7 +23,7 @@ const props = withDefaults(
     download: false,
     preserveCase: false,
     elevatedSecondary: false,
-  }
+  },
 )
 
 const isMailto = computed(() => Boolean(props.href?.toLowerCase().startsWith('mailto:')))
@@ -38,9 +38,15 @@ const secondaryFg = computed(() =>
 
 const btnClass = computed(() =>
   [
-    'cta-button inline-flex items-center gap-2 rounded-md px-4 py-2 text-xs tracking-[0.1em] transition-all duration-300 origin-center',
+    'cta-button inline-flex items-center gap-2 origin-center',
+    !props.attention ? 'transition-all duration-300' : '',
+    props.attention ? 'btn-attention shiny-cta' : 'rounded-md px-4 py-2 text-xs tracking-[0.1em]',
     props.preserveCase ? 'cta-button--preserve-case' : 'uppercase',
-  ].join(' '),
+    props.secondary && 'cta-button-secondary',
+    props.secondary && props.elevatedSecondary && 'cta-button-secondary--elevated',
+  ]
+    .filter(Boolean)
+    .join(' '),
 )
 
 const mouseX = ref(50)
@@ -52,6 +58,33 @@ const handleMouseMove = (e: MouseEvent) => {
   mouseX.value = ((e.clientX - rect.left) / rect.width) * 100
   mouseY.value = ((e.clientY - rect.top) / rect.height) * 100
 }
+
+function onMouseMove(e: MouseEvent) {
+  if (props.attention) return
+  handleMouseMove(e)
+}
+
+const inlineStyle = computed(() => {
+  const mouse = {
+    '--mouse-x': `${mouseX.value}%`,
+    '--mouse-y': `${mouseY.value}%`,
+  }
+  if (props.secondary) {
+    return {
+      backgroundColor: secondaryBg.value,
+      color: secondaryFg.value,
+      ...mouse,
+    }
+  }
+  if (props.attention) {
+    return {}
+  }
+  return {
+    backgroundColor: 'var(--btn-primary-bg)',
+    color: 'var(--btn-primary-fg)',
+    ...mouse,
+  }
+})
 </script>
 
 <template>
@@ -61,65 +94,81 @@ const handleMouseMove = (e: MouseEvent) => {
     :target="download || isMailto ? undefined : '_blank'"
     :rel="download || isMailto ? undefined : 'noopener noreferrer'"
     :download="download || undefined"
-    :class="[
-      btnClass,
-      attention && 'btn-attention',
-      secondary && 'cta-button-secondary',
-      secondary && elevatedSecondary && 'cta-button-secondary--elevated',
-    ]"
-    :style="{
-      backgroundColor: secondary ? secondaryBg : (attention ? 'var(--btn-attention-bg)' : 'var(--btn-primary-bg)'),
-      color: secondary ? secondaryFg : (attention ? 'var(--btn-attention-fg)' : 'var(--btn-primary-fg)'),
-      '--mouse-x': `${mouseX}%`,
-      '--mouse-y': `${mouseY}%`
-    }"
-    @mousemove="handleMouseMove"
+    :class="btnClass"
+    :style="inlineStyle"
+    @mousemove="onMouseMove"
   >
-    <span
-      v-if="withDot"
-      :class="[
-        'inline-block h-2 w-2 rounded-full',
-        secondary ? 'cta-status-dot' : 'pulse-glow',
-      ]"
-      :style="secondary ? undefined : { backgroundColor: 'var(--emphasis)' }"
-    />
-    <slot name="icon">
-      <span class="icon-wrapper" />
-    </slot>
-    {{ label }}
+    <template v-if="attention">
+      <span class="shiny-cta-inner">
+        <span
+          v-if="withDot"
+          :class="[
+            'inline-block h-2 w-2 rounded-full',
+            secondary ? 'cta-status-dot' : 'pulse-glow',
+          ]"
+          :style="secondary ? undefined : { backgroundColor: 'var(--emphasis)' }"
+        />
+        <slot name="icon">
+          <span class="icon-wrapper" />
+        </slot>
+        {{ label }}
+      </span>
+    </template>
+    <template v-else>
+      <span
+        v-if="withDot"
+        :class="[
+          'inline-block h-2 w-2 rounded-full',
+          secondary ? 'cta-status-dot' : 'pulse-glow',
+        ]"
+        :style="secondary ? undefined : { backgroundColor: 'var(--emphasis)' }"
+      />
+      <slot name="icon">
+        <span class="icon-wrapper" />
+      </slot>
+      {{ label }}
+    </template>
     <span v-if="!download && !isMailto" class="sr-only">(opens in new tab)</span>
-    <span class="cta-button-glow" />
+    <span v-if="!attention" class="cta-button-glow" />
   </a>
   <NuxtLink
     v-else-if="to"
     :to="to"
-    :class="[
-      btnClass,
-      attention && 'btn-attention',
-      secondary && 'cta-button-secondary',
-      secondary && elevatedSecondary && 'cta-button-secondary--elevated',
-    ]"
-    :style="{
-      backgroundColor: secondary ? secondaryBg : (attention ? 'var(--btn-attention-bg)' : 'var(--btn-primary-bg)'),
-      color: secondary ? secondaryFg : (attention ? 'var(--btn-attention-fg)' : 'var(--btn-primary-fg)'),
-      '--mouse-x': `${mouseX}%`,
-      '--mouse-y': `${mouseY}%`
-    }"
-    @mousemove="handleMouseMove"
+    :class="btnClass"
+    :style="inlineStyle"
+    @mousemove="onMouseMove"
   >
-    <span
-      v-if="withDot"
-      :class="[
-        'inline-block h-2 w-2 rounded-full',
-        secondary ? 'cta-status-dot' : 'pulse-glow',
-      ]"
-      :style="secondary ? undefined : { backgroundColor: 'var(--emphasis)' }"
-    />
-    <slot name="icon">
-      <span class="icon-wrapper" />
-    </slot>
-    {{ label }}
-    <span class="cta-button-glow" />
+    <template v-if="attention">
+      <span class="shiny-cta-inner">
+        <span
+          v-if="withDot"
+          :class="[
+            'inline-block h-2 w-2 rounded-full',
+            secondary ? 'cta-status-dot' : 'pulse-glow',
+          ]"
+          :style="secondary ? undefined : { backgroundColor: 'var(--emphasis)' }"
+        />
+        <slot name="icon">
+          <span class="icon-wrapper" />
+        </slot>
+        {{ label }}
+      </span>
+    </template>
+    <template v-else>
+      <span
+        v-if="withDot"
+        :class="[
+          'inline-block h-2 w-2 rounded-full',
+          secondary ? 'cta-status-dot' : 'pulse-glow',
+        ]"
+        :style="secondary ? undefined : { backgroundColor: 'var(--emphasis)' }"
+      />
+      <slot name="icon">
+        <span class="icon-wrapper" />
+      </slot>
+      {{ label }}
+    </template>
+    <span v-if="!attention" class="cta-button-glow" />
   </NuxtLink>
 </template>
 
@@ -232,21 +281,21 @@ const handleMouseMove = (e: MouseEvent) => {
   display: none;
 }
 
-/* Attention CTA: single clear emphasis (no idle pulse) */
-.btn-attention {
+/* Attention CTA (non-shiny fallback — shiny resume CTAs use global .shiny-cta rules) */
+.btn-attention:not(.shiny-cta) {
   position: relative;
   font-weight: 600;
   padding: 0.5rem 1.25rem;
   box-shadow: 0 0 20px color-mix(in srgb, var(--accent) 22%, transparent);
 }
 
-.btn-attention:hover {
+.btn-attention:not(.shiny-cta):hover {
   transform: scale(1.02);
   box-shadow:
     0 0 24px color-mix(in srgb, var(--accent) 28%, transparent);
 }
 
-.btn-attention:active {
+.btn-attention:not(.shiny-cta):active {
   transform: scale(0.98);
 }
 </style>

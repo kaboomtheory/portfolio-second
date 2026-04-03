@@ -102,10 +102,10 @@ withDefaults(
   --text: #ffffff;
   --muted: #8a94a8;
   --muted-neon: rgba(168, 212, 255, 0.62);
-  background: transparent;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(8, 13, 28, 0.55);
+  border: 1px solid rgba(87, 166, 255, 0.18);
   box-shadow:
-    0 0 0 1px rgba(87, 166, 255, 0.14),
+    0 0 0 1px rgba(87, 166, 255, 0.18),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 

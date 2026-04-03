@@ -12,10 +12,10 @@ const lightPreset = {
 }
 
 const darkPreset = {
-  color1: '#000000',
-  color2: '#000000',
+  color1: '#040812',
+  color2: '#060c1a',
   color3: '#215aa6',
-  color4: '#000000',
+  color4: '#030710',
 }
 
 const sharedParams = {
