@@ -12,7 +12,7 @@ function mapSection(section: ContentBlock): ProjectStorySection {
     case 'singleImage':
       return {
         type: 'singleImage',
-        image: section.image ? buildImageUrl(section.image) : undefined,
+        image: section.image ? buildImageUrl(section.image, 'content') : undefined,
         layout: section.layout,
         caption: section.caption,
       }
@@ -21,7 +21,7 @@ function mapSection(section: ContentBlock): ProjectStorySection {
         type: 'imageGallery',
         layout: section.layout,
         images: section.images?.map((img) => ({
-          image: buildImageUrl(img.image),
+          image: buildImageUrl(img.image, 'content'),
           alt: img.alt,
           caption: img.caption,
         })),
@@ -29,7 +29,7 @@ function mapSection(section: ContentBlock): ProjectStorySection {
     case 'imageTextBlock':
       return {
         type: 'imageTextBlock',
-        image: section.image ? buildImageUrl(section.image) : undefined,
+        image: section.image ? buildImageUrl(section.image, 'content') : undefined,
         heading: section.heading,
         body: section.body,
         position: section.position,
@@ -63,11 +63,36 @@ function mapSection(section: ContentBlock): ProjectStorySection {
         type: 'section',
         heading: section.heading,
         body: section.body,
-        image: section.image ? buildImageUrl(section.image) : undefined,
+        image: section.image ? buildImageUrl(section.image, 'content') : undefined,
       }
     default:
       return {}
   }
+}
+
+export function projectItemsFromSanityRaw(
+  rawProjects: SanityProjectItem[] | null | undefined,
+): ProjectItem[] {
+  if (!rawProjects || !Array.isArray(rawProjects)) return []
+
+  return rawProjects.map((project: SanityProjectItem) => ({
+    slug: project.slug?.current || '',
+    name: project.name || '',
+    category: project.category || '',
+    year: project.year || '',
+    summary: project.summary || '',
+    thumbnail: project.thumbnail ? buildImageUrl(project.thumbnail, 'grid') : '',
+    protected: project.protected || false,
+    tags: project.tags || [],
+    sections: (project.sections || []).map(mapSection),
+    order: project.order,
+    client: project.client,
+    role: project.role,
+    projectUrl: project.projectUrl,
+    heroImage: project.heroImage ? buildImageUrl(project.heroImage, 'hero') : undefined,
+    color: project.color,
+    collaborators: project.collaborators,
+  }))
 }
 
 export function useSanityProjects() {
@@ -80,28 +105,9 @@ export function useSanityProjects() {
     getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
   })
 
-  const projects = computed<ProjectItem[]>(() => {
-    if (!rawProjects.value || !Array.isArray(rawProjects.value)) return []
-
-    return rawProjects.value.map((project: SanityProjectItem) => ({
-      slug: project.slug?.current || '',
-      name: project.name || '',
-      category: project.category || '',
-      year: project.year || '',
-      summary: project.summary || '',
-      thumbnail: project.thumbnail ? buildImageUrl(project.thumbnail) : '',
-      protected: project.protected || false,
-      tags: project.tags || [],
-      sections: (project.sections || []).map(mapSection),
-      order: project.order,
-      client: project.client,
-      role: project.role,
-      projectUrl: project.projectUrl,
-      heroImage: project.heroImage ? buildImageUrl(project.heroImage) : undefined,
-      color: project.color,
-      collaborators: project.collaborators,
-    }))
-  })
+  const projects = computed<ProjectItem[]>(() =>
+    projectItemsFromSanityRaw(rawProjects.value),
+  )
 
   const orderedProjects = computed<ProjectItem[]>(() => {
     const list = [...projects.value]

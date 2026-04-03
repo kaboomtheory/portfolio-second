@@ -1,18 +1,35 @@
 import { createImageUrlBuilder, type SanityImageSource } from '@sanity/image-url'
 import type { SanityImage } from '~/types/project'
 
-export function buildImageUrl(source: SanityImageSource): string {
-  // Get config from runtime config
-  const config = useRuntimeConfig()
-  const projectId = config.public.sanityProjectId as string
-  const dataset = config.public.sanityDataset as string
+/** Tuned widths for CDN resizing (Sanity Image API). */
+export type SanityImageSize =
+  | 'thumbnail'
+  | 'card'
+  | 'content'
+  | 'hero'
+  /** Homepage / grid project cards — wide enough for retina multi-column layouts */
+  | 'grid'
 
-  const builder = createImageUrlBuilder({
-    projectId: projectId || '',
-    dataset: dataset || 'production',
-  })
+const SIZE_PRESETS: Record<
+  SanityImageSize,
+  { width: number; quality: number }
+> = {
+  thumbnail: { width: 400, quality: 80 },
+  card: { width: 720, quality: 82 },
+  content: { width: 1600, quality: 85 },
+  hero: { width: 2200, quality: 85 },
+  grid: { width: 2800, quality: 92 },
+}
 
-  return builder.image(source).url() || ''
+/**
+ * Full-resolution URLs are avoided by default: pass a size preset for CDN transforms.
+ */
+export function buildImageUrl(
+  source: SanityImageSource,
+  size: SanityImageSize = 'content',
+): string {
+  const { width, quality } = SIZE_PRESETS[size]
+  return buildImageUrlWithProps(source, { width, quality, auto: 'format' })
 }
 
 export function buildImageUrlWithProps(

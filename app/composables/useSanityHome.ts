@@ -13,7 +13,7 @@ interface SanitySocialLink {
   href: string
 }
 
-interface SanityHomePage {
+export interface SanityHomePageRaw {
   title?: string
   taglines?: SanityTaglineLine[]
   intro?: string
@@ -33,34 +33,41 @@ export interface HomePageData {
   socialLinks: { label: string; icon: string; href: string }[]
 }
 
-export function useSanityHome() {
-  const { data: raw, pending: loading, error, refresh } = useFetch<SanityHomePage | null>('/api/sanity-home', {
-    key: 'sanity-home',
-    getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
-  })
+export function homePageDataFromSanityRaw(
+  raw: SanityHomePageRaw | null | undefined,
+): HomePageData | null {
+  if (!raw) return null
 
-  const homePage = computed<HomePageData | null>(() => {
-    if (!raw.value) return null
-
-    return {
-      hero: {
-        title: raw.value.title || '',
-        taglines: (raw.value.taglines || []).map((line) => ({
-          segments: (line.segments || []).map((seg) => ({
-            text: seg.text,
-            em: seg.em,
-          })),
+  return {
+    hero: {
+      title: raw.title || '',
+      taglines: (raw.taglines || []).map((line) => ({
+        segments: (line.segments || []).map((seg) => ({
+          text: seg.text,
+          em: seg.em,
         })),
-      },
-      intro: raw.value.intro || '',
-      email: raw.value.email || '',
-      socialLinks: (raw.value.socialLinks || []).map((link) => ({
-        label: link.label,
-        icon: link.icon,
-        href: link.href,
       })),
-    }
-  })
+    },
+    intro: raw.intro || '',
+    email: raw.email || '',
+    socialLinks: (raw.socialLinks || []).map((link) => ({
+      label: link.label,
+      icon: link.icon,
+      href: link.href,
+    })),
+  }
+}
+
+export function useSanityHome() {
+  const { data: raw, pending: loading, error, refresh } = useFetch<SanityHomePageRaw | null>(
+    '/api/sanity-home',
+    {
+      key: 'sanity-home',
+      getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
+    },
+  )
+
+  const homePage = computed<HomePageData | null>(() => homePageDataFromSanityRaw(raw.value))
 
   return { homePage, loading, error, refresh }
 }

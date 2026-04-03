@@ -2,6 +2,29 @@
 const { scrollTo } = useSmoothScroll()
 const route = useRoute()
 
+const prefersReducedMotion = ref(false)
+const showWebGlBackground = ref(false)
+
+const OrganicBackgroundAsync = defineAsyncComponent({
+  loader: () => import('~/components/OrganicBackground.vue'),
+  delay: 0,
+  timeout: 30000,
+})
+
+function scheduleWebGlBackground() {
+  if (prefersReducedMotion.value) return
+  const run = () => {
+    showWebGlBackground.value = true
+  }
+  requestAnimationFrame(() => {
+    if (typeof requestIdleCallback === 'function') {
+      requestIdleCallback(run, { timeout: 2500 })
+    } else {
+      setTimeout(run, 200)
+    }
+  })
+}
+
 watch(
   () => route.path,
   () => {
@@ -14,6 +37,8 @@ watch(
 )
 
 onMounted(() => {
+  prefersReducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  scheduleWebGlBackground()
   document.addEventListener('click', handleAnchorClick)
 })
 
@@ -36,7 +61,9 @@ const handleAnchorClick = (e: MouseEvent) => {
 
 <template>
   <div class="app-shell">
-    <OrganicBackground />
+    <OrganicBackgroundStatic v-if="prefersReducedMotion" />
+    <OrganicBackgroundAsync v-else-if="showWebGlBackground" />
+    <OrganicBackgroundStatic v-else />
     <div class="grain-overlay" aria-hidden="true" />
     <div class="gradient-overlay" aria-hidden="true" />
     <NuxtLoadingIndicator
@@ -46,7 +73,7 @@ const handleAnchorClick = (e: MouseEvent) => {
     />
     <NuxtRouteAnnouncer />
     <NuxtLayout>
-      <NuxtPage :page-key="route => route.fullPath" :transition="{ name: 'page', mode: 'out-in' }" />
+      <NuxtPage :page-key="route => route.fullPath" :transition="{ name: 'page', mode: 'default' }" />
     </NuxtLayout>
   </div>
 </template>
@@ -59,21 +86,33 @@ const handleAnchorClick = (e: MouseEvent) => {
 }
 
 .app-shell
-  > :not(.organic-background-root):not(.grain-overlay):not(.gradient-overlay) {
+  > :not(.organic-background-root):not(.organic-background-static):not(.grain-overlay):not(
+    .gradient-overlay
+  ) {
   position: relative;
   z-index: 1;
 }
 
+/* CSS-only grain: avoids decoding/repainting an animated GIF every frame */
 .grain-overlay {
   position: fixed;
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background-image: url('/grain.gif');
-  background-repeat: repeat;
-  background-size: 100px 100px;
-  opacity: 0.03;
-  mix-blend-mode: screen;
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.04) 0 1px,
+      transparent 1px 2px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.03) 0 1px,
+      transparent 1px 3px
+    );
+  background-size: 100% 100%;
 }
 
 .gradient-overlay {

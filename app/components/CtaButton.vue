@@ -164,12 +164,15 @@ const handleMouseMove = (e: MouseEvent) => {
 }
 
 .cta-button-secondary {
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  border: var(--card-border);
+  box-shadow: var(--card-ring);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
 }
 
 .cta-button-secondary--elevated {
   box-shadow:
+    var(--card-ring),
     var(--shadow-sm),
     0 0 0 1px var(--chrome-ring-idle);
 }

@@ -1,5 +1,4 @@
-@import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css');
-@import url('https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css');
+/* Geist fonts: loaded via nuxt.config head (preload + stylesheet) for faster discovery */
 
 /*
   Color roles:
@@ -9,21 +8,21 @@
   Stays cohesive with the blue gradient background.
 */
 :root {
-  /* ── Surfaces: blue-tinted frosted glass ── */
-  --bg-primary: rgba(61, 125, 186, 0.18);
-  --bg-secondary: rgba(61, 125, 186, 0.12);
-  --bg-tertiary: rgba(61, 125, 186, 0.07);
+  /* ── Surfaces: NeonMetricCard frosted glass ── */
+  --bg-primary: rgba(240, 248, 255, 0.78);
+  --bg-secondary: rgba(240, 248, 255, 0.55);
+  --bg-tertiary: rgba(240, 248, 255, 0.32);
   /* ── Foreground: dark text for the light-top gradient ── */
   --fg-primary: #0a1628;
   --fg-secondary: #2a3f5c;
   --fg-muted: #425a78;
   /* ── Borders (match primary text for edges) ── */
   --border: var(--fg-primary);
-  /* ── Brand blues (single ramp + one darker pair) ── */
-  --accent: #3d7dba;
-  --accent-soft: #5a94c8;
-  --accent-2: #2e6fa0;
-  --accent-2-soft: #4a88b8;
+  /* ── Brand blues: NeonMetricCard neon palette ── */
+  --accent: #2a5fa0;
+  --accent-soft: #3d7dba;
+  --accent-2: #2a3f5c;
+  --accent-2-soft: #425a78;
   --on-accent: #ffffff;
   --on-accent-muted: #e0ecf8;
   --emphasis: var(--accent);
@@ -32,33 +31,42 @@
   --on-emphasis-muted: var(--on-accent-muted);
   --status-available: #1a8a4a;
   --danger: #c53030;
+  /* ── NeonMetricCard neon palette (global) ── */
+  --neon: #2a5fa0;
+  --neon-mid: #3d7dba;
+  --neon-soft: #2a3f5c;
+  --neon-frost: #0a1628;
+  --muted-neon: rgba(66, 90, 120, 0.72);
   /* ── Button fills ── */
-  --btn-primary-bg: #2a5080;
+  --btn-primary-bg: #2a5fa0;
   --btn-primary-fg: #ffffff;
-  --btn-attention-bg: #18a7ec;
+  --btn-attention-bg: #3d7dba;
   --btn-attention-fg: #ffffff;
   /* Frosted controls (secondary CTAs, filter pills, footer actions) */
-  --surface-interactive: rgba(255, 255, 255, 0.72);
+  --surface-interactive: rgba(240, 248, 255, 0.72);
   --btn-secondary-bg: var(--surface-interactive);
   --chrome-ring-idle: color-mix(in srgb, var(--accent) 30%, transparent);
-  /* ── Shadows: blue-tinted ── */
+  /* ── Shadows: NeonMetricCard colored formula ── */
   --shadow-sm: 0 1px 3px rgba(0, 20, 60, 0.10);
-  --shadow-md: 0 4px 12px rgba(0, 20, 60, 0.12);
-  --shadow-lg: 0 8px 24px rgba(0, 20, 60, 0.16);
+  --shadow-md: 0 8px 20px rgba(61, 125, 186, 0.18);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 20px rgba(61, 125, 186, 0.18);
+  /* ── Card surface tokens (NeonMetricCard border/ring formula) ── */
+  --card-border: 1px solid rgba(61, 125, 186, 0.22);
+  --card-ring: 0 0 0 1px rgba(61, 125, 186, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.7);
 }
 
 :root.dark {
-  --bg-primary: rgba(61, 125, 186, 0.22);
-  --bg-secondary: rgba(61, 125, 186, 0.15);
-  --bg-tertiary: rgba(61, 125, 186, 0.08);
-  --fg-primary: #f0f4f8;
-  --fg-secondary: #cdd9e8;
-  --fg-muted: #8fabbf;
+  --bg-primary: rgba(10, 15, 30, 0.65);
+  --bg-secondary: rgba(10, 15, 30, 0.45);
+  --bg-tertiary: rgba(10, 15, 30, 0.28);
+  --fg-primary: #ffffff;
+  --fg-secondary: #d4eaff;
+  --fg-muted: #8a94a8;
   --border: var(--fg-primary);
-  --accent: #5a94c8;
-  --accent-soft: #7aade6;
-  --accent-2: #4a88b8;
-  --accent-2-soft: #6aa0d0;
+  --accent: #57a6ff;
+  --accent-soft: #7ab8ff;
+  --accent-2: #a8d4ff;
+  --accent-2-soft: #8a94a8;
   --on-accent: #0a0f1a;
   --on-accent-muted: #1a2540;
   --emphasis: var(--accent);
@@ -67,17 +75,26 @@
   --on-emphasis-muted: var(--on-accent-muted);
   --status-available: #4ade80;
   --danger: #f87171;
+  /* ── NeonMetricCard neon palette (dark) ── */
+  --neon: #57a6ff;
+  --neon-mid: #7ab8ff;
+  --neon-soft: #a8d4ff;
+  --neon-frost: #d4eaff;
+  --muted-neon: rgba(168, 212, 255, 0.62);
   /* ── Button fills ── */
-  --btn-primary-bg: #5a94c8;
+  --btn-primary-bg: #57a6ff;
   --btn-primary-fg: #0a1628;
-  --btn-attention-bg: #18a7ec;
+  --btn-attention-bg: #7ab8ff;
   --btn-attention-fg: #0a1628;
   --surface-interactive: rgba(10, 15, 30, 0.72);
   --btn-secondary-bg: var(--surface-interactive);
   --chrome-ring-idle: color-mix(in srgb, var(--accent) 35%, transparent);
   --shadow-sm: 0 1px 3px rgba(0, 10, 30, 0.25);
-  --shadow-md: 0 4px 12px rgba(0, 10, 30, 0.30);
-  --shadow-lg: 0 8px 24px rgba(0, 10, 30, 0.35);
+  --shadow-md: 0 12px 28px rgba(87, 166, 255, 0.22);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.50), 0 12px 28px rgba(87, 166, 255, 0.22);
+  /* ── Card surface tokens (dark) ── */
+  --card-border: 1px solid rgba(255, 255, 255, 0.1);
+  --card-ring: 0 0 0 1px rgba(87, 166, 255, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
 
 /* ── Spacing scale ── */
@@ -377,8 +394,8 @@ pre,
   white-space: nowrap;
   color: var(--fg-secondary);
   background: var(--bg-primary);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
 }
 
 /* Interactive variant (filter buttons) */
@@ -391,8 +408,8 @@ pre,
   box-shadow:
     var(--shadow-sm),
     0 0 0 1px var(--chrome-ring-idle);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
   transition:
     background-color 200ms ease,
     color 200ms ease,
@@ -435,10 +452,12 @@ pre,
 }
 
 .card-surface {
-  background: var(--bg-secondary);
+  background: var(--bg-primary);
   border-radius: var(--radius-card);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  border: var(--card-border);
+  box-shadow: var(--card-ring);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
 }
 
 .page-enter-active,

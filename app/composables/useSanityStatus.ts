@@ -27,7 +27,7 @@ export function useSanityStatus() {
       title: item.title || '',
       content: item.content || '',
       link: item.link || '',
-      images: item.image ? [buildImageUrl(item.image)] : [],
+      images: item.image ? [buildImageUrl(item.image, 'thumbnail')] : [],
       icon: item.icon,
     }))
   })

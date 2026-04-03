@@ -20,13 +20,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const elementRef = ref<HTMLElement | null>(null)
 
-const { scale, progress } = useScrollExpand(elementRef, {
+const { scale, displayedOpacity } = useScrollExpandImage(elementRef, {
   minScale: props.minScale,
   maxScale: props.maxScale,
-  preExpanded: props.preExpanded,
-})
-
-const { displayedOpacity } = useScrollOpacity(elementRef, {
   preExpanded: props.preExpanded,
 })
 

@@ -168,7 +168,45 @@ const fragmentShader = `
 let renderer: THREE.WebGLRenderer | null = null
 let material: THREE.ShaderMaterial | null = null
 let geometry: THREE.PlaneGeometry | null = null
+let scene: THREE.Scene | null = null
+let camera: THREE.OrthographicCamera | null = null
 let animationId: number | null = null
+
+/** Lower = fewer shaded pixels (stretched by CSS). Biggest perf win for this shader. */
+const INTERNAL_RES_SCALE = 0.55
+const MAX_DPR = 1.25
+
+let isPageVisible = true
+let prefersReducedMotion = false
+let resizeHandler: (() => void) | null = null
+let visibilityHandler: (() => void) | null = null
+let reducedMotionMql: MediaQueryList | null = null
+let reducedMotionHandler: ((e: MediaQueryListEvent) => void) | null = null
+
+function stopAnimationLoop() {
+  if (animationId !== null) {
+    cancelAnimationFrame(animationId)
+    animationId = null
+  }
+}
+
+function syncRendererSize() {
+  if (!renderer) return
+  const canvas = renderer.domElement
+  const pr = Math.min(window.devicePixelRatio || 1, MAX_DPR)
+  const w = Math.max(1, Math.floor(window.innerWidth * INTERNAL_RES_SCALE * pr))
+  const h = Math.max(1, Math.floor(window.innerHeight * INTERNAL_RES_SCALE * pr))
+  renderer.setPixelRatio(1)
+  renderer.setSize(w, h, false)
+  canvas.style.width = '100%'
+  canvas.style.height = '100%'
+  material?.uniforms.uResolution?.value.set(w, h)
+}
+
+function renderFrame() {
+  if (!material || !renderer || !scene || !camera) return
+  renderer.render(scene, camera)
+}
 
 /** Matches theme CSS / view transition duration */
 const COLOR_BLEND_SEC = 0.65
@@ -230,13 +268,19 @@ onMounted(() => {
   const canvas = canvasRef.value
   if (!canvas) return
 
-  const scene = new THREE.Scene()
-  const camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10)
+  scene = new THREE.Scene()
+  camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 10)
   camera.position.z = 1
 
-  renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: 'low-power' })
-  renderer.setSize(window.innerWidth, window.innerHeight)
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+  prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  isPageVisible = !document.hidden
+
+  renderer = new THREE.WebGLRenderer({
+    canvas,
+    antialias: false,
+    powerPreference: 'low-power',
+    alpha: false,
+  })
 
   const preset = isDark.value ? darkPreset : lightPreset
 
@@ -245,7 +289,7 @@ onMounted(() => {
     fragmentShader,
     uniforms: {
       uTime: { value: 0 },
-      uResolution: { value: new THREE.Vector2(window.innerWidth, window.innerHeight) },
+      uResolution: { value: new THREE.Vector2(1, 1) },
       uColor1: { value: new THREE.Color(preset.color1) },
       uColor2: { value: new THREE.Color(preset.color2) },
       uColor3: { value: new THREE.Color(preset.color3) },
@@ -262,14 +306,25 @@ onMounted(() => {
     },
   })
 
-  // Freeze animation if user prefers reduced motion
-  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)')
-  if (reducedMotion.matches) {
+  syncRendererSize()
+
+  if (prefersReducedMotion) {
     material.uniforms.uSpeed!.value = 0
   }
-  reducedMotion.addEventListener('change', (e) => {
-    if (material) material.uniforms.uSpeed!.value = e.matches ? 0 : sharedParams.speed
-  })
+
+  reducedMotionMql = window.matchMedia('(prefers-reduced-motion: reduce)')
+  reducedMotionHandler = (e: MediaQueryListEvent) => {
+    prefersReducedMotion = e.matches
+    if (!material) return
+    material.uniforms.uSpeed!.value = e.matches ? 0 : sharedParams.speed
+    if (e.matches) {
+      stopAnimationLoop()
+      renderFrame()
+    } else if (isPageVisible) {
+      startAnimationLoop()
+    }
+  }
+  reducedMotionMql.addEventListener('change', reducedMotionHandler)
 
   geometry = new THREE.PlaneGeometry(2, 2)
   const mesh = new THREE.Mesh(geometry, material)
@@ -280,18 +335,30 @@ onMounted(() => {
     pendingPreset = null
   }
 
-  const onResize = () => {
-    if (!renderer || !material) return
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    material.uniforms.uResolution!.value.set(window.innerWidth, window.innerHeight)
+  resizeHandler = () => {
+    syncRendererSize()
+    renderFrame()
   }
-  window.addEventListener('resize', onResize)
+  window.addEventListener('resize', resizeHandler)
+
+  visibilityHandler = () => {
+    isPageVisible = !document.hidden
+    if (!isPageVisible) {
+      stopAnimationLoop()
+      return
+    }
+    if (!prefersReducedMotion) {
+      startAnimationLoop()
+    } else {
+      renderFrame()
+    }
+  }
+  document.addEventListener('visibilitychange', visibilityHandler)
 
   const clock = new THREE.Clock()
 
-  const animate = () => {
-    animationId = requestAnimationFrame(animate)
-    if (!material || !renderer) return
+  const tick = () => {
+    if (!isPageVisible || !material || !renderer || !scene || !camera) return
     const dt = clock.getDelta()
     material.uniforms.uTime!.value = clock.elapsedTime
     if (colorBlend.t < 1) {
@@ -305,14 +372,48 @@ onMounted(() => {
     }
     renderer.render(scene, camera)
   }
-  animate()
+
+  function startAnimationLoop() {
+    if (prefersReducedMotion) return
+    stopAnimationLoop()
+    const loop = () => {
+      animationId = requestAnimationFrame(loop)
+      tick()
+    }
+    animationId = requestAnimationFrame(loop)
+  }
+
+  if (prefersReducedMotion) {
+    clock.getDelta()
+    renderFrame()
+  } else if (isPageVisible) {
+    startAnimationLoop()
+  }
 })
 
 onBeforeUnmount(() => {
-  if (animationId !== null) cancelAnimationFrame(animationId)
+  stopAnimationLoop()
+  if (resizeHandler) {
+    window.removeEventListener('resize', resizeHandler)
+    resizeHandler = null
+  }
+  if (visibilityHandler) {
+    document.removeEventListener('visibilitychange', visibilityHandler)
+    visibilityHandler = null
+  }
+  if (reducedMotionMql && reducedMotionHandler) {
+    reducedMotionMql.removeEventListener('change', reducedMotionHandler)
+    reducedMotionMql = null
+    reducedMotionHandler = null
+  }
   geometry?.dispose()
+  geometry = null
   material?.dispose()
+  material = null
   renderer?.dispose()
+  renderer = null
+  scene = null
+  camera = null
 })
 </script>
 
@@ -341,12 +442,13 @@ onBeforeUnmount(() => {
   min-height: 100%;
   transform: translate(-50%, -50%) scale(1.09);
   transform-origin: center center;
-  filter: blur(9px);
+  /* Heavy on compositor at full viewport; shader is already soft */
+  filter: blur(5px);
 }
 
 @media (prefers-reduced-motion: reduce) {
   .organic-background {
-    filter: blur(6px);
+    filter: blur(4px);
   }
 }
 </style>

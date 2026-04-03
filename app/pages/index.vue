@@ -3,8 +3,7 @@ import { Icon } from '@iconify/vue'
 import { socialLinks, profile } from '~/data/site'
 
 const { homeHero } = useMockContent()
-const { orderedProjects, loading } = useSanityProjects()
-const { homePage: cmsHome } = useSanityHome()
+const { orderedProjects, loading, homePage: cmsHome } = useSanityIndexBundle()
 
 const heroTitle = computed(() => cmsHome.value?.hero.title || homeHero.title)
 const heroTaglines = computed(() =>
@@ -148,7 +147,7 @@ useHead({
 
       <div
         v-else-if="filteredProjects.length === 0"
-        class="empty-projects rounded-xl bg-[var(--bg-secondary)] px-6 py-14 text-center"
+        class="empty-projects rounded-xl bg-[var(--bg-primary)] px-6 py-14 text-center"
       >
         <Icon
           icon="lucide:folder-open"
@@ -281,10 +280,19 @@ useHead({
   }
 }
 
+/* Empty state card */
+.empty-projects {
+  border: var(--card-border);
+  box-shadow: var(--card-ring);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
+}
+
 /* Skeleton loading */
 .skeleton-card {
   border-radius: 0.75rem;
   background: var(--bg-secondary);
+  border: var(--card-border);
   overflow: hidden;
 }
 

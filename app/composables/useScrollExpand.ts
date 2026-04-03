@@ -1,4 +1,9 @@
-import { ref, onMounted, onUnmounted, computed, type Ref } from 'vue'
+import { ref, computed, type Ref } from 'vue'
+import {
+  useScrollLayoutSubscription,
+  useSharedScrollY,
+  type ScrollLayoutTickSource,
+} from '~/composables/useScrollLayoutBus'
 
 export interface ScrollExpandOptions {
   minScale?: number
@@ -9,7 +14,7 @@ export interface ScrollExpandOptions {
 
 export function useScrollExpand(
   elementRef: Ref<HTMLElement | null>,
-  options: ScrollExpandOptions = {}
+  options: ScrollExpandOptions = {},
 ) {
   const {
     minScale = 0.85,
@@ -19,16 +24,14 @@ export function useScrollExpand(
   } = options
 
   const progress = ref(preExpanded ? 1 : 0)
-  const scrollY = ref(0)
+  const scrollY = useSharedScrollY()
   const minProgress = ref(preExpanded ? 1 : 0)
   const hasScrolled = ref(false)
-  const TRANSITION_RANGE = 1200 // Pixels over which to transition from full to scroll-based
-  let rafId: number | null = null
+  const TRANSITION_RANGE = 1200
 
-  // Smooth factor: 1 at top, 0 after TRANSITION_RANGE
   const topFactor = computed(() => {
     if (scrollY.value >= TRANSITION_RANGE) return 0
-    return 1 - (scrollY.value / TRANSITION_RANGE)
+    return 1 - scrollY.value / TRANSITION_RANGE
   })
 
   const scale = computed(() => {
@@ -37,13 +40,12 @@ export function useScrollExpand(
     }
     if (preExpanded) {
       const scrollBasedScale = minScale + (maxScale - minScale) * minProgress.value
-      // Blend between maxScale and scroll-based based on topFactor
       return scrollBasedScale + (maxScale - scrollBasedScale) * topFactor.value
     }
     return minScale + (maxScale - minScale) * progress.value
   })
 
-  const isCentered = computed(() => progress.value >= (1 - centerThreshold))
+  const isCentered = computed(() => progress.value >= 1 - centerThreshold)
 
   const calculateProgress = () => {
     if (!import.meta.client || !elementRef.value) {
@@ -55,14 +57,10 @@ export function useScrollExpand(
     const viewportHeight = window.innerHeight
     const elementCenter = rect.top + rect.height / 2
     const viewportCenter = viewportHeight / 2
-
     const distanceFromCenter = elementCenter - viewportCenter
-    const maxDistance = viewportHeight * 0.95 // Wider range for more gradual scale fade
-
+    const maxDistance = viewportHeight * 0.95
     const normalizedDistance = Math.abs(distanceFromCenter) / maxDistance
-
-    // Apply easing for more gradual transition
-    const easedDistance = normalizedDistance * normalizedDistance // Quadratic easing
+    const easedDistance = normalizedDistance * normalizedDistance
 
     progress.value = Math.max(0, Math.min(1, 1 - easedDistance))
 
@@ -71,38 +69,20 @@ export function useScrollExpand(
     }
   }
 
-  const onScroll = () => {
-    scrollY.value = window.scrollY
-    hasScrolled.value = true
-
-    if (rafId) {
-      cancelAnimationFrame(rafId)
+  const onTick = (source: ScrollLayoutTickSource) => {
+    if (source === 'scroll') {
+      hasScrolled.value = true
     }
-
-    rafId = requestAnimationFrame(calculateProgress)
+    calculateProgress()
   }
+
+  useScrollLayoutSubscription(onTick)
 
   const attach = () => {
-    if (!import.meta.client) return
-
     calculateProgress()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', calculateProgress, { passive: true })
   }
 
-  const detach = () => {
-    if (!import.meta.client) return
-
-    window.removeEventListener('scroll', onScroll)
-    window.removeEventListener('resize', calculateProgress)
-    if (rafId) {
-      cancelAnimationFrame(rafId)
-      rafId = null
-    }
-  }
-
-  onMounted(attach)
-  onUnmounted(detach)
+  const detach = () => {}
 
   return {
     progress,
@@ -117,21 +97,19 @@ export function useScrollExpand(
 
 export function useScrollOpacity(
   elementRef: Ref<HTMLElement | null>,
-  options: { preExpanded?: boolean } = {}
+  options: { preExpanded?: boolean } = {},
 ) {
   const { preExpanded = false } = options
 
   const opacity = ref(preExpanded ? 1 : 0)
   const minOpacity = ref(preExpanded ? 1 : 0)
   const hasScrolled = ref(false)
-  const scrollY = ref(0)
-  const TRANSITION_RANGE = 1200 // Pixels over which to transition from full to scroll-based
-  let rafId: number | null = null
+  const scrollY = useSharedScrollY()
+  const TRANSITION_RANGE = 1200
 
-  // Smooth factor: 1 at top, 0 after TRANSITION_RANGE
   const topFactor = computed(() => {
     if (scrollY.value >= TRANSITION_RANGE) return 0
-    return 1 - (scrollY.value / TRANSITION_RANGE)
+    return 1 - scrollY.value / TRANSITION_RANGE
   })
 
   const displayedOpacity = computed(() => {
@@ -139,7 +117,6 @@ export function useScrollOpacity(
       return 1
     }
     if (preExpanded) {
-      // Blend between 1 and scroll-based based on topFactor
       return minOpacity.value + (1 - minOpacity.value) * topFactor.value
     }
     return opacity.value
@@ -155,16 +132,15 @@ export function useScrollOpacity(
     const viewportHeight = window.innerHeight
     const elementCenter = rect.top + rect.height / 2
     const viewportCenter = viewportHeight / 2
-
     const distanceFromCenter = elementCenter - viewportCenter
-    const maxDistance = viewportHeight * 0.85 // Wider range for more gradual opacity fade
-    const bufferZone = maxDistance * 0.4 // Larger zone where opacity stays at 1
+    const maxDistance = viewportHeight * 0.85
+    const bufferZone = maxDistance * 0.4
 
     if (Math.abs(distanceFromCenter) < bufferZone) {
       opacity.value = 1
     } else {
-      const normalizedDistance = (Math.abs(distanceFromCenter) - bufferZone) / (maxDistance - bufferZone)
-      // Apply easing for more gradual transition
+      const normalizedDistance =
+        (Math.abs(distanceFromCenter) - bufferZone) / (maxDistance - bufferZone)
       const easedDistance = normalizedDistance * normalizedDistance
       opacity.value = Math.max(0.25, Math.min(1, 1 - easedDistance))
     }
@@ -174,36 +150,20 @@ export function useScrollOpacity(
     }
   }
 
-  const onScroll = () => {
-    scrollY.value = window.scrollY
-    hasScrolled.value = true
-    if (rafId) {
-      cancelAnimationFrame(rafId)
+  const onTick = (source: ScrollLayoutTickSource) => {
+    if (source === 'scroll') {
+      hasScrolled.value = true
     }
-    rafId = requestAnimationFrame(calculateOpacity)
+    calculateOpacity()
   }
+
+  useScrollLayoutSubscription(onTick)
 
   const attach = () => {
-    if (!import.meta.client) return
-
     calculateOpacity()
-    window.addEventListener('scroll', onScroll, { passive: true })
-    window.addEventListener('resize', calculateOpacity, { passive: true })
   }
 
-  const detach = () => {
-    if (!import.meta.client) return
-
-    window.removeEventListener('scroll', onScroll)
-    window.removeEventListener('resize', calculateOpacity)
-    if (rafId) {
-      cancelAnimationFrame(rafId)
-      rafId = null
-    }
-  }
-
-  onMounted(attach)
-  onUnmounted(detach)
+  const detach = () => {}
 
   return {
     opacity,
@@ -211,5 +171,107 @@ export function useScrollOpacity(
     hasScrolled,
     attach,
     detach,
+  }
+}
+
+/**
+ * Single layout subscription + one getBoundingClientRect per frame for scroll-driven
+ * scale and opacity (used by ScrollExpandImage).
+ */
+export function useScrollExpandImage(
+  elementRef: Ref<HTMLElement | null>,
+  options: ScrollExpandOptions = {},
+) {
+  const {
+    minScale = 0.92,
+    maxScale = 1,
+    centerThreshold = 0.3,
+    preExpanded = false,
+  } = options
+
+  const progress = ref(preExpanded ? 1 : 0)
+  const opacity = ref(preExpanded ? 1 : 0)
+  const minProgress = ref(preExpanded ? 1 : 0)
+  const minOpacity = ref(preExpanded ? 1 : 0)
+  const hasScrolled = ref(false)
+  const scrollY = useSharedScrollY()
+  const TRANSITION_RANGE = 1200
+
+  const topFactor = computed(() => {
+    if (scrollY.value >= TRANSITION_RANGE) return 0
+    return 1 - scrollY.value / TRANSITION_RANGE
+  })
+
+  const scale = computed(() => {
+    if (preExpanded && !hasScrolled.value) {
+      return maxScale
+    }
+    if (preExpanded) {
+      const scrollBasedScale = minScale + (maxScale - minScale) * minProgress.value
+      return scrollBasedScale + (maxScale - scrollBasedScale) * topFactor.value
+    }
+    return minScale + (maxScale - minScale) * progress.value
+  })
+
+  const displayedOpacity = computed(() => {
+    if (preExpanded && !hasScrolled.value) {
+      return 1
+    }
+    if (preExpanded) {
+      return minOpacity.value + (1 - minOpacity.value) * topFactor.value
+    }
+    return opacity.value
+  })
+
+  const isCentered = computed(() => progress.value >= 1 - centerThreshold)
+
+  const updateLayout = (source: ScrollLayoutTickSource) => {
+    if (!import.meta.client || !elementRef.value) {
+      progress.value = preExpanded ? 1 : 0
+      opacity.value = preExpanded ? 1 : 0
+      return
+    }
+
+    if (source === 'scroll') {
+      hasScrolled.value = true
+    }
+
+    const rect = elementRef.value.getBoundingClientRect()
+    const viewportHeight = window.innerHeight
+    const elementCenter = rect.top + rect.height / 2
+    const viewportCenter = viewportHeight / 2
+    const distanceFromCenter = elementCenter - viewportCenter
+
+    const maxExpand = viewportHeight * 0.95
+    const normExpand = Math.abs(distanceFromCenter) / maxExpand
+    const easedExpand = normExpand * normExpand
+    progress.value = Math.max(0, Math.min(1, 1 - easedExpand))
+
+    const maxOp = viewportHeight * 0.85
+    const bufferZone = maxOp * 0.4
+    if (Math.abs(distanceFromCenter) < bufferZone) {
+      opacity.value = 1
+    } else {
+      const normOp =
+        (Math.abs(distanceFromCenter) - bufferZone) / (maxOp - bufferZone)
+      const easedOp = normOp * normOp
+      opacity.value = Math.max(0.25, Math.min(1, 1 - easedOp))
+    }
+
+    if (preExpanded && hasScrolled.value) {
+      minProgress.value = Math.min(minProgress.value, progress.value)
+      minOpacity.value = Math.min(minOpacity.value, opacity.value)
+    }
+  }
+
+  useScrollLayoutSubscription(updateLayout)
+
+  return {
+    progress,
+    scale,
+    isCentered,
+    displayedOpacity,
+    scrollY,
+    hasScrolled,
   }
 }

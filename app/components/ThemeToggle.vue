@@ -7,11 +7,12 @@ const { isDark, toggle } = useTheme()
 <template>
   <button
     type="button"
-    class="relative inline-flex h-9 w-[78px] items-center rounded-full px-2 transition-all duration-300 hover:scale-105 active:scale-95"
+    class="relative inline-flex h-9 w-[78px] shrink-0 items-center rounded-full px-2 transition-all duration-300 hover:scale-105 active:scale-95"
     :style="{
       backgroundColor: 'var(--bg-primary)',
-      backdropFilter: 'blur(12px)',
-      WebkitBackdropFilter: 'blur(12px)',
+      border: 'var(--card-border)',
+      backdropFilter: 'blur(15px) saturate(1.2)',
+      WebkitBackdropFilter: 'blur(15px) saturate(1.2)',
     }"
     :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
     :aria-pressed="isDark"

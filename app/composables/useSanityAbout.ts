@@ -60,7 +60,7 @@ export function useSanityAbout() {
       hero: raw.value.hero
         ? {
             name: raw.value.hero.name,
-            avatar: raw.value.hero.avatar ? buildImageUrl(raw.value.hero.avatar) : null,
+            avatar: raw.value.hero.avatar ? buildImageUrl(raw.value.hero.avatar, 'card') : null,
             availabilityText: raw.value.hero.availabilityText || 'Available for freelance',
           } as AboutHero
         : null,
@@ -70,7 +70,7 @@ export function useSanityAbout() {
         company: exp.company,
         year: exp.year,
         description: exp.description,
-        image: exp.logo ? buildImageUrl(exp.logo) : null,
+        image: exp.logo ? buildImageUrl(exp.logo, 'thumbnail') : null,
       })) as AboutExperienceEntry[],
       capabilities: (raw.value.capabilities || []) as AboutCapability[],
       resumeUrl: raw.value.resumeUrl || null,

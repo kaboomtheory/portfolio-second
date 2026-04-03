@@ -257,7 +257,7 @@ const availabilityCtaLabel = computed(() =>
   padding: var(--space-lg) 0 var(--space-xl);
   min-height: min(70vh, 52rem);
   display: flex;
-  align-items: center;
+  align-items: flex-start;
 }
 
 .hero-grid {
@@ -268,8 +268,9 @@ const availabilityCtaLabel = computed(() =>
 
 @media (min-width: 1024px) {
   .hero-grid {
-    grid-template-columns: 1.2fr 1fr;
-    gap: 4rem;
+    grid-template-columns: 1.15fr 1fr;
+    gap: clamp(2rem, 4vw, 3rem);
+    align-items: start;
   }
 }
 
@@ -321,6 +322,12 @@ const availabilityCtaLabel = computed(() =>
   justify-content: center;
 }
 
+@media (min-width: 1024px) {
+  .hero-visual {
+    justify-content: flex-start;
+  }
+}
+
 .avatar-container {
   width: 280px;
   height: 340px;
@@ -330,6 +337,13 @@ const availabilityCtaLabel = computed(() =>
   .avatar-container {
     width: 320px;
     height: 400px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .avatar-container {
+    width: min(100%, 360px);
+    height: clamp(22rem, 52vh, 28rem);
   }
 }
 
@@ -345,9 +359,11 @@ const availabilityCtaLabel = computed(() =>
   padding: var(--space-md) var(--space-md);
   overflow: hidden;
   border-radius: var(--radius-card);
-  border: 1px solid color-mix(in srgb, var(--border) 12%, transparent);
-  box-shadow: var(--shadow-sm);
-  background: color-mix(in srgb, var(--bg-secondary) 55%, transparent);
+  border: var(--card-border);
+  box-shadow: var(--card-ring);
+  background: var(--bg-secondary);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
 }
 
 .ticker-wrapper {
@@ -428,9 +444,11 @@ const availabilityCtaLabel = computed(() =>
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 1rem;
-  background: var(--bg-secondary);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-primary);
+  border: var(--card-border);
+  box-shadow: var(--card-ring);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
   border-radius: var(--radius-card);
   transition: background-color 200ms ease;
 }
@@ -554,9 +572,10 @@ const availabilityCtaLabel = computed(() =>
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--fg-secondary);
-  background: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  background: var(--bg-primary);
+  border: 1px solid rgba(61, 125, 186, 0.15);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
   border-radius: 9999px;
   transition:
     color 200ms ease,
@@ -564,16 +583,17 @@ const availabilityCtaLabel = computed(() =>
 }
 
 :root.dark .capability-tag {
-  background: rgba(10, 15, 30, 0.6);
+  background: var(--bg-primary);
+  border-color: rgba(255, 255, 255, 0.08);
 }
 
 .capability-tag:hover {
   color: var(--fg-primary);
-  background-color: color-mix(in srgb, var(--fg-primary) 6%, rgba(255, 255, 255, 0.6));
+  background-color: color-mix(in srgb, var(--neon-mid) 8%, var(--bg-primary));
 }
 
 :root.dark .capability-tag:hover {
-  background-color: color-mix(in srgb, white 8%, rgba(10, 15, 30, 0.6));
+  background-color: color-mix(in srgb, var(--neon) 8%, var(--bg-primary));
 }
 
 /* Experience Section */
@@ -592,9 +612,11 @@ const availabilityCtaLabel = computed(() =>
   grid-template-columns: 1fr;
   gap: 1rem;
   padding: 1.25rem;
-  background: var(--bg-secondary);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--bg-primary);
+  border: var(--card-border);
+  box-shadow: var(--card-ring);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
   border-radius: var(--radius-card);
   animation: slide-in 0.5s ease-out backwards;
   animation-delay: var(--delay);

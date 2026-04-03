@@ -41,16 +41,14 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+  background: var(--bg-primary);
+  border: var(--card-border);
+  box-shadow: var(--card-ring);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
   color: var(--fg-secondary);
   cursor: pointer;
   transition: all 0.2s ease;
-}
-
-:root.dark .back-to-top {
-  background: rgba(10, 15, 30, 0.6);
 }
 
 .back-to-top:hover {

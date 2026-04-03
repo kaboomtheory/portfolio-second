@@ -33,7 +33,7 @@ If any are added later, treat them as higher-priority project instructions and u
   - `useTheme`: theme state management.
   - `useMockContent`: unified mock data access.
   - `useScrollReveal`: IntersectionObserver-based fade/slide animations.
-  - `useScrollExpand`: viewport-centred scroll progress tracking for scale/opacity.
+  - `useScrollExpand` / `useScrollOpacity` / `useScrollExpandImage`: viewport-centred scroll effects; `useScrollLayoutBus` coalesces scroll/resize to one rAF.
 - `app/plugins/*`: client-side plugins.
   - `theme.client.ts`: theme persistence and DOM sync.
 - `app/middleware/*`: route middleware (`project-protect`).
@@ -172,7 +172,7 @@ The project pages use a scroll-driven animation system with these components:
 ### Composables
 
 - **`useScrollReveal`** (`app/composables/useScrollReveal.ts`): IntersectionObserver-based fade/slide animations. Returns `elementRef`, `isVisible` for single elements. Also exports `useScrollRevealGroup` for staggered children animations.
-- **`useScrollExpand`** (`app/composables/useScrollExpand.ts`): Viewport-center-based scale/opacity calculations. Returns `progress`, `scale`, `isCentered`. Also exports `useScrollOpacity` for separate opacity fade logic.
+- **`useScrollExpand`** (`app/composables/useScrollExpand.ts`): Viewport-center-based scale calculations (`progress`, `scale`, `isCentered`). **`useScrollOpacity`**: separate opacity fade. **`useScrollExpandImage`**: single `getBoundingClientRect` per frame for both (used by `ScrollExpandImage`). All use **`useScrollLayoutBus`** (`useScrollLayoutSubscription` + shared `scrollY`) for one window listener set.
 
 ### Components
 

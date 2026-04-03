@@ -63,26 +63,28 @@ onUnmounted(() => {
 
 <template>
   <header class="navbar" :class="{ 'navbar-hidden': isHidden }">
-    <div class="navbar-inner">
+    <div class="navbar-inner container mx-auto w-full px-5 sm:px-6 md:max-w-[72rem] md:px-8">
       <div class="pill">
         <NuxtLink to="/" class="navbar-brand">
           <img :src="profile.photo" :alt="profile.name" class="navbar-brand-avatar">
           <span class="navbar-brand-name mono">{{ profile.name }}</span>
         </NuxtLink>
 
-        <nav ref="pillNav" class="pill-nav">
-          <span ref="blob" class="nav-blob" />
-          <NuxtLink
-            v-for="item in navItems"
-            :key="item.path"
-            :to="item.path"
-            class="nav-link mono"
-          >
-            {{ item.title }}
-          </NuxtLink>
-        </nav>
+        <div class="pill-trailing">
+          <nav ref="pillNav" class="pill-nav">
+            <span ref="blob" class="nav-blob" />
+            <NuxtLink
+              v-for="item in navItems"
+              :key="item.path"
+              :to="item.path"
+              class="nav-link mono"
+            >
+              {{ item.title }}
+            </NuxtLink>
+          </nav>
 
-        <ThemeToggle />
+          <ThemeToggle />
+        </div>
       </div>
     </div>
   </header>
@@ -95,7 +97,7 @@ onUnmounted(() => {
   left: 0;
   right: 0;
   z-index: 50;
-  padding: 1.5rem 1.25rem;
+  padding: 1.5rem 0;
   pointer-events: none;
   transition: transform 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9);
 }
@@ -105,11 +107,6 @@ onUnmounted(() => {
 }
 
 .navbar-inner {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  max-width: 72rem;
-  margin: 0 auto;
   pointer-events: auto;
 }
 
@@ -133,22 +130,33 @@ onUnmounted(() => {
   }
 }
 
-/* Single pill */
+/* Full-width bar aligned with layout container */
 .pill {
   display: flex;
   align-items: center;
-  gap: 0.625rem;
-  border-radius: 9999px;
-  padding: 0.5rem 0.625rem;
-  background-color: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
+  justify-content: space-between;
+  gap: 0.75rem;
+  width: 100%;
   min-width: 0;
+  border-radius: 9999px;
+  padding: 0.5rem 0.75rem;
+  background-color: var(--bg-primary);
+  border: var(--card-border);
+  box-shadow: var(--card-ring);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
   animation: navbar-pill-glow 6s ease-in-out infinite alternate;
 }
 
+@media (min-width: 640px) {
+  .pill {
+    padding: 0.5rem 1rem;
+    gap: 1rem;
+  }
+}
+
 :root.dark .pill {
-  background-color: rgba(10, 15, 30, 0.6);
+  background-color: var(--bg-primary);
   animation-name: navbar-pill-glow-dark;
 }
 
@@ -188,12 +196,33 @@ onUnmounted(() => {
   }
 }
 
+.pill-trailing {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .pill-trailing {
+    gap: 0.75rem;
+  }
+}
+
 /* Nav links */
 .pill-nav {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.375rem;
   position: relative;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .pill-nav {
+    gap: 0.5rem;
+  }
 }
 
 .nav-blob {
