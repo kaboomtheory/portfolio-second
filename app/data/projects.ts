@@ -7,8 +7,6 @@ export interface ProjectStorySection {
 export interface ProjectItem {
   slug: string
   name: string
-  category: string
-  year: string
   summary: string
   thumbnail: string
   protected?: boolean
@@ -22,8 +20,6 @@ export const projects: ProjectItem[] = [
   {
     slug: 'victor',
     name: 'Victor',
-    category: 'Marketing',
-    year: '2024',
     summary:
       'Premium A+ content created for Victor\'s online product listings, delivering visually captivating and functional assets to elevate the online shopping experience.',
     thumbnail: '/images/projects/victor/01.png',
@@ -104,8 +100,6 @@ export const projects: ProjectItem[] = [
   {
     slug: 'emerson',
     name: 'Emerson',
-    category: 'Branding',
-    year: '2024',
     summary:
       'A comprehensive branding project for Emerson, creating visual assets that communicate quality and innovation.',
     thumbnail: '/images/projects/emerson/01.png',
@@ -181,8 +175,6 @@ export const projects: ProjectItem[] = [
   {
     slug: 'cubby',
     name: 'Cubby',
-    category: 'Product Design',
-    year: '2024',
     summary:
       'A modern storage solution brand identity and digital presence that combines functionality with playful design.',
     thumbnail: '/images/projects/cubby/01.png',
@@ -263,8 +255,6 @@ export const projects: ProjectItem[] = [
   {
     slug: 'puchicafe',
     name: 'Púchicafé',
-    category: 'Branding',
-    year: '2024',
     summary:
       'A vibrant brand identity for a specialty coffee shop that celebrates Latin American coffee culture.',
     thumbnail: '/images/projects/puchicafe/01.png',
@@ -300,8 +290,6 @@ export const projects: ProjectItem[] = [
   {
     slug: 'linkup',
     name: 'LinkUp',
-    category: 'App Design',
-    year: '2024',
     summary:
       'A social networking app designed to help people build meaningful professional connections.',
     thumbnail: '/images/projects/linkup/01.png',
@@ -372,8 +360,6 @@ export const projects: ProjectItem[] = [
   {
     slug: 'kale-of-the-wild',
     name: 'Kale of the Wild',
-    category: 'Brand Identity',
-    year: '2024',
     summary:
       'A nature-inspired brand identity for an organic food company that celebrates wild, sustainable ingredients.',
     thumbnail: '/images/projects/kale-of-the-wild/01.png',
@@ -434,8 +420,6 @@ export const projects: ProjectItem[] = [
   {
     slug: 'radiant-valley',
     name: 'Radiant Valley',
-    category: 'Brand Identity',
-    year: '2024',
     summary:
       'A serene brand identity for a wellness retreat nestled in nature, offering transformative experiences.',
     thumbnail: '/images/projects/radiant-valley/01.png',
@@ -501,8 +485,6 @@ export const projects: ProjectItem[] = [
   {
     slug: 'mixed-designs',
     name: 'Mixed Designs',
-    category: 'Design Collection',
-    year: '2024',
     summary:
       'A curated collection of design experiments and client work showcasing versatility across styles and mediums.',
     thumbnail: '/images/projects/mixed-designs/01.png',

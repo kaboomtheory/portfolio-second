@@ -4,8 +4,6 @@ export default defineCachedEventHandler(async () => {
     _type,
     name,
     slug,
-    category,
-    year,
     summary,
     thumbnail,
     protected,

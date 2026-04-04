@@ -78,8 +78,6 @@ export function projectItemsFromSanityRaw(
   return rawProjects.map((project: SanityProjectItem) => ({
     slug: project.slug?.current || '',
     name: project.name || '',
-    category: project.category || '',
-    year: project.year || '',
     summary: project.summary || '',
     thumbnail: project.thumbnail ? buildImageUrl(project.thumbnail, 'grid') : '',
     protected: project.protected || false,

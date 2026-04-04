@@ -17,30 +17,27 @@ const linkedinHref = computed(() => {
   return found?.href ?? 'https://www.linkedin.com/'
 })
 
-const filterCategory = ref<string>('all')
+const filterTag = ref<string>('all')
 
-const categoryOptions = computed(() => {
+const tagOptions = computed(() => {
   const set = new Set<string>()
   for (const p of orderedProjects.value) {
-    const c = p.category?.trim()
-    if (c) set.add(c)
+    for (const t of p.tags ?? []) {
+      const s = t?.trim()
+      if (s) set.add(s)
+    }
   }
   return Array.from(set).sort((a, b) => a.localeCompare(b))
 })
 
 const filteredProjects = computed(() => {
-  if (filterCategory.value === 'all') return orderedProjects.value
-  return orderedProjects.value.filter((p) => p.category === filterCategory.value)
+  if (filterTag.value === 'all') return orderedProjects.value
+  return orderedProjects.value.filter((p) => p.tags?.includes(filterTag.value))
 })
 
 const showFilters = computed(
-  () => !loading.value && categoryOptions.value.length > 0,
+  () => !loading.value && tagOptions.value.length > 0,
 )
-
-const getAnimationDelay = (index: number) => {
-  const baseDelay = 0.12
-  return baseDelay + index * 0.08
-}
 
 useHead({
   title: 'Selected work',
@@ -99,7 +96,7 @@ useHead({
           Selected work
         </h2>
         <p class="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-          Case studies and client projects — filtered by type when available.
+          Case studies and client projects — filtered by tag when available.
         </p>
       </div>
 
@@ -107,29 +104,29 @@ useHead({
         v-if="showFilters"
         class="mb-6 flex flex-wrap gap-2"
         role="tablist"
-        aria-label="Filter projects by category"
+        aria-label="Filter projects by tag"
       >
         <button
           type="button"
           role="tab"
-          :aria-selected="filterCategory === 'all'"
+          :aria-selected="filterTag === 'all'"
           class="filter-pill"
-          :class="{ 'filter-pill--active': filterCategory === 'all' }"
-          @click="filterCategory = 'all'"
+          :class="{ 'filter-pill--active': filterTag === 'all' }"
+          @click="filterTag = 'all'"
         >
           All
         </button>
         <button
-          v-for="cat in categoryOptions"
-          :key="cat"
+          v-for="tag in tagOptions"
+          :key="tag"
           type="button"
           role="tab"
-          :aria-selected="filterCategory === cat"
+          :aria-selected="filterTag === tag"
           class="filter-pill"
-          :class="{ 'filter-pill--active': filterCategory === cat }"
-          @click="filterCategory = cat"
+          :class="{ 'filter-pill--active': filterTag === tag }"
+          @click="filterTag = tag"
         >
-          {{ cat }}
+          {{ tag }}
         </button>
       </div>
 
@@ -160,18 +157,19 @@ useHead({
         </p>
       </div>
 
-      <div
-        v-else
-        class="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-7"
-      >
-        <ProjectCard
-          v-for="(item, index) in filteredProjects"
-          :key="item.slug"
-          :project="item"
-          :style="{ animationDelay: `${getAnimationDelay(index)}s` }"
-          class="project-card-enter"
-        />
-      </div>
+      <Transition v-else name="grid-fade" mode="out-in" appear>
+        <div
+          :key="filterTag"
+          class="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-7"
+        >
+          <ProjectCard
+            v-for="(item, idx) in filteredProjects"
+            :key="item.slug"
+            :project="item"
+            :style="{ '--i': idx }"
+          />
+        </div>
+      </Transition>
     </section>
   </div>
 </template>
@@ -246,17 +244,34 @@ useHead({
   }
 }
 
-/* Staggered card entry */
-.project-card-enter {
-  opacity: 0;
-  transform: translateY(16px);
-  animation: project-card-enter 0.55s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+/* Project grid: crossfade on filter change */
+.grid-fade-enter-active {
+  transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
-@keyframes project-card-enter {
+.grid-fade-leave-active {
+  transition: opacity 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+}
+
+.grid-fade-enter-from,
+.grid-fade-leave-to {
+  opacity: 0;
+}
+
+/* Staggered card entry within the grid */
+.grid-fade-enter-active :deep(.project-card) {
+  animation: card-enter 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+  animation-delay: calc(var(--i, 0) * 50ms);
+}
+
+@keyframes card-enter {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translateY(0) scale(1);
   }
 }
 
@@ -336,13 +351,24 @@ useHead({
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hero-fade-in,
-  .project-card-enter {
+  .hero-fade-in {
     animation: none;
     opacity: 1;
   }
 
-  .project-card-enter {
+  .grid-fade-enter-active,
+  .grid-fade-leave-active {
+    transition: none;
+  }
+
+  .grid-fade-enter-from,
+  .grid-fade-leave-to {
+    opacity: 1;
+  }
+
+  .grid-fade-enter-active :deep(.project-card) {
+    animation: none;
+    opacity: 1;
     transform: none;
   }
 

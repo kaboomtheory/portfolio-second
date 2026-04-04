@@ -94,20 +94,17 @@ function isMediaSection(section: ProjectStorySection): boolean {
       </NuxtLink>
 
       <div class="hero-header">
-        <p class="project-meta text-meta">
-          {{ project.category }} • {{ project.year }}
-        </p>
-        <h1 class="mt-2 text-4xl font-bold md:text-5xl">
+        <h1 class="text-4xl font-bold md:text-5xl">
           {{ project.name }}
         </h1>
         <p class="mt-4 max-w-3xl text-lg">
           {{ project.summary }}
         </p>
-        <div v-if="project.tags" class="mt-4 flex flex-wrap gap-2">
+        <div v-if="project.tags?.length" class="mt-4 flex flex-wrap gap-2">
           <span
             v-for="tag in project.tags"
             :key="tag"
-            class="pill"
+            class="tag-chip"
           >
             {{ tag }}
           </span>
@@ -295,11 +292,6 @@ function isMediaSection(section: ProjectStorySection): boolean {
 .hero-header {
   animation: hero-reveal 0.6s ease-out forwards;
   margin-bottom: var(--space-xl);
-}
-
-.project-meta {
-  color: var(--accent-soft);
-  letter-spacing: 0.12em;
 }
 
 .section-heading {

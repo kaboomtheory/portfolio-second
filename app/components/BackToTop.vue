@@ -20,11 +20,13 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
     <button
       v-if="isVisible"
       type="button"
-      class="back-to-top"
+      class="back-to-top shiny-cta"
       aria-label="Back to top"
       @click="scrollToTop"
     >
-      <Icon icon="lucide:arrow-up" />
+      <span class="shiny-cta-inner">
+        <Icon icon="lucide:arrow-up" aria-hidden="true" />
+      </span>
     </button>
   </Transition>
 </template>
@@ -35,29 +37,8 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   bottom: 2rem;
   right: 2rem;
   z-index: 40;
-  width: 2.5rem;
-  height: 2.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   border-radius: 9999px;
-  background: var(--bg-primary);
-  border: var(--card-border);
-  box-shadow: var(--card-ring);
-  backdrop-filter: blur(15px) saturate(1.2);
-  -webkit-backdrop-filter: blur(15px) saturate(1.2);
-  color: var(--fg-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.back-to-top:hover {
-  color: var(--emphasis);
-  transform: translateY(-2px);
-}
-
-.back-to-top:active {
-  transform: translateY(0);
 }
 
 .fade-up-enter-active,
@@ -72,10 +53,6 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .back-to-top {
-    transition: none;
-  }
-
   .fade-up-enter-active,
   .fade-up-leave-active {
     transition: none;

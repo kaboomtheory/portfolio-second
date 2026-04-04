@@ -144,9 +144,10 @@
 
 /*
   Shiny pill CTA (Ryan Mulligan / @property conic border pattern).
-  Used only with .cta-button.btn-attention.shiny-cta from CtaButton.vue.
+  Used with .cta-button.btn-attention.shiny-cta (CtaButton.vue) and .back-to-top.shiny-cta (BackToTop.vue).
 */
-.cta-button.btn-attention.shiny-cta {
+.cta-button.btn-attention.shiny-cta,
+.back-to-top.shiny-cta {
   --shiny-duration: 3s;
   --shiny-shadow-size: 2px;
   --shiny-ease: 800ms cubic-bezier(0.25, 1, 0.5, 1);
@@ -182,7 +183,9 @@
 }
 
 .cta-button.btn-attention.shiny-cta,
-.cta-button.btn-attention.shiny-cta::before {
+.cta-button.btn-attention.shiny-cta::before,
+.back-to-top.shiny-cta,
+.back-to-top.shiny-cta::before {
   animation:
     shiny-cta-gradient-angle var(--shiny-duration) linear infinite,
     shiny-cta-gradient-angle calc(var(--shiny-duration) / 0.4) linear reverse paused;
@@ -190,7 +193,9 @@
 }
 
 .cta-button.btn-attention.shiny-cta::before,
-.cta-button.btn-attention.shiny-cta::after {
+.cta-button.btn-attention.shiny-cta::after,
+.back-to-top.shiny-cta::before,
+.back-to-top.shiny-cta::after {
   content: '';
   pointer-events: none;
   position: absolute;
@@ -201,7 +206,8 @@
 }
 
 /* Dots pattern */
-.cta-button.btn-attention.shiny-cta::before {
+.cta-button.btn-attention.shiny-cta::before,
+.back-to-top.shiny-cta::before {
   --size: calc(100% - var(--shiny-shadow-size) * 3);
   --position: 2px;
   --space: calc(var(--position) * 2);
@@ -228,7 +234,8 @@
 }
 
 /* Inner shimmer */
-.cta-button.btn-attention.shiny-cta::after {
+.cta-button.btn-attention.shiny-cta::after,
+.back-to-top.shiny-cta::after {
   width: 100%;
   aspect-ratio: 1;
   background: linear-gradient(
@@ -246,7 +253,8 @@
   animation-composition: add;
 }
 
-.cta-button.btn-attention.shiny-cta .shiny-cta-inner {
+.cta-button.btn-attention.shiny-cta .shiny-cta-inner,
+.back-to-top.shiny-cta .shiny-cta-inner {
   position: relative;
   z-index: 1;
   display: inline-flex;
@@ -254,7 +262,8 @@
   gap: 0.5rem;
 }
 
-.cta-button.btn-attention.shiny-cta:is(:hover, :focus-visible) {
+.cta-button.btn-attention.shiny-cta:is(:hover, :focus-visible),
+.back-to-top.shiny-cta:is(:hover, :focus-visible) {
   --gradient-percent: 20%;
   --gradient-angle-offset: 95deg;
   --gradient-shine: var(--shiny-cta-highlight-subtle);
@@ -264,13 +273,17 @@
     var(--shiny-cta-hover-glow-b);
 }
 
-.cta-button.btn-attention.shiny-cta:is(:hover, :focus-visible)::after {
+.cta-button.btn-attention.shiny-cta:is(:hover, :focus-visible)::after,
+.back-to-top.shiny-cta:is(:hover, :focus-visible)::after {
   opacity: 0.72;
 }
 
 .cta-button.btn-attention.shiny-cta:is(:hover, :focus-visible),
 .cta-button.btn-attention.shiny-cta:is(:hover, :focus-visible)::before,
-.cta-button.btn-attention.shiny-cta:is(:hover, :focus-visible)::after {
+.cta-button.btn-attention.shiny-cta:is(:hover, :focus-visible)::after,
+.back-to-top.shiny-cta:is(:hover, :focus-visible),
+.back-to-top.shiny-cta:is(:hover, :focus-visible)::before,
+.back-to-top.shiny-cta:is(:hover, :focus-visible)::after {
   animation-play-state: running;
 }
 
@@ -278,9 +291,67 @@
   translate: 0 1px;
 }
 
+.back-to-top.shiny-cta:is(:hover, :focus-visible) {
+  translate: 0 -2px;
+}
+
+.back-to-top.shiny-cta:active {
+  translate: 0 0;
+}
+
 .cta-button.btn-attention.shiny-cta.cta-button--preserve-case {
   letter-spacing: 0.02em;
   font-weight: 500;
+}
+
+/* Icon FAB: same shiny treatment as attention CTA, fixed circle (content sized in component) */
+.back-to-top.shiny-cta {
+  position: relative;
+  overflow: hidden;
+  padding: 0;
+  min-width: 2.5rem;
+  min-height: 2.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  line-height: 1;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  transition:
+    translate 0.2s ease,
+    --gradient-angle-offset var(--shiny-ease, 800ms cubic-bezier(0.25, 1, 0.5, 1)),
+    --gradient-percent var(--shiny-ease, 800ms cubic-bezier(0.25, 1, 0.5, 1)),
+    --gradient-shine var(--shiny-ease, 800ms cubic-bezier(0.25, 1, 0.5, 1)),
+    box-shadow var(--shiny-ease, 800ms cubic-bezier(0.25, 1, 0.5, 1));
+}
+
+.back-to-top.shiny-cta .shiny-cta-inner {
+  justify-content: center;
+}
+
+/*
+  Light mode: pure white in the conic “shine” stop reads chalky on #e8f2f9.
+  Tint the idle shine + rim stops toward the canvas blues so the border feels integrated.
+*/
+:root:not(.dark) .cta-button.btn-attention.shiny-cta,
+:root:not(.dark) .back-to-top.shiny-cta {
+  --gradient-shine: color-mix(in srgb, #f4fafd 45%, #b0cfe4 55%);
+  --shiny-cta-highlight: color-mix(in srgb, #5a8eae 72%, #a3c8de 28%);
+  --shiny-cta-highlight-subtle: color-mix(in srgb, #7aa3c2 55%, #c5ddf0 45%);
+  --shiny-cta-dot: color-mix(in srgb, var(--shiny-cta-highlight) 24%, transparent);
+}
+
+/* Back-to-top: keep rim soft (above); a touch more chroma only in the inner rotating bar */
+:root:not(.dark) .back-to-top.shiny-cta::after {
+  background: linear-gradient(
+    -50deg,
+    transparent,
+    color-mix(in srgb, #4a9fd0 40%, #8ec0e0 60%),
+    transparent
+  );
 }
 
 @keyframes shiny-cta-gradient-angle {
@@ -298,11 +369,15 @@
 @media (prefers-reduced-motion: reduce) {
   .cta-button.btn-attention.shiny-cta,
   .cta-button.btn-attention.shiny-cta::before,
-  .cta-button.btn-attention.shiny-cta::after {
+  .cta-button.btn-attention.shiny-cta::after,
+  .back-to-top.shiny-cta,
+  .back-to-top.shiny-cta::before,
+  .back-to-top.shiny-cta::after {
     animation: none !important;
   }
 
-  .cta-button.btn-attention.shiny-cta {
+  .cta-button.btn-attention.shiny-cta,
+  .back-to-top.shiny-cta {
     --gradient-angle: 200deg;
     --gradient-angle-offset: 0deg;
     --gradient-percent: 14%;
@@ -314,18 +389,26 @@
       0 0 0 1px color-mix(in srgb, var(--shiny-cta-highlight) 25%, transparent);
   }
 
-  .cta-button.btn-attention.shiny-cta::before {
+  .cta-button.btn-attention.shiny-cta::before,
+  .back-to-top.shiny-cta::before {
     opacity: 0.2;
     mask-image: none;
   }
 
-  .cta-button.btn-attention.shiny-cta::after {
+  .cta-button.btn-attention.shiny-cta::after,
+  .back-to-top.shiny-cta::after {
     opacity: 0.25;
     rotate: none;
   }
 
-  .cta-button.btn-attention.shiny-cta:is(:hover, :focus-visible)::after {
+  .cta-button.btn-attention.shiny-cta:is(:hover, :focus-visible)::after,
+  .back-to-top.shiny-cta:is(:hover, :focus-visible)::after {
     opacity: 0.25;
+  }
+
+  .back-to-top.shiny-cta:is(:hover, :focus-visible),
+  .back-to-top.shiny-cta:active {
+    translate: none;
   }
 }
 
@@ -613,7 +696,6 @@ pre,
 
 /* ── Pill / tag tokens (single source of truth) ── */
 .pill,
-.tag-chip,
 .filter-pill {
   font-family: 'Geist Mono', ui-monospace, monospace;
   display: inline-block;
@@ -630,6 +712,31 @@ pre,
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
 }
 
+/* Read-only tags: same idle chrome as filter pills (non-interactive) */
+.tag-chip {
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: color-mix(in srgb, var(--fg-primary) 88%, var(--fg-secondary) 12%);
+  background-color: var(--surface-interactive);
+  border: 1px solid transparent;
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px var(--chrome-ring-idle);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
+}
+
+:root.dark .tag-chip {
+  background-color: var(--surface-interactive);
+}
+
 /* Interactive variant (filter buttons) */
 .filter-pill {
   cursor: pointer;
@@ -643,9 +750,14 @@ pre,
   backdrop-filter: blur(15px) saturate(1.2);
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
   transition:
-    background-color 200ms ease,
-    color 200ms ease,
-    box-shadow 200ms ease;
+    background-color 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    color 180ms ease,
+    box-shadow 220ms cubic-bezier(0.34, 1.56, 0.64, 1),
+    transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.filter-pill:active {
+  transform: scale(0.95);
 }
 
 :root.dark .filter-pill {
@@ -666,9 +778,10 @@ pre,
   background-color: var(--surface-interactive);
   color: var(--fg-primary);
   font-weight: 700;
+  transform: scale(1.04);
   box-shadow:
     var(--shadow-sm),
-    0 0 0 1px var(--accent);
+    0 0 0 1.5px var(--accent);
 }
 
 :root.dark .filter-pill-active,

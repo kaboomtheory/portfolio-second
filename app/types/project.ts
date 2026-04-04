@@ -131,8 +131,6 @@ export interface SanityProjectItem {
     current: string
   }
   name: string
-  category: string
-  year?: string
   summary?: string
   thumbnail?: SanityImage
   protected?: boolean
@@ -153,8 +151,6 @@ export interface SanityProjectItem {
 export interface ProjectItem {
   slug: string
   name: string
-  category: string
-  year?: string
   summary?: string
   thumbnail: string
   protected?: boolean
@@ -205,8 +201,6 @@ export function sanityProjectToLegacy(
   return {
     slug: project.slug.current,
     name: project.name,
-    category: project.category,
-    year: project.year,
     summary: project.summary,
     thumbnail: project.thumbnail ? buildImageUrl(project.thumbnail) : '',
     protected: project.protected,

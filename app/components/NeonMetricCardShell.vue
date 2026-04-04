@@ -85,13 +85,11 @@ withDefaults(
   border-radius: 3rem;
   overflow: hidden;
   font-family: 'Geist Sans', system-ui, sans-serif;
-  background: rgba(240, 248, 255, 0.78);
+  background: transparent;
   border: 1px solid rgba(61, 125, 186, 0.22);
   box-shadow:
     0 0 0 1px rgba(61, 125, 186, 0.12),
     inset 0 1px 0 rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(15px) saturate(1.2);
-  -webkit-backdrop-filter: blur(15px) saturate(1.2);
 }
 
 :root.dark .metric-card {
@@ -102,7 +100,7 @@ withDefaults(
   --text: #ffffff;
   --muted: #8a94a8;
   --muted-neon: rgba(168, 212, 255, 0.62);
-  background: rgba(8, 13, 28, 0.55);
+  background: transparent;
   border: 1px solid rgba(87, 166, 255, 0.18);
   box-shadow:
     0 0 0 1px rgba(87, 166, 255, 0.18),

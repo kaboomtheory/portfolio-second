@@ -27,28 +27,6 @@ export const project = defineType({
       initialValue: 0,
     }),
 
-    // === Categorization ===
-    defineField({
-      name: 'category',
-      type: 'string',
-      title: 'Category',
-      options: {
-        list: [
-          { title: 'Marketing', value: 'Marketing' },
-          { title: 'Branding', value: 'Branding' },
-          { title: 'Brand Identity', value: 'Brand Identity' },
-          { title: 'Product Design', value: 'Product Design' },
-          { title: 'App Design', value: 'App Design' },
-          { title: 'Design Collection', value: 'Design Collection' },
-        ],
-      },
-      validation: (rule) => rule.required(),
-    }),
-    defineField({
-      name: 'year',
-      type: 'string',
-      title: 'Year',
-    }),
     defineField({
       name: 'tags',
       type: 'array',
@@ -360,8 +338,14 @@ export const project = defineType({
   preview: {
     select: {
       title: 'name',
-      subtitle: 'category',
+      tags: 'tags',
+      client: 'client',
       media: 'thumbnail',
+    },
+    prepare({ title, tags, client, media }) {
+      const tagList = Array.isArray(tags) ? tags.filter(Boolean).slice(0, 3).join(', ') : ''
+      const subtitle = client?.trim() || tagList || undefined
+      return { title, subtitle, media }
     },
   },
 })

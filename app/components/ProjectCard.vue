@@ -24,7 +24,7 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
         >
       </div>
 
-      <div class="mt-4 flex min-h-0 flex-1 flex-col gap-2.5 px-0.5 pb-0.5">
+      <div class="flex min-h-0 flex-1 flex-col gap-3 px-0.5 pb-1 pt-4">
         <h3 class="min-w-0 text-lg font-semibold leading-snug tracking-tight text-[var(--fg-primary)] transition-colors duration-300 group-hover:text-[var(--emphasis)] md:text-xl">
           {{ project.name }}
         </h3>
@@ -38,11 +38,11 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 
         <ul
           v-if="displayTags.length"
-          class="mt-auto flex list-none flex-wrap gap-1.5 p-0"
+          class="flex list-none flex-wrap gap-1.5 p-0"
           aria-label="Project tags"
         >
           <li v-for="tag in displayTags" :key="tag">
-            <span class="pill">{{ tag }}</span>
+            <span class="tag-chip">{{ tag }}</span>
           </li>
         </ul>
       </div>

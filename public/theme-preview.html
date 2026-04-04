@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Theme Previews</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background: #1a1a1a;
+    padding: 2rem;
+    color: #fff;
+  }
+  h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #888;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .theme-card {
+    border-radius: 1rem;
+    overflow: hidden;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  }
+  .theme-label {
+    padding: 0.6rem 1rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    background: #111;
+    color: #888;
+    border-bottom: 1px solid #222;
+  }
+  .mockup {
+    padding: 1.5rem;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  /* ── Shared mockup UI ── */
+  .mock-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 0.75rem;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  .mock-nav-links { display: flex; gap: 0.75rem; opacity: 0.65; }
+  .mock-hero { flex: 1; }
+  .mock-title {
+    font-size: 1.1rem;
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin-bottom: 0.4rem;
+  }
+  .mock-sub { font-size: 0.72rem; opacity: 0.6; margin-bottom: 0.85rem; line-height: 1.5; }
+  .mock-btns { display: flex; gap: 0.5rem; flex-wrap: wrap; }
+  .mock-btn {
+    padding: 0.35rem 0.85rem;
+    border-radius: 0.375rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    cursor: default;
+  }
+  .mock-btn-outline {
+    background: transparent;
+    padding: 0.35rem 0.85rem;
+    border-radius: 0.375rem;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    cursor: default;
+    border-width: 1px;
+    border-style: solid;
+  }
+  .mock-card {
+    border-radius: 0.5rem;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.7rem;
+    border-width: 1px;
+    border-style: solid;
+  }
+  .mock-card-label { font-size: 0.6rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.5; margin-bottom: 0.25rem; }
+  .mock-card-title { font-weight: 600; }
+
+  /* ══════════════════════════════════════
+     1. WARM NEUTRAL + AMBER — LIGHT
+     ══════════════════════════════════════ */
+  .amber-light .mockup { background: #faf7f2; }
+  .amber-light .mock-nav { background: rgba(255,255,255,0.85); color: #2c1a0e; border: 1px solid rgba(180,120,40,0.15); }
+  .amber-light .mock-title { color: #1c110a; }
+  .amber-light .mock-sub { color: #6b4c30; }
+  .amber-light .mock-btn { background: #c97c2a; color: #fff; }
+  .amber-light .mock-btn-outline { color: #c97c2a; border-color: rgba(201,124,42,0.4); }
+  .amber-light .mock-card { background: rgba(255,255,255,0.7); border-color: rgba(180,120,40,0.2); color: #1c110a; }
+
+  /* 1b. WARM NEUTRAL + AMBER — DARK */
+  .amber-dark .mockup { background: #18120a; }
+  .amber-dark .mock-nav { background: rgba(30,20,10,0.85); color: #f0e0c0; border: 1px solid rgba(220,160,60,0.18); }
+  .amber-dark .mock-title { color: #f5e8d0; }
+  .amber-dark .mock-sub { color: #a88060; }
+  .amber-dark .mock-btn { background: #e09030; color: #1a0e04; }
+  .amber-dark .mock-btn-outline { color: #e09030; border-color: rgba(224,144,48,0.4); }
+  .amber-dark .mock-card { background: rgba(40,25,10,0.7); border-color: rgba(220,160,60,0.16); color: #f0e0c0; }
+
+  /* ══════════════════════════════════════
+     2. SLATE + EMERALD — LIGHT
+     ══════════════════════════════════════ */
+  .emerald-light .mockup { background: #f3f6f5; }
+  .emerald-light .mock-nav { background: rgba(255,255,255,0.85); color: #1a2e28; border: 1px solid rgba(16,120,80,0.15); }
+  .emerald-light .mock-title { color: #0f1f1a; }
+  .emerald-light .mock-sub { color: #4a6b60; }
+  .emerald-light .mock-btn { background: #0e7a52; color: #fff; }
+  .emerald-light .mock-btn-outline { color: #0e7a52; border-color: rgba(14,122,82,0.4); }
+  .emerald-light .mock-card { background: rgba(255,255,255,0.75); border-color: rgba(14,122,82,0.2); color: #0f1f1a; }
+
+  /* 2b. SLATE + EMERALD — DARK */
+  .emerald-dark .mockup { background: #0c1410; }
+  .emerald-dark .mock-nav { background: rgba(15,25,20,0.85); color: #c8e8d8; border: 1px solid rgba(20,180,110,0.18); }
+  .emerald-dark .mock-title { color: #e0f4ec; }
+  .emerald-dark .mock-sub { color: #6aaa8a; }
+  .emerald-dark .mock-btn { background: #18b870; color: #041208; }
+  .emerald-dark .mock-btn-outline { color: #18b870; border-color: rgba(24,184,112,0.4); }
+  .emerald-dark .mock-card { background: rgba(18,35,25,0.75); border-color: rgba(20,180,110,0.16); color: #c8e8d8; }
+
+  /* ══════════════════════════════════════
+     3. CREAM + TERRACOTTA — LIGHT
+     ══════════════════════════════════════ */
+  .terra-light .mockup { background: #f7f2ec; }
+  .terra-light .mock-nav { background: rgba(255,252,246,0.88); color: #2e1c12; border: 1px solid rgba(180,80,40,0.15); }
+  .terra-light .mock-title { color: #1e120a; }
+  .terra-light .mock-sub { color: #7a5040; }
+  .terra-light .mock-btn { background: #c05030; color: #fff; }
+  .terra-light .mock-btn-outline { color: #c05030; border-color: rgba(192,80,48,0.4); }
+  .terra-light .mock-card { background: rgba(255,250,242,0.8); border-color: rgba(180,80,40,0.2); color: #1e120a; }
+
+  /* 3b. CREAM + TERRACOTTA — DARK */
+  .terra-dark .mockup { background: #160e0a; }
+  .terra-dark .mock-nav { background: rgba(28,16,10,0.88); color: #f0d8c8; border: 1px solid rgba(200,100,60,0.18); }
+  .terra-dark .mock-title { color: #f5e0d0; }
+  .terra-dark .mock-sub { color: #a07060; }
+  .terra-dark .mock-btn { background: #d06040; color: #160e0a; }
+  .terra-dark .mock-btn-outline { color: #d06040; border-color: rgba(208,96,64,0.4); }
+  .terra-dark .mock-card { background: rgba(35,18,12,0.75); border-color: rgba(200,100,60,0.16); color: #f0d8c8; }
+
+  /* ══════════════════════════════════════
+     4. PURE MONOCHROME — LIGHT
+     ══════════════════════════════════════ */
+  .mono-light .mockup { background: #ffffff; }
+  .mono-light .mock-nav { background: rgba(250,250,250,0.92); color: #0a0a0a; border: 1px solid rgba(0,0,0,0.1); }
+  .mono-light .mock-title { color: #0a0a0a; }
+  .mono-light .mock-sub { color: #666; }
+  .mono-light .mock-btn { background: #0a0a0a; color: #fff; }
+  .mono-light .mock-btn-outline { color: #0a0a0a; border-color: rgba(0,0,0,0.3); }
+  .mono-light .mock-card { background: #f5f5f5; border-color: rgba(0,0,0,0.1); color: #0a0a0a; }
+
+  /* 4b. PURE MONOCHROME — DARK */
+  .mono-dark .mockup { background: #080808; }
+  .mono-dark .mock-nav { background: rgba(18,18,18,0.92); color: #f0f0f0; border: 1px solid rgba(255,255,255,0.1); }
+  .mono-dark .mock-title { color: #f8f8f8; }
+  .mono-dark .mock-sub { color: #888; }
+  .mono-dark .mock-btn { background: #f0f0f0; color: #080808; }
+  .mono-dark .mock-btn-outline { color: #f0f0f0; border-color: rgba(255,255,255,0.25); }
+  .mono-dark .mock-card { background: rgba(28,28,28,0.9); border-color: rgba(255,255,255,0.08); color: #f0f0f0; }
+
+  /* ══════════════════════════════════════
+     5. BLUE WARMER / INDIGO — LIGHT
+     ══════════════════════════════════════ */
+  .indigo-light .mockup { background: #f4f3ff; }
+  .indigo-light .mock-nav { background: rgba(255,255,255,0.88); color: #1a1640; border: 1px solid rgba(80,60,200,0.15); }
+  .indigo-light .mock-title { color: #120e30; }
+  .indigo-light .mock-sub { color: #5050a0; }
+  .indigo-light .mock-btn { background: #5048d0; color: #fff; }
+  .indigo-light .mock-btn-outline { color: #5048d0; border-color: rgba(80,72,208,0.4); }
+  .indigo-light .mock-card { background: rgba(255,255,255,0.8); border-color: rgba(80,72,208,0.2); color: #120e30; }
+
+  /* 5b. BLUE WARMER / INDIGO — DARK */
+  .indigo-dark .mockup { background: #0c0a1e; }
+  .indigo-dark .mock-nav { background: rgba(18,14,40,0.88); color: #d8d4ff; border: 1px solid rgba(120,100,255,0.18); }
+  .indigo-dark .mock-title { color: #eeecff; }
+  .indigo-dark .mock-sub { color: #8880cc; }
+  .indigo-dark .mock-btn { background: #7c70f0; color: #080618; }
+  .indigo-dark .mock-btn-outline { color: #7c70f0; border-color: rgba(124,112,240,0.4); }
+  .indigo-dark .mock-card { background: rgba(20,16,50,0.75); border-color: rgba(120,100,255,0.16); color: #d8d4ff; }
+
+  /* ══════════════════════════════════════
+     6. ICE BLUE / ARCTIC (colder blue)
+     ══════════════════════════════════════ */
+  .ice-light .mockup { background: #eef8ff; }
+  .ice-light .mock-nav { background: rgba(255,255,255,0.9); color: #0a1e30; border: 1px solid rgba(0,140,220,0.18); }
+  .ice-light .mock-title { color: #061420; }
+  .ice-light .mock-sub { color: #3a6880; }
+  .ice-light .mock-btn { background: #0088cc; color: #fff; }
+  .ice-light .mock-btn-outline { color: #0088cc; border-color: rgba(0,136,204,0.45); }
+  .ice-light .mock-card { background: rgba(224,244,255,0.85); border-color: rgba(0,136,204,0.2); color: #061420; }
+
+  .ice-dark .mockup { background: #040e1a; }
+  .ice-dark .mock-nav { background: rgba(6,16,32,0.88); color: #c8eeff; border: 1px solid rgba(0,180,255,0.2); }
+  .ice-dark .mock-title { color: #e8f8ff; }
+  .ice-dark .mock-sub { color: #5ab0d8; }
+  .ice-dark .mock-btn { background: #00b4f0; color: #040e1a; }
+  .ice-dark .mock-btn-outline { color: #00b4f0; border-color: rgba(0,180,240,0.45); }
+  .ice-dark .mock-card { background: rgba(6,22,40,0.75); border-color: rgba(0,180,255,0.18); color: #c8eeff; }
+
+  /* ══════════════════════════════════════
+     7. ELECTRIC CYAN / NEON
+     ══════════════════════════════════════ */
+  .cyan-light .mockup { background: #f0fafa; }
+  .cyan-light .mock-nav { background: rgba(255,255,255,0.88); color: #052020; border: 1px solid rgba(0,180,180,0.18); }
+  .cyan-light .mock-title { color: #031818; }
+  .cyan-light .mock-sub { color: #306060; }
+  .cyan-light .mock-btn { background: #009090; color: #fff; }
+  .cyan-light .mock-btn-outline { color: #009090; border-color: rgba(0,144,144,0.4); }
+  .cyan-light .mock-card { background: rgba(220,248,248,0.85); border-color: rgba(0,160,160,0.2); color: #031818; }
+
+  .cyan-dark .mockup { background: #040e0e; }
+  .cyan-dark .mock-nav { background: rgba(6,18,18,0.88); color: #b0f0f0; border: 1px solid rgba(0,220,220,0.18); }
+  .cyan-dark .mock-title { color: #d8fafa; }
+  .cyan-dark .mock-sub { color: #40a0a0; }
+  .cyan-dark .mock-btn { background: #00d0d0; color: #040e0e; }
+  .cyan-dark .mock-btn-outline { color: #00d0d0; border-color: rgba(0,208,208,0.4); }
+  .cyan-dark .mock-card { background: rgba(6,24,24,0.75); border-color: rgba(0,208,208,0.16); color: #b0f0f0; }
+
+  /* ══════════════════════════════════════
+     8. NAVY + GOLD (premium)
+     ══════════════════════════════════════ */
+  .gold-light .mockup { background: #f5f4f0; }
+  .gold-light .mock-nav { background: rgba(255,254,250,0.9); color: #161220; border: 1px solid rgba(160,120,20,0.2); }
+  .gold-light .mock-title { color: #0e0c18; }
+  .gold-light .mock-sub { color: #5a5040; }
+  .gold-light .mock-btn { background: #1a1630; color: #f0c840; }
+  .gold-light .mock-btn-outline { color: #8a6810; border-color: rgba(160,120,20,0.4); }
+  .gold-light .mock-card { background: rgba(255,252,240,0.85); border-color: rgba(160,120,20,0.2); color: #0e0c18; }
+
+  .gold-dark .mockup { background: #0a0818; }
+  .gold-dark .mock-nav { background: rgba(16,12,32,0.9); color: #f0e8c0; border: 1px solid rgba(200,160,40,0.2); }
+  .gold-dark .mock-title { color: #f8f0d8; }
+  .gold-dark .mock-sub { color: #a09050; }
+  .gold-dark .mock-btn { background: #d4a820; color: #0a0818; }
+  .gold-dark .mock-btn-outline { color: #d4a820; border-color: rgba(212,168,32,0.4); }
+  .gold-dark .mock-card { background: rgba(18,14,36,0.8); border-color: rgba(200,160,40,0.18); color: #f0e8c0; }
+
+  /* ══════════════════════════════════════
+     9. SAGE / OLIVE
+     ══════════════════════════════════════ */
+  .sage-light .mockup { background: #f4f5f0; }
+  .sage-light .mock-nav { background: rgba(252,253,248,0.9); color: #1c2018; border: 1px solid rgba(100,120,60,0.18); }
+  .sage-light .mock-title { color: #141810; }
+  .sage-light .mock-sub { color: #506040; }
+  .sage-light .mock-btn { background: #5a7040; color: #fff; }
+  .sage-light .mock-btn-outline { color: #5a7040; border-color: rgba(90,112,64,0.4); }
+  .sage-light .mock-card { background: rgba(240,244,232,0.85); border-color: rgba(100,120,60,0.2); color: #141810; }
+
+  .sage-dark .mockup { background: #0e1008; }
+  .sage-dark .mock-nav { background: rgba(16,20,10,0.88); color: #d0ddb8; border: 1px solid rgba(140,180,80,0.18); }
+  .sage-dark .mock-title { color: #e0ecca; }
+  .sage-dark .mock-sub { color: #7a9858; }
+  .sage-dark .mock-btn { background: #90c050; color: #0e1008; }
+  .sage-dark .mock-btn-outline { color: #90c050; border-color: rgba(144,192,80,0.4); }
+  .sage-dark .mock-card { background: rgba(18,24,10,0.75); border-color: rgba(140,180,80,0.15); color: #d0ddb8; }
+
+  /* ══════════════════════════════════════
+     10. ROSE / BLUSH
+     ══════════════════════════════════════ */
+  .rose-light .mockup { background: #fdf4f4; }
+  .rose-light .mock-nav { background: rgba(255,250,250,0.9); color: #2a1414; border: 1px solid rgba(200,80,80,0.15); }
+  .rose-light .mock-title { color: #1e0e0e; }
+  .rose-light .mock-sub { color: #804848; }
+  .rose-light .mock-btn { background: #b84040; color: #fff; }
+  .rose-light .mock-btn-outline { color: #b84040; border-color: rgba(184,64,64,0.4); }
+  .rose-light .mock-card { background: rgba(255,240,240,0.85); border-color: rgba(200,80,80,0.18); color: #1e0e0e; }
+
+  .rose-dark .mockup { background: #150808; }
+  .rose-dark .mock-nav { background: rgba(26,10,10,0.88); color: #fad0d0; border: 1px solid rgba(240,100,100,0.18); }
+  .rose-dark .mock-title { color: #fce8e8; }
+  .rose-dark .mock-sub { color: #b06060; }
+  .rose-dark .mock-btn { background: #e06060; color: #150808; }
+  .rose-dark .mock-btn-outline { color: #e06060; border-color: rgba(224,96,96,0.4); }
+  .rose-dark .mock-card { background: rgba(32,12,12,0.78); border-color: rgba(240,100,100,0.15); color: #fad0d0; }
+
+  /* ══════════════════════════════════════
+     CURRENT (REFERENCE)
+     ══════════════════════════════════════ */
+  .current-light .mockup { background: #f4f8ff; }
+  .current-light .mock-nav { background: rgba(240,248,255,0.85); color: #0a1628; border: 1px solid rgba(61,125,186,0.22); }
+  .current-light .mock-title { color: #0a1628; }
+  .current-light .mock-sub { color: #2a3f5c; }
+  .current-light .mock-btn { background: #2a5fa0; color: #fff; }
+  .current-light .mock-btn-outline { color: #2a5fa0; border-color: rgba(42,95,160,0.4); }
+  .current-light .mock-card { background: rgba(240,248,255,0.78); border-color: rgba(61,125,186,0.22); color: #0a1628; }
+
+  .current-dark .mockup { background: #080810; }
+  .current-dark .mock-nav { background: rgba(10,15,30,0.72); color: #ffffff; border: 1px solid rgba(87,166,255,0.18); }
+  .current-dark .mock-title { color: #ffffff; }
+  .current-dark .mock-sub { color: #d4eaff; }
+  .current-dark .mock-btn { background: #57a6ff; color: #0a1628; }
+  .current-dark .mock-btn-outline { color: #57a6ff; border-color: rgba(87,166,255,0.4); }
+  .current-dark .mock-card { background: rgba(8,13,28,0.55); border-color: rgba(87,166,255,0.18); color: #ffffff; }
+
+  /* ══ Section headers ══ */
+  .section-header {
+    grid-column: 1 / -1;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #555;
+    padding-top: 1rem;
+    border-top: 1px solid #2a2a2a;
+    margin-top: 0.5rem;
+  }
+  .section-header:first-child { border-top: none; margin-top: 0; padding-top: 0; }
+
+  /* Swatch row */
+  .swatches { display: flex; gap: 0.35rem; }
+  .swatch { width: 14px; height: 14px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+<h1>Color Theme Previews — Bryan X. Mendez Portfolio</h1>
+
+<div class="grid">
+
+  <!-- ── CURRENT (reference) ── -->
+  <div class="section-header">Current (reference)</div>
+
+  <div class="theme-card current-light">
+    <div class="theme-label">Current · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#f4f8ff"></span>
+        <span class="swatch" style="background:#2a5fa0"></span>
+        <span class="swatch" style="background:#0a1628"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card current-dark">
+    <div class="theme-label">Current · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#080810"></span>
+        <span class="swatch" style="background:#57a6ff"></span>
+        <span class="swatch" style="background:#ffffff"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <!-- ── 6. ICE BLUE / ARCTIC ── -->
+  <div class="section-header">6 — Ice Blue / Arctic (colder blue)</div>
+
+  <div class="theme-card ice-light">
+    <div class="theme-label">Ice Blue · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#eef8ff"></span>
+        <span class="swatch" style="background:#0088cc"></span>
+        <span class="swatch" style="background:#061420"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card ice-dark">
+    <div class="theme-label">Ice Blue · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#040e1a"></span>
+        <span class="swatch" style="background:#00b4f0"></span>
+        <span class="swatch" style="background:#e8f8ff"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <!-- ── 7. ELECTRIC CYAN ── -->
+  <div class="section-header">7 — Electric Cyan</div>
+
+  <div class="theme-card cyan-light">
+    <div class="theme-label">Cyan · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#f0fafa"></span>
+        <span class="swatch" style="background:#009090"></span>
+        <span class="swatch" style="background:#031818"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card cyan-dark">
+    <div class="theme-label">Cyan · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#040e0e"></span>
+        <span class="swatch" style="background:#00d0d0"></span>
+        <span class="swatch" style="background:#d8fafa"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <!-- ── 8. NAVY + GOLD ── -->
+  <div class="section-header">8 — Navy + Gold</div>
+
+  <div class="theme-card gold-light">
+    <div class="theme-label">Navy + Gold · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#f5f4f0"></span>
+        <span class="swatch" style="background:#1a1630"></span>
+        <span class="swatch" style="background:#c8a020"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card gold-dark">
+    <div class="theme-label">Navy + Gold · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#0a0818"></span>
+        <span class="swatch" style="background:#d4a820"></span>
+        <span class="swatch" style="background:#f8f0d8"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <!-- ── 9. SAGE / OLIVE ── -->
+  <div class="section-header">9 — Sage / Olive</div>
+
+  <div class="theme-card sage-light">
+    <div class="theme-label">Sage · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#f4f5f0"></span>
+        <span class="swatch" style="background:#5a7040"></span>
+        <span class="swatch" style="background:#141810"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card sage-dark">
+    <div class="theme-label">Sage · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#0e1008"></span>
+        <span class="swatch" style="background:#90c050"></span>
+        <span class="swatch" style="background:#e0ecca"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <!-- ── 10. ROSE / BLUSH ── -->
+  <div class="section-header">10 — Rose / Blush</div>
+
+  <div class="theme-card rose-light">
+    <div class="theme-label">Rose · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#fdf4f4"></span>
+        <span class="swatch" style="background:#b84040"></span>
+        <span class="swatch" style="background:#1e0e0e"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card rose-dark">
+    <div class="theme-label">Rose · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#150808"></span>
+        <span class="swatch" style="background:#e06060"></span>
+        <span class="swatch" style="background:#fce8e8"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <!-- ── 1. WARM NEUTRAL + AMBER ── -->
+  <div class="section-header">1 — Warm Neutral + Amber</div>
+
+  <div class="theme-card amber-light">
+    <div class="theme-label">Amber · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#faf7f2"></span>
+        <span class="swatch" style="background:#c97c2a"></span>
+        <span class="swatch" style="background:#1c110a"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card amber-dark">
+    <div class="theme-label">Amber · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#18120a"></span>
+        <span class="swatch" style="background:#e09030"></span>
+        <span class="swatch" style="background:#f5e8d0"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <!-- ── 2. SLATE + EMERALD ── -->
+  <div class="section-header">2 — Slate + Emerald</div>
+
+  <div class="theme-card emerald-light">
+    <div class="theme-label">Emerald · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#f3f6f5"></span>
+        <span class="swatch" style="background:#0e7a52"></span>
+        <span class="swatch" style="background:#0f1f1a"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card emerald-dark">
+    <div class="theme-label">Emerald · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#0c1410"></span>
+        <span class="swatch" style="background:#18b870"></span>
+        <span class="swatch" style="background:#e0f4ec"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <!-- ── 3. CREAM + TERRACOTTA ── -->
+  <div class="section-header">3 — Cream + Terracotta</div>
+
+  <div class="theme-card terra-light">
+    <div class="theme-label">Terracotta · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#f7f2ec"></span>
+        <span class="swatch" style="background:#c05030"></span>
+        <span class="swatch" style="background:#1e120a"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card terra-dark">
+    <div class="theme-label">Terracotta · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#160e0a"></span>
+        <span class="swatch" style="background:#d06040"></span>
+        <span class="swatch" style="background:#f5e0d0"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <!-- ── 4. PURE MONOCHROME ── -->
+  <div class="section-header">4 — Pure Monochrome</div>
+
+  <div class="theme-card mono-light">
+    <div class="theme-label">Mono · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#ffffff;border-color:rgba(0,0,0,0.2)"></span>
+        <span class="swatch" style="background:#0a0a0a"></span>
+        <span class="swatch" style="background:#666"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card mono-dark">
+    <div class="theme-label">Mono · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#080808"></span>
+        <span class="swatch" style="background:#f0f0f0"></span>
+        <span class="swatch" style="background:#888"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <!-- ── 5. INDIGO / WARM BLUE ── -->
+  <div class="section-header">5 — Warmer Blue (Indigo / Periwinkle)</div>
+
+  <div class="theme-card indigo-light">
+    <div class="theme-label">Indigo · Light &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#f4f3ff"></span>
+        <span class="swatch" style="background:#5048d0"></span>
+        <span class="swatch" style="background:#120e30"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+  <div class="theme-card indigo-dark">
+    <div class="theme-label">Indigo · Dark &nbsp;
+      <span class="swatches" style="display:inline-flex;vertical-align:middle">
+        <span class="swatch" style="background:#0c0a1e"></span>
+        <span class="swatch" style="background:#7c70f0"></span>
+        <span class="swatch" style="background:#eeecff"></span>
+      </span>
+    </div>
+    <div class="mockup">
+      <div class="mock-nav"><span>Bryan X. Mendez</span><span class="mock-nav-links"><span>Home</span><span>About</span></span></div>
+      <div class="mock-hero">
+        <div class="mock-title">Graphic designer focused on brand identity.</div>
+        <div class="mock-sub">Based in Los Angeles, CA · Open to work</div>
+        <div class="mock-btns">
+          <span class="mock-btn">View Resume</span>
+          <span class="mock-btn-outline">Open to Work</span>
+        </div>
+      </div>
+      <div class="mock-card"><div class="mock-card-label">Latest Project</div><div class="mock-card-title">Victor Branding</div></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
