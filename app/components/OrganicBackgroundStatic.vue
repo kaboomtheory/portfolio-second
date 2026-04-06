@@ -34,7 +34,7 @@ const { isDark } = useTheme()
   filter: blur(4px);
   background: radial-gradient(
       100% 90% at 50% 85%,
-      #215aa6 0%,
+      #80abe6 0%,
       #0a1628 45%,
       #000000 100%
     );

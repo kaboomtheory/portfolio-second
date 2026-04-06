@@ -138,7 +138,7 @@ onUnmounted(() => {
   gap: 0.75rem;
   width: 100%;
   min-width: 0;
-  border-radius: 9999px;
+  border-radius: 1rem;
   padding: 0.5rem 0.75rem;
   background-color: var(--bg-primary);
   border: var(--card-border);
@@ -176,7 +176,7 @@ onUnmounted(() => {
 .navbar-brand-avatar {
   height: 2.25rem;
   width: 2.25rem;
-  border-radius: 9999px;
+  border-radius: 0.625rem;
   object-fit: cover;
   flex-shrink: 0;
 }
@@ -232,7 +232,7 @@ onUnmounted(() => {
   left: 0;
   width: 0;
   opacity: 0;
-  border-radius: 9999px;
+  border-radius: 0.5rem;
   background-color: var(--bg-secondary);
   box-shadow: 0 2px 8px color-mix(in srgb, var(--fg-primary) 5%, transparent);
   transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
@@ -246,7 +246,7 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   padding: 0.4rem 0.75rem;
-  border-radius: 9999px;
+  border-radius: 0.5rem;
   font-size: 0.8125rem;
   font-weight: 400;
   letter-spacing: 0.01em;
@@ -272,6 +272,11 @@ onUnmounted(() => {
 .nav-link.router-link-exact-active {
   color: var(--fg-primary);
   font-weight: 600;
+}
+
+:root:not(.dark) .pill .nav-link:not(.router-link-exact-active) {
+  color: color-mix(in srgb, var(--fg-primary) 78%, var(--fg-secondary) 22%);
+  font-weight: 500;
 }
 
 @media (prefers-reduced-motion: reduce) {

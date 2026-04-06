@@ -63,6 +63,8 @@
   --shiny-cta-dots-opacity: 0.32;
   --shiny-cta-hover-glow-a: 0 0 22px color-mix(in srgb, var(--shiny-cta-highlight) 20%, transparent);
   --shiny-cta-hover-glow-b: 0 0 42px color-mix(in srgb, var(--shiny-cta-highlight) 10%, transparent);
+  /* Theme toggle thumb (knob) — readable on frosted track in each mode */
+  --theme-toggle-knob-bg: color-mix(in srgb, #ffffff 90%, var(--bg-secondary));
 }
 
 :root.dark {
@@ -105,16 +107,17 @@
   /* ── Card surface tokens (dark) ── */
   --card-border: 1px solid rgba(87, 166, 255, 0.18);
   --card-ring: 0 0 0 1px rgba(87, 166, 255, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  /* ── Shiny attention CTA (dark) — rim blues aligned to canvas spotlight #215aa6 / #0a1628 ── */
+  /* ── Shiny attention CTA (dark) — rim blues aligned to canvas spotlight #80abe6 / #0a1628 ── */
   --shiny-cta-bg: #0a0f18;
-  --shiny-cta-bg-subtle: color-mix(in srgb, #215aa6 26%, #0c121c);
+  --shiny-cta-bg-subtle: color-mix(in srgb, #80abe6 26%, #0c121c);
   --shiny-cta-fg: #ffffff;
-  --shiny-cta-highlight: #215aa6;
+  --shiny-cta-highlight: #80abe6;
   --shiny-cta-highlight-subtle: #3d78c8;
   --shiny-cta-dot: color-mix(in srgb, #7eb0ea 36%, transparent);
   --shiny-cta-dots-opacity: 0.4;
   --shiny-cta-hover-glow-a: 0 0 28px color-mix(in srgb, var(--shiny-cta-highlight) 28%, transparent);
   --shiny-cta-hover-glow-b: 0 0 52px color-mix(in srgb, var(--shiny-cta-highlight) 14%, transparent);
+  --theme-toggle-knob-bg: color-mix(in srgb, var(--bg-primary) 88%, #0a0f1a);
 }
 
 /* Animated custom properties for shiny resume CTA (see CtaButton attention variant) */
