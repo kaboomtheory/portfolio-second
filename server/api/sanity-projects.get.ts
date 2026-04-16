@@ -1,3 +1,7 @@
+// Public project list. This endpoint is intentionally safe to serve
+// without auth: `sections` and `password` are never included for
+// protected projects. Full protected content is served by
+// `/api/project/[slug]` after a valid unlock cookie is presented.
 export default defineCachedEventHandler(async () => {
   return await sanityQuery(`*[_type == "project" && defined(slug.current)]|order(order asc, name asc){
     _id,
@@ -8,7 +12,7 @@ export default defineCachedEventHandler(async () => {
     thumbnail,
     protected,
     tags,
-    sections,
+    "sections": select(protected == true => null, sections),
     client,
     role,
     projectUrl,

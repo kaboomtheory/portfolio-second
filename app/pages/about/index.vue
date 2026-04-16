@@ -243,6 +243,36 @@ const availabilityCtaLabel = computed(() =>
       </div>
     </section>
 
+    <!-- Closing CTA -->
+    <section class="closing-cta reveal-up" aria-labelledby="closing-cta-heading">
+      <p class="closing-eyebrow">Next</p>
+      <h2 id="closing-cta-heading" class="closing-title">
+        Have a project in mind?
+      </h2>
+      <p class="closing-lede">
+        I'm open to freelance and full-time collaborations. The fastest way to start is a quick email — happy to share full case studies on request.
+      </p>
+      <div class="closing-actions">
+        <CtaButton
+          :href="resumeHref"
+          label="Download Resume"
+          attention
+          target="_blank"
+        >
+          <template #icon><Icon icon="lucide:download" class="text-sm" /></template>
+        </CtaButton>
+        <CtaButton
+          :href="availabilityMailto"
+          label="SAY HELLO"
+          secondary
+          elevated-secondary
+          preserve-case
+        >
+          <template #icon><Icon icon="lucide:mail" class="text-sm" /></template>
+        </CtaButton>
+      </div>
+    </section>
+
   </div>
 </template>
 
@@ -351,7 +381,18 @@ const availabilityCtaLabel = computed(() =>
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 0.5rem;
+  border-radius: var(--radius-card);
+  box-shadow:
+    0 0 0 1px rgba(61, 125, 186, 0.22),
+    0 1px 2px rgba(0, 20, 60, 0.08),
+    var(--shadow-lg);
+}
+
+:root.dark .avatar-image {
+  box-shadow:
+    0 0 0 1px rgba(87, 166, 255, 0.18),
+    0 1px 2px rgba(0, 10, 30, 0.35),
+    var(--shadow-lg);
 }
 
 /* Ticker Section */
@@ -554,10 +595,10 @@ const availabilityCtaLabel = computed(() =>
 }
 
 .capability-group-title {
-  font-size: 0.75rem;
+  font-family: 'Geist Sans', system-ui, sans-serif;
+  font-size: 0.875rem;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  letter-spacing: -0.005em;
   color: var(--fg-muted);
 }
 
@@ -646,10 +687,10 @@ const availabilityCtaLabel = computed(() =>
 }
 
 .experience-company {
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  font-family: 'Geist Sans', system-ui, sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  letter-spacing: 0;
   color: var(--fg-muted);
 }
 
@@ -673,6 +714,51 @@ const availabilityCtaLabel = computed(() =>
   letter-spacing: 0.05em;
   color: var(--accent);
   white-space: nowrap;
+}
+
+/* Closing CTA (page-local, not a card; footer already uses NeonMetricCardShell) */
+.closing-cta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--space-md);
+  padding: var(--space-xl-lg) 0 var(--space-xl);
+  border-top: 1px solid color-mix(in srgb, var(--fg-muted) 18%, transparent);
+  margin-top: var(--space-md);
+}
+
+.closing-eyebrow {
+  margin: 0;
+  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.closing-title {
+  margin: 0;
+  font-size: clamp(1.75rem, 3.5vw + 0.5rem, 2.75rem);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--fg-primary);
+}
+
+.closing-lede {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 1.0625rem;
+  line-height: 1.6;
+  color: var(--fg-secondary);
+}
+
+.closing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: var(--space-sm);
 }
 
 </style>

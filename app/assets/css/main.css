@@ -72,7 +72,7 @@
   --bg-secondary: rgba(10, 15, 30, 0.45);
   --bg-tertiary: rgba(10, 15, 30, 0.28);
   --fg-primary: #ffffff;
-  --fg-secondary: #d4eaff;
+  --fg-secondary: #e6ecf5;
   --fg-muted: #9ba5be;
   --border: var(--fg-primary);
   --accent: #57a6ff;
@@ -427,9 +427,12 @@
   /* 24px */
   --space-xl: 2.5rem;
   /* 40px */
+  --space-xl-lg: 3rem;
+  /* 48px */
   --space-2xl: 4rem;
   /* 64px */
-  --radius-card: 0.5rem;
+  --radius-card: 0.75rem;
+  --radius-inner: 0.5rem;
 }
 
 * {
@@ -682,21 +685,6 @@ pre,
   text-decoration-color: var(--fg-primary);
 }
 
-.filter-row {
-  margin-bottom: 1.25rem;
-  display: flex;
-  gap: 0.45rem;
-  overflow-x: auto;
-  padding-bottom: 0.75rem;
-  -webkit-mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
-  mask-image: linear-gradient(to right, black calc(100% - 2rem), transparent);
-  scrollbar-width: none;
-}
-
-.filter-row::-webkit-scrollbar {
-  display: none;
-}
-
 /* ── Pill / tag tokens (single source of truth) ── */
 .pill,
 .filter-pill {
@@ -715,29 +703,27 @@ pre,
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
 }
 
-/* Read-only tags: same idle chrome as filter pills (non-interactive) */
+/* Read-only tags: quieter chrome so filter pills own the "interactive" visual weight */
 .tag-chip {
-  font-family: 'Geist Mono', ui-monospace, monospace;
+  font-family: 'Geist Sans', system-ui, sans-serif;
   display: inline-block;
   border-radius: 9999px;
-  padding: 0.35rem 0.75rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
+  padding: 0.3rem 0.65rem;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0;
+  text-transform: none;
   white-space: nowrap;
-  color: color-mix(in srgb, var(--fg-primary) 88%, var(--fg-secondary) 12%);
-  background-color: var(--surface-interactive);
-  border: 1px solid transparent;
-  box-shadow:
-    var(--shadow-sm),
-    0 0 0 1px var(--chrome-ring-idle);
-  backdrop-filter: blur(15px) saturate(1.2);
-  -webkit-backdrop-filter: blur(15px) saturate(1.2);
+  color: var(--fg-muted);
+  background-color: color-mix(in srgb, var(--surface-interactive) 55%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg-muted) 22%, transparent);
+  backdrop-filter: blur(10px) saturate(1.1);
+  -webkit-backdrop-filter: blur(10px) saturate(1.1);
 }
 
 :root.dark .tag-chip {
-  background-color: var(--surface-interactive);
+  background-color: color-mix(in srgb, var(--surface-interactive) 45%, transparent);
+  border-color: color-mix(in srgb, var(--fg-muted) 28%, transparent);
 }
 
 /* Interactive variant (filter buttons) */
@@ -901,20 +887,8 @@ pre,
   }
 }
 
-@keyframes subtle-bounce {
-
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-
-  50% {
-    transform: translateY(-2px);
-  }
-}
-
 .btn-attention {
-  animation: subtle-bounce 2s ease-in-out infinite, attention-pulse 3s ease-in-out infinite;
+  animation: attention-pulse 5s ease-in-out infinite;
 }
 
 .btn-attention:hover {
@@ -929,6 +903,6 @@ pre,
   }
 
   50% {
-    opacity: 0.78;
+    opacity: 0.88;
   }
 }

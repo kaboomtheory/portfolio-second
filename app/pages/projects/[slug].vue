@@ -1,21 +1,68 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { useScrollRevealGroup } from '~/composables/useScrollReveal'
-import type { ProjectItem, ProjectStorySection } from '~/types/project'
+import { projectItemsFromSanityRaw } from '~/composables/useSanityProjects'
+import type { ProjectItem, ProjectStorySection, SanityProjectItem } from '~/types/project'
+import { sanitizeEmbedUrl } from '~/utils/embed'
+import { normalizeProjectSlug } from '~/utils/projectSlug'
 
 definePageMeta({
   middleware: 'project-protect'
 })
 
 const route = useRoute()
-const { orderedProjects, loading } = useSanityProjects()
+const { orderedProjects, loading: loadingList } = useSanityProjects()
 
-const slug = computed(() => {
-  const source = route.params.slug
-  return Array.isArray(source) ? source[0] : String(source || '')
+const slug = computed(() => normalizeProjectSlug(route.params.slug))
+
+const listProject = computed(() => orderedProjects.value.find((p) => p.slug === slug.value))
+
+// Protected projects have their `sections` stripped from the public
+// list, so fetch the authenticated per-slug endpoint when the listing
+// marks this slug as protected. The server enforces the unlock
+// cookie; if it rejects us, the protect middleware redirects to
+// /password/<slug> on the next nav.
+const protectedRaw = ref<SanityProjectItem | null>(null)
+const loadingProtected = ref(false)
+
+async function fetchProtected(targetSlug: string) {
+  if (!targetSlug) return
+  loadingProtected.value = true
+  try {
+    protectedRaw.value = await $fetch<SanityProjectItem>(
+      `/api/project/${encodeURIComponent(targetSlug)}`,
+    )
+  } catch {
+    protectedRaw.value = null
+  } finally {
+    loadingProtected.value = false
+  }
+}
+
+watch(
+  [() => listProject.value?.protected, slug],
+  ([isProtected, currentSlug]) => {
+    if (isProtected && currentSlug && protectedRaw.value?.slug?.current !== currentSlug) {
+      fetchProtected(currentSlug)
+    }
+  },
+  { immediate: true },
+)
+
+const protectedProject = computed<ProjectItem | undefined>(() => {
+  if (!protectedRaw.value) return undefined
+  return projectItemsFromSanityRaw([protectedRaw.value])[0]
 })
 
-const project = computed(() => orderedProjects.value.find((p) => p.slug === slug.value))
+const project = computed<ProjectItem | undefined>(() =>
+  listProject.value?.protected ? protectedProject.value : listProject.value,
+)
+
+const loading = computed(
+  () =>
+    loadingList.value
+    || (Boolean(listProject.value?.protected) && !protectedProject.value && loadingProtected.value),
+)
 
 const projectIndex = computed(() =>
   orderedProjects.value.findIndex((p) => p.slug === slug.value),
@@ -188,15 +235,21 @@ function isMediaSection(section: ProjectStorySection): boolean {
             'max-w-5xl mx-auto': section.layout === 'large',
             'max-w-3xl mx-auto': section.layout === 'medium' || !section.layout,
           }">
-            <div class="aspect-video overflow-hidden rounded-lg">
+            <div v-if="sanitizeEmbedUrl(section.url)" class="aspect-video overflow-hidden rounded-lg">
               <iframe
-                :src="section.url"
+                :src="sanitizeEmbedUrl(section.url) || ''"
                 class="h-full w-full"
                 frameborder="0"
+                loading="lazy"
+                referrerpolicy="no-referrer"
+                sandbox="allow-scripts allow-same-origin allow-presentation allow-popups"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
               />
             </div>
+            <p v-else class="rounded-md border border-dashed p-4 text-sm text-muted">
+              Embed blocked: only YouTube and Vimeo URLs are allowed.
+            </p>
             <p v-if="section.caption" class="mt-3 text-center text-sm text-muted">
               {{ section.caption }}
             </p>

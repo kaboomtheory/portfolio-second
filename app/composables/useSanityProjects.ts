@@ -98,10 +98,6 @@ export function useSanityProjects() {
     key: 'sanity-projects',
     getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
   })
-  const { data: rawPasswords } = useFetch<Record<string, string>>('/api/sanity-passwords', {
-    key: 'sanity-passwords',
-    getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
-  })
 
   const projects = computed<ProjectItem[]>(() =>
     projectItemsFromSanityRaw(rawProjects.value),
@@ -113,15 +109,9 @@ export function useSanityProjects() {
     return list
   })
 
-  const projectPasswords = computed<Record<string, string>>(() => {
-    if (!rawPasswords.value) return {}
-    return rawPasswords.value || {}
-  })
-
   return {
     projects,
     orderedProjects,
-    projectPasswords,
     loading,
     error,
     refresh,

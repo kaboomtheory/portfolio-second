@@ -68,6 +68,46 @@ export default defineNuxtConfig({
     },
   },
 
+  // Baseline security headers. CSP is tuned for the assets actually
+  // used by this site: Sanity CDN for images, jsDelivr for fonts,
+  // YouTube/Vimeo iframes, Iconify API for on-demand icon JSON.
+  // CSP is applied in production only — dev uses Vite HMR over
+  // WebSockets and benefits from looser defaults.
+  routeRules: (() => {
+    const isProd = process.env.NODE_ENV === 'production'
+
+    const baseHeaders: Record<string, string> = {
+      'Referrer-Policy': 'strict-origin-when-cross-origin',
+      'X-Content-Type-Options': 'nosniff',
+      'X-Frame-Options': 'DENY',
+      'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
+      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+    }
+
+    if (isProd) {
+      baseHeaders['Content-Security-Policy'] = [
+        "default-src 'self'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'",
+        "object-src 'none'",
+        "img-src 'self' data: blob: https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com",
+        "font-src 'self' data: https://cdn.jsdelivr.net",
+        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+        "style-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+        "script-src 'self' 'unsafe-inline'",
+        "connect-src 'self' https://*.api.sanity.io https://*.apicdn.sanity.io https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com",
+        "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
+        "media-src 'self' blob:",
+        "worker-src 'self' blob:",
+      ].join('; ')
+    }
+
+    return {
+      '/**': { headers: baseHeaders },
+    }
+  })(),
+
   vite: {
     build: {
       rollupOptions: {

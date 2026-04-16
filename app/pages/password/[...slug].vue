@@ -1,33 +1,45 @@
 <script setup lang="ts">
+import { normalizeProjectSlug } from '~/utils/projectSlug'
+
 const route = useRoute()
 const router = useRouter()
-const { projectPasswords } = useSanityProjects()
 
 const password = ref('')
 const error = ref('')
 const reveal = ref(false)
+const submitting = ref(false)
 
-const slug = computed(() => {
-  const source = route.params.slug
-  return Array.isArray(source) ? source.join('/') : String(source || '')
-})
+const slug = computed(() => normalizeProjectSlug(route.params.slug))
 
-function submit() {
+async function submit() {
   error.value = ''
-  const expected = projectPasswords.value[slug.value]
-
-  if (!expected) {
+  if (!slug.value) {
     router.push('/projects')
     return
   }
-
-  if (password.value.trim() === expected) {
-    localStorage.setItem(`entered_password_${slug.value}`, expected)
-    router.push(`/projects/${slug.value}`)
+  if (!password.value.trim()) {
+    error.value = 'Please enter a password.'
     return
   }
 
-  error.value = 'Incorrect password. Try placeholder value: letmein!2024'
+  submitting.value = true
+  try {
+    await $fetch('/api/project-unlock', {
+      method: 'POST',
+      body: { slug: slug.value, password: password.value },
+    })
+    router.push(`/projects/${slug.value}`)
+  } catch (e: unknown) {
+    const status = (e as { statusCode?: number; response?: { status?: number } })?.statusCode
+      ?? (e as { response?: { status?: number } })?.response?.status
+    if (status === 429) {
+      error.value = 'Too many attempts. Please wait a moment and try again.'
+    } else {
+      error.value = 'Incorrect password. Please try again.'
+    }
+  } finally {
+    submitting.value = false
+  }
 }
 
 useHead({ title: 'Password Protected Project' })
@@ -38,7 +50,7 @@ useHead({ title: 'Password Protected Project' })
     <section class="card-surface w-full max-w-md space-y-4 p-6">
       <h1 class="text-3xl">Enter Password</h1>
       <p class="text-sm">
-        This case study is protected in the reference experience. Use the placeholder password for MVP access.
+        This case study is protected. Enter the password to view it.
       </p>
       <form @submit.prevent="submit" class="space-y-4">
         <label class="space-y-2 text-sm">
@@ -50,6 +62,8 @@ useHead({ title: 'Password Protected Project' })
               :style="{ backgroundColor: 'var(--bg-primary)' }"
               :type="reveal ? 'text' : 'password'"
               placeholder="Enter password"
+              autocomplete="current-password"
+              :disabled="submitting"
             >
             <button
               type="button"
@@ -68,8 +82,9 @@ useHead({ title: 'Password Protected Project' })
           type="submit"
           class="rounded-md px-4 py-2 text-xs uppercase tracking-[0.08em]"
           :style="{ backgroundColor: 'var(--bg-tertiary)' }"
+          :disabled="submitting"
         >
-          Let me in
+          {{ submitting ? 'Checking…' : 'Let me in' }}
         </button>
       </form>
     </section>

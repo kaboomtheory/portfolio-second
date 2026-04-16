@@ -1,7 +1,11 @@
 import { sanityQuery } from '../utils/sanityFetch'
 
+// Public index bundle. Passwords are NOT returned here — they are
+// compared server-side in `/api/project-unlock`. Protected projects
+// have their `sections` stripped; full protected content is served
+// by `/api/project/[slug]` after unlock.
 export default defineCachedEventHandler(async () => {
-  const [projects, home, passwordRows] = await Promise.all([
+  const [projects, home] = await Promise.all([
     sanityQuery(`*[_type == "project" && defined(slug.current)]|order(order asc, name asc){
     _id,
     _type,
@@ -11,7 +15,7 @@ export default defineCachedEventHandler(async () => {
     thumbnail,
     protected,
     tags,
-    sections,
+    "sections": select(protected == true => null, sections),
     client,
     role,
     projectUrl,
@@ -27,20 +31,9 @@ export default defineCachedEventHandler(async () => {
     email,
     socialLinks
   }`) || null,
-    sanityQuery<Array<{ slug: { current: string }; password: string }>>(
-      `*[_type == "project" && protected == true && defined(password)]{
-      slug,
-      password
-    }`,
-    ) || [],
   ])
 
-  const passwords: Record<string, string> = {}
-  for (const p of passwordRows) {
-    passwords[p.slug.current] = p.password
-  }
-
-  return { projects, home, passwords }
+  return { projects, home }
 }, {
   maxAge: 60,
   swr: true,

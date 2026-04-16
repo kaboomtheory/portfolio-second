@@ -11,11 +11,12 @@ import {
 interface SanityIndexPayload {
   projects: SanityProjectItem[]
   home: SanityHomePageRaw | null
-  passwords: Record<string, string>
 }
 
 /**
- * Single request for home page: projects + home CMS + passwords (saves round trips vs separate fetches).
+ * Single request for home page: projects + home CMS (saves a round trip
+ * vs separate fetches). Passwords are never exposed through this API —
+ * see /api/project-unlock for the auth flow.
  */
 export function useSanityIndexBundle() {
   const { data, pending: loading, error, refresh } = useFetch<SanityIndexPayload>('/api/sanity-index', {
@@ -31,15 +32,12 @@ export function useSanityIndexBundle() {
     return list
   })
 
-  const projectPasswords = computed(() => data.value?.passwords ?? {})
-
   const homePage = computed<HomePageData | null>(() =>
     homePageDataFromSanityRaw(data.value?.home),
   )
 
   return {
     orderedProjects,
-    projectPasswords,
     homePage,
     loading,
     error,

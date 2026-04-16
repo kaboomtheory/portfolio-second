@@ -185,10 +185,10 @@ useHead({
 
 .hero-name {
   display: inline-block;
-  line-height: 1.2;
-  font-size: clamp(1.5rem, 2.8vw + 0.35rem, 2.25rem);
+  line-height: 1.08;
+  font-size: clamp(2.5rem, 5vw + 0.5rem, 4.25rem);
   font-weight: 700;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: var(--fg-primary);
 }
 

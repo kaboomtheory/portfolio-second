@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Icon } from '@iconify/vue'
 import type { ProjectItem } from '~/types/project'
 
 const props = defineProps<{
@@ -12,16 +13,20 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 <template>
   <div :class="['project-card group relative', props.class]">
     <NuxtLink
-      class="project-card-link flex h-full flex-col rounded-lg bg-[var(--bg-primary)] p-3 shadow-sm transition-[box-shadow,transform] duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--fg-primary)]"
+      class="project-card-link flex h-full flex-col bg-[var(--bg-primary)] p-3 shadow-sm transition-[box-shadow,transform] duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--fg-primary)]"
       :to="`/projects/${project.slug}`"
     >
-      <div class="relative min-h-0 shrink-0 overflow-hidden rounded-lg aspect-[4/3]">
+      <div class="project-card__media relative min-h-0 shrink-0 overflow-hidden aspect-[4/3]">
         <img
           :src="project.thumbnail"
           :alt="project.name"
           class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
           loading="lazy"
         >
+        <span class="project-card__cue" aria-hidden="true">
+          <span class="project-card__cue-label">View case study</span>
+          <Icon icon="lucide:arrow-up-right" class="project-card__cue-icon" />
+        </span>
       </div>
 
       <div class="flex min-h-0 flex-1 flex-col gap-3 px-0.5 pb-1 pt-4">
@@ -58,6 +63,7 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 .project-card-link {
   height: 100%;
   border: var(--card-border);
+  border-radius: var(--radius-card);
   box-shadow: var(--card-ring);
   backdrop-filter: blur(15px) saturate(1.2);
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
@@ -68,6 +74,52 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
   transform: translateY(-4px);
 }
 
+.project-card__media {
+  border-radius: var(--radius-inner);
+}
+
+/* Hover cue pill in the top-right corner of the thumbnail */
+.project-card__cue {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.3rem 0.6rem 0.3rem 0.7rem;
+  border-radius: 9999px;
+  background: color-mix(in srgb, var(--bg-primary) 88%, transparent);
+  color: var(--fg-primary);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  backdrop-filter: blur(10px) saturate(1.15);
+  -webkit-backdrop-filter: blur(10px) saturate(1.15);
+  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
+  box-shadow: 0 2px 8px rgba(0, 20, 60, 0.12);
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 200ms ease, transform 200ms ease;
+  pointer-events: none;
+}
+
+.project-card:hover .project-card__cue,
+.project-card-link:focus-visible .project-card__cue {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.project-card__cue-label {
+  white-space: nowrap;
+}
+
+.project-card__cue-icon {
+  width: 0.85rem;
+  height: 0.85rem;
+  flex-shrink: 0;
+  color: var(--accent);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .project-card-link:hover {
     transform: none;
@@ -75,6 +127,11 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 
   .project-card-link img {
     transition: none;
+  }
+
+  .project-card__cue {
+    transition: opacity 0ms;
+    transform: none;
   }
 }
 </style>
