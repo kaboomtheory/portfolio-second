@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { navItems, profile } from '~/data/site'
+import { useSharedScrollY, useScrollLayoutSubscription } from '~/composables/useScrollLayoutBus'
 
 const route = useRoute()
 const pillNav = ref<HTMLElement | null>(null)
@@ -34,35 +35,19 @@ watch(() => route.path, () => {
   nextTick(() => setTimeout(updateBlob, 50))
 })
 
-const isHidden = ref(false)
-const lastScrollY = ref(0)
-const scrollThreshold = 50
+const CONDENSE_THRESHOLD = 80
+const scrollY = useSharedScrollY()
+const isCondensed = computed(() => scrollY.value > CONDENSE_THRESHOLD)
 
-const onScroll = () => {
-  const currentY = window.scrollY
-  if (currentY < scrollThreshold) {
-    isHidden.value = false
-  } else if (currentY > lastScrollY.value + 5) {
-    isHidden.value = true
-  } else if (currentY < lastScrollY.value - 5) {
-    isHidden.value = false
+useScrollLayoutSubscription((source) => {
+  if (source === 'resize' || source === 'init') {
+    updateBlob()
   }
-  lastScrollY.value = currentY
-}
-
-onMounted(() => {
-  window.addEventListener('scroll', onScroll, { passive: true })
-  window.addEventListener('resize', updateBlob)
-  nextTick(updateBlob)
-})
-onUnmounted(() => {
-  window.removeEventListener('scroll', onScroll)
-  window.removeEventListener('resize', updateBlob)
 })
 </script>
 
 <template>
-  <header class="navbar" :class="{ 'navbar-hidden': isHidden }">
+  <header class="navbar" :class="{ 'navbar-condensed': isCondensed }">
     <div class="navbar-inner container mx-auto w-full px-5 sm:px-6 md:max-w-[72rem] md:px-8">
       <div class="pill">
         <NuxtLink to="/" class="navbar-brand">
@@ -99,11 +84,11 @@ onUnmounted(() => {
   z-index: 50;
   padding: 1.5rem 0;
   pointer-events: none;
-  transition: transform 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9);
+  transition: padding 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9);
 }
 
-.navbar-hidden {
-  transform: translateY(-100%);
+.navbar.navbar-condensed {
+  padding: 0.75rem 0;
 }
 
 .navbar-inner {
@@ -146,12 +131,28 @@ onUnmounted(() => {
   backdrop-filter: blur(15px) saturate(1.2);
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
   animation: navbar-pill-glow 6s ease-in-out infinite alternate;
+  transition:
+    padding 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9),
+    gap 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9),
+    border-radius 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9);
 }
 
 @media (min-width: 640px) {
   .pill {
     padding: 0.5rem 1rem;
     gap: 1rem;
+  }
+}
+
+.navbar-condensed .pill {
+  padding: 0.375rem 0.6rem;
+  border-radius: 0.875rem;
+}
+
+@media (min-width: 640px) {
+  .navbar-condensed .pill {
+    padding: 0.375rem 0.75rem;
+    gap: 0.75rem;
   }
 }
 
@@ -179,6 +180,14 @@ onUnmounted(() => {
   border-radius: 0.625rem;
   object-fit: cover;
   flex-shrink: 0;
+  transition:
+    height 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9),
+    width 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9);
+}
+
+.navbar-condensed .navbar-brand-avatar {
+  height: 1.875rem;
+  width: 1.875rem;
 }
 
 .navbar-brand-name {
@@ -187,12 +196,26 @@ onUnmounted(() => {
   letter-spacing: 0.01em;
   color: var(--fg-primary);
   white-space: nowrap;
+  transition:
+    max-width 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9),
+    opacity 0.25s ease,
+    margin-left 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9);
 }
 
 /* Hide name on small screens */
 @media (max-width: 480px) {
   .navbar-brand-name {
     display: none;
+  }
+}
+
+/* On narrow viewports below sm, collapse the brand name when condensed */
+@media (max-width: 639px) {
+  .navbar-condensed .navbar-brand-name {
+    max-width: 0;
+    opacity: 0;
+    margin-left: -0.75rem;
+    overflow: hidden;
   }
 }
 
@@ -281,6 +304,13 @@ onUnmounted(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .nav-blob {
+    transition: none;
+  }
+
+  .navbar,
+  .pill,
+  .navbar-brand-avatar,
+  .navbar-brand-name {
     transition: none;
   }
 

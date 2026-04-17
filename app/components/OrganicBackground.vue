@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import type GUI from 'lil-gui'
 import * as THREE from 'three'
 
 const canvasRef = ref<HTMLCanvasElement>()
@@ -34,7 +33,7 @@ const sharedParams = {
   shadowWidth: 0.11335,
 }
 
-/** Live shader + palette; kept in sync with uniforms and optional dev GUI */
+/** Live shader + palette; kept in sync with uniforms */
 const organicTweaks = {
   preset: 'Site Light' as SitePresetName,
   color1: lightPreset.color1,
@@ -213,7 +212,6 @@ let resizeHandler: (() => void) | null = null
 let visibilityHandler: (() => void) | null = null
 let reducedMotionMql: MediaQueryList | null = null
 let reducedMotionHandler: ((e: MediaQueryListEvent) => void) | null = null
-let organicGui: GUI | null = null
 let componentDisposed = false
 
 function stopAnimationLoop() {
@@ -264,10 +262,6 @@ let pendingPreset: typeof lightPreset | null = null
 
 const colorUniformKeys = ['uColor1', 'uColor2', 'uColor3', 'uColor4'] as const
 
-function refreshOrganicGuiDisplay() {
-  organicGui?.controllersRecursive().forEach((c) => c.updateDisplay())
-}
-
 function applyTweaksToUniforms() {
   if (!material) return
   material.uniforms.uSpeed!.value = prefersReducedMotion ? 0 : organicTweaks.speed
@@ -302,7 +296,6 @@ function applyPreset(preset: { color1: string; color2: string; color3: string; c
   material.uniforms.uColor2!.value.set(preset.color2)
   material.uniforms.uColor3!.value.set(preset.color3)
   material.uniforms.uColor4!.value.set(preset.color4)
-  refreshOrganicGuiDisplay()
 }
 
 function startColorBlend(preset: typeof lightPreset) {
@@ -323,7 +316,6 @@ function startColorBlend(preset: typeof lightPreset) {
 watch(isDark, (dark) => {
   const preset = dark ? darkPreset : lightPreset
   syncOrganicTweaksColorsFromTheme()
-  refreshOrganicGuiDisplay()
   if (!material) {
     pendingPreset = preset
     return
@@ -458,56 +450,10 @@ onMounted(() => {
   } else if (isPageVisible) {
     startAnimationLoop()
   }
-
-  if (import.meta.dev) {
-    void import('lil-gui').then(({ default: GUI }) => {
-      if (componentDisposed || !material) return
-      const gui = new GUI({ title: 'Organic Settings' })
-      gui.close()
-
-      gui
-        .add(organicTweaks, 'preset', ['Site Light', 'Site Dark'])
-        .name('Theme Preset')
-        .onChange((name: SitePresetName) => {
-          const p = name === 'Site Light' ? lightPreset : darkPreset
-          organicTweaks.preset = name
-          organicTweaks.color1 = p.color1
-          organicTweaks.color2 = p.color2
-          organicTweaks.color3 = p.color3
-          organicTweaks.color4 = p.color4
-          gui.controllersRecursive().forEach((c) => c.updateDisplay())
-          startColorBlend(p)
-        })
-
-      const colorsFolder = gui.addFolder('Gradient Palette')
-      colorsFolder.addColor(organicTweaks, 'color1').name('Shadow (Valley)').onChange(() => applyTweaksColorsToMaterial())
-      colorsFolder.addColor(organicTweaks, 'color2').name('Mid Dark').onChange(() => applyTweaksColorsToMaterial())
-      colorsFolder.addColor(organicTweaks, 'color3').name('Mid Light').onChange(() => applyTweaksColorsToMaterial())
-      colorsFolder.addColor(organicTweaks, 'color4').name('Highlight (Peak)').onChange(() => applyTweaksColorsToMaterial())
-
-      const fluidFolder = gui.addFolder('Fluid & Waves')
-      fluidFolder.add(organicTweaks, 'speed', 0, 0.4).name('Flow Speed').onChange(() => applyTweaksToUniforms())
-      fluidFolder.add(organicTweaks, 'angle', -Math.PI, Math.PI).name('Flow Angle').onChange(() => applyTweaksToUniforms())
-      fluidFolder.add(organicTweaks, 'foldFrequency', 0.0, 5.0).name('Wave Scale').onChange(() => applyTweaksToUniforms())
-      fluidFolder.add(organicTweaks, 'warpAmount', 0.0, 4.0).name('Liquid Warp').onChange(() => applyTweaksToUniforms())
-      fluidFolder.add(organicTweaks, 'noiseScale', 0.0, 3.0).name('Noise Detail').onChange(() => applyTweaksToUniforms())
-      fluidFolder.add(organicTweaks, 'connections', 0.0, 1.5).name('Organic Connections').onChange(() => applyTweaksToUniforms())
-
-      const lightingFolder = gui.addFolder('Softness & Lighting')
-      lightingFolder.add(organicTweaks, 'depth', 0.0, 2.5).name('Surface Softness').onChange(() => applyTweaksToUniforms())
-      lightingFolder.add(organicTweaks, 'shadowWidth', 0.01, 0.4).name('Shadow Width').onChange(() => applyTweaksToUniforms())
-      lightingFolder.add(organicTweaks, 'lightX', -2.0, 2.0).name('Light X').onChange(() => applyTweaksToUniforms())
-      lightingFolder.add(organicTweaks, 'lightY', -2.0, 2.0).name('Light Y').onChange(() => applyTweaksToUniforms())
-
-      organicGui = gui
-    })
-  }
 })
 
 onBeforeUnmount(() => {
   componentDisposed = true
-  organicGui?.destroy()
-  organicGui = null
   stopAnimationLoop()
   if (resizeHandler) {
     window.removeEventListener('resize', resizeHandler)

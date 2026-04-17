@@ -91,7 +91,8 @@ useHead({
 
     <!-- Projects Section -->
     <section class="page-section projects-section">
-      <div class="mb-5 md:mb-6">
+      <div class="section-header mb-5 md:mb-6">
+        <span class="section-number">00</span>
         <h2 class="section-title">
           Selected work
         </h2>

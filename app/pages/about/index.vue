@@ -165,26 +165,28 @@ const availabilityCtaLabel = computed(() =>
     </section>
 
     <!-- Status Ticker -->
-    <section v-if="statusItems?.length" class="ticker-section reveal-up">
-      <div class="ticker-wrapper">
-        <div
-          class="ticker-track"
-          :class="{ 'ticker-track--marquee': !reduceTickerMotion }"
-        >
-          <div class="ticker-content">
-            <template v-for="cell in tickerCells" :key="cell.key">
-              <div class="ticker-item">
-                <div class="ticker-image">
-                  <img v-if="cell.item.images?.length" :src="cell.item.images[0]" :alt="cell.item.title" />
-                  <Icon v-else-if="cell.item.icon" :icon="cell.item.icon" class="w-5 h-5 text-[var(--fg-muted)]" />
+    <section v-if="statusItems?.length" class="ticker-section full-bleed reveal-up">
+      <div class="full-bleed-inner">
+        <div class="ticker-wrapper">
+          <div
+            class="ticker-track"
+            :class="{ 'ticker-track--marquee': !reduceTickerMotion }"
+          >
+            <div class="ticker-content">
+              <template v-for="cell in tickerCells" :key="cell.key">
+                <div class="ticker-item">
+                  <div class="ticker-image">
+                    <img v-if="cell.item.images?.length" :src="cell.item.images[0]" :alt="cell.item.title" />
+                    <Icon v-else-if="cell.item.icon" :icon="cell.item.icon" class="w-5 h-5 text-[var(--fg-muted)]" />
+                  </div>
+                  <div class="ticker-info">
+                    <span class="ticker-label">{{ cell.item.label }}</span>
+                    <span class="ticker-title">{{ cell.item.title }}</span>
+                  </div>
                 </div>
-                <div class="ticker-info">
-                  <span class="ticker-label">{{ cell.item.label }}</span>
-                  <span class="ticker-title">{{ cell.item.title }}</span>
-                </div>
-              </div>
-              <span v-if="cell.showSep" class="ticker-sep" aria-hidden="true">·</span>
-            </template>
+                <span v-if="cell.showSep" class="ticker-sep" aria-hidden="true">·</span>
+              </template>
+            </div>
           </div>
         </div>
       </div>
@@ -395,16 +397,18 @@ const availabilityCtaLabel = computed(() =>
     var(--shadow-lg);
 }
 
-/* Ticker Section */
+/* Ticker Section: full-width band (edge-to-edge); inner stays inside 72rem */
 .ticker-section {
-  padding: var(--space-md) var(--space-md);
+  padding: var(--space-md) 0;
   overflow: hidden;
-  border-radius: var(--radius-card);
-  border: var(--card-border);
-  box-shadow: var(--card-ring);
+  border-block: 1px solid color-mix(in srgb, var(--fg-muted) 14%, transparent);
   background: var(--bg-secondary);
   backdrop-filter: blur(15px) saturate(1.2);
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
+}
+
+:root.dark .ticker-section {
+  border-block-color: color-mix(in srgb, var(--accent-soft) 16%, transparent);
 }
 
 .ticker-wrapper {
@@ -536,23 +540,7 @@ const availabilityCtaLabel = computed(() =>
   white-space: nowrap;
 }
 
-/* Section Headers */
-.section-header {
-  margin-bottom: var(--space-lg);
-}
-
-.section-number {
-  font-size: 0.75rem;
-  font-weight: 700;
-  letter-spacing: 0.15em;
-  color: var(--accent);
-  font-family: 'Geist Mono', monospace;
-}
-
-.section-title {
-  margin-top: 0.25rem;
-}
-
+/* Section Headers: .section-header, .section-number, and .section-title live in main.css */
 .section-lede {
   font-size: 0.9375rem;
   line-height: 1.55;

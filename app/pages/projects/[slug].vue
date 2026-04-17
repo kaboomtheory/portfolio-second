@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
 import { useScrollRevealGroup } from '~/composables/useScrollReveal'
-import { projectItemsFromSanityRaw } from '~/composables/useSanityProjects'
+import { projectItemsFromSanityRaw, useSanityProjects } from '~/composables/useSanityProjects'
 import type { ProjectItem, ProjectStorySection, SanityProjectItem } from '~/types/project'
 import { sanitizeEmbedUrl } from '~/utils/embed'
 import { normalizeProjectSlug } from '~/utils/projectSlug'

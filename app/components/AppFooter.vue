@@ -10,8 +10,8 @@ const linkedinHref = computed(() => {
 
 <template>
   <footer class="footer">
-    <div class="connect-band" aria-label="Contact">
-      <div class="connect-band__inner w-full">
+    <div class="connect-band full-bleed" aria-label="Contact">
+      <div class="full-bleed-inner connect-band__inner w-full">
         <NeonMetricCardShell compact fluid-width heading-id="connect-card-heading">
         <div class="connect-card__main">
           <h2 id="connect-card-heading" class="connect-card__title">Let's Connect</h2>
@@ -60,6 +60,34 @@ const linkedinHref = computed(() => {
   z-index: 0;
   padding-top: var(--space-xl);
   padding-bottom: var(--space-xl);
+  border-top: 1px solid color-mix(in srgb, var(--accent) 14%, transparent);
+}
+
+.connect-band::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background:
+    radial-gradient(
+      60% 80% at 50% 0%,
+      color-mix(in srgb, var(--accent) 10%, transparent),
+      transparent 70%
+    );
+  pointer-events: none;
+}
+
+:root.dark .connect-band {
+  border-top-color: color-mix(in srgb, var(--accent-soft) 18%, transparent);
+}
+
+:root.dark .connect-band::before {
+  background:
+    radial-gradient(
+      60% 80% at 50% 0%,
+      color-mix(in srgb, var(--accent-soft) 14%, transparent),
+      transparent 70%
+    );
 }
 
 .connect-band__inner {

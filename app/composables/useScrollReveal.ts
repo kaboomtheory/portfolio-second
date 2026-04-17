@@ -1,4 +1,4 @@
-import { ref, onMounted, onUnmounted, type Ref } from 'vue'
+import { ref, onMounted, onUnmounted, watch, type Ref } from 'vue'
 
 export interface ScrollRevealOptions {
   threshold?: number
@@ -130,7 +130,20 @@ export function useScrollRevealGroup(
     }
   }
 
-  onMounted(observe)
+  onMounted(() => {
+    observe()
+    // Container may mount after initial onMounted when it's gated behind
+    // an async v-if (e.g., waiting on a fetch). Re-attempt observation
+    // as soon as the ref resolves to an element.
+    if (!observer) {
+      const stop = watch(containerRef, (el) => {
+        if (el && !observer) {
+          observe()
+          stop()
+        }
+      })
+    }
+  })
   onUnmounted(disconnect)
 
   return {

@@ -489,6 +489,7 @@ html {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
+  overflow-x: clip;
 }
 
 html.lenis,
@@ -520,6 +521,7 @@ body {
   color: var(--fg-primary);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -663,6 +665,36 @@ pre,
   padding: var(--space-lg) 0;
 }
 
+.page-content > .page-section:first-child,
+.page-content > section:first-child {
+  padding-top: 0;
+}
+
+/* Escape the 72rem column for editorial moments; inner content stays capped. */
+.full-bleed {
+  width: 100vw;
+  margin-inline: calc(50% - 50vw);
+}
+
+.full-bleed > .full-bleed-inner {
+  width: 100%;
+  max-width: 72rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .full-bleed > .full-bleed-inner {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .full-bleed > .full-bleed-inner {
+    padding-inline: 2rem;
+  }
+}
+
 .eyebrow-link {
   font-family: 'Geist Mono', ui-monospace, monospace;
   font-size: 0.75rem;
@@ -776,6 +808,23 @@ pre,
 :root.dark .filter-pill-active,
 :root.dark .filter-pill--active {
   background-color: var(--surface-interactive);
+}
+
+.section-header {
+  margin-bottom: var(--space-lg);
+}
+
+.section-number {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  font-family: 'Geist Mono', ui-monospace, monospace;
+}
+
+.section-header > .section-title {
+  margin-top: 0.25rem;
+  margin-bottom: 0;
 }
 
 .section-title {

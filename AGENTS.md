@@ -25,7 +25,7 @@ If any are added later, treat them as higher-priority project instructions and u
 ## 3) Source Layout
 
 - `app/app.vue`: app entry wrapper using layout + page.
-- `app/layouts/default.vue`: desktop sidebar + mobile drawer shell.
+- `app/layouts/default.vue`: top pill navbar (`AppNavbar`) + centered 72rem container shell; footer (`AppFooter`) + `BackToTop` FAB.
 - `app/pages/*`: route files (see full list in Todos.md Phase 4).
 - `app/components/*`: reusable UI building blocks.
   - `ScrollExpandImage`: scroll-triggered image animation with scale and opacity effects.
