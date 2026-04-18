@@ -15,7 +15,6 @@ export const profile = {
 
 export const navItems: NavItem[] = [
   { group: 'Work', title: 'Home', path: '/', icon: 'lucide:house' },
-  { group: 'Personal', title: 'About', path: '/about', icon: 'lucide:user' },
 ]
 
 export const socialLinks = [

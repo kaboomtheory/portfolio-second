@@ -2,20 +2,39 @@
 import { Icon } from '@iconify/vue'
 import type { ProjectItem } from '~/types/project'
 
-const props = defineProps<{
-  project: ProjectItem
-  class?: string
-}>()
+const props = withDefaults(
+  defineProps<{
+    project: ProjectItem
+    class?: string
+    /** `strip`: intrinsic card height (dashboard carousel). `default`: fill parent height. */
+    layout?: 'default' | 'strip'
+  }>(),
+  { layout: 'default' },
+)
 
 const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
+
+const linkClass = computed(() => [
+  'project-card-link flex flex-col bg-[var(--bg-primary)] p-3 shadow-sm transition-[box-shadow,transform] duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--fg-primary)]',
+  props.layout === 'strip' ? 'project-card-link--strip' : 'h-full',
+])
+
+const bodyClass = computed(() =>
+  props.layout === 'strip'
+    ? 'flex shrink-0 flex-col gap-3 px-0.5 pb-1 pt-4'
+    : 'flex min-h-0 flex-1 flex-col gap-3 px-0.5 pb-1 pt-4',
+)
+
+const summaryClass = computed(() =>
+  props.layout === 'strip'
+    ? 'line-clamp-3 text-sm leading-relaxed text-[var(--fg-secondary)]'
+    : 'line-clamp-2 text-sm leading-relaxed text-[var(--fg-secondary)]',
+)
 </script>
 
 <template>
   <div :class="['project-card group relative', props.class]">
-    <NuxtLink
-      class="project-card-link flex h-full flex-col bg-[var(--bg-primary)] p-3 shadow-sm transition-[box-shadow,transform] duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--fg-primary)]"
-      :to="`/projects/${project.slug}`"
-    >
+    <NuxtLink :class="linkClass" :to="`/projects/${project.slug}`">
       <div class="project-card__media relative min-h-0 shrink-0 overflow-hidden aspect-[4/3]">
         <img
           :src="project.thumbnail"
@@ -29,14 +48,14 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
         </span>
       </div>
 
-      <div class="flex min-h-0 flex-1 flex-col gap-3 px-0.5 pb-1 pt-4">
+      <div :class="bodyClass">
         <h3 class="min-w-0 text-lg font-semibold leading-snug tracking-tight text-[var(--fg-primary)] transition-colors duration-300 group-hover:text-[var(--emphasis)] md:text-xl">
           {{ project.name }}
         </h3>
 
         <p
           v-if="project.summary"
-          class="line-clamp-2 text-sm leading-relaxed text-[var(--fg-secondary)]"
+          :class="summaryClass"
         >
           {{ project.summary }}
         </p>
@@ -69,6 +88,10 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
 }
 
+.project-card-link--strip {
+  height: auto;
+}
+
 .project-card-link:hover {
   box-shadow: var(--card-ring), var(--shadow-lg);
   transform: translateY(-4px);
@@ -76,6 +99,11 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 
 .project-card__media {
   border-radius: var(--radius-inner);
+}
+
+.project-card-link--strip:hover {
+  transform: none;
+  box-shadow: var(--card-ring), var(--shadow-md);
 }
 
 /* Hover cue pill in the top-right corner of the thumbnail */

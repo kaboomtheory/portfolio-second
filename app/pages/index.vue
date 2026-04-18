@@ -1,381 +1,244 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-import { socialLinks, profile } from '~/data/site'
+const { homeHero, aboutMe: fallbackAboutMe, experiences: fallbackExperiences } = useMockContent()
+const { orderedProjects, loading, homePage } = useSanityIndexBundle()
+const { statusItems } = useSanityStatus()
+const { aboutPage } = useSanityAbout()
 
-const { homeHero } = useMockContent()
-const { orderedProjects, loading, homePage: cmsHome } = useSanityIndexBundle()
-
-const heroTitle = computed(() => cmsHome.value?.hero.title || homeHero.title)
+const heroTitle = computed(() => homePage.value?.hero.title || homeHero.title)
 const heroTaglines = computed(() =>
-  cmsHome.value?.hero.taglines?.length ? cmsHome.value.hero.taglines : homeHero.taglines,
+  homePage.value?.hero.taglines?.length ? homePage.value.hero.taglines : homeHero.taglines,
 )
-const heroEmail = computed(() => cmsHome.value?.email || profile.email)
+const hasTicker = computed(() => (statusItems.value?.length ?? 0) > 0)
 
-const linkedinHref = computed(() => {
-  const list = cmsHome.value?.socialLinks?.length ? cmsHome.value.socialLinks : socialLinks
-  const found = list.find((l) => /linkedin/i.test(l.label))
-  return found?.href ?? 'https://www.linkedin.com/'
+const story = computed(() =>
+  aboutPage.value?.story?.length ? aboutPage.value.story : fallbackAboutMe.story,
+)
+
+const experienceItems = computed(() =>
+  aboutPage.value?.experiences?.length ? aboutPage.value.experiences : fallbackExperiences,
+)
+
+const featuredRole = computed(() => experienceItems.value[0] ?? null)
+const historyItems = computed(() => experienceItems.value.slice(1))
+
+const capabilities = computed(() => {
+  if (aboutPage.value?.capabilities?.length) return aboutPage.value.capabilities
+  return [
+    ...fallbackAboutMe.skills.flatMap((g) =>
+      g.items.map((name) => ({ name, category: g.category })),
+    ),
+    ...fallbackAboutMe.tools.map((name) => ({ name, category: 'Software' })),
+  ]
 })
 
-const filterTag = ref<string>('all')
-
-const tagOptions = computed(() => {
-  const set = new Set<string>()
-  for (const p of orderedProjects.value) {
-    for (const t of p.tags ?? []) {
-      const s = t?.trim()
-      if (s) set.add(s)
-    }
+const groupedCapabilities = computed(() => {
+  const groups: Record<string, string[]> = {}
+  for (const cap of capabilities.value) {
+    (groups[cap.category] ??= []).push(cap.name)
   }
-  return Array.from(set).sort((a, b) => a.localeCompare(b))
+  return Object.entries(groups).map(([category, items]) => ({ category, items }))
 })
 
-const filteredProjects = computed(() => {
-  if (filterTag.value === 'all') return orderedProjects.value
-  return orderedProjects.value.filter((p) => p.tags?.includes(filterTag.value))
-})
-
-const showFilters = computed(
-  () => !loading.value && tagOptions.value.length > 0,
+const bentoClass = computed(() =>
+  hasTicker.value ? 'bento--with-ticker' : 'bento--no-ticker',
 )
 
 useHead({
-  title: 'Selected work',
+  title: 'Home',
 })
 </script>
 
 <template>
-  <div class="page-content">
-    <!-- Hero Section -->
-    <section class="page-section">
-      <h1 class="hero-statement hero-fade-in">
-        <TextReveal tag="span" :text="heroTitle" class="hero-name" />
-        <span class="hero-tagline">
-          <p
-            v-for="(line, lineIndex) in heroTaglines"
-            :key="lineIndex"
-            class="hero-tagline-line"
-          >
-            <template v-for="(seg, segIndex) in line.segments" :key="segIndex">
-              <strong v-if="seg.em" class="hero-tagline-em">{{ seg.text }}</strong>
-              <template v-else>{{ seg.text }}</template>
-            </template>
-          </p>
-        </span>
-      </h1>
-      <div class="mt-6 flex flex-wrap items-center gap-3 hero-fade-in hero-delay-2">
-        <CtaButton to="/about" label="VIEW RESUME" attention preserve-case>
-          <template #icon><Icon icon="lucide:file-text" class="text-sm" /></template>
-        </CtaButton>
-        <CtaButton
-          :href="`mailto:${heroEmail}`"
-          label="OPEN TO WORK"
-          secondary
-          elevated-secondary
-          with-dot
-          preserve-case
-        >
-          <template #icon><Icon icon="lucide:mail" class="text-sm" /></template>
-        </CtaButton>
-        <CtaButton
-          :href="linkedinHref"
-          label="LINKEDIN"
-          secondary
-          elevated-secondary
-          preserve-case
-        >
-          <template #icon><Icon icon="ri:linkedin-fill" class="text-sm" /></template>
-        </CtaButton>
-      </div>
-    </section>
-
-    <!-- Projects Section -->
-    <section class="page-section projects-section">
-      <div class="section-header mb-5 md:mb-6">
-        <span class="section-number">00</span>
-        <h2 class="section-title">
-          Selected work
-        </h2>
-        <p class="mt-2 max-w-xl text-sm leading-relaxed text-muted">
-          Case studies and client projects — filtered by tag when available.
-        </p>
-      </div>
-
-      <div
-        v-if="showFilters"
-        class="mb-6 flex flex-wrap gap-2"
-        role="tablist"
-        aria-label="Filter projects by tag"
-      >
-        <button
-          type="button"
-          role="tab"
-          :aria-selected="filterTag === 'all'"
-          class="filter-pill"
-          :class="{ 'filter-pill--active': filterTag === 'all' }"
-          @click="filterTag = 'all'"
-        >
-          All
-        </button>
-        <button
-          v-for="tag in tagOptions"
-          :key="tag"
-          type="button"
-          role="tab"
-          :aria-selected="filterTag === tag"
-          class="filter-pill"
-          :class="{ 'filter-pill--active': filterTag === tag }"
-          @click="filterTag = tag"
-        >
-          {{ tag }}
-        </button>
-      </div>
-
-      <!-- Skeleton Loading -->
-      <div v-if="loading" class="project-grid-skeleton">
-        <div v-for="i in 6" :key="i" class="skeleton-card">
-          <div class="skeleton-thumbnail" />
-          <div class="skeleton-body">
-            <div class="skeleton-line skeleton-line-short" />
-            <div class="skeleton-line" />
-            <div class="skeleton-line skeleton-line-mid" />
-          </div>
-        </div>
-      </div>
-
-      <div
-        v-else-if="filteredProjects.length === 0"
-        class="empty-projects rounded-xl bg-[var(--bg-primary)] px-6 py-14 text-center"
-      >
-        <Icon
-          icon="lucide:folder-open"
-          class="mx-auto mb-4 h-10 w-10 text-[var(--fg-muted)]"
-          aria-hidden="true"
+  <div class="bento-page">
+    <div class="bento" :class="bentoClass">
+      <div class="bento-cell bento-cell--profile">
+        <DashboardProfileTile
+          class="bento-cell__fill"
+          :hero-title="heroTitle"
+          :hero-taglines="heroTaglines"
+          :story="story"
         />
-        <p class="text-base font-medium text-[var(--fg-primary)]">No projects to show yet</p>
-        <p class="mx-auto mt-2 max-w-sm text-sm leading-relaxed text-[var(--fg-muted)]">
-          New work will appear here once it is published. Try a different filter or check back soon.
-        </p>
       </div>
 
-      <Transition v-else name="grid-fade" mode="out-in" appear>
-        <div
-          :key="filterTag"
-          class="grid grid-cols-1 gap-5 md:grid-cols-2 md:gap-6 lg:grid-cols-3 lg:gap-7"
-        >
-          <ProjectCard
-            v-for="(item, idx) in filteredProjects"
-            :key="item.slug"
-            :project="item"
-            :style="{ '--i': idx }"
-          />
-        </div>
-      </Transition>
-    </section>
+      <div v-if="featuredRole" class="bento-cell bento-cell--featured">
+        <DashboardFeaturedRole
+          class="bento-cell__fill"
+          :role="featuredRole"
+          :history-items="historyItems"
+        />
+      </div>
+
+      <div class="bento-cell bento-cell--capabilities">
+        <DashboardCapabilitiesTile
+          class="bento-cell__fill"
+          :grouped-capabilities="groupedCapabilities"
+        />
+      </div>
+
+      <div v-if="hasTicker" class="bento-cell bento-cell--ticker">
+        <DashboardStatusTicker
+          class="bento-cell__fill w-full min-h-0"
+          :status-items="statusItems"
+        />
+      </div>
+
+      <div class="bento-cell bento-cell--proj">
+        <DashboardProjectsTile
+          class="bento-cell__fill"
+          :projects="orderedProjects"
+          :loading="loading"
+        />
+      </div>
+    </div>
   </div>
 </template>
 
 <style scoped>
-/* Hero statement */
-.hero-statement {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 1rem;
-}
-
-.hero-name {
-  display: inline-block;
-  line-height: 1.08;
-  font-size: clamp(2.5rem, 5vw + 0.5rem, 4.25rem);
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  color: var(--fg-primary);
-}
-
-.hero-tagline {
-  display: block;
-  max-width: 42rem;
-}
-
-.hero-tagline-line {
-  margin: 0;
-  font-size: clamp(1rem, 1.4vw + 0.4rem, 1.375rem);
-  font-weight: 400;
-  line-height: 1.55;
-  color: var(--fg-secondary);
-  letter-spacing: -0.01em;
-}
-
-.hero-tagline-line + .hero-tagline-line {
-  margin-top: 0.5rem;
-}
-
-.hero-tagline-em {
-  font-weight: 600;
-  color: var(--fg-primary);
-}
-
-.hero-intro {
-  color: var(--fg-secondary);
-}
-
-.projects-section {
-  padding-top: var(--space-sm);
-}
-
-/* Hero fade-in animations */
-.hero-fade-in {
-  opacity: 0;
-  animation: hero-fade-in 0.8s cubic-bezier(0.2, 0.65, 0.3, 0.9) forwards;
-}
-
-.hero-delay-2 {
-  animation-delay: 0.55s;
-}
-
-@keyframes hero-fade-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Project grid: crossfade on filter change */
-.grid-fade-enter-active {
-  transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.grid-fade-leave-active {
-  transition: opacity 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-}
-
-.grid-fade-enter-from,
-.grid-fade-leave-to {
-  opacity: 0;
-}
-
-/* Staggered card entry within the grid */
-.grid-fade-enter-active :deep(.project-card) {
-  animation: card-enter 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-  animation-delay: calc(var(--i, 0) * 50ms);
-}
-
-@keyframes card-enter {
-  from {
-    opacity: 0;
-    transform: translateY(12px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-.project-grid-skeleton {
+.bento {
   display: grid;
-  grid-template-columns: 1fr;
-  gap: 1.25rem;
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+  max-width: 108rem;
+  margin-inline: auto;
+  gap: 0.75rem;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
 }
 
-@media (min-width: 768px) {
-  .project-grid-skeleton {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1.5rem;
+/*
+ * Desktop mosaic (≥1024px). Offsets are the whole point:
+ *  - middle column (featured + history) spans three rows as one cell
+ *  - right column is capabilities only (availability/contact lives in the navbar on home)
+ *  - projects spans three named rows (`proj`) so the strip fits full cards
+ */
+.bento--with-ticker {
+  grid-template-rows:
+    minmax(0, 0.48fr)
+    minmax(0, 0.8fr)
+    minmax(0, 0.92fr)
+    auto
+    minmax(0, 1.2fr)
+    minmax(0, 1.2fr)
+    minmax(0, 1.2fr);
+  grid-template-areas:
+    'profile profile profile profile profile featured featured featured featured caps caps caps'
+    'profile profile profile profile profile featured featured featured featured caps caps caps'
+    'profile profile profile profile profile featured featured featured featured caps caps caps'
+    'ticker ticker ticker ticker ticker ticker ticker ticker ticker ticker ticker ticker'
+    'proj proj proj proj proj proj proj proj proj proj proj proj'
+    'proj proj proj proj proj proj proj proj proj proj proj proj'
+    'proj proj proj proj proj proj proj proj proj proj proj proj';
+}
+
+.bento--no-ticker {
+  grid-template-rows:
+    minmax(0, 0.5fr)
+    minmax(0, 0.82fr)
+    minmax(0, 0.95fr)
+    minmax(0, 1.2fr)
+    minmax(0, 1.2fr)
+    minmax(0, 1.2fr);
+  grid-template-areas:
+    'profile profile profile profile profile featured featured featured featured caps caps caps'
+    'profile profile profile profile profile featured featured featured featured caps caps caps'
+    'profile profile profile profile profile featured featured featured featured caps caps caps'
+    'proj proj proj proj proj proj proj proj proj proj proj proj'
+    'proj proj proj proj proj proj proj proj proj proj proj proj'
+    'proj proj proj proj proj proj proj proj proj proj proj proj';
+}
+
+@media (max-width: 1199px) {
+  .bento {
+    gap: 0.625rem;
   }
 }
 
-@media (min-width: 1024px) {
-  .project-grid-skeleton {
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.75rem;
+/* Tablet: 6-col compressed mosaic */
+@media (max-width: 1023px) {
+  .bento {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    grid-auto-rows: auto;
+  }
+
+  .bento--with-ticker,
+  .bento--no-ticker {
+    grid-template-rows: unset;
+  }
+
+  .bento--with-ticker {
+    grid-template-areas:
+      'profile profile profile profile featured featured'
+      'profile profile profile profile featured featured'
+      'caps caps caps caps caps caps'
+      'ticker ticker ticker ticker ticker ticker'
+      'proj proj proj proj proj proj';
+  }
+
+  .bento--no-ticker {
+    grid-template-areas:
+      'profile profile profile profile featured featured'
+      'profile profile profile profile featured featured'
+      'caps caps caps caps caps caps'
+      'proj proj proj proj proj proj';
   }
 }
 
-/* Empty state card */
-.empty-projects {
-  border: var(--card-border);
-  box-shadow: var(--card-ring);
-  backdrop-filter: blur(15px) saturate(1.2);
-  -webkit-backdrop-filter: blur(15px) saturate(1.2);
+/* Mobile: single-column stack */
+@media (max-width: 639px) {
+  .bento {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .bento--with-ticker {
+    grid-template-areas:
+      'profile'
+      'featured'
+      'caps'
+      'ticker'
+      'proj';
+  }
+
+  .bento--no-ticker {
+    grid-template-areas:
+      'profile'
+      'featured'
+      'caps'
+      'proj';
+  }
 }
 
-/* Skeleton loading */
-.skeleton-card {
-  border-radius: 0.75rem;
-  background: var(--bg-secondary);
-  border: var(--card-border);
-  overflow: hidden;
-}
-
-.skeleton-thumbnail {
-  aspect-ratio: 4 / 3;
-  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.5s ease-in-out infinite;
-}
-
-.skeleton-body {
-  padding: 1rem 1rem 1.125rem;
+.bento-cell {
   display: flex;
+  min-height: 0;
+  min-width: 0;
   flex-direction: column;
-  gap: 0.5rem;
 }
 
-.skeleton-line {
-  height: 0.75rem;
-  border-radius: 0.25rem;
-  background: linear-gradient(90deg, var(--bg-tertiary) 25%, var(--bg-secondary) 50%, var(--bg-tertiary) 75%);
-  background-size: 200% 100%;
-  animation: skeleton-shimmer 1.5s ease-in-out infinite;
+.bento-cell__fill {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
 }
 
-.skeleton-line-short {
-  width: 40%;
+.bento-cell--profile { grid-area: profile; }
+.bento-cell--featured { grid-area: featured; }
+
+.bento-cell--capabilities { grid-area: caps; }
+.bento-cell--ticker { grid-area: ticker; }
+.bento-cell--proj {
+  grid-area: proj;
+  min-height: clamp(15rem, 34vh, 24rem);
 }
 
-.skeleton-line-mid {
-  width: 72%;
-}
-
-@keyframes skeleton-shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
+@media (max-width: 1023px) {
+  .bento-cell--proj {
+    min-height: clamp(16rem, 42vh, 28rem);
   }
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .hero-fade-in {
-    animation: none;
-    opacity: 1;
-  }
-
-  .grid-fade-enter-active,
-  .grid-fade-leave-active {
-    transition: none;
-  }
-
-  .grid-fade-enter-from,
-  .grid-fade-leave-to {
-    opacity: 1;
-  }
-
-  .grid-fade-enter-active :deep(.project-card) {
-    animation: none;
-    opacity: 1;
-    transform: none;
-  }
-
-  .skeleton-thumbnail,
-  .skeleton-line {
-    animation: none;
+@media (max-width: 639px) {
+  .bento-cell--proj {
+    min-height: clamp(14rem, 38vh, 22rem);
   }
 }
 </style>

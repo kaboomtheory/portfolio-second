@@ -1,8 +1,26 @@
 <script setup lang="ts">
-import { navItems, profile } from '~/data/site'
+import { navItems, profile, socialLinks } from '~/data/site'
 import { useSharedScrollY, useScrollLayoutSubscription } from '~/composables/useScrollLayoutBus'
 
 const route = useRoute()
+/** Matches home + project detail: wide pill bar aligned with 108rem content column. */
+const isWideShell = computed(
+  () => route.path === '/' || /^\/projects\//.test(route.path),
+)
+const isHome = computed(() => route.path === '/')
+
+const { homePage } = useSanityIndexBundle()
+const { aboutPage } = useSanityAbout()
+
+const heroEmail = computed(() => homePage.value?.email || profile.email)
+const resumeHref = computed(
+  () => aboutPage.value?.resumeUrl || '/Bryan_Mendez_resume_2025-1.pdf',
+)
+const linkedinHref = computed(() => {
+  const list = homePage.value?.socialLinks?.length ? homePage.value.socialLinks : socialLinks
+  const found = list.find((l) => /linkedin/i.test(l.label))
+  return found?.href ?? 'https://www.linkedin.com/'
+})
 const pillNav = ref<HTMLElement | null>(null)
 const blob = ref<HTMLElement | null>(null)
 const BLOB_TRANSITION = 'left 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease'
@@ -48,14 +66,32 @@ useScrollLayoutSubscription((source) => {
 
 <template>
   <header class="navbar" :class="{ 'navbar-condensed': isCondensed }">
-    <div class="navbar-inner container mx-auto w-full px-5 sm:px-6 md:max-w-[72rem] md:px-8">
-      <div class="pill">
+    <div
+      class="navbar-inner mx-auto w-full"
+      :class="
+        isWideShell
+          ? 'max-w-[108rem] px-4 sm:px-5 md:px-6'
+          : 'container px-5 sm:px-6 md:max-w-[72rem] md:px-8'
+      "
+    >
+      <div class="pill" :class="{ 'pill--with-now': isHome }">
         <NuxtLink to="/" class="navbar-brand">
           <img :src="profile.photo" :alt="profile.name" class="navbar-brand-avatar">
           <span class="navbar-brand-name mono">{{ profile.name }}</span>
         </NuxtLink>
 
-        <div class="pill-trailing">
+        <div v-if="isHome" class="pill-now">
+          <div class="pill-now-inner">
+            <DashboardNowCard
+              variant="navbar"
+              :resume-href="resumeHref"
+              :linkedin-href="linkedinHref"
+              :email="heroEmail"
+            />
+          </div>
+        </div>
+
+        <div class="pill-trailing" :class="{ 'pill-trailing--home': isHome }">
           <nav ref="pillNav" class="pill-nav">
             <span ref="blob" class="nav-blob" />
             <NuxtLink
@@ -161,6 +197,85 @@ useScrollLayoutSubscription((source) => {
   animation-name: navbar-pill-glow-dark;
 }
 
+/* Home: brand | availability cluster | nav + theme */
+.pill--with-now {
+  justify-content: flex-start;
+  gap: 0.5rem;
+  flex-wrap: nowrap;
+}
+
+@media (min-width: 640px) {
+  .pill--with-now {
+    gap: 0.625rem;
+  }
+}
+
+.pill--with-now .navbar-brand {
+  padding-right: 0.5rem;
+  margin-right: 0.125rem;
+  border-right: 1px solid color-mix(in srgb, var(--fg-muted) 16%, transparent);
+}
+
+@media (min-width: 640px) {
+  .pill--with-now .navbar-brand {
+    padding-right: 0.75rem;
+  }
+}
+
+.pill-now {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pill-now-inner {
+  width: 100%;
+  max-width: min(100%, 58rem);
+  border-radius: 0.625rem;
+  padding: 0.125rem 0.35rem 0.125rem 0.45rem;
+  background: color-mix(in srgb, var(--bg-secondary) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg-muted) 14%, transparent);
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--fg-primary) 4%, transparent);
+}
+
+@media (min-width: 640px) {
+  .pill-now-inner {
+    padding: 0.15rem 0.45rem 0.15rem 0.55rem;
+    border-radius: 0.6875rem;
+  }
+}
+
+.pill-now :deep(.now-card--navbar) {
+  margin-top: 0;
+  width: auto;
+  max-width: 100%;
+  padding: 0;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 0;
+}
+
+.pill--with-now .pill-trailing {
+  margin-left: auto;
+}
+
+.pill-trailing--home {
+  padding-left: 0.5rem;
+  margin-left: 0.125rem;
+  border-left: 1px solid color-mix(in srgb, var(--fg-muted) 16%, transparent);
+}
+
+@media (min-width: 640px) {
+  .pill-trailing--home {
+    padding-left: 0.75rem;
+  }
+}
+
 /* Brand */
 .navbar-brand {
   display: flex;
@@ -223,7 +338,7 @@ useScrollLayoutSubscription((source) => {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  flex-shrink: 0;
+  flex-shrink: 1;
   min-width: 0;
 }
 
@@ -240,6 +355,12 @@ useScrollLayoutSubscription((source) => {
   gap: 0.375rem;
   position: relative;
   min-width: 0;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.pill-nav::-webkit-scrollbar {
+  display: none;
 }
 
 @media (min-width: 640px) {
@@ -321,6 +442,79 @@ useScrollLayoutSubscription((source) => {
 
   :root.dark .pill {
     box-shadow: 0 0 20px color-mix(in srgb, var(--accent-soft) 18%, transparent);
+  }
+}
+
+@media (max-width: 1180px) {
+  .pill--with-now {
+    flex-wrap: wrap;
+    row-gap: 0.5rem;
+    align-items: flex-start;
+  }
+
+  .pill--with-now .navbar-brand {
+    order: 1;
+  }
+
+  .pill--with-now .pill-trailing {
+    order: 2;
+  }
+
+  .pill-now {
+    order: 3;
+    flex: 1 1 100%;
+    justify-content: flex-start;
+  }
+
+  .pill-now-inner {
+    max-width: 100%;
+  }
+}
+
+@media (max-width: 900px) {
+  .pill-trailing {
+    gap: 0.4rem;
+  }
+
+  .pill-nav {
+    gap: 0.3rem;
+  }
+
+  .nav-link {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 760px) {
+  .pill--with-now .navbar-brand {
+    order: 1;
+    border-right: none;
+    margin-right: 0;
+    padding-right: 0;
+  }
+
+  .pill-now {
+    order: 2;
+  }
+
+  .pill--with-now .pill-trailing {
+    order: 3;
+    width: 100%;
+    margin-left: 0;
+    justify-content: space-between;
+  }
+
+  .pill-nav {
+    flex: 1 1 auto;
+  }
+
+  .pill-trailing--home {
+    border-left: none;
+    padding-left: 0;
+    margin-left: 0;
+    padding-top: 0.35rem;
+    border-top: 1px solid color-mix(in srgb, var(--fg-muted) 16%, transparent);
   }
 }
 
