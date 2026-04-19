@@ -47,7 +47,7 @@ const tickerCells = computed(() => {
 <template>
   <section
     v-if="statusItems.length"
-    class="ticker-section bento-ticker reveal-up flex min-h-0 flex-col"
+    class="ticker-section bento-ticker reveal-up flex min-h-0 max-h-full shrink-0 flex-col overflow-hidden"
     aria-label="Status"
   >
     <div class="ticker-wrapper min-h-0 min-w-0">
@@ -77,7 +77,7 @@ const tickerCells = computed(() => {
 
 <style scoped>
 .ticker-section {
-  padding: 0.5rem 0;
+  padding: 0.2rem 0;
   overflow: hidden;
   border-block: 1px solid color-mix(in srgb, var(--fg-muted) 14%, transparent);
   background: var(--bg-secondary);
@@ -153,13 +153,13 @@ const tickerCells = computed(() => {
   display: flex;
   align-items: center;
   flex-wrap: nowrap;
-  gap: var(--space-md);
+  gap: 0.35rem;
 }
 
 .ticker-track:not(.ticker-track--marquee) .ticker-content {
   flex-wrap: wrap;
   justify-content: center;
-  row-gap: var(--space-sm);
+  row-gap: 0.25rem;
   width: 100%;
 }
 
@@ -177,8 +177,10 @@ const tickerCells = computed(() => {
 .ticker-item {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.375rem 0.75rem;
+  gap: 0.35rem;
+  min-width: 0;
+  max-width: 100%;
+  padding: 0.25rem 0.5rem;
   background: var(--bg-primary);
   border: var(--card-border);
   box-shadow: var(--card-ring);
@@ -212,6 +214,7 @@ const tickerCells = computed(() => {
 .ticker-info {
   display: flex;
   flex-direction: column;
+  min-width: 0;
 }
 
 .ticker-label {
@@ -228,6 +231,21 @@ const tickerCells = computed(() => {
   font-weight: 600;
   color: var(--fg-primary);
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 480px) {
+  .ticker-item {
+    padding: 0.3rem 0.5rem;
+  }
+
+  .ticker-title {
+    white-space: normal;
+    overflow-wrap: anywhere;
+    overflow: visible;
+    text-overflow: unset;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

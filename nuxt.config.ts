@@ -27,6 +27,7 @@ export default defineNuxtConfig({
     head: {
       htmlAttrs: { lang: 'en' },
       titleTemplate: `%s · ${siteTitle}`,
+      viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
       meta: [
         { name: 'description', content: siteDescription },
         { property: 'og:type', content: 'website' },

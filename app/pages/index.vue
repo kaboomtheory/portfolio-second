@@ -49,11 +49,12 @@ useHead({
 </script>
 
 <template>
-  <div class="bento-page">
-    <div class="bento" :class="bentoClass">
+  <div class="bento-page min-h-0 min-w-0 flex-1">
+    <div class="bento bento--stretch" :class="bentoClass">
       <div class="bento-cell bento-cell--profile">
         <DashboardProfileTile
           class="bento-cell__fill"
+          section-number="01"
           :hero-title="heroTitle"
           :hero-taglines="heroTaglines"
           :story="story"
@@ -63,6 +64,7 @@ useHead({
       <div v-if="featuredRole" class="bento-cell bento-cell--featured">
         <DashboardFeaturedRole
           class="bento-cell__fill"
+          section-number="02"
           :role="featuredRole"
           :history-items="historyItems"
         />
@@ -71,6 +73,7 @@ useHead({
       <div class="bento-cell bento-cell--capabilities">
         <DashboardCapabilitiesTile
           class="bento-cell__fill"
+          section-number="03"
           :grouped-capabilities="groupedCapabilities"
         />
       </div>
@@ -84,7 +87,8 @@ useHead({
 
       <div class="bento-cell bento-cell--proj">
         <DashboardProjectsTile
-          class="bento-cell__fill"
+          class="bento-cell__fill bento-cell__fill--proj-tile"
+          section-number="04"
           :projects="orderedProjects"
           :loading="loading"
         />
@@ -96,60 +100,55 @@ useHead({
 <style scoped>
 .bento {
   display: grid;
-  height: 100%;
-  min-height: 0;
+  align-items: stretch;
   width: 100%;
   max-width: 108rem;
   margin-inline: auto;
-  gap: 0.75rem;
+  gap: 0.375rem;
   grid-template-columns: repeat(12, minmax(0, 1fr));
+  height: 100%;
+  max-height: 100%;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.bento--stretch {
+  flex: 1 1 0%;
+  min-height: 0;
+  max-height: 100%;
 }
 
 /*
- * Desktop mosaic (≥1024px). Offsets are the whole point:
- *  - middle column (featured + history) spans three rows as one cell
- *  - right column is capabilities only (availability/contact lives in the navbar on home)
- *  - projects spans three named rows (`proj`) so the strip fits full cards
+ * Desktop mosaic (≥1024px): 12×3
+ *  - Row 1: profile (4 cols), featured (4), capabilities (4). Profile row-spans 1–2.
+ *  - Row 2: profile continues; status ticker (8 cols) or empty cells when no ticker.
+ *  - Row 3: projects (12 cols), single track; 1.5fr vs row 1’s 1fr for a taller carousel band.
  */
 .bento--with-ticker {
   grid-template-rows:
-    minmax(0, 0.48fr)
-    minmax(0, 0.8fr)
-    minmax(0, 0.92fr)
-    auto
-    minmax(0, 1.2fr)
-    minmax(0, 1.2fr)
-    minmax(0, 1.2fr);
+    minmax(0, 1fr)
+    minmax(0, auto)
+    minmax(0, 1.5fr);
   grid-template-areas:
-    'profile profile profile profile profile featured featured featured featured caps caps caps'
-    'profile profile profile profile profile featured featured featured featured caps caps caps'
-    'profile profile profile profile profile featured featured featured featured caps caps caps'
-    'ticker ticker ticker ticker ticker ticker ticker ticker ticker ticker ticker ticker'
-    'proj proj proj proj proj proj proj proj proj proj proj proj'
-    'proj proj proj proj proj proj proj proj proj proj proj proj'
+    'profile profile profile profile featured featured featured featured caps caps caps caps'
+    'profile profile profile profile ticker ticker ticker ticker ticker ticker ticker ticker'
     'proj proj proj proj proj proj proj proj proj proj proj proj';
 }
 
 .bento--no-ticker {
   grid-template-rows:
-    minmax(0, 0.5fr)
-    minmax(0, 0.82fr)
-    minmax(0, 0.95fr)
-    minmax(0, 1.2fr)
-    minmax(0, 1.2fr)
-    minmax(0, 1.2fr);
+    minmax(0, 1fr)
+    minmax(0, auto)
+    minmax(0, 1.5fr);
   grid-template-areas:
-    'profile profile profile profile profile featured featured featured featured caps caps caps'
-    'profile profile profile profile profile featured featured featured featured caps caps caps'
-    'profile profile profile profile profile featured featured featured featured caps caps caps'
-    'proj proj proj proj proj proj proj proj proj proj proj proj'
-    'proj proj proj proj proj proj proj proj proj proj proj proj'
+    'profile profile profile profile featured featured featured featured caps caps caps caps'
+    'profile profile profile profile . . . . . . . .'
     'proj proj proj proj proj proj proj proj proj proj proj proj';
 }
 
 @media (max-width: 1199px) {
   .bento {
-    gap: 0.625rem;
+    gap: 0.3rem;
   }
 }
 
@@ -157,17 +156,15 @@ useHead({
 @media (max-width: 1023px) {
   .bento {
     grid-template-columns: repeat(6, minmax(0, 1fr));
-    grid-auto-rows: auto;
-  }
-
-  .bento--with-ticker,
-  .bento--no-ticker {
-    grid-template-rows: unset;
   }
 
   .bento--with-ticker {
+    grid-template-rows:
+      minmax(0, 1fr)
+      minmax(0, 1.05fr)
+      minmax(0, auto)
+      minmax(0, 1.5fr);
     grid-template-areas:
-      'profile profile profile profile featured featured'
       'profile profile profile profile featured featured'
       'caps caps caps caps caps caps'
       'ticker ticker ticker ticker ticker ticker'
@@ -175,8 +172,11 @@ useHead({
   }
 
   .bento--no-ticker {
+    grid-template-rows:
+      minmax(0, 1fr)
+      minmax(0, 1.05fr)
+      minmax(0, 1.5fr);
     grid-template-areas:
-      'profile profile profile profile featured featured'
       'profile profile profile profile featured featured'
       'caps caps caps caps caps caps'
       'proj proj proj proj proj proj';
@@ -187,9 +187,16 @@ useHead({
 @media (max-width: 639px) {
   .bento {
     grid-template-columns: minmax(0, 1fr);
+    gap: 0.25rem;
   }
 
   .bento--with-ticker {
+    grid-template-rows:
+      minmax(0, 1.1fr)
+      minmax(0, 0.9fr)
+      minmax(0, 0.85fr)
+      minmax(0, auto)
+      minmax(0, 1.5fr);
     grid-template-areas:
       'profile'
       'featured'
@@ -199,6 +206,11 @@ useHead({
   }
 
   .bento--no-ticker {
+    grid-template-rows:
+      minmax(0, 1.1fr)
+      minmax(0, 0.9fr)
+      minmax(0, 0.85fr)
+      minmax(0, 1.5fr);
     grid-template-areas:
       'profile'
       'featured'
@@ -209,15 +221,27 @@ useHead({
 
 .bento-cell {
   display: flex;
-  min-height: 0;
   min-width: 0;
+  min-height: 0;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .bento-cell__fill {
-  flex: 1 1 auto;
-  min-height: 0;
+  flex: 1 1 0%;
+  width: 100%;
   min-width: 0;
+  min-height: 0;
+  max-height: 100%;
+  height: 100%;
+}
+
+.bento-cell__fill--proj-tile {
+  flex: 1 1 0%;
+  min-height: 0;
+  width: 100%;
+  height: 100%;
+  max-height: 100%;
 }
 
 .bento-cell--profile { grid-area: profile; }
@@ -227,18 +251,6 @@ useHead({
 .bento-cell--ticker { grid-area: ticker; }
 .bento-cell--proj {
   grid-area: proj;
-  min-height: clamp(15rem, 34vh, 24rem);
-}
-
-@media (max-width: 1023px) {
-  .bento-cell--proj {
-    min-height: clamp(16rem, 42vh, 28rem);
-  }
-}
-
-@media (max-width: 639px) {
-  .bento-cell--proj {
-    min-height: clamp(14rem, 38vh, 22rem);
-  }
+  min-height: 0;
 }
 </style>

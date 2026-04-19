@@ -1,22 +1,28 @@
 <script setup lang="ts">
 import type { HomeHeroTaglineLine } from '~/data/home'
 
-defineProps<{
-  heroTitle: string
-  heroTaglines: HomeHeroTaglineLine[]
-  story: string[]
-}>()
+withDefaults(
+  defineProps<{
+    heroTitle: string
+    heroTaglines: HomeHeroTaglineLine[]
+    story: string[]
+    sectionNumber?: string
+    cardTitle?: string
+  }>(),
+  {
+    sectionNumber: '01',
+    cardTitle: 'Introduction',
+  },
+)
 </script>
 
 <template>
   <section
-    class="dashboard-tile bento-tile profile-tile reveal-up flex h-full min-h-0 flex-col"
+    class="dashboard-tile bento-tile profile-tile reveal-up flex h-full min-h-0 flex-col overflow-hidden"
     aria-labelledby="dashboard-profile-heading"
   >
     <div
-      class="bento-scroll profile-tile__scroll min-h-0 flex-1"
-      tabindex="0"
-      aria-label="Profile and about"
+      class="dashboard-tile__content profile-tile__scroll bento-scroll order-1 flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden"
     >
       <h1 id="dashboard-profile-heading" class="hero-statement hero-fade-in">
         <TextReveal tag="span" :text="heroTitle" class="hero-name" />
@@ -34,16 +40,27 @@ defineProps<{
         </span>
       </h1>
 
-      <div v-if="story.length" class="hero-story mt-4 hero-fade-in hero-delay-2">
+      <div v-if="story.length" class="hero-story mt-2 hero-fade-in hero-delay-2">
         <p v-for="(paragraph, index) in story" :key="index" class="story-paragraph">
           {{ paragraph }}
         </p>
       </div>
     </div>
+
+    <div class="section-header profile-tile__chrome shrink-0">
+      <span class="section-number">{{ sectionNumber }}</span>
+      <h2 class="section-title">
+        {{ cardTitle }}
+      </h2>
+    </div>
   </section>
 </template>
 
 <style scoped>
+.profile-tile__chrome {
+  order: -1;
+}
+
 .profile-tile__scroll {
   display: flex;
   flex-direction: column;
@@ -53,7 +70,8 @@ defineProps<{
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 0.375rem;
+  gap: 0.25rem;
+  flex-shrink: 0;
 }
 
 .hero-name {
@@ -112,15 +130,22 @@ defineProps<{
 .hero-story {
   display: flex;
   flex-direction: column;
-  gap: var(--space-sm);
+  gap: 0.25rem;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .story-paragraph {
   margin: 0;
-  font-size: 0.8125rem;
-  line-height: 1.55;
+  font-size: 0.75rem;
+  line-height: 1.45;
   color: var(--fg-secondary);
   max-width: 100%;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
 }
 
 @media (prefers-reduced-motion: reduce) {

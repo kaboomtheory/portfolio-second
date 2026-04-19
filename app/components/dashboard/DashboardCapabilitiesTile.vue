@@ -1,38 +1,41 @@
 <script setup lang="ts">
-defineProps<{
-  groupedCapabilities: { category: string; items: string[] }[]
-}>()
+withDefaults(
+  defineProps<{
+    groupedCapabilities: { category: string; items: string[] }[]
+    sectionNumber?: string
+    cardTitle?: string
+  }>(),
+  {
+    sectionNumber: '03',
+    cardTitle: 'Capabilities',
+  },
+)
 </script>
 
 <template>
   <section
-    class="dashboard-tile bento-tile capabilities-tile reveal-up flex h-full min-h-0 flex-col"
+    class="dashboard-tile bento-tile capabilities-tile reveal-up flex h-full min-h-0 flex-col overflow-hidden"
     aria-labelledby="dashboard-capabilities-heading"
   >
-    <div
-      class="bento-scroll capabilities-tile__scroll min-h-0 flex-1"
-      tabindex="0"
-      aria-label="Capabilities and tools"
-    >
+    <div class="capabilities-tile__scroll flex min-h-0 flex-1 flex-col overflow-hidden">
       <div class="section-header shrink-0">
-        <span class="section-number">02</span>
+        <span class="section-number">{{ sectionNumber }}</span>
         <h2 id="dashboard-capabilities-heading" class="section-title">
-          Capabilities
+          {{ cardTitle }}
         </h2>
-        <p class="section-lede">
-          Disciplines I practice and the software I use.
-        </p>
       </div>
 
-      <div class="capabilities-grid mt-3 pb-1">
-        <div v-for="group in groupedCapabilities" :key="group.category" class="capability-group">
-          <h3 class="capability-group-title">
-            {{ group.category }}
-          </h3>
-          <div class="capability-tags">
-            <span v-for="item in group.items" :key="item" class="capability-tag">
-              {{ item }}
-            </span>
+      <div class="dashboard-tile__content min-h-0 flex-1 overflow-hidden">
+        <div class="capabilities-grid">
+          <div v-for="group in groupedCapabilities" :key="group.category" class="capability-group">
+            <h3 class="capability-group-title">
+              {{ group.category }}
+            </h3>
+            <div class="capability-tags">
+              <span v-for="item in group.items" :key="item" class="capability-tag">
+                {{ item }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
@@ -46,24 +49,19 @@ defineProps<{
   flex-direction: column;
 }
 
-.section-lede {
-  font-size: 0.75rem;
-  line-height: 1.4;
-  color: var(--fg-muted);
-  margin-top: 0.25rem;
-  max-width: 100%;
-}
-
 .capabilities-grid {
   display: grid;
-  gap: var(--space-sm);
+  gap: 0.25rem;
   grid-template-columns: 1fr;
+  min-height: 0;
+  overflow: hidden;
+  align-content: start;
 }
 
 .capability-group {
   display: flex;
   flex-direction: column;
-  gap: 0.375rem;
+  gap: 0.2rem;
 }
 
 .capability-group-title {
@@ -77,7 +75,7 @@ defineProps<{
 .capability-tags {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.3125rem;
+  gap: 0.2rem;
 }
 
 .capability-tag {

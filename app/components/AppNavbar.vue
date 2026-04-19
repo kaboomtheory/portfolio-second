@@ -21,6 +21,7 @@ const linkedinHref = computed(() => {
   const found = list.find((l) => /linkedin/i.test(l.label))
   return found?.href ?? 'https://www.linkedin.com/'
 })
+const navbarEl = ref<HTMLElement | null>(null)
 const pillNav = ref<HTMLElement | null>(null)
 const blob = ref<HTMLElement | null>(null)
 const BLOB_TRANSITION = 'left 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease'
@@ -62,16 +63,44 @@ useScrollLayoutSubscription((source) => {
     updateBlob()
   }
 })
+
+const publishNavbarHeight = () => {
+  if (!import.meta.client || !navbarEl.value) return
+  const h = Math.ceil(navbarEl.value.offsetHeight)
+  document.documentElement.style.setProperty('--navbar-h', `${h}px`)
+}
+
+let navbarResizeObserver: ResizeObserver | null = null
+
+onMounted(() => {
+  if (!import.meta.client) return
+  publishNavbarHeight()
+  // ResizeObserver for live reflows when pill wraps without a window resize
+  if (typeof ResizeObserver !== 'undefined' && navbarEl.value) {
+    navbarResizeObserver = new ResizeObserver(publishNavbarHeight)
+    navbarResizeObserver.observe(navbarEl.value)
+  }
+  window.addEventListener('resize', publishNavbarHeight, { passive: true })
+})
+
+watch(isCondensed, () => nextTick(publishNavbarHeight))
+
+onUnmounted(() => {
+  if (!import.meta.client) return
+  navbarResizeObserver?.disconnect()
+  navbarResizeObserver = null
+  window.removeEventListener('resize', publishNavbarHeight)
+})
 </script>
 
 <template>
-  <header class="navbar" :class="{ 'navbar-condensed': isCondensed }">
+  <header ref="navbarEl" class="navbar" :class="{ 'navbar-condensed': isCondensed }">
     <div
       class="navbar-inner mx-auto w-full"
       :class="
         isWideShell
-          ? 'max-w-[108rem] px-4 sm:px-5 md:px-6'
-          : 'container px-5 sm:px-6 md:max-w-[72rem] md:px-8'
+          ? 'navbar-inner--gutter-wide max-w-[108rem]'
+          : 'navbar-inner--gutter-narrow container md:max-w-[72rem]'
       "
     >
       <div class="pill" :class="{ 'pill--with-now': isHome }">
@@ -129,6 +158,44 @@ useScrollLayoutSubscription((source) => {
 
 .navbar-inner {
   pointer-events: auto;
+}
+
+.navbar-inner--gutter-wide {
+  padding-inline-start: max(1rem, env(safe-area-inset-left, 0px));
+  padding-inline-end: max(1rem, env(safe-area-inset-right, 0px));
+}
+
+@media (min-width: 640px) {
+  .navbar-inner--gutter-wide {
+    padding-inline-start: max(1.25rem, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(1.25rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar-inner--gutter-wide {
+    padding-inline-start: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(1.5rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+.navbar-inner--gutter-narrow {
+  padding-inline-start: max(1.25rem, env(safe-area-inset-left, 0px));
+  padding-inline-end: max(1.25rem, env(safe-area-inset-right, 0px));
+}
+
+@media (min-width: 640px) {
+  .navbar-inner--gutter-narrow {
+    padding-inline-start: max(1.5rem, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(1.5rem, env(safe-area-inset-right, 0px));
+  }
+}
+
+@media (min-width: 768px) {
+  .navbar-inner--gutter-narrow {
+    padding-inline-start: max(2rem, env(safe-area-inset-left, 0px));
+    padding-inline-end: max(2rem, env(safe-area-inset-right, 0px));
+  }
 }
 
 @keyframes navbar-pill-glow {
@@ -448,8 +515,8 @@ useScrollLayoutSubscription((source) => {
 @media (max-width: 1180px) {
   .pill--with-now {
     flex-wrap: wrap;
-    row-gap: 0.5rem;
-    align-items: flex-start;
+    row-gap: 0.375rem;
+    align-items: center;
   }
 
   .pill--with-now .navbar-brand {
@@ -513,7 +580,7 @@ useScrollLayoutSubscription((source) => {
     border-left: none;
     padding-left: 0;
     margin-left: 0;
-    padding-top: 0.35rem;
+    padding-top: 0.25rem;
     border-top: 1px solid color-mix(in srgb, var(--fg-muted) 16%, transparent);
   }
 }
