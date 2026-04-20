@@ -1,45 +1,38 @@
 <script setup lang="ts">
+import { SMOOTH_SCROLL_HASH_MS } from '~/composables/useSmoothScroll'
+import { getScrollAnchorOffsetPx } from '~/utils/scrollAnchor'
+
 const { scrollTo } = useSmoothScroll()
 const route = useRoute()
 
-const prefersReducedMotion = ref(false)
-const showWebGlBackground = ref(false)
-
-const OrganicBackgroundAsync = defineAsyncComponent({
-  loader: () => import('~/components/OrganicBackground.vue'),
-  delay: 0,
-  timeout: 30000,
-})
-
-function scheduleWebGlBackground() {
-  if (prefersReducedMotion.value) return
-  const run = () => {
-    showWebGlBackground.value = true
-  }
-  requestAnimationFrame(() => {
-    if (typeof requestIdleCallback === 'function') {
-      requestIdleCallback(run, { timeout: 2500 })
-    } else {
-      setTimeout(run, 200)
-    }
+function scrollToHashIfPresent() {
+  if (!import.meta.client || !route.hash) return
+  nextTick(() => {
+    requestAnimationFrame(() => {
+      const el = document.querySelector(route.hash)
+      if (el) scrollTo(route.hash, { duration: SMOOTH_SCROLL_HASH_MS, offset: getScrollAnchorOffsetPx() })
+    })
   })
 }
 
 watch(
-  () => route.path,
-  () => {
+  () => [route.path, route.hash] as const,
+  ([path, hash], prev) => {
     nextTick(() => {
-      window.scrollTo(0, 0)
       const main = document.getElementById('main-content')
+      if (hash) {
+        scrollToHashIfPresent()
+      } else if (!prev || path !== prev[0]) {
+        window.scrollTo(0, 0)
+      }
       main?.focus({ preventScroll: true })
     })
   },
 )
 
 onMounted(() => {
-  prefersReducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  scheduleWebGlBackground()
   document.addEventListener('click', handleAnchorClick)
+  scrollToHashIfPresent()
 })
 
 onUnmounted(() => {
@@ -55,26 +48,23 @@ const handleAnchorClick = (e: MouseEvent) => {
   if (!href || href === '#') return
 
   e.preventDefault()
-  scrollTo(href, { duration: 1400, offset: -20 })
+  scrollTo(href, { duration: SMOOTH_SCROLL_HASH_MS, offset: getScrollAnchorOffsetPx() })
 }
 </script>
 
 <template>
   <div class="app-shell">
-    <OrganicBackgroundStatic v-if="prefersReducedMotion" />
-    <OrganicBackgroundAsync v-else-if="showWebGlBackground" />
-    <OrganicBackgroundStatic v-else />
-    <div class="grain-overlay" aria-hidden="true" />
-    <div class="gradient-overlay" aria-hidden="true" />
-    <NuxtLoadingIndicator
-      color="var(--emphasis)"
-      :height="2"
-      :duration="3000"
-    />
-    <NuxtRouteAnnouncer />
-    <NuxtLayout>
-      <NuxtPage :page-key="route => route.fullPath" :transition="{ name: 'page', mode: 'default' }" />
-    </NuxtLayout>
+    <div class="app-shell-ui">
+      <NuxtLoadingIndicator
+        color="var(--emphasis)"
+        :height="2"
+        :duration="3000"
+      />
+      <NuxtRouteAnnouncer />
+      <NuxtLayout>
+        <NuxtPage :page-key="route => route.path" />
+      </NuxtLayout>
+    </div>
   </div>
 </template>
 
@@ -85,51 +75,17 @@ const handleAnchorClick = (e: MouseEvent) => {
   min-height: 100%;
 }
 
-.app-shell
-  > :not(.organic-background-root):not(.organic-background-static):not(.grain-overlay):not(
-    .gradient-overlay
-  ) {
+.app-shell-ui {
   position: relative;
   z-index: 1;
+  min-height: 100%;
+  min-width: 0;
+  max-width: 100%;
+  /* Opaque surface so nothing behind the shell can read as a “black veil” */
+  background-color: var(--shell-ui-bg, var(--paper, #f4efe4));
 }
 
-/* CSS-only grain: avoids decoding/repainting an animated GIF every frame */
-.grain-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  opacity: 0.04;
-  mix-blend-mode: overlay;
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      rgba(255, 255, 255, 0.04) 0 1px,
-      transparent 1px 2px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      rgba(0, 0, 0, 0.03) 0 1px,
-      transparent 1px 3px
-    );
-  background-size: 100% 100%;
-}
-
-.gradient-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 0;
-  pointer-events: none;
-  background: linear-gradient(to bottom, transparent 0%, white 100%);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .gradient-overlay {
-    transition: background 0.65s ease;
-  }
-}
-
-:global(html.dark .gradient-overlay) {
-  background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 1) 65%);
+:global(html.dark) .app-shell-ui {
+  background-color: var(--shell-ui-bg, var(--paper, #0b0a08));
 }
 </style>

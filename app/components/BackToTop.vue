@@ -7,8 +7,16 @@ const onScroll = () => {
   isVisible.value = window.scrollY > 280
 }
 
+function prefersReducedMotion() {
+  if (!import.meta.client) return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: 'smooth' })
+  window.scrollTo({
+    top: 0,
+    behavior: prefersReducedMotion() ? 'auto' : 'smooth',
+  })
 }
 
 onMounted(() => window.addEventListener('scroll', onScroll, { passive: true }))
@@ -20,11 +28,11 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
     <button
       v-if="isVisible"
       type="button"
-      class="back-to-top shiny-cta"
+      class="back-to-top cta-attention-pill"
       aria-label="Back to top"
       @click="scrollToTop"
     >
-      <span class="shiny-cta-inner">
+      <span class="cta-attention-pill__inner">
         <Icon icon="lucide:arrow-up" aria-hidden="true" />
       </span>
     </button>
@@ -34,11 +42,18 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
 <style scoped>
 .back-to-top {
   position: fixed;
-  bottom: 2rem;
-  right: 2rem;
+  right: max(1rem, env(safe-area-inset-right, 0px));
+  bottom: max(1rem, env(safe-area-inset-bottom, 0px));
   z-index: 40;
-  border-radius: 9999px;
+  border-radius: 0;
   cursor: pointer;
+}
+
+@media (min-width: 640px) {
+  .back-to-top {
+    right: max(1.5rem, env(safe-area-inset-right, 0px));
+    bottom: max(1.5rem, env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .fade-up-enter-active,

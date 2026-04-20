@@ -9,13 +9,14 @@ export const profile = {
   name: 'Bryan X. Mendez',
   role: 'Visual Designer',
   location: 'Los Angeles, CA',
-  photo: 'https://picsum.photos/seed/profile-avery/300/300',
+  photo: '/profile-photo.jpg',
   email: 'hello@bryanxmendez.com',
 }
 
 export const navItems: NavItem[] = [
-  { group: 'Work', title: 'Home', path: '/', icon: 'lucide:house' },
-  { group: 'Personal', title: 'About', path: '/about', icon: 'lucide:user' },
+  { group: 'Work', title: 'Home', path: '/#intro', icon: 'lucide:house' },
+  { group: 'Work', title: 'Work', path: '/#work', icon: 'lucide:layout-grid' },
+  { group: 'Personal', title: 'About', path: '/#story', icon: 'lucide:user' },
 ]
 
 export const socialLinks = [

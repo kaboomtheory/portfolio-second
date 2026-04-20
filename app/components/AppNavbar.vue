@@ -3,73 +3,62 @@ import { navItems, profile } from '~/data/site'
 import { useSharedScrollY, useScrollLayoutSubscription } from '~/composables/useScrollLayoutBus'
 
 const route = useRoute()
-const pillNav = ref<HTMLElement | null>(null)
-const blob = ref<HTMLElement | null>(null)
-const BLOB_TRANSITION = 'left 0.35s cubic-bezier(0.4, 0, 0.2, 1), width 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease'
-let initialized = false
 
-const updateBlob = () => {
-  if (!pillNav.value || !blob.value) return
-  const el = blob.value
-  const active = pillNav.value.querySelector('.router-link-exact-active') as HTMLElement | null
-  if (active) {
-    if (!initialized) {
-      el.style.transition = 'none'
-      el.style.left = `${active.offsetLeft}px`
-      el.style.width = `${active.offsetWidth}px`
-      el.style.opacity = '1'
-      void el.offsetHeight
-      el.style.transition = BLOB_TRANSITION
-      initialized = true
-    } else {
-      el.style.left = `${active.offsetLeft}px`
-      el.style.width = `${active.offsetWidth}px`
-      el.style.opacity = '1'
-    }
-  } else {
-    el.style.opacity = '0'
-  }
-}
-
-watch(() => route.path, () => {
-  nextTick(() => setTimeout(updateBlob, 50))
+const effectiveHash = computed(() => {
+  if (route.path !== '/') return ''
+  return route.hash || '#intro'
 })
 
-const CONDENSE_THRESHOLD = 80
+function navTarget(path: string) {
+  if (!path.includes('#')) return path
+  const [pathname, frag] = path.split('#')
+  return { path: pathname || '/', hash: `#${frag}` }
+}
+
+function isNavActive(path: string) {
+  if (!path.includes('#')) {
+    return route.path === path && !route.hash
+  }
+  const hash = path.slice(path.indexOf('#'))
+  const pathOnly = path.slice(0, path.indexOf('#')) || '/'
+  if (route.path !== pathOnly) return false
+  if (hash === '#intro') {
+    return effectiveHash.value === '#intro' || effectiveHash.value === ''
+  }
+  return effectiveHash.value === hash
+}
+
+const CONDENSE_THRESHOLD = 72
 const scrollY = useSharedScrollY()
 const isCondensed = computed(() => scrollY.value > CONDENSE_THRESHOLD)
 
-useScrollLayoutSubscription((source) => {
-  if (source === 'resize' || source === 'init') {
-    updateBlob()
-  }
-})
+useScrollLayoutSubscription(() => {})
 </script>
 
 <template>
-  <header class="navbar" :class="{ 'navbar-condensed': isCondensed }">
-    <div class="navbar-inner container mx-auto w-full px-5 sm:px-6 md:max-w-[72rem] md:px-8">
-      <div class="pill">
-        <NuxtLink to="/" class="navbar-brand">
+  <header class="navbar" :class="{ 'navbar--condensed': isCondensed }">
+    <div
+      class="navbar-inner container mx-auto w-full min-w-0 max-w-full px-[clamp(1.25rem,3vw,2.5rem)] md:max-w-[82rem]"
+      :class="{ 'navbar-inner--condensed': isCondensed }"
+    >
+      <div class="navbar-row">
+        <NuxtLink :to="navTarget('/#intro')" class="navbar-brand">
           <img :src="profile.photo" :alt="profile.name" class="navbar-brand-avatar">
-          <span class="navbar-brand-name mono">{{ profile.name }}</span>
+          <span class="navbar-brand-name eyebrow-sans">{{ profile.name }}</span>
         </NuxtLink>
 
-        <div class="pill-trailing">
-          <nav ref="pillNav" class="pill-nav">
-            <span ref="blob" class="nav-blob" />
-            <NuxtLink
-              v-for="item in navItems"
-              :key="item.path"
-              :to="item.path"
-              class="nav-link mono"
-            >
-              {{ item.title }}
-            </NuxtLink>
-          </nav>
-
+        <nav class="navbar-nav" aria-label="Primary">
+          <NuxtLink
+            v-for="item in navItems"
+            :key="item.path"
+            :to="navTarget(item.path)"
+            class="nav-link"
+            :class="{ 'nav-link--active': isNavActive(item.path) }"
+          >
+            {{ item.title }}
+          </NuxtLink>
           <ThemeToggle />
-        </div>
+        </nav>
       </div>
     </div>
   </header>
@@ -82,246 +71,165 @@ useScrollLayoutSubscription((source) => {
   left: 0;
   right: 0;
   z-index: 50;
-  padding: 1.5rem 0;
+  padding: 1.1rem 0;
   pointer-events: none;
-  transition: padding 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9);
+  transition: padding 0.25s ease;
 }
 
-.navbar.navbar-condensed {
-  padding: 0.75rem 0;
+.navbar--condensed {
+  padding: 0.55rem 0;
+}
+
+@media (max-width: 767px) {
+  .navbar {
+    padding: 0.75rem 0;
+  }
+
+  .navbar--condensed {
+    padding: 0.45rem 0;
+  }
 }
 
 .navbar-inner {
   pointer-events: auto;
+  transition:
+    background-color 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
+    box-shadow 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
+    border-color 0.3s ease;
 }
 
-@keyframes navbar-pill-glow {
-  from {
-    box-shadow: 0 0 14px color-mix(in srgb, var(--accent) 12%, transparent);
-  }
-
-  to {
-    box-shadow: 0 0 22px color-mix(in srgb, var(--accent) 22%, transparent);
-  }
+.navbar-inner--condensed {
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--fg-muted));
+  border-radius: 0.75rem;
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, transparent);
 }
 
-@keyframes navbar-pill-glow-dark {
-  from {
-    box-shadow: 0 0 16px color-mix(in srgb, var(--accent-soft) 14%, transparent);
-  }
-
-  to {
-    box-shadow: 0 0 26px color-mix(in srgb, var(--accent-soft) 24%, transparent);
-  }
+:root.dark .navbar-inner--condensed {
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 94%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 1px color-mix(in srgb, white 5%, transparent);
 }
 
-/* Full-width bar aligned with layout container */
-.pill {
+.navbar-row {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.5rem 1rem;
   width: 100%;
-  min-width: 0;
-  border-radius: 1rem;
-  padding: 0.5rem 0.75rem;
-  background-color: var(--bg-primary);
-  border: var(--card-border);
-  box-shadow: var(--card-ring);
-  backdrop-filter: blur(15px) saturate(1.2);
-  -webkit-backdrop-filter: blur(15px) saturate(1.2);
-  animation: navbar-pill-glow 6s ease-in-out infinite alternate;
-  transition:
-    padding 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9),
-    gap 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9),
-    border-radius 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9);
+  min-height: 2.75rem;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--fg-muted) 22%, transparent);
 }
 
-@media (min-width: 640px) {
-  .pill {
-    padding: 0.5rem 1rem;
-    gap: 1rem;
-  }
+.navbar--condensed .navbar-row {
+  min-height: 2.35rem;
 }
 
-.navbar-condensed .pill {
-  padding: 0.375rem 0.6rem;
-  border-radius: 0.875rem;
-}
-
-@media (min-width: 640px) {
-  .navbar-condensed .pill {
-    padding: 0.375rem 0.75rem;
-    gap: 0.75rem;
-  }
-}
-
-:root.dark .pill {
-  background-color: var(--bg-primary);
-  animation-name: navbar-pill-glow-dark;
-}
-
-/* Brand */
 .navbar-brand {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
   flex-shrink: 0;
+  text-decoration: none;
+  color: var(--fg-primary);
   transition: opacity 0.2s ease;
 }
 
 .navbar-brand:hover {
-  opacity: 0.8;
+  opacity: 0.82;
 }
 
 .navbar-brand-avatar {
-  height: 2.25rem;
-  width: 2.25rem;
-  border-radius: 0.625rem;
+  height: 2rem;
+  width: 2rem;
+  border-radius: 0.35rem;
   object-fit: cover;
   flex-shrink: 0;
-  transition:
-    height 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9),
-    width 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
 }
 
-.navbar-condensed .navbar-brand-avatar {
-  height: 1.875rem;
-  width: 1.875rem;
+.navbar--condensed .navbar-brand-avatar {
+  height: 1.75rem;
+  width: 1.75rem;
 }
 
 .navbar-brand-name {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   font-weight: 500;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.04em;
   color: var(--fg-primary);
   white-space: nowrap;
-  transition:
-    max-width 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9),
-    opacity 0.25s ease,
-    margin-left 0.3s cubic-bezier(0.2, 0.65, 0.3, 0.9);
 }
 
-/* Hide name on small screens */
 @media (max-width: 480px) {
   .navbar-brand-name {
     display: none;
   }
 }
 
-/* On narrow viewports below sm, collapse the brand name when condensed */
-@media (max-width: 639px) {
-  .navbar-condensed .navbar-brand-name {
-    max-width: 0;
-    opacity: 0;
-    margin-left: -0.75rem;
-    overflow: hidden;
-  }
-}
-
-.pill-trailing {
+.navbar-nav {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  flex-shrink: 0;
+  justify-content: flex-end;
+  gap: 0.125rem;
   min-width: 0;
+  flex: 1 1 auto;
 }
 
 @media (min-width: 640px) {
-  .pill-trailing {
-    gap: 0.75rem;
+  .navbar-nav {
+    gap: 0.35rem;
   }
-}
-
-/* Nav links */
-.pill-nav {
-  display: flex;
-  align-items: center;
-  gap: 0.375rem;
-  position: relative;
-  min-width: 0;
-}
-
-@media (min-width: 640px) {
-  .pill-nav {
-    gap: 0.5rem;
-  }
-}
-
-.nav-blob {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  width: 0;
-  opacity: 0;
-  border-radius: 0.5rem;
-  background-color: var(--bg-secondary);
-  box-shadow: 0 2px 8px color-mix(in srgb, var(--fg-primary) 5%, transparent);
-  transition: left 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              width 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-              opacity 0.25s ease;
-  z-index: 0;
-  pointer-events: none;
 }
 
 .nav-link {
   display: inline-flex;
   align-items: center;
-  padding: 0.4rem 0.75rem;
-  border-radius: 0.5rem;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  letter-spacing: 0.01em;
-  color: var(--fg-secondary);
-  white-space: nowrap;
-  transition: color 0.2s ease, background-color 0.2s ease;
-  position: relative;
-  z-index: 1;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: 0.35rem;
+  font-family: var(--font-sans);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  text-decoration: none;
+  transition: color 0.18s ease, background-color 0.18s ease;
 }
 
 @media (min-width: 640px) {
   .nav-link {
-    padding: 0.5rem 1.125rem;
-    font-size: 0.875rem;
+    min-height: 0;
+    padding: 0.45rem 0.85rem;
+    font-size: 0.75rem;
   }
 }
 
 .nav-link:hover {
   color: var(--fg-primary);
-  background-color: var(--bg-tertiary);
+  background-color: color-mix(in srgb, var(--accent) 8%, transparent);
 }
 
-.nav-link.router-link-exact-active {
-  color: var(--fg-primary);
+.nav-link--active {
+  color: var(--accent);
   font-weight: 600;
-}
-
-:root:not(.dark) .pill .nav-link:not(.router-link-exact-active) {
-  color: color-mix(in srgb, var(--fg-primary) 78%, var(--fg-secondary) 22%);
-  font-weight: 500;
+  background-color: color-mix(in srgb, var(--accent) 10%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .nav-blob {
-    transition: none;
-  }
-
   .navbar,
-  .pill,
   .navbar-brand-avatar,
-  .navbar-brand-name {
+  .navbar-inner {
     transition: none;
-  }
-
-  .pill {
-    animation: none;
-    box-shadow: 0 0 18px color-mix(in srgb, var(--accent) 16%, transparent);
-  }
-
-  :root.dark .pill {
-    box-shadow: 0 0 20px color-mix(in srgb, var(--accent-soft) 18%, transparent);
   }
 }
-
 </style>

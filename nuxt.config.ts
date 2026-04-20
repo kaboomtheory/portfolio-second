@@ -10,24 +10,34 @@ const sanityDataset = process.env.SANITY_DATASET || 'production'
 const sanityApiVersion = process.env.SANITY_API_VERSION || '2025-01-01'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
-const geistSansCss =
-  'https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-sans/style.css'
-const geistMonoCss =
-  'https://cdn.jsdelivr.net/npm/geist@1.3.0/dist/fonts/geist-mono/style.css'
+/** Geist (display + UI sans), Fraunces (editorial accent serif), Geist Mono (labels/meta) — matches stacks in `app/assets/css/main.css`. */
+const appFontsCss =
+  'https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300..700;1,9..144,300..700&family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap'
 
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: process.env.NODE_ENV !== 'production' },
+  /**
+   * SPA mode: client-rendered shell; `npm run generate` still emits a static host
+   * but first paint is JS-driven. For stronger SEO/social previews (HTML in first
+   * response), switch to `ssr: true` or hybrid route rules and retest client-only
+   * plugins (theme, smooth scroll, Lenis if added).
+   */
   ssr: false,
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sanity'],
   css: ['~/assets/css/main.css'],
 
   app: {
-    pageTransition: { name: 'page', mode: 'default' },
+    /* Opacity cross-fades have been mistaken for a persistent black overlay; keep instant swaps. */
+    pageTransition: false,
     head: {
       htmlAttrs: { lang: 'en' },
       titleTemplate: `%s · ${siteTitle}`,
       meta: [
+        {
+          name: 'viewport',
+          content: 'width=device-width, initial-scale=1, viewport-fit=cover',
+        },
         { name: 'description', content: siteDescription },
         { property: 'og:type', content: 'website' },
         { property: 'og:site_name', content: siteTitle },
@@ -41,11 +51,10 @@ export default defineNuxtConfig({
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
-        { rel: 'preconnect', href: 'https://cdn.jsdelivr.net', crossorigin: 'anonymous' },
-        { rel: 'preload', as: 'style', href: geistSansCss, crossorigin: 'anonymous' },
-        { rel: 'preload', as: 'style', href: geistMonoCss, crossorigin: 'anonymous' },
-        { rel: 'stylesheet', href: geistSansCss, crossorigin: 'anonymous' },
-        { rel: 'stylesheet', href: geistMonoCss, crossorigin: 'anonymous' },
+        { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+        { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: 'anonymous' },
+        { rel: 'preload', as: 'style', href: appFontsCss },
+        { rel: 'stylesheet', href: appFontsCss },
       ],
     },
   },
@@ -65,11 +74,13 @@ export default defineNuxtConfig({
       sanityProjectId,
       sanityDataset,
       sanityApiVersion,
+      siteUrl,
+      siteDescription,
     },
   },
 
   // Baseline security headers. CSP is tuned for the assets actually
-  // used by this site: Sanity CDN for images, jsDelivr for fonts,
+  // used by this site: Sanity CDN for images, Google Fonts,
   // YouTube/Vimeo iframes, Iconify API for on-demand icon JSON.
   // CSP is applied in production only — dev uses Vite HMR over
   // WebSockets and benefits from looser defaults.
@@ -92,9 +103,9 @@ export default defineNuxtConfig({
         "frame-ancestors 'none'",
         "object-src 'none'",
         "img-src 'self' data: blob: https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com",
-        "font-src 'self' data: https://cdn.jsdelivr.net",
-        "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
-        "style-src-elem 'self' 'unsafe-inline' https://cdn.jsdelivr.net",
+        "font-src 'self' data: https://fonts.gstatic.com",
+        "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+        "style-src-elem 'self' 'unsafe-inline' https://fonts.googleapis.com",
         "script-src 'self' 'unsafe-inline'",
         "connect-src 'self' https://*.api.sanity.io https://*.apicdn.sanity.io https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com",
         "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",

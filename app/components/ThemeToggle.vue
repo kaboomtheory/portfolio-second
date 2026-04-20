@@ -15,19 +15,17 @@ const { isDark, toggle } = useTheme()
     :aria-checked="isDark"
     @click="toggle"
   >
-    <span
-      class="theme-toggle__labels relative z-0 flex w-full items-center justify-between px-0.5 text-sm pointer-events-none"
-    >
+    <span class="theme-toggle__labels relative z-0 flex w-full items-center justify-between px-0.5 text-sm pointer-events-none">
       <Icon
         icon="lucide:sun"
-        class="h-4 w-4 shrink-0 transition-all duration-300"
-        :class="isDark ? 'opacity-40 scale-75' : 'opacity-100 scale-100'"
+        class="theme-toggle__rail h-4 w-4 shrink-0 transition-all duration-300"
+        :class="isDark ? 'theme-toggle__rail--muted' : 'theme-toggle__rail--on'"
         aria-hidden="true"
       />
       <Icon
         icon="lucide:moon"
-        class="h-4 w-4 shrink-0 transition-all duration-300"
-        :class="!isDark ? 'opacity-40 scale-75' : 'opacity-100 scale-100'"
+        class="theme-toggle__rail h-4 w-4 shrink-0 transition-all duration-300"
+        :class="!isDark ? 'theme-toggle__rail--muted' : 'theme-toggle__rail--on'"
         aria-hidden="true"
       />
     </span>
@@ -65,8 +63,17 @@ const { isDark, toggle } = useTheme()
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
 }
 
-.theme-toggle__labels {
-  color: var(--fg-muted);
+.theme-toggle__rail {
+  color: var(--theme-toggle-rail-emphasis);
+}
+
+.theme-toggle__rail--on {
+  transform: scale(1);
+}
+
+.theme-toggle__rail--muted {
+  color: var(--theme-toggle-rail-muted);
+  transform: scale(0.82);
 }
 
 .theme-toggle__pill {
@@ -93,7 +100,7 @@ const { isDark, toggle } = useTheme()
 }
 
 .theme-toggle__orbit-icon {
-  color: var(--fg-secondary);
+  color: var(--theme-toggle-knob-fg);
   transition:
     transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1),
     opacity 0.4s ease;

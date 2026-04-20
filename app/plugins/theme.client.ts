@@ -6,29 +6,15 @@ function applyTheme(mode: ThemeMode) {
   document.documentElement.classList.toggle('dark', mode === 'dark')
 }
 
-function runWithThemeViewTransition(apply: () => void) {
-  if (import.meta.server) {
-    apply()
-    return
-  }
-  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-    apply()
-    return
-  }
-  if (typeof document.startViewTransition !== 'function') {
-    apply()
-    return
-  }
-  document.startViewTransition(apply)
-}
-
 export default defineNuxtPlugin(() => {
   const theme = useState<ThemeMode>('theme-mode', () => getInitialTheme())
 
   applyTheme(theme.value)
 
   watch(theme, (value) => {
-    runWithThemeViewTransition(() => applyTheme(value))
+    // Avoid document.startViewTransition: some Chromium builds leave a dark snapshot
+    // layer on screen after theme toggles (looks like a black overlay).
+    applyTheme(value)
   })
 
   if (import.meta.client && !hasStoredColorMode()) {

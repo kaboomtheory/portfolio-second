@@ -1,5 +1,10 @@
 import { ref, onMounted, onUnmounted, watch, type Ref } from 'vue'
 
+function prefersReducedMotion(): boolean {
+  if (!import.meta.client) return false
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
 export interface ScrollRevealOptions {
   threshold?: number
   rootMargin?: string
@@ -29,7 +34,7 @@ export function useScrollReveal(options: ScrollRevealOptions = {}) {
           if (entry.isIntersecting) {
             if (once && hasRevealed.value) return
 
-            if (delay > 0) {
+            if (delay > 0 && !prefersReducedMotion()) {
               setTimeout(() => {
                 isVisible.value = true
                 hasRevealed.value = true
@@ -101,12 +106,17 @@ export function useScrollRevealGroup(
             const children = containerRef.value?.children
             if (!children) return
 
-            Array.from(children).forEach((_, index) => {
-              const itemDelay = delay + index * staggerDelay
-              setTimeout(() => {
-                visibleItems.value[index] = true
-              }, itemDelay)
-            })
+            if (prefersReducedMotion()) {
+              const len = Math.min(children.length, visibleItems.value.length)
+              visibleItems.value = visibleItems.value.map((_, i) => i < len)
+            } else {
+              Array.from(children).forEach((_, index) => {
+                const itemDelay = delay + index * staggerDelay
+                setTimeout(() => {
+                  visibleItems.value[index] = true
+                }, itemDelay)
+              })
+            }
 
             if (once && observer) {
               observer.disconnect()

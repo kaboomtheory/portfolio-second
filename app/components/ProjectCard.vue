@@ -1,55 +1,75 @@
 <script setup lang="ts">
 import { Icon } from '@iconify/vue'
+import type { CSSProperties } from 'vue'
 import type { ProjectItem } from '~/types/project'
 
 const props = defineProps<{
   project: ProjectItem
-  class?: string
+  projectIndex?: number
 }>()
 
-const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
+const projectHref = computed(() => `/projects/${props.project.slug}`)
+
+const hasThumbnail = computed(() => Boolean(props.project.thumbnail))
+const visibleTags = computed(() => (props.project.tags ?? []).slice(0, 4))
+const summaryText = computed(() => props.project.summary?.trim())
+const projectIndexLabel = computed(() => {
+  if (!props.projectIndex || props.projectIndex < 1) return null
+  return String(props.projectIndex).padStart(2, '0')
+})
+
+const accentStyle = computed<CSSProperties>(() => {
+  if (!props.project.color?.trim()) return {}
+  return { '--project-accent': props.project.color.trim() }
+})
 </script>
 
 <template>
-  <div :class="['project-card group relative', props.class]">
+  <div class="project-card group relative" :style="accentStyle">
     <NuxtLink
-      class="project-card-link flex h-full flex-col bg-[var(--bg-primary)] p-3 shadow-sm transition-[box-shadow,transform] duration-300 ease-out focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--fg-primary)]"
-      :to="`/projects/${project.slug}`"
+      :to="projectHref"
+      class="project-card-link"
     >
-      <div class="project-card__media relative min-h-0 shrink-0 overflow-hidden aspect-[4/3]">
+      <div class="project-card__media work-media-frame">
         <img
+          v-if="hasThumbnail"
           :src="project.thumbnail"
           :alt="project.name"
-          class="h-full w-full object-cover transition-transform duration-300 ease-out group-hover:scale-[1.03]"
           loading="lazy"
+          decoding="async"
+          class="project-card__image"
         >
-        <span class="project-card__cue" aria-hidden="true">
-          <span class="project-card__cue-label">View case study</span>
-          <Icon icon="lucide:arrow-up-right" class="project-card__cue-icon" />
-        </span>
+        <div v-else class="project-card__media-fallback">
+          <Icon icon="lucide:image-off" class="project-card__media-fallback-icon" aria-hidden="true" />
+          <span class="project-card__media-fallback-copy">Preview coming soon</span>
+        </div>
+        <span class="project-card__media-scrim" aria-hidden="true" />
+        <div class="project-card__media-meta" aria-hidden="true">
+          <span v-if="projectIndexLabel" class="project-card__index">{{ projectIndexLabel }}</span>
+          <span class="project-card__media-hint">Case Study</span>
+        </div>
       </div>
 
-      <div class="flex min-h-0 flex-1 flex-col gap-3 px-0.5 pb-1 pt-4">
-        <h3 class="min-w-0 text-lg font-semibold leading-snug tracking-tight text-[var(--fg-primary)] transition-colors duration-300 group-hover:text-[var(--emphasis)] md:text-xl">
+      <div class="project-card__body">
+        <h3 class="project-card__title">
           {{ project.name }}
         </h3>
-
         <p
-          v-if="project.summary"
-          class="line-clamp-2 text-sm leading-relaxed text-[var(--fg-secondary)]"
+          v-if="summaryText"
+          class="project-card__summary text-muted"
         >
-          {{ project.summary }}
+          {{ summaryText }}
         </p>
 
-        <ul
-          v-if="displayTags.length"
-          class="flex list-none flex-wrap gap-1.5 p-0"
-          aria-label="Project tags"
-        >
-          <li v-for="tag in displayTags" :key="tag">
+        <ul v-if="visibleTags.length" class="project-card__tags" aria-label="Project tags">
+          <li v-for="tag in visibleTags" :key="tag">
             <span class="tag-chip">{{ tag }}</span>
           </li>
         </ul>
+        <span class="project-card__cta" aria-hidden="true">
+          <span class="project-card__cta-label">View project</span>
+          <Icon icon="lucide:arrow-up-right" class="project-card__cta-icon" />
+        </span>
       </div>
     </NuxtLink>
   </div>
@@ -57,80 +77,229 @@ const displayTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 
 <style scoped>
 .project-card {
+  position: relative;
   transform: translateY(0);
 }
 
 .project-card-link {
+  display: flex;
+  flex-direction: column;
   height: 100%;
-  border: var(--card-border);
-  border-radius: var(--radius-card);
-  box-shadow: var(--card-ring);
-  backdrop-filter: blur(15px) saturate(1.2);
-  -webkit-backdrop-filter: blur(15px) saturate(1.2);
+  min-height: 100%;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  background: var(--project-card-surface, var(--bg-primary));
+  border: 1px solid var(--project-card-border, color-mix(in srgb, var(--rule) 58%, transparent));
+  border-radius: calc(var(--radius-card) + 0.25rem);
+  box-shadow: var(--project-card-shadow-idle, var(--shadow-sm));
+  transition:
+    background-color 240ms ease,
+    box-shadow 280ms ease,
+    transform 280ms ease,
+    border-color 220ms ease;
 }
 
 .project-card-link:hover {
-  box-shadow: var(--card-ring), var(--shadow-lg);
-  transform: translateY(-4px);
+  background: var(--project-card-surface-hover, color-mix(in srgb, var(--bg-primary) 84%, var(--bg-secondary)));
+  border-color: color-mix(in srgb, var(--project-accent, var(--accent)) 42%, var(--rule));
+  box-shadow: var(--project-card-shadow-hover, var(--shadow-md));
+  transform: translateY(-3px);
+}
+
+.project-card-link:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--project-accent, var(--accent)) 55%, white);
+  outline-offset: 3px;
+}
+
+.project-card-link * {
+  text-decoration: none;
 }
 
 .project-card__media {
-  border-radius: var(--radius-inner);
+  position: relative;
+  aspect-ratio: 5 / 3.8;
+  overflow: hidden;
+  isolation: isolate;
 }
 
-/* Hover cue pill in the top-right corner of the thumbnail */
-.project-card__cue {
+.project-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1);
+  transition: transform 420ms cubic-bezier(0.2, 0.6, 0.2, 1);
+}
+
+.project-card:hover .project-card__image {
+  transform: scale(1.06);
+}
+
+.project-card__media-fallback {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  gap: 0.4rem;
+  color: var(--fg-muted);
+  background:
+    radial-gradient(circle at 22% 24%, color-mix(in srgb, var(--project-accent, var(--accent)) 16%, transparent), transparent 40%),
+    linear-gradient(140deg, var(--bg-secondary), var(--bg-primary));
+}
+
+.project-card__media-scrim {
   position: absolute;
-  top: 0.65rem;
-  right: 0.65rem;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.35rem;
-  padding: 0.3rem 0.6rem 0.3rem 0.7rem;
-  border-radius: 9999px;
-  background: color-mix(in srgb, var(--bg-primary) 88%, transparent);
-  color: var(--fg-primary);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.01em;
-  backdrop-filter: blur(10px) saturate(1.15);
-  -webkit-backdrop-filter: blur(10px) saturate(1.15);
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, transparent);
-  box-shadow: 0 2px 8px rgba(0, 20, 60, 0.12);
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: opacity 200ms ease, transform 200ms ease;
+  inset: auto 0 0;
+  height: 46%;
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    color-mix(in srgb, var(--project-accent, var(--accent)) 13%, transparent) 52%,
+    color-mix(in srgb, var(--bg-primary) 90%, transparent) 100%
+  );
+  z-index: 1;
   pointer-events: none;
 }
 
-.project-card:hover .project-card__cue,
-.project-card-link:focus-visible .project-card__cue {
-  opacity: 1;
-  transform: translateY(0);
+.project-card__media-meta {
+  position: absolute;
+  inset: 0.72rem 0.72rem auto;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
 }
 
-.project-card__cue-label {
+.project-card__index,
+.project-card__media-hint {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.26rem 0.52rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--fg-primary) 88%, var(--fg-muted));
+  background: color-mix(in srgb, var(--bg-primary) 78%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg-muted) 30%, transparent);
+}
+
+.project-card__media-hint {
+  margin-left: auto;
+}
+
+.project-card__media-fallback-icon {
+  width: 1.2rem;
+  height: 1.2rem;
+}
+
+.project-card__media-fallback-copy {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  font-family: var(--font-mono);
+}
+
+.project-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.78rem;
+  padding: 1.05rem 1rem 0.95rem;
+}
+
+.project-card__title {
+  margin: 0;
+  font-size: clamp(1.08rem, 1.15vw + 0.72rem, 1.28rem);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.016em;
+  color: var(--fg-primary);
+  text-decoration: none;
+  transition: color 220ms ease;
+}
+
+.project-card:hover .project-card__title {
+  color: var(--emphasis);
+}
+
+.project-card__tags {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.42rem;
+}
+
+.project-card__summary {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.48;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  color: var(--fg-secondary);
+  text-decoration: none;
+}
+
+.project-card__cta {
+  margin-top: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.69rem;
+  font-family: var(--font-mono);
+  font-weight: 500;
+  line-height: 1.2;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: color-mix(in srgb, var(--project-accent, var(--accent)) 82%, var(--fg-primary));
+  transition: color 220ms ease;
+}
+
+.project-card__cta-label {
   white-space: nowrap;
 }
 
-.project-card__cue-icon {
-  width: 0.85rem;
-  height: 0.85rem;
+.project-card__cta-icon {
+  width: 0.82rem;
+  height: 0.82rem;
   flex-shrink: 0;
-  color: var(--accent);
+  transform: translateY(0);
+  transition: transform 220ms ease;
+}
+
+.project-card:hover .project-card__cta {
+  color: var(--project-accent, var(--accent));
+}
+
+.project-card:hover .project-card__cta-icon,
+.project-card-link:focus-visible .project-card__cta-icon {
+  transform: translate3d(2px, -1px, 0);
+}
+
+@media (max-width: 520px) {
+  .project-card__body {
+    padding: 0.92rem 0.86rem 0.85rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .project-card-link:hover {
-    transform: none;
-  }
-
-  .project-card-link img {
+  .project-card-link,
+  .project-card__image,
+  .project-card__title,
+  .project-card__cta,
+  .project-card__cta-icon {
     transition: none;
   }
 
-  .project-card__cue {
-    transition: opacity 0ms;
+  .project-card-link:hover,
+  .project-card:hover .project-card__cta-icon {
     transform: none;
   }
 }

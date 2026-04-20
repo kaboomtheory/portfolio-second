@@ -14,7 +14,7 @@ const slug = computed(() => normalizeProjectSlug(route.params.slug))
 async function submit() {
   error.value = ''
   if (!slug.value) {
-    router.push('/projects')
+    router.push('/')
     return
   }
   if (!password.value.trim()) {
@@ -69,6 +69,8 @@ useHead({ title: 'Password Protected Project' })
               type="button"
               class="absolute right-2 top-1/2 -translate-y-1/2 text-xs uppercase tracking-[0.08em]"
               :style="{ color: 'var(--fg-muted)' }"
+              :aria-pressed="reveal"
+              :aria-label="reveal ? 'Hide password' : 'Show password'"
               @click="reveal = !reveal"
             >
               {{ reveal ? 'Hide' : 'Show' }}

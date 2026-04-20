@@ -134,17 +134,17 @@ function isMediaSection(section: ProjectStorySection): boolean {
   <div v-else-if="project" class="page-content">
     <section class="page-section">
       <NuxtLink
-        to="/"
+        to="/#work"
         class="back-link mb-8 inline-flex items-center gap-2 text-sm transition-colors"
       >
-        <span>← Back to Projects</span>
+        <span>← Back to work</span>
       </NuxtLink>
 
       <div class="hero-header">
-        <h1 class="text-4xl font-bold md:text-5xl">
+        <h1 class="project-hero-title font-display">
           {{ project.name }}
         </h1>
-        <p class="mt-4 max-w-3xl text-lg">
+        <p class="mt-4 max-w-3xl text-base leading-relaxed sm:text-lg">
           {{ project.summary }}
         </p>
         <div v-if="project.tags?.length" class="mt-4 flex flex-wrap gap-2">
@@ -190,11 +190,11 @@ function isMediaSection(section: ProjectStorySection): boolean {
 
           <!-- Image Gallery -->
           <div v-else-if="section.type === 'imageGallery'" :class="{
-            'gallery-grid grid gap-4': section.layout !== 'masonry',
-            'grid-cols-2': section.layout === 'two-col',
-            'grid-cols-3': section.layout === 'three-col',
-            'grid-cols-4': section.layout === 'four-col',
-            'columns-2 md:columns-3 gap-4 space-y-4': section.layout === 'masonry',
+            'gallery-grid grid gap-3 sm:gap-4': section.layout !== 'masonry',
+            'grid-cols-1 sm:grid-cols-2': section.layout === 'two-col',
+            'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3': section.layout === 'three-col',
+            'grid-cols-2 sm:grid-cols-2 lg:grid-cols-4': section.layout === 'four-col',
+            'columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3': section.layout === 'masonry',
           }">
             <div
               v-for="(img, imgIndex) in section.images"
@@ -211,15 +211,15 @@ function isMediaSection(section: ProjectStorySection): boolean {
           </div>
 
           <!-- Image + Text Block -->
-          <div v-else-if="section.type === 'imageTextBlock'" class="flex flex-col gap-8 md:flex-row" :class="{ 'md:flex-row-reverse': section.position === 'right' }">
-            <div class="flex-1">
+          <div v-else-if="section.type === 'imageTextBlock'" class="flex min-w-0 flex-col gap-8 md:flex-row" :class="{ 'md:flex-row-reverse': section.position === 'right' }">
+            <div class="min-w-0 flex-1">
               <ScrollExpandImage
                 :src="section.image || ''"
                 :alt="section.heading || `Image ${index + 1}`"
                 :pre-expanded="index === firstImageSectionIndex"
               />
             </div>
-            <div class="flex-1 max-w-xl">
+            <div class="min-w-0 flex-1 max-w-xl">
               <h2 v-if="section.heading" class="section-heading">
                 {{ section.heading }}
               </h2>
@@ -235,8 +235,9 @@ function isMediaSection(section: ProjectStorySection): boolean {
             'max-w-5xl mx-auto': section.layout === 'large',
             'max-w-3xl mx-auto': section.layout === 'medium' || !section.layout,
           }">
-            <div v-if="sanitizeEmbedUrl(section.url)" class="aspect-video overflow-hidden rounded-lg">
+            <div v-if="sanitizeEmbedUrl(section.url)" class="aspect-video w-full max-w-full overflow-hidden rounded-lg">
               <iframe
+                :title="section.caption || `Video: ${project.name}`"
                 :src="sanitizeEmbedUrl(section.url) || ''"
                 class="h-full w-full"
                 frameborder="0"
@@ -257,20 +258,20 @@ function isMediaSection(section: ProjectStorySection): boolean {
 
           <!-- Quote -->
           <div v-else-if="section.type === 'quote'" class="mx-auto max-w-3xl">
-            <blockquote class="project-quote pl-6 text-2xl italic">
-              "{{ section.body }}"
+            <blockquote class="project-quote pl-4 text-xl sm:pl-6 sm:text-2xl">
+              <q>{{ section.body }}</q>
             </blockquote>
-            <div v-if="section.author" class="mt-4 pl-6">
+            <div v-if="section.author" class="mt-4 pl-4 sm:pl-6">
               <p class="font-semibold section-body">{{ section.author }}</p>
               <p v-if="section.role" class="text-sm text-muted">{{ section.role }}</p>
             </div>
           </div>
 
           <!-- Stats Row -->
-          <div v-else-if="section.type === 'statsRow'" class="flex flex-wrap justify-center gap-8 md:gap-16">
-            <div v-for="(stat, statIndex) in section.stats" :key="statIndex" class="text-center">
-              <p class="stat-value text-4xl font-bold">{{ stat.value }}</p>
-              <p class="mt-1 text-sm uppercase tracking-wide text-muted">{{ stat.label }}</p>
+          <div v-else-if="section.type === 'statsRow'" class="flex flex-wrap justify-center gap-6 sm:gap-8 md:gap-16">
+            <div v-for="(stat, statIndex) in section.stats" :key="statIndex" class="min-w-0 max-w-[min(100%,14rem)] text-center">
+              <p class="stat-value text-3xl font-bold sm:text-4xl">{{ stat.value }}</p>
+              <p class="stat-label mt-1 text-sm uppercase text-muted">{{ stat.label }}</p>
             </div>
           </div>
 
@@ -308,7 +309,7 @@ function isMediaSection(section: ProjectStorySection): boolean {
         <NuxtLink
           v-if="prevProject"
           :to="`/projects/${prevProject.slug}`"
-          class="pager-link inline-flex items-center gap-2 text-sm font-medium transition-colors"
+          class="pager-link inline-flex min-w-0 max-w-full items-center gap-2 break-words text-sm font-medium transition-colors"
         >
           <Icon icon="lucide:arrow-left" class="h-4 w-4 shrink-0" aria-hidden="true" />
           <span>
@@ -321,7 +322,7 @@ function isMediaSection(section: ProjectStorySection): boolean {
         <NuxtLink
           v-if="nextProject"
           :to="`/projects/${nextProject.slug}`"
-          class="pager-link inline-flex items-center gap-2 text-right text-sm font-medium transition-colors md:ml-auto"
+          class="pager-link inline-flex min-w-0 max-w-full items-center gap-2 break-words text-right text-sm font-medium transition-colors md:ml-auto"
         >
           <span>
             <span class="pager-label block text-meta">Next</span>
@@ -347,10 +348,21 @@ function isMediaSection(section: ProjectStorySection): boolean {
   margin-bottom: var(--space-xl);
 }
 
+.project-hero-title {
+  font-size: clamp(2.25rem, 4vw + 1rem, 3.25rem);
+  font-weight: 600;
+  line-height: 1.08;
+  letter-spacing: -0.02em;
+  color: var(--fg-primary);
+  overflow-wrap: anywhere;
+}
+
 .section-heading {
-  font-size: 1.5rem;
+  font-size: clamp(1.25rem, 0.6vw + 1.1rem, 1.5rem);
   font-weight: 650;
   color: var(--fg-primary);
+  overflow-wrap: anywhere;
+  hyphens: none;
 }
 
 .section-body {
@@ -358,7 +370,21 @@ function isMediaSection(section: ProjectStorySection): boolean {
 }
 
 .project-quote {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 300;
+  font-variation-settings: 'opsz' 144;
   color: var(--fg-primary);
+}
+
+.project-quote :deep(q) {
+  font-style: inherit;
+  quotes: auto;
+}
+
+.stat-label {
+  letter-spacing: 0.08em;
+  font-weight: 500;
 }
 
 .stat-value {
@@ -388,6 +414,8 @@ function isMediaSection(section: ProjectStorySection): boolean {
 }
 
 .project-section {
+  min-width: 0;
+  max-width: 100%;
   opacity: 0;
   transform: translateY(30px);
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;

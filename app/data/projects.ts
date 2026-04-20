@@ -21,13 +21,13 @@ export const projects: ProjectItem[] = [
     slug: 'victor',
     name: 'Victor',
     summary:
-      'Premium A+ content created for Victor\'s online product listings, delivering visually captivating and functional assets to elevate the online shopping experience.',
+      'Premium A+ content created for Victor\u2019s online product listings, delivering visually captivating and functional assets to elevate the online shopping experience.',
     thumbnail: '/images/projects/victor/01.png',
     tags: ['Marketing', 'Branding', 'Digital'],
     sections: [
       {
         heading: 'Concept',
-        body: 'By blending sleek, modern design with user-friendly layouts and purposeful imagery, the content was designed to emphasize the unique features and craftsmanship of Victor\'s record players and related products.',
+        body: 'By blending sleek, modern design with user-friendly layouts and purposeful imagery, the content was designed to emphasize the unique features and craftsmanship of Victor\u2019s record players and related products.',
         image: '/images/projects/victor/02.png',
       },
       {
@@ -127,7 +127,7 @@ export const projects: ProjectItem[] = [
       },
       {
         heading: 'Iconography',
-        body: 'Custom iconography that complements the brand\'s typographic voice and clarifies communication.',
+        body: 'Custom iconography that complements the brand\u2019s typographic voice and clarifies communication.',
         image: '/images/projects/emerson/06.png',
       },
       {
@@ -152,7 +152,7 @@ export const projects: ProjectItem[] = [
       },
       {
         heading: 'Packaging Concepts',
-        body: 'Translating the brand\'s core message into elegant packaging solutions.',
+        body: 'Translating the brand\u2019s core message into elegant packaging solutions.',
         image: '/images/projects/emerson/11.png',
       },
       {
@@ -197,7 +197,7 @@ export const projects: ProjectItem[] = [
       },
       {
         heading: 'Typography System',
-        body: 'Playful yet legible typography that supports the brand\'s approachable voice.',
+        body: 'Playful yet legible typography that supports the brand\u2019s approachable voice.',
         image: '/images/projects/cubby/05.png',
       },
       {
@@ -217,7 +217,7 @@ export const projects: ProjectItem[] = [
       },
       {
         heading: 'Packaging Design',
-        body: 'Packaging that stands out on shelves and communicates the brand\'s commitment to quality and design.',
+        body: 'Packaging that stands out on shelves and communicates the brand\u2019s commitment to quality and design.',
         image: '/images/projects/cubby/09.png',
       },
       {
@@ -347,12 +347,12 @@ export const projects: ProjectItem[] = [
       },
       {
         heading: 'Feature Showcase',
-        body: 'Key features are presented in an engaging way that highlights the app\'s unique value proposition.',
+        body: 'Key features are presented in an engaging way that highlights the app\u2019s unique value proposition.',
         image: '/images/projects/linkup/12.png',
       },
       {
         heading: 'Launch Marketing',
-        body: 'Promotional graphics highlighting the app\'s value proposition for the public launch.',
+        body: 'Promotional graphics highlighting the app\u2019s value proposition for the public launch.',
         image: '/images/projects/linkup/13.png',
       },
     ],
@@ -387,7 +387,7 @@ export const projects: ProjectItem[] = [
       },
       {
         heading: 'Packaging Design',
-        body: 'Created eye-catching packaging that stands out on shelves while communicating the brand\'s natural ethos.',
+        body: 'Created eye-catching packaging that stands out on shelves while communicating the brand\u2019s natural ethos.',
         image: '/images/projects/kale-of-the-wild/06.png',
       },
       {
