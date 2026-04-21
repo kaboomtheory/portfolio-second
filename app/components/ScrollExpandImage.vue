@@ -7,6 +7,8 @@ interface Props {
   maxScale?: number
   caption?: string
   layout?: 'full' | 'large' | 'medium'
+  /** Passed to `<NuxtImg sizes>` for responsive srcset */
+  imgSizes?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -16,6 +18,7 @@ const props = withDefaults(defineProps<Props>(), {
   maxScale: 1,
   caption: undefined,
   layout: 'medium',
+  imgSizes: '(max-width: 1024px) 100vw, min(80rem, 92vw)',
 })
 
 const elementRef = ref<HTMLElement | null>(null)
@@ -54,12 +57,14 @@ const layoutClass = computed(() => {
       class="overflow-hidden rounded-lg"
       :style="containerStyle"
     >
-      <img
+      <SanityImage
         :src="src"
         :alt="alt"
+        :sizes="imgSizes"
         class="w-full object-cover"
         loading="lazy"
-      >
+        decoding="async"
+      />
     </div>
     <p
       v-if="caption"

@@ -5,9 +5,16 @@ definePageMeta({
   layout: 'default',
 })
 
+const { siteUrl } = useRuntimeConfig().public
+const themeLabCanonical = `${String(siteUrl).replace(/\/$/, '')}/theme-lab`
+
 useHead({
   title: 'Theme lab',
-  meta: [{ name: 'robots', content: 'noindex, nofollow' }],
+  link: [{ rel: 'canonical', href: themeLabCanonical }],
+})
+
+useSeoMeta({
+  robots: 'noindex, nofollow',
 })
 
 const {
@@ -46,6 +53,9 @@ function previewCtxFrom(map: Record<string, string>): ThemePreviewContext {
     bgSecondary: c('--bg-secondary'),
     bgTertiary: c('--bg-tertiary'),
     surfaceInteractive: c('--surface-interactive'),
+    paperSunk: c('--paper-sunk'),
+    pastelPeach: c('--pastel-peach'),
+    pastelInk: c('--pastel-ink'),
     fgPrimary: c('--fg-primary'),
     accent: c('--accent'),
     border: c('--border'),

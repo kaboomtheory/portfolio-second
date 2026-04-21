@@ -9,7 +9,13 @@ export default defineNuxtPlugin((nuxtApp) => {
     return
   }
 
-  const lenis = new Lenis()
+  const lenis = new Lenis({
+    duration: 1.15,
+    // Slightly cinematic default easing without feeling sluggish.
+    easing: (t: number) => 1 - Math.pow(1 - t, 3.2),
+  })
+
+  nuxtApp.provide('lenis', lenis)
 
   let rafId = 0
   const raf = (time: number) => {

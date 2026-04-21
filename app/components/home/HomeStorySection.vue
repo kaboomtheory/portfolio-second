@@ -18,20 +18,21 @@ defineProps<{
       <div class="story-marker">
         <div class="story-marker-sticky">
           <span class="section-marker">
-            <span class="section-marker-num">02</span>
             <span class="section-marker-word">Story</span>
           </span>
         </div>
       </div>
 
       <div class="story-body">
-        <p
-          v-for="(paragraph, index) in story"
-          :key="index"
-          class="story-paragraph"
-        >
-          {{ paragraph }}
-        </p>
+        <div class="story-body-prose">
+          <p
+            v-for="(paragraph, index) in story"
+            :key="index"
+            class="story-paragraph"
+          >
+            {{ paragraph }}
+          </p>
+        </div>
 
         <div class="story-cta-row">
           <CtaButton
@@ -49,12 +50,14 @@ defineProps<{
       <div class="story-aside">
         <figure class="story-avatar">
           <div class="story-avatar-frame">
-            <img
+            <SanityImage
               :src="avatar"
               :alt="name"
+              sizes="(max-width: 767px) 100vw, 22rem"
               class="story-avatar-image"
               loading="lazy"
-            >
+              decoding="async"
+            />
           </div>
           <figcaption class="story-avatar-caption">
             <span class="story-avatar-key">Fig.&nbsp;01</span>
@@ -68,6 +71,13 @@ defineProps<{
 
 <style scoped>
 .story-section-outer {
+  --signal: var(--signal-peach);
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: var(--pastel-ink-muted);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
+  --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
+  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, transparent);
+  --btn-attention-bg: var(--pastel-sky);
   padding-top: clamp(4rem, 8vw, 7rem);
   padding-bottom: clamp(4rem, 8vw, 7rem);
 }
@@ -88,6 +98,16 @@ defineProps<{
   flex-direction: column;
   gap: clamp(1.25rem, 2vw, 1.75rem);
   min-width: 0;
+}
+
+.story-body-prose {
+  background-color: var(--pastel-peach);
+  padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.25rem, 3vw, 2rem);
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1rem, 1.5vw, 1.25rem);
+  min-width: 0;
+  border-radius: 0.25rem;
 }
 
 .story-aside {
@@ -135,7 +155,7 @@ defineProps<{
   font-family: var(--font-sans);
   font-size: var(--text-body);
   line-height: 1.55;
-  color: var(--fg-secondary);
+  color: var(--pastel-ink);
   margin: 0;
   letter-spacing: 0;
 }
@@ -160,7 +180,7 @@ defineProps<{
   width: 100%;
   max-width: 100%;
   border: 1px solid var(--rule);
-  background: var(--bg-secondary);
+  background: var(--pastel-sky);
   display: flex;
   align-items: center;
   justify-content: center;

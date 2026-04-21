@@ -10,29 +10,45 @@ function mapSection(section: ContentBlock): ProjectStorySection {
         body: section.body,
       }
     case 'singleImage':
-      return {
-        type: 'singleImage',
-        image: section.image ? buildImageUrl(section.image, 'content') : undefined,
-        layout: section.layout,
-        caption: section.caption,
+      {
+        const image = section.image ? buildImageUrl(section.image, 'content') : ''
+        return {
+          type: 'singleImage',
+          image: image || undefined,
+          layout: section.layout,
+          caption: section.caption,
+        }
       }
     case 'imageGallery':
-      return {
-        type: 'imageGallery',
-        layout: section.layout,
-        images: section.images?.map((img) => ({
-          image: buildImageUrl(img.image, 'content'),
-          alt: img.alt,
-          caption: img.caption,
-        })),
+      {
+        const images = section.images
+          ?.map((img) => {
+            const image = buildImageUrl(img.image, 'content')
+            if (!image) return null
+            return {
+              image,
+              alt: img.alt,
+              caption: img.caption,
+            }
+          })
+          .filter((img): img is { image: string; alt?: string; caption?: string } => Boolean(img))
+
+        return {
+          type: 'imageGallery',
+          layout: section.layout,
+          images,
+        }
       }
     case 'imageTextBlock':
-      return {
-        type: 'imageTextBlock',
-        image: section.image ? buildImageUrl(section.image, 'content') : undefined,
-        heading: section.heading,
-        body: section.body,
-        position: section.position,
+      {
+        const image = section.image ? buildImageUrl(section.image, 'content') : ''
+        return {
+          type: 'imageTextBlock',
+          image: image || undefined,
+          heading: section.heading,
+          body: section.body,
+          position: section.position,
+        }
       }
     case 'videoEmbed':
       return {
@@ -59,11 +75,14 @@ function mapSection(section: ContentBlock): ProjectStorySection {
         size: section.size,
       }
     case 'section':
-      return {
-        type: 'section',
-        heading: section.heading,
-        body: section.body,
-        image: section.image ? buildImageUrl(section.image, 'content') : undefined,
+      {
+        const image = section.image ? buildImageUrl(section.image, 'content') : ''
+        return {
+          type: 'section',
+          heading: section.heading,
+          body: section.body,
+          image: image || undefined,
+        }
       }
     default:
       return {}
@@ -75,22 +94,27 @@ export function projectItemsFromSanityRaw(
 ): ProjectItem[] {
   if (!rawProjects || !Array.isArray(rawProjects)) return []
 
-  return rawProjects.map((project: SanityProjectItem) => ({
-    slug: project.slug?.current || '',
-    name: project.name || '',
-    summary: project.summary || '',
-    thumbnail: project.thumbnail ? buildImageUrl(project.thumbnail, 'grid') : '',
-    protected: project.protected || false,
-    tags: project.tags || [],
-    sections: (project.sections || []).map(mapSection),
-    order: project.order,
-    client: project.client,
-    role: project.role,
-    projectUrl: project.projectUrl,
-    heroImage: project.heroImage ? buildImageUrl(project.heroImage, 'hero') : undefined,
-    color: project.color,
-    collaborators: project.collaborators,
-  }))
+  return rawProjects.map((project: SanityProjectItem) => {
+    const thumbnail = project.thumbnail ? buildImageUrl(project.thumbnail, 'grid') : ''
+    const heroImage = project.heroImage ? buildImageUrl(project.heroImage, 'hero') : ''
+
+    return {
+      slug: project.slug?.current || '',
+      name: project.name || '',
+      summary: project.summary || '',
+      thumbnail,
+      protected: project.protected || false,
+      tags: project.tags || [],
+      sections: (project.sections || []).map(mapSection),
+      order: project.order,
+      client: project.client,
+      role: project.role,
+      projectUrl: project.projectUrl,
+      heroImage: heroImage || undefined,
+      color: project.color,
+      collaborators: project.collaborators,
+    }
+  })
 }
 
 export function useSanityProjects() {

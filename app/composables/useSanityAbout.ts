@@ -56,22 +56,29 @@ export function useSanityAbout() {
   const aboutPage = computed(() => {
     if (!raw.value) return null
 
+    const avatar = raw.value.hero?.avatar
+      ? buildImageUrl(raw.value.hero.avatar, 'card')
+      : ''
+
     return {
       hero: raw.value.hero
         ? {
             name: raw.value.hero.name,
-            avatar: raw.value.hero.avatar ? buildImageUrl(raw.value.hero.avatar, 'card') : null,
+            avatar: avatar || null,
             availabilityText: raw.value.hero.availabilityText || 'Available for freelance',
           } as AboutHero
         : null,
       story: raw.value.story || [],
-      experiences: (raw.value.experiences || []).map((exp) => ({
-        title: exp.title,
-        company: exp.company,
-        year: exp.year,
-        description: exp.description,
-        image: exp.logo ? buildImageUrl(exp.logo, 'thumbnail') : null,
-      })) as AboutExperienceEntry[],
+      experiences: (raw.value.experiences || []).map((exp) => {
+        const image = exp.logo ? buildImageUrl(exp.logo, 'thumbnail') : ''
+        return {
+          title: exp.title,
+          company: exp.company,
+          year: exp.year,
+          description: exp.description,
+          image: image || null,
+        }
+      }) as AboutExperienceEntry[],
       capabilities: (raw.value.capabilities || []) as AboutCapability[],
       resumeUrl: raw.value.resumeUrl || null,
     }

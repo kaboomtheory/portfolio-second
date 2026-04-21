@@ -16,7 +16,7 @@ const handleMouseMove = (e: MouseEvent) => {
 <template>
   <div
     ref="cardRef"
-    class="spotlight-card group relative overflow-hidden rounded-lg bg-[var(--bg-secondary)] transition-all duration-300 hover:bg-[var(--bg-tertiary)]"
+    class="spotlight-card group relative overflow-hidden rounded-lg bg-[var(--pastel-peach)] text-[color:var(--pastel-ink)] transition-all duration-300 hover:bg-[var(--pastel-mint)]"
     @mousemove="handleMouseMove"
     :style="{
       '--mouse-x': `${mouseX}px`,

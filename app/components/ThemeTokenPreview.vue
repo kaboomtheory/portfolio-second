@@ -53,6 +53,38 @@ defineProps<{
       Filter
     </div>
 
+    <div
+      v-else-if="kind === 'surface-rule'"
+      class="theme-token-preview__rule-slab"
+      :style="{
+        backgroundColor: ctx.paperSunk,
+        border: `1px solid ${hex}`,
+      }"
+      title="Sunk panel outline"
+    />
+
+    <div
+      v-else-if="kind === 'pastel-chip'"
+      class="theme-token-preview__pill theme-token-preview__pill--pastel"
+      :style="{
+        backgroundColor: hex,
+        border: `1px solid color-mix(in srgb, ${ctx.pastelInk} 18%, transparent)`,
+        color: ctx.pastelInk,
+      }"
+      title="Sparse pastel chip"
+    >
+      Chip
+    </div>
+
+    <div
+      v-else-if="kind === 'pastel-ink-contrast'"
+      class="theme-token-preview__text-block"
+      :style="{ backgroundColor: ctx.pastelPeach, color: hex }"
+      title="Ink on bright pastel"
+    >
+      <span class="theme-token-preview__eyebrow">Aa</span>
+    </div>
+
     <!-- Text -->
     <div
       v-else-if="kind === 'text-primary'"
@@ -262,6 +294,18 @@ defineProps<{
   letter-spacing: 0.06em;
   text-transform: uppercase;
   font-family: var(--font-mono);
+}
+
+.theme-token-preview__pill--pastel {
+  box-shadow: none;
+}
+
+.theme-token-preview__rule-slab {
+  align-self: center;
+  margin: 0.4rem;
+  width: calc(100% - 0.8rem);
+  min-height: 2.35rem;
+  border-radius: 0.35rem;
 }
 
 .theme-token-preview__text-block {

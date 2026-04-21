@@ -53,7 +53,7 @@ const tickerCells = computed(() => {
     v-if="layout === 'ticker'"
     id="status"
     :delay="200"
-    class="ticker-section full-bleed"
+    class="status-band ticker-section full-bleed"
   >
     <div class="full-bleed-inner">
       <div class="ticker-wrapper">
@@ -86,7 +86,7 @@ const tickerCells = computed(() => {
       </div>
     </div>
   </RevealOnScroll>
-  <div v-else class="status-stack" role="list">
+  <div v-else class="status-band status-stack" role="list">
     <div
       v-for="(item, i) in statusItems"
       :key="`${item.label}-${i}`"
@@ -100,6 +100,10 @@ const tickerCells = computed(() => {
 </template>
 
 <style scoped>
+.status-band {
+  --signal: var(--signal-blush);
+}
+
 .status-stack {
   display: flex;
   flex-direction: column;
@@ -173,7 +177,7 @@ const tickerCells = computed(() => {
 
 .ticker-track {
   display: flex;
-  --ticker-duration: 40s;
+  --ticker-duration: 24s;
 }
 
 .ticker-track--marquee {
@@ -183,7 +187,7 @@ const tickerCells = computed(() => {
 
 @media (max-width: 640px) {
   .ticker-track {
-    --ticker-duration: 56s;
+    --ticker-duration: 34s;
   }
 }
 

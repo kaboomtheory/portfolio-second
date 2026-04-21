@@ -1,16 +1,14 @@
 <script setup lang="ts">
-import { SMOOTH_SCROLL_HASH_MS } from '~/composables/useSmoothScroll'
-import { getScrollAnchorOffsetPx } from '~/utils/scrollAnchor'
+import { useHomeSectionScroll } from '~/composables/useHomeSectionScroll'
 
-const { scrollTo } = useSmoothScroll()
+const { scrollToHomeHash } = useHomeSectionScroll()
 const route = useRoute()
 
 function scrollToHashIfPresent() {
   if (!import.meta.client || !route.hash) return
   nextTick(() => {
     requestAnimationFrame(() => {
-      const el = document.querySelector(route.hash)
-      if (el) scrollTo(route.hash, { duration: SMOOTH_SCROLL_HASH_MS, offset: getScrollAnchorOffsetPx() })
+      scrollToHomeHash(route.hash)
     })
   })
 }
@@ -28,11 +26,11 @@ watch(
       main?.focus({ preventScroll: true })
     })
   },
+  { immediate: true },
 )
 
 onMounted(() => {
   document.addEventListener('click', handleAnchorClick)
-  scrollToHashIfPresent()
 })
 
 onUnmounted(() => {
@@ -48,7 +46,7 @@ const handleAnchorClick = (e: MouseEvent) => {
   if (!href || href === '#') return
 
   e.preventDefault()
-  scrollTo(href, { duration: SMOOTH_SCROLL_HASH_MS, offset: getScrollAnchorOffsetPx() })
+  scrollToHomeHash(href)
 }
 </script>
 
@@ -81,7 +79,6 @@ const handleAnchorClick = (e: MouseEvent) => {
   min-height: 100%;
   min-width: 0;
   max-width: 100%;
-  /* Opaque surface so nothing behind the shell can read as a “black veil” */
   background-color: var(--shell-ui-bg, var(--paper, #f4efe4));
 }
 

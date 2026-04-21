@@ -53,8 +53,9 @@ function tryAgain() {
           type="button"
           class="rounded-md px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.1em] transition-colors"
           :style="{
-            backgroundColor: 'var(--bg-tertiary)',
-            color: 'var(--fg-primary)',
+            backgroundColor: 'var(--pastel-mint)',
+            color: 'var(--pastel-ink)',
+            border: '1px solid color-mix(in srgb, var(--pastel-ink) 18%, transparent)',
           }"
           @click="tryAgain"
         >
@@ -64,8 +65,9 @@ function tryAgain() {
           type="button"
           class="rounded-md px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.1em] transition-opacity hover:opacity-90"
           :style="{
-            backgroundColor: 'var(--emphasis)',
-            color: 'var(--on-emphasis)',
+            backgroundColor: 'var(--pastel-peach)',
+            color: 'var(--pastel-ink)',
+            border: '1px solid color-mix(in srgb, var(--pastel-ink) 18%, transparent)',
           }"
           @click="goHome"
         >
@@ -78,11 +80,15 @@ function tryAgain() {
 
 <style scoped>
 .error-panel {
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: var(--pastel-ink-muted);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
   margin-left: auto;
   margin-right: auto;
   max-width: 36rem;
   padding: 2.5rem 1.5rem;
   border-radius: 1rem;
-  background: var(--bg-secondary);
+  background: var(--pastel-sky);
+  color: var(--pastel-ink);
 }
 </style>

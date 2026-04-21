@@ -160,8 +160,16 @@ const focusRailValue = computed(() => {
 
 <style scoped>
 .home-intro {
+  --signal: var(--signal-sky);
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: var(--pastel-ink-muted);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
+  --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
+  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, transparent);
+  --btn-attention-bg: var(--pastel-peach);
+  background-color: var(--shell-ui-bg, var(--paper));
   padding-top: clamp(2rem, 4vw, 3.5rem);
-  padding-bottom: clamp(3rem, 6vw, 5rem);
+  padding-bottom: clamp(1.5rem, 4vw, 3rem);
 }
 
 .intro-grid {
@@ -183,8 +191,10 @@ const focusRailValue = computed(() => {
   display: grid;
   grid-template-columns: 1fr;
   gap: 0;
-  border-top: 1px solid var(--rule);
-  padding-top: 0.85rem;
+  background-color: var(--pastel-blush);
+  padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.25rem, 3vw, 2rem);
+  border-radius: 0.25rem;
+  min-width: 0;
 }
 
 @media (min-width: 768px) {
@@ -192,8 +202,6 @@ const focusRailValue = computed(() => {
     grid-column: 9 / span 4;
     grid-row: 1;
     grid-template-columns: 1fr;
-    border-top: none;
-    padding-top: 0;
     align-self: start;
   }
 
@@ -211,6 +219,12 @@ const focusRailValue = computed(() => {
   line-height: 1.06;
   letter-spacing: 0;
   color: var(--fg-primary);
+  background-color: var(--pastel-mint);
+  padding: clamp(1rem, 2.2vw, 1.75rem) clamp(1.25rem, 2.8vw, 2.25rem);
+  border-radius: 0.5rem;
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .hero-title-lead {
@@ -270,24 +284,38 @@ const focusRailValue = computed(() => {
 .intro-linkedin {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
+  justify-content: center;
+  gap: 0.5rem;
+  isolation: isolate;
+  cursor: pointer;
   font-family: var(--font-mono);
-  font-size: var(--label-size);
+  font-size: 0.75rem;
+  line-height: 1.2;
   font-weight: 500;
-  letter-spacing: var(--label-tracking-mono);
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--signal);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
-  padding-bottom: 0.1rem;
+  color: var(--pastel-ink);
+  background: var(--pastel-sky);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, transparent);
+  border-radius: var(--radius-control, 0.35rem);
+  padding: 0.65rem 1.4rem;
+  outline-offset: 4px;
+  box-shadow: none;
   transition:
+    background-color 120ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1)),
     color 120ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1)),
     border-color 120ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1));
 }
 
 .intro-linkedin:hover {
-  color: var(--fg-primary);
-  border-bottom-color: var(--signal);
+  background: color-mix(in srgb, var(--pastel-sky) 82%, var(--pastel-ink));
+  border-color: color-mix(in srgb, var(--pastel-ink) 32%, transparent);
+  color: var(--pastel-ink);
+}
+
+.intro-linkedin:active {
+  transform: translateY(1px);
 }
 
 .intro-linkedin:focus-visible {
@@ -298,6 +326,7 @@ const focusRailValue = computed(() => {
 .intro-linkedin-icon {
   width: 1rem;
   height: 1rem;
+  color: currentColor;
 }
 
 .intro-rail-line {

@@ -1,4 +1,4 @@
-/* Geist + Fraunces + Geist Mono: loaded via nuxt.config head */
+/* Geist + Fraunces + Geist Mono: loaded via @nuxt/fonts */
 
 /*
   Swiss neo-grid: canonical --paper / --ink / --signal plus legacy aliases
@@ -35,9 +35,23 @@
   --motion-ease-standard: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --duration-reveal: 320ms;
 
-  /* Canonical Swiss palette */
-  --paper: #f4efe4;
-  --paper-sunk: #ece5d5;
+  /* Pastel tiles (same hexes in .dark — pop on dark shell) + ink on tiles */
+  --pastel-peach: #fef3e2;
+  --pastel-mint: #ecf9eb;
+  --pastel-sky: #ddf4ff;
+  --pastel-blush: #ffebff;
+  --pastel-pink: var(--pastel-blush);
+  --pastel-ink: #000000;
+  --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, transparent);
+  /* Dark accent inks on pastel bands (section markers, links) */
+  --signal-sky: #1a4a6e;
+  --signal-mint: #1f5c42;
+  --signal-peach: #5c3d26;
+  --signal-blush: #6b2a52;
+
+  /* Light: white page; semantic surfaces = pastels (peach / mint / sky) */
+  --paper: #ffffff;
+  --paper-sunk: #f7f7f6;
   --ink: #15120f;
   --ink-mid: #6b645b;
   --ink-muted: #a69c8e;
@@ -47,8 +61,9 @@
 
   --shell-ui-bg: var(--paper);
   --bg-primary: var(--paper);
-  --bg-secondary: var(--paper-sunk);
-  --bg-tertiary: #e0d8c4;
+  /* Box surfaces: peach → mint → sky (project cards, etc.) */
+  --bg-secondary: var(--pastel-peach);
+  --bg-tertiary: var(--pastel-mint);
   --fg-primary: var(--ink);
   --fg-secondary: var(--ink-mid);
   --fg-muted: var(--ink-muted);
@@ -73,17 +88,17 @@
   --muted-neon: color-mix(in srgb, var(--ink) 70%, transparent);
   --btn-primary-bg: var(--signal);
   --btn-primary-fg: var(--signal-ink);
-  --btn-attention-bg: var(--signal);
-  --btn-attention-fg: var(--signal-ink);
-  --surface-interactive: var(--paper-sunk);
+  --btn-attention-bg: var(--pastel-peach);
+  --btn-attention-fg: var(--pastel-ink);
+  --surface-interactive: var(--pastel-sky);
   --btn-secondary-bg: transparent;
   --chrome-ring-idle: var(--ink);
   --shadow-sm: 0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent);
   --shadow-md: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
   --shadow-lg: 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
-  --project-card-surface: color-mix(in srgb, var(--bg-primary) 92%, var(--bg-secondary));
-  --project-card-surface-hover: color-mix(in srgb, var(--bg-primary) 84%, var(--bg-secondary));
-  --project-card-border: color-mix(in srgb, var(--rule) 58%, transparent);
+  --project-card-surface: var(--pastel-peach);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 88%, var(--pastel-ink));
+  --project-card-border: color-mix(in srgb, var(--pastel-ink) 14%, transparent);
   --project-card-shadow-idle: var(--shadow-sm);
   --project-card-shadow-hover: var(--shadow-md);
   --card-border: 1px solid var(--rule-token);
@@ -99,17 +114,34 @@
 :root.dark {
   --paper: #0b0a08;
   --paper-sunk: #14120f;
-  --ink: #ece4d4;
-  --ink-mid: #a89f8e;
-  --ink-muted: #6b645b;
-  --rule-token: #ece4d4;
+  /* Text/chrome: same primary as light paper (#fff); neutrals without warm tan */
+  --ink: #ffffff;
+  --ink-mid: #b0b0b0;
+  --ink-muted: #949494;
+  /* Hairlines: ink stepped up for legibility vs charcoal shell */
+  --rule-token: color-mix(in srgb, var(--ink) 46%, var(--paper));
   --signal: #e87a5b;
   --signal-ink: #0b0a08;
 
+  /* Hue-locked dark tiles — higher chroma than sRGB pastel-mix into paper */
+  --pastel-peach: #523a26;
+  --pastel-mint: #1f3a30;
+  --pastel-sky: #223948;
+  --pastel-blush: #3a2840;
+  --pastel-pink: var(--pastel-blush);
+  /* Light ink on pastel bands — matches light-mode paper for primary type */
+  --pastel-ink: var(--ink);
+  --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 72%, transparent);
+  /* Accent inks re-tuned to pop on muted dark tiles (were dark navy/forest/brown/wine in light) */
+  --signal-sky: #8fc4e8;
+  --signal-mint: #9edbb5;
+  --signal-peach: #f0b58a;
+  --signal-blush: #f3a6c8;
+
   --shell-ui-bg: var(--paper);
   --bg-primary: var(--paper);
-  --bg-secondary: var(--paper-sunk);
-  --bg-tertiary: #1d1a16;
+  --bg-secondary: var(--pastel-peach);
+  --bg-tertiary: var(--pastel-mint);
   --fg-primary: var(--ink);
   --fg-secondary: var(--ink-mid);
   --fg-muted: var(--ink-muted);
@@ -133,20 +165,24 @@
   --muted-neon: color-mix(in srgb, var(--ink) 65%, transparent);
   --btn-primary-bg: var(--signal);
   --btn-primary-fg: var(--signal-ink);
-  --btn-attention-bg: var(--signal);
-  --btn-attention-fg: var(--signal-ink);
-  --surface-interactive: #1d1a16;
+  --btn-attention-bg: var(--pastel-peach);
+  --btn-attention-fg: var(--pastel-ink);
+  --surface-interactive: var(--pastel-sky);
   --btn-secondary-bg: transparent;
   --chrome-ring-idle: var(--ink);
   --shadow-sm: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
   --shadow-md: 0 0 0 1px color-mix(in srgb, var(--ink) 14%, transparent);
   --shadow-lg: 0 0 0 1px color-mix(in srgb, var(--ink) 18%, transparent);
-  --project-card-surface: color-mix(in srgb, var(--bg-primary) 90%, var(--bg-secondary));
-  --project-card-surface-hover: color-mix(in srgb, var(--bg-primary) 78%, var(--bg-secondary));
-  --project-card-border: color-mix(in srgb, var(--rule) 52%, transparent);
-  --project-card-shadow-idle: var(--shadow-sm);
-  --project-card-shadow-hover: var(--shadow-md);
-  --card-border: 1px solid var(--rule-token);
+  --project-card-surface: var(--pastel-peach);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 88%, var(--pastel-ink));
+  --project-card-border: color-mix(in srgb, var(--pastel-ink) 40%, transparent);
+  --project-card-shadow-idle:
+    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 28%, transparent),
+    0 0.35rem 1.35rem color-mix(in srgb, #000000 32%, transparent);
+  --project-card-shadow-hover:
+    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 38%, transparent),
+    0 0.5rem 1.75rem color-mix(in srgb, #000000 42%, transparent);
+  --card-border: 1px solid color-mix(in srgb, var(--pastel-ink) 36%, transparent);
   --card-ring: none;
   --rule: var(--rule-token);
   --rule-soft: color-mix(in srgb, var(--ink) 22%, transparent);
@@ -156,7 +192,7 @@
   --theme-toggle-rail-muted: var(--ink-mid);
 }
 
-/* Swiss flat attention pill (CTA + back-to-top) */
+/* Swiss flat attention pill (CTA + back-to-top) — pastel fill + black label */
 .cta-button.btn-attention.cta-attention-pill,
 .back-to-top.cta-attention-pill {
   isolation: isolate;
@@ -169,10 +205,10 @@
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid var(--signal);
-  border-radius: 0;
-  color: var(--signal-ink);
-  background: var(--signal);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, transparent);
+  border-radius: var(--radius-control);
+  color: var(--btn-attention-fg, var(--pastel-ink));
+  background: var(--btn-attention-bg, var(--pastel-peach));
   box-shadow: none;
   transition:
     background-color 120ms var(--motion-ease-reveal),
@@ -190,9 +226,9 @@
 
 .cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible),
 .back-to-top.cta-attention-pill:is(:hover, :focus-visible) {
-  background: color-mix(in srgb, var(--signal) 88%, var(--ink));
-  border-color: color-mix(in srgb, var(--signal) 88%, var(--ink));
-  color: var(--signal-ink);
+  background: color-mix(in srgb, var(--btn-attention-bg, var(--pastel-peach)) 82%, var(--pastel-ink));
+  border-color: color-mix(in srgb, var(--pastel-ink) 32%, transparent);
+  color: var(--btn-attention-fg, var(--pastel-ink));
 }
 
 .cta-button.btn-attention.cta-attention-pill:active {
@@ -238,6 +274,8 @@
   /* Swiss: sharp corners. Keep tokens as 0 so existing .radius usage flattens automatically. */
   --radius-card: 0;
   --radius-inner: 0;
+  /* Nav + attention CTAs — same cornering as .nav-link / active home */
+  --radius-control: 0.35rem;
   /* Fixed header: align layout top padding, anchor scroll-margin, skip-link, and JS hash offset */
   --layout-header-clearance: 6rem;
   --scroll-anchor-offset: 6.5rem;
@@ -262,6 +300,25 @@
 
 :root.dark *:focus-visible {
   outline-color: var(--emphasis-soft);
+}
+
+/* Calmer focus on pills / tag chips / CTAs (dark): coral-tinged ring vs plain emphasis */
+:root.dark .filter-pill:focus-visible,
+:root.dark .tag-chip:focus-visible,
+:root.dark .cta-button.btn-attention.cta-attention-pill:focus-visible,
+:root.dark .back-to-top.cta-attention-pill:focus-visible {
+  outline-color: color-mix(in srgb, var(--signal) 45%, var(--ink));
+}
+
+/* Pastel-ink-based hairlines — bump alpha in dark so borders stay visible on fills */
+:root.dark .cta-button.btn-attention.cta-attention-pill,
+:root.dark .back-to-top.cta-attention-pill {
+  border-color: color-mix(in srgb, var(--pastel-ink) 42%, transparent);
+}
+
+:root.dark .cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible),
+:root.dark .back-to-top.cta-attention-pill:is(:hover, :focus-visible) {
+  border-color: color-mix(in srgb, var(--pastel-ink) 52%, transparent);
 }
 
 .skip-link {
@@ -289,7 +346,62 @@
 }
 
 section[id] {
+  position: relative;
   scroll-margin-top: var(--scroll-anchor-offset);
+}
+
+@keyframes section-arrival-lift {
+  /* Opacity + ring only — avoids fighting `.reveal-on-scroll` transform transitions. */
+  0% {
+    opacity: 0.82;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+
+  42% {
+    opacity: 1;
+    box-shadow:
+      0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent),
+      0 0 2.25rem color-mix(in srgb, var(--accent) 12%, transparent);
+  }
+
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 transparent;
+  }
+}
+
+@keyframes section-arrival-wash {
+  0% {
+    opacity: 0;
+    transform: scaleY(0.92);
+  }
+
+  30% {
+    opacity: 0.2;
+  }
+
+  100% {
+    opacity: 0;
+    transform: scaleY(1);
+  }
+}
+
+section[id].section-arrival {
+  animation: section-arrival-lift 620ms cubic-bezier(0.18, 0.84, 0.22, 1) both;
+}
+
+section[id].section-arrival::after {
+  content: '';
+  position: absolute;
+  inset: -0.35rem 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--accent) 16%, transparent) 0%,
+    color-mix(in srgb, var(--accent) 9%, transparent) 50%,
+    transparent 100%
+  );
+  animation: section-arrival-wash 620ms cubic-bezier(0.18, 0.84, 0.22, 1) both;
 }
 
 .layout-header-pad {
@@ -309,7 +421,8 @@ section[id] {
 }
 
 html {
-  scroll-behavior: smooth;
+  /* JS handles cinematic section navigation; avoid double-smoothing. */
+  scroll-behavior: auto;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior: contain;
   overflow-x: clip;
@@ -526,6 +639,10 @@ pre,
   overflow-anchor: none;
 }
 
+.page-content--home {
+  gap: clamp(var(--space-md), 2.2vw, var(--space-lg));
+}
+
 .page-section {
   padding: var(--space-md) 0;
 }
@@ -638,20 +755,31 @@ pre,
 /* ── Pill / tag tokens (single source of truth) ── */
 .pill,
 .filter-pill {
-  font-family: var(--font-mono);
   display: inline-block;
   border-radius: 9999px;
   padding: 0.35rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
   white-space: nowrap;
-  color: var(--fg-secondary);
-  background: var(--bg-primary);
+  color: var(--pastel-ink);
 }
 
-/* Read-only tags: quieter chrome so filter pills own the "interactive" visual weight */
+/* Read-only mono labels keep uppercase styling */
+.pill {
+  background: var(--pastel-mint);
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Interactive filter pills: quieter, sans, sentence-case */
+.filter-pill {
+  font-family: var(--font-sans);
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+/* Read-only tags: neutral surface + black ink (matches filter pills) */
 .tag-chip {
   font-family: var(--font-sans);
   display: inline-block;
@@ -662,24 +790,24 @@ pre,
   letter-spacing: 0;
   text-transform: none;
   white-space: nowrap;
-  color: var(--fg-muted);
-  background-color: color-mix(in srgb, var(--surface-interactive) 55%, transparent);
-  border: 1px solid color-mix(in srgb, var(--fg-muted) 22%, transparent);
+  color: var(--pastel-ink);
+  background-color: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 16%, transparent);
 }
 
 :root.dark .tag-chip {
-  background-color: color-mix(in srgb, var(--surface-interactive) 45%, transparent);
-  border-color: color-mix(in srgb, var(--fg-muted) 28%, transparent);
+  background-color: var(--paper-sunk);
+  border-color: color-mix(in srgb, var(--pastel-ink) 36%, transparent);
 }
 
-/* Interactive variant (filter buttons) */
+/* Interactive variant (filter buttons) — neutral surface, matches page paper */
 .filter-pill {
   cursor: pointer;
   font-weight: 500;
-  color: color-mix(in srgb, var(--fg-primary) 88%, var(--fg-secondary) 12%);
-  background-color: var(--surface-interactive);
-  border: 1px solid color-mix(in srgb, var(--fg-muted) 18%, transparent);
-  box-shadow: var(--shadow-sm);
+  color: var(--pastel-ink);
+  background-color: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 16%, transparent);
+  box-shadow: none;
   transition:
     background-color 180ms var(--motion-ease-reveal),
     color 150ms ease,
@@ -691,32 +819,36 @@ pre,
 }
 
 :root.dark .filter-pill {
-  background-color: var(--surface-interactive);
+  background-color: var(--paper-sunk);
+  border-color: color-mix(in srgb, var(--pastel-ink) 36%, transparent);
 }
 
 .filter-pill:hover {
-  color: var(--fg-primary);
-  background-color: color-mix(in srgb, var(--fg-primary) 6%, var(--surface-interactive));
+  color: var(--pastel-ink);
+  background-color: color-mix(in srgb, var(--pastel-ink) 6%, var(--paper));
 }
 
 :root.dark .filter-pill:hover {
-  background-color: color-mix(in srgb, white 8%, var(--surface-interactive));
+  background-color: color-mix(in srgb, var(--pastel-ink) 10%, var(--paper-sunk));
 }
 
 .filter-pill-active,
 .filter-pill--active {
-  background-color: var(--surface-interactive);
-  color: var(--fg-primary);
-  font-weight: 500;
+  color: var(--pastel-ink);
+  font-weight: 600;
+  background-color: var(--paper);
   transform: none;
   box-shadow:
     var(--shadow-sm),
-    0 0 0 1px var(--accent);
+    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 35%, transparent);
 }
 
 :root.dark .filter-pill-active,
 :root.dark .filter-pill--active {
-  background-color: var(--surface-interactive);
+  background-color: color-mix(in srgb, var(--ink) 6%, var(--paper-sunk));
+  box-shadow:
+    var(--shadow-sm),
+    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 55%, transparent);
 }
 
 .section-header {
@@ -747,18 +879,34 @@ pre,
 }
 
 .card-surface {
-  background: var(--bg-primary);
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: var(--pastel-ink-muted);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
+  background: var(--pastel-peach);
+  color: var(--pastel-ink);
   border-radius: var(--radius-card);
-  border: var(--card-border);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 14%, transparent);
   box-shadow: var(--card-ring), var(--shadow-sm);
+}
+
+.card-surface .text-muted,
+.card-surface .muted {
+  color: var(--pastel-ink-muted);
+}
+
+:root.dark .card-surface {
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 36%, transparent);
+  box-shadow: var(--card-ring), var(--project-card-shadow-idle);
 }
 
 /* Reusable project/work card primitives */
 .work-media-frame {
-  background:
-    linear-gradient(170deg, color-mix(in srgb, var(--accent) 8%, transparent), transparent 45%),
-    var(--bg-secondary);
-  border-bottom: 1px solid color-mix(in srgb, var(--rule) 70%, transparent);
+  background: var(--project-card-surface, var(--pastel-mint));
+  border-bottom: 1px solid color-mix(in srgb, var(--pastel-ink) 12%, transparent);
+}
+
+:root.dark .work-media-frame {
+  border-bottom-color: color-mix(in srgb, var(--pastel-ink) 30%, transparent);
 }
 
 .page-enter-active,
@@ -822,6 +970,15 @@ pre,
     opacity: 1;
     transform: none;
     transition: none;
+  }
+
+  section[id].section-arrival {
+    animation: none;
+  }
+
+  section[id].section-arrival::after {
+    animation: none;
+    opacity: 0;
   }
 
   .btn-attention {

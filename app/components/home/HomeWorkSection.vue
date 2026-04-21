@@ -40,7 +40,13 @@ const filterAnnouncement = computed(() => {
 </script>
 
 <template>
-  <RevealOnScroll id="work" :delay="80" class="page-section work-section-outer">
+  <RevealOnScroll
+    id="work"
+    :delay="80"
+    :threshold="0.06"
+    root-margin="0px 0px 0px 0px"
+    class="page-section work-section-outer"
+  >
     <p id="work-filter-status" class="sr-only" aria-live="polite">
       {{ filterAnnouncement }}
     </p>
@@ -48,7 +54,6 @@ const filterAnnouncement = computed(() => {
     <div class="work-grid grid-12">
       <div class="work-marker">
         <span class="section-marker">
-          <span class="section-marker-num">01</span>
           <span class="section-marker-word">Work</span>
         </span>
       </div>
@@ -128,14 +133,15 @@ const filterAnnouncement = computed(() => {
 
 <style scoped>
 .work-section-outer {
-  padding-top: clamp(4rem, 8vw, 7rem);
+  --signal: var(--signal-mint);
+  padding-top: clamp(1.75rem, 4.5vw, 3.5rem);
   padding-bottom: clamp(4rem, 8vw, 7rem);
 }
 
 .work-grid {
   row-gap: clamp(1.25rem, 2.5vw, 2rem);
   align-items: start;
-  padding-top: clamp(1.25rem, 2.5vw, 2rem);
+  padding-top: clamp(0.85rem, 1.8vw, 1.25rem);
 }
 
 .work-marker {
@@ -184,6 +190,42 @@ const filterAnnouncement = computed(() => {
   display: grid;
   grid-template-columns: repeat(1, minmax(0, 1fr));
   gap: clamp(0.9rem, 1.6vw, 1.2rem);
+}
+
+.work-list :deep(.project-card) {
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: var(--pastel-ink-muted);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
+}
+
+.work-list :deep(.project-card:nth-child(4n + 1)) {
+  --project-card-surface: var(--pastel-peach);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 86%, var(--pastel-ink));
+}
+
+.work-list :deep(.project-card:nth-child(4n + 2)) {
+  --project-card-surface: var(--pastel-mint);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-mint) 86%, var(--pastel-ink));
+}
+
+.work-list :deep(.project-card:nth-child(4n + 3)) {
+  --project-card-surface: var(--pastel-sky);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-sky) 86%, var(--pastel-ink));
+}
+
+.work-list :deep(.project-card:nth-child(4n + 4)) {
+  --project-card-surface: var(--pastel-blush);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-blush) 86%, var(--pastel-ink));
+}
+
+.work-list :deep(.project-card:hover .project-card__title),
+.work-list :deep(.project-card-link:focus-visible .project-card__title) {
+  color: var(--pastel-ink);
+}
+
+.work-list :deep(.project-card:hover .project-card__cta),
+.work-list :deep(.project-card-link:focus-visible .project-card__cta) {
+  color: var(--pastel-ink);
 }
 
 @media (min-width: 700px) {

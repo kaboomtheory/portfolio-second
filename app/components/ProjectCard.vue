@@ -31,22 +31,25 @@ const accentStyle = computed<CSSProperties>(() => {
       class="project-card-link"
     >
       <div class="project-card__media work-media-frame">
-        <img
+        <SanityImage
           v-if="hasThumbnail"
           :src="project.thumbnail"
           :alt="project.name"
+          sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw"
           loading="lazy"
           decoding="async"
           class="project-card__image"
-        >
+        />
         <div v-else class="project-card__media-fallback">
           <Icon icon="lucide:image-off" class="project-card__media-fallback-icon" aria-hidden="true" />
           <span class="project-card__media-fallback-copy">Preview coming soon</span>
         </div>
-        <span class="project-card__media-scrim" aria-hidden="true" />
-        <div class="project-card__media-meta" aria-hidden="true">
-          <span v-if="projectIndexLabel" class="project-card__index">{{ projectIndexLabel }}</span>
-          <span class="project-card__media-hint">Case Study</span>
+        <div
+          v-if="projectIndexLabel"
+          class="project-card__media-meta"
+          aria-hidden="true"
+        >
+          <span class="project-card__index">{{ projectIndexLabel }}</span>
         </div>
       </div>
 
@@ -91,7 +94,7 @@ const accentStyle = computed<CSSProperties>(() => {
   color: inherit;
   background: var(--project-card-surface, var(--bg-primary));
   border: 1px solid var(--project-card-border, color-mix(in srgb, var(--rule) 58%, transparent));
-  border-radius: calc(var(--radius-card) + 0.25rem);
+  border-radius: var(--radius-card);
   box-shadow: var(--project-card-shadow-idle, var(--shadow-sm));
   transition:
     background-color 240ms ease,
@@ -118,7 +121,7 @@ const accentStyle = computed<CSSProperties>(() => {
 
 .project-card__media {
   position: relative;
-  aspect-ratio: 5 / 3.8;
+  aspect-ratio: 3 / 2;
   overflow: hidden;
   isolation: isolate;
 }
@@ -144,35 +147,21 @@ const accentStyle = computed<CSSProperties>(() => {
   color: var(--fg-muted);
   background:
     radial-gradient(circle at 22% 24%, color-mix(in srgb, var(--project-accent, var(--accent)) 16%, transparent), transparent 40%),
-    linear-gradient(140deg, var(--bg-secondary), var(--bg-primary));
-}
-
-.project-card__media-scrim {
-  position: absolute;
-  inset: auto 0 0;
-  height: 46%;
-  background: linear-gradient(
-    180deg,
-    transparent 0%,
-    color-mix(in srgb, var(--project-accent, var(--accent)) 13%, transparent) 52%,
-    color-mix(in srgb, var(--bg-primary) 90%, transparent) 100%
-  );
-  z-index: 1;
-  pointer-events: none;
+    linear-gradient(
+      140deg,
+      var(--project-card-surface, var(--pastel-peach)),
+      color-mix(in srgb, var(--project-card-surface, var(--pastel-peach)) 88%, var(--bg-primary))
+    );
 }
 
 .project-card__media-meta {
   position: absolute;
-  inset: 0.72rem 0.72rem auto;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem;
+  top: 0.72rem;
+  left: 0.72rem;
+  z-index: 1;
 }
 
-.project-card__index,
-.project-card__media-hint {
+.project-card__index {
   display: inline-flex;
   align-items: center;
   padding: 0.26rem 0.52rem;
@@ -186,10 +175,6 @@ const accentStyle = computed<CSSProperties>(() => {
   color: color-mix(in srgb, var(--fg-primary) 88%, var(--fg-muted));
   background: color-mix(in srgb, var(--bg-primary) 78%, transparent);
   border: 1px solid color-mix(in srgb, var(--fg-muted) 30%, transparent);
-}
-
-.project-card__media-hint {
-  margin-left: auto;
 }
 
 .project-card__media-fallback-icon {
@@ -258,7 +243,7 @@ const accentStyle = computed<CSSProperties>(() => {
   line-height: 1.2;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--project-accent, var(--accent)) 82%, var(--fg-primary));
+  color: var(--fg-primary);
   transition: color 220ms ease;
 }
 
@@ -275,7 +260,7 @@ const accentStyle = computed<CSSProperties>(() => {
 }
 
 .project-card:hover .project-card__cta {
-  color: var(--project-accent, var(--accent));
+  color: var(--fg-primary);
 }
 
 .project-card:hover .project-card__cta-icon,

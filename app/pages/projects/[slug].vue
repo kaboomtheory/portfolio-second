@@ -89,8 +89,86 @@ watchEffect(() => {
   }
 })
 
-useHead({
+const { siteUrl, siteDescription } = useRuntimeConfig().public
+
+const defaultOgImage = `${String(siteUrl).replace(/\/$/, '')}/og-default.png`
+
+const projectCanonicalUrl = computed(() =>
+  `${String(siteUrl).replace(/\/$/, '')}/projects/${slug.value}`,
+)
+
+const pageDescription = computed(() => {
+  const s = project.value?.summary?.trim()
+  return s || String(siteDescription)
+})
+
+const pageOgImage = computed(() => {
+  const t = project.value?.thumbnail?.trim()
+  if (!t) return defaultOgImage
+  return t.startsWith('http') ? t : `${String(siteUrl).replace(/\/$/, '')}${t}`
+})
+
+const creativeWorkJsonLd = computed(() => {
+  const p = project.value
+  if (!p) return null
+  const base = String(siteUrl).replace(/\/$/, '')
+  const thumb = p.thumbnail?.trim()
+  const imageUrl = thumb
+    ? (thumb.startsWith('http') ? thumb : `${base}${thumb}`)
+    : defaultOgImage
+  const desc = p.summary?.trim() || String(siteDescription)
+  const work: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'CreativeWork',
+    name: p.name,
+    description: desc,
+    image: imageUrl,
+    url: `${base}/projects/${slug.value}`,
+    author: {
+      '@type': 'Person',
+      name: 'Bryan X. Mendez',
+      url: `${base}/`,
+    },
+  }
+  if (p.tags?.length) {
+    work.keywords = p.tags.join(', ')
+  }
+  if (p.client?.trim()) {
+    work.publisher = {
+      '@type': 'Organization',
+      name: p.client.trim(),
+    }
+  }
+  return work
+})
+
+useSeoMeta({
   title: () => project.value?.name || 'Project',
+  description: () => pageDescription.value,
+  ogTitle: () => (project.value?.name ? `${project.value.name} — Bryan X. Mendez` : 'Bryan X. Mendez'),
+  ogDescription: () => pageDescription.value,
+  ogUrl: () => projectCanonicalUrl.value,
+  ogImage: () => pageOgImage.value,
+  twitterCard: 'summary_large_image',
+  twitterTitle: () => (project.value?.name ? `${project.value.name} — Bryan X. Mendez` : 'Bryan X. Mendez'),
+  twitterDescription: () => pageDescription.value,
+  twitterImage: () => pageOgImage.value,
+})
+
+useHead(() => {
+  const json = creativeWorkJsonLd.value
+  return {
+    link: [{ rel: 'canonical', href: projectCanonicalUrl.value }],
+    script: json
+      ? [
+          {
+            key: 'ldjson-creative-work',
+            type: 'application/ld+json',
+            children: JSON.stringify(json),
+          },
+        ]
+      : [],
+  }
 })
 
 /** Upper bound for scroll-reveal slots (Sanity sections vary). */
@@ -131,7 +209,7 @@ function isMediaSection(section: ProjectStorySection): boolean {
       <div class="mt-10 aspect-[4/3] max-w-4xl rounded-xl bg-[var(--bg-tertiary)]" />
     </div>
   </div>
-  <div v-else-if="project" class="page-content">
+  <div v-else-if="project" class="page-content project-detail-page">
     <section class="page-section">
       <NuxtLink
         to="/#work"
@@ -336,6 +414,10 @@ function isMediaSection(section: ProjectStorySection): boolean {
 </template>
 
 <style scoped>
+.project-detail-page {
+  --signal: var(--signal-peach);
+}
+
 .back-link {
   color: var(--fg-muted);
 }

@@ -17,7 +17,6 @@ defineProps<{
     <div class="resume-grid grid-12">
       <div class="resume-marker">
         <span class="section-marker">
-          <span class="section-marker-num">03</span>
           <span class="section-marker-word">Experience</span>
         </span>
       </div>
@@ -38,13 +37,17 @@ defineProps<{
               :key="`${item.company}-${item.year}-${index}`"
               class="experience-row"
             >
-              <img
+              <SanityImage
                 v-if="item.image"
                 :src="item.image"
                 :alt="item.company"
+                width="48"
+                height="48"
+                sizes="48px"
                 loading="lazy"
+                decoding="async"
                 class="experience-logo"
-              >
+              />
               <div class="experience-copy">
                 <p class="experience-meta">
                   <span class="experience-company">{{ item.company }}</span>
@@ -94,6 +97,14 @@ defineProps<{
 
 <style scoped>
 .resume-section-outer {
+  --signal: var(--signal-mint);
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: var(--pastel-ink-muted);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
+  --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
+  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, transparent);
+  --btn-attention-bg: var(--pastel-blush);
+  background-color: var(--pastel-mint);
   padding-top: clamp(4rem, 8vw, 7rem);
   padding-bottom: clamp(4rem, 8vw, 7rem);
 }

@@ -42,7 +42,21 @@ async function submit() {
   }
 }
 
-useHead({ title: 'Password Protected Project' })
+const { siteUrl } = useRuntimeConfig().public
+
+const passwordCanonicalUrl = computed(() => {
+  const path = route.path.startsWith('/password') ? route.path : '/password'
+  return `${String(siteUrl).replace(/\/$/, '')}${path}`
+})
+
+useHead(() => ({
+  title: 'Password Protected Project',
+  link: [{ rel: 'canonical', href: passwordCanonicalUrl.value }],
+}))
+
+useSeoMeta({
+  robots: 'noindex, nofollow',
+})
 </script>
 
 <template>
@@ -83,7 +97,11 @@ useHead({ title: 'Password Protected Project' })
         <button
           type="submit"
           class="rounded-md px-4 py-2 text-xs uppercase tracking-[0.08em]"
-          :style="{ backgroundColor: 'var(--bg-tertiary)' }"
+          :style="{
+            backgroundColor: 'var(--pastel-mint)',
+            color: 'var(--pastel-ink)',
+            border: '1px solid color-mix(in srgb, var(--pastel-ink) 18%, transparent)',
+          }"
           :disabled="submitting"
         >
           {{ submitting ? 'Checking…' : 'Let me in' }}

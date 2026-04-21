@@ -45,7 +45,7 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   right: max(1rem, env(safe-area-inset-right, 0px));
   bottom: max(1rem, env(safe-area-inset-bottom, 0px));
   z-index: 40;
-  border-radius: 0;
+  border-radius: var(--radius-control, 0.35rem);
   cursor: pointer;
 }
 

@@ -31,7 +31,6 @@ const emailAddress = computed(() => {
     <div class="closing-grid grid-12">
       <div class="closing-marker">
         <span class="section-marker">
-          <span class="section-marker-num">04</span>
           <span class="section-marker-word">Contact</span>
         </span>
       </div>
@@ -74,6 +73,13 @@ const emailAddress = computed(() => {
 
 <style scoped>
 .closing-cta-section {
+  --signal: var(--signal-mint);
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: var(--pastel-ink-muted);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
+  --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
+  --btn-attention-bg: var(--pastel-sky);
+  background-color: var(--pastel-blush);
   padding-top: clamp(4rem, 8vw, 7rem);
   padding-bottom: clamp(4rem, 8vw, 7rem);
 }

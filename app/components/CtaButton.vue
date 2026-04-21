@@ -144,14 +144,14 @@ const inlineStyle = computed(() => {
   overflow: hidden;
 }
 
-/* Swiss flat pill: square, mono label, hairline border */
+/* Swiss flat pill: mono label, hairline border — corners match .nav-link */
 .cta-button {
   font-family: var(--font-mono);
-  border-radius: 0;
+  border-radius: var(--radius-control, 0.35rem);
 }
 
 .cta-button--pill:not(.btn-attention) {
-  border-radius: 0;
+  border-radius: var(--radius-control, 0.35rem);
   padding: 0.65rem 1.4rem;
   font-size: 0.75rem;
   line-height: 1.2;
@@ -170,7 +170,7 @@ const inlineStyle = computed(() => {
 }
 
 .btn-attention .cta-attention-dot {
-  background: color-mix(in srgb, var(--signal-ink) 70%, transparent);
+  background: color-mix(in srgb, var(--pastel-ink) 42%, transparent);
 }
 
 .cta-button-secondary {
