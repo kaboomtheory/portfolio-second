@@ -271,11 +271,13 @@
   /* 64px */
   /* Vertical rhythm between stacked page sections (home, long pages) */
   --page-content-gap: clamp(var(--space-lg), 3vw, var(--space-xl));
+  /* Homepage section rhythm: single source for section-to-section balance */
+  --home-section-gap: clamp(2.5rem, 6vw, 4.5rem);
   /* Swiss: sharp corners. Keep tokens as 0 so existing .radius usage flattens automatically. */
   --radius-card: 0;
   --radius-inner: 0;
   /* Nav + attention CTAs — same cornering as .nav-link / active home */
-  --radius-control: 0.35rem;
+  --radius-control: 0;
   /* Fixed header: align layout top padding, anchor scroll-margin, skip-link, and JS hash offset */
   --layout-header-clearance: 6rem;
   --scroll-anchor-offset: 6.5rem;
@@ -408,6 +410,16 @@ section[id].section-arrival::after {
   padding-top: var(--layout-header-clearance);
 }
 
+/* Homepage: fill clearance under fixed nav so no white strip above dark hero */
+.layout-header-pad:has(main .page-content--home) {
+  background-image: linear-gradient(
+    to bottom,
+    #0e1e1d 0,
+    #0e1e1d var(--layout-header-clearance),
+    transparent var(--layout-header-clearance)
+  );
+}
+
 .sr-only {
   position: absolute;
   width: 1px;
@@ -428,6 +440,11 @@ html {
   overflow-x: clip;
   scrollbar-gutter: stable;
   background-color: var(--shell-ui-bg, #f6f4f0);
+}
+
+/* Homepage hero: match shell gutter + status bar to hero green */
+html.home-landing {
+  background-color: #0e1e1d;
 }
 
 html.lenis,
@@ -640,7 +657,12 @@ pre,
 }
 
 .page-content--home {
-  gap: clamp(var(--space-md), 2.2vw, var(--space-lg));
+  gap: var(--home-section-gap);
+}
+
+.page-content--home > section {
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .page-section {
@@ -779,25 +801,20 @@ pre,
   text-transform: none;
 }
 
-/* Read-only tags: neutral surface + black ink (matches filter pills) */
+/* Read-only tags: aligned with capability-tag treatment */
 .tag-chip {
-  font-family: var(--font-sans);
+  font-family: var(--font-mono);
   display: inline-block;
   border-radius: 9999px;
-  padding: 0.3rem 0.65rem;
-  font-size: 0.6875rem;
+  padding: 0.35rem 0.65rem;
+  font-size: var(--label-size);
   font-weight: 500;
-  letter-spacing: 0;
-  text-transform: none;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   white-space: nowrap;
-  color: var(--pastel-ink);
-  background-color: var(--paper);
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 16%, transparent);
-}
-
-:root.dark .tag-chip {
-  background-color: var(--paper-sunk);
-  border-color: color-mix(in srgb, var(--pastel-ink) 36%, transparent);
+  color: var(--fg-secondary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--rule-soft);
 }
 
 /* Interactive variant (filter buttons) — neutral surface, matches page paper */
@@ -984,4 +1001,31 @@ pre,
   .btn-attention {
     animation: none;
   }
+}
+
+/* Global square-corner mode */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}
+
+/* Global borderless box mode */
+:where(
+  section,
+  article,
+  aside,
+  div,
+  figure,
+  img,
+  ul,
+  ol,
+  li,
+  button,
+  a,
+  input,
+  textarea,
+  select
+) {
+  border: none !important;
 }

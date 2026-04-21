@@ -13,6 +13,7 @@ const projectHref = computed(() => `/projects/${props.project.slug}`)
 const hasThumbnail = computed(() => Boolean(props.project.thumbnail))
 const visibleTags = computed(() => (props.project.tags ?? []).slice(0, 4))
 const summaryText = computed(() => props.project.summary?.trim())
+const clientLine = computed(() => props.project.client?.trim() ?? '')
 const projectIndexLabel = computed(() => {
   if (!props.projectIndex || props.projectIndex < 1) return null
   return String(props.projectIndex).padStart(2, '0')
@@ -30,30 +31,13 @@ const accentStyle = computed<CSSProperties>(() => {
       :to="projectHref"
       class="project-card-link"
     >
-      <div class="project-card__media work-media-frame">
-        <SanityImage
-          v-if="hasThumbnail"
-          :src="project.thumbnail"
-          :alt="project.name"
-          sizes="(max-width: 640px) 100vw, (max-width: 1100px) 50vw, 33vw"
-          loading="lazy"
-          decoding="async"
-          class="project-card__image"
-        />
-        <div v-else class="project-card__media-fallback">
-          <Icon icon="lucide:image-off" class="project-card__media-fallback-icon" aria-hidden="true" />
-          <span class="project-card__media-fallback-copy">Preview coming soon</span>
-        </div>
-        <div
-          v-if="projectIndexLabel"
-          class="project-card__media-meta"
-          aria-hidden="true"
-        >
-          <span class="project-card__index">{{ projectIndexLabel }}</span>
-        </div>
-      </div>
-
       <div class="project-card__body">
+        <p
+          v-if="clientLine"
+          class="project-card__client"
+        >
+          {{ clientLine }}
+        </p>
         <h3 class="project-card__title">
           {{ project.name }}
         </h3>
@@ -74,6 +58,29 @@ const accentStyle = computed<CSSProperties>(() => {
           <Icon icon="lucide:arrow-up-right" class="project-card__cta-icon" />
         </span>
       </div>
+
+      <div class="project-card__media work-media-frame">
+        <SanityImage
+          v-if="hasThumbnail"
+          :src="project.thumbnail"
+          :alt="project.name"
+          sizes="(max-width: 719px) 100vw, 50vw"
+          loading="lazy"
+          decoding="async"
+          class="project-card__image"
+        />
+        <div v-else class="project-card__media-fallback">
+          <Icon icon="lucide:image-off" class="project-card__media-fallback-icon" aria-hidden="true" />
+          <span class="project-card__media-fallback-copy">Preview coming soon</span>
+        </div>
+        <div
+          v-if="projectIndexLabel"
+          class="project-card__media-meta"
+          aria-hidden="true"
+        >
+          <span class="project-card__index">{{ projectIndexLabel }}</span>
+        </div>
+      </div>
     </NuxtLink>
   </div>
 </template>
@@ -82,19 +89,22 @@ const accentStyle = computed<CSSProperties>(() => {
 .project-card {
   position: relative;
   transform: translateY(0);
+  /* Same crop frame for every project thumbnail (desktop + mobile). */
+  --project-card-media-aspect: 16 / 10;
 }
 
 .project-card-link {
   display: flex;
   flex-direction: column;
+  align-items: stretch;
   height: 100%;
   min-height: 100%;
   overflow: hidden;
   text-decoration: none;
   color: inherit;
-  background: var(--project-card-surface, var(--bg-primary));
+  background: var(--bg-primary);
   border: 1px solid var(--project-card-border, color-mix(in srgb, var(--rule) 58%, transparent));
-  border-radius: var(--radius-card);
+  border-radius: 0.5rem;
   box-shadow: var(--project-card-shadow-idle, var(--shadow-sm));
   transition:
     background-color 240ms ease,
@@ -104,10 +114,16 @@ const accentStyle = computed<CSSProperties>(() => {
 }
 
 .project-card-link:hover {
-  background: var(--project-card-surface-hover, color-mix(in srgb, var(--bg-primary) 84%, var(--bg-secondary)));
   border-color: color-mix(in srgb, var(--project-accent, var(--accent)) 42%, var(--rule));
   box-shadow: var(--project-card-shadow-hover, var(--shadow-md));
   transform: translateY(-3px);
+}
+
+.project-card-link:hover .project-card__body {
+  background: var(
+    --project-card-surface-hover,
+    color-mix(in srgb, var(--project-card-surface, var(--bg-secondary)) 86%, var(--bg-primary))
+  );
 }
 
 .project-card-link:focus-visible {
@@ -119,11 +135,59 @@ const accentStyle = computed<CSSProperties>(() => {
   text-decoration: none;
 }
 
+.project-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.78rem;
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 0;
+  padding: 1.05rem 1rem 0.95rem;
+  background: var(--project-card-surface, var(--bg-secondary));
+  border-bottom: 1px solid color-mix(in srgb, var(--pastel-ink) 10%, transparent);
+  transition: background-color 240ms ease;
+}
+
+:root.dark .project-card__body {
+  border-bottom-color: color-mix(in srgb, var(--pastel-ink) 22%, transparent);
+}
+
+.project-card__client {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.35;
+  letter-spacing: 0.02em;
+  color: var(--fg-muted);
+}
+
 .project-card__media {
   position: relative;
-  aspect-ratio: 3 / 2;
+  flex: 0 0 auto;
+  width: 100%;
+  min-width: 0;
+  aspect-ratio: var(--project-card-media-aspect);
   overflow: hidden;
   isolation: isolate;
+  background-color: var(--project-card-media-bg, var(--bg-secondary));
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--fg-muted) 18%, transparent) 0.5px,
+    transparent 0.6px
+  );
+  background-size: 11px 11px;
+  border-bottom: none;
+}
+
+.project-card__media.work-media-frame {
+  border-bottom: none;
+}
+
+:root.dark .project-card__media {
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--fg-muted) 30%, transparent) 0.5px,
+    transparent 0.6px
+  );
 }
 
 .project-card__image {
@@ -146,11 +210,11 @@ const accentStyle = computed<CSSProperties>(() => {
   gap: 0.4rem;
   color: var(--fg-muted);
   background:
-    radial-gradient(circle at 22% 24%, color-mix(in srgb, var(--project-accent, var(--accent)) 16%, transparent), transparent 40%),
+    radial-gradient(circle at 22% 24%, color-mix(in srgb, var(--project-accent, var(--accent)) 14%, transparent), transparent 42%),
     linear-gradient(
       140deg,
-      var(--project-card-surface, var(--pastel-peach)),
-      color-mix(in srgb, var(--project-card-surface, var(--pastel-peach)) 88%, var(--bg-primary))
+      var(--project-card-media-bg, var(--bg-secondary)),
+      color-mix(in srgb, var(--project-card-media-bg, var(--bg-secondary)) 90%, var(--bg-primary))
     );
 }
 
@@ -187,13 +251,6 @@ const accentStyle = computed<CSSProperties>(() => {
   letter-spacing: 0.04em;
   text-transform: uppercase;
   font-family: var(--font-mono);
-}
-
-.project-card__body {
-  display: flex;
-  flex-direction: column;
-  gap: 0.78rem;
-  padding: 1.05rem 1rem 0.95rem;
 }
 
 .project-card__title {
@@ -268,6 +325,35 @@ const accentStyle = computed<CSSProperties>(() => {
   transform: translate3d(2px, -1px, 0);
 }
 
+@media (min-width: 720px) {
+  .project-card-link {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .project-card__body {
+    flex: 1 1 50%;
+    align-self: stretch;
+    padding: clamp(1.1rem, 2vw, 1.55rem) clamp(1rem, 2vw, 1.35rem);
+    border-bottom: none;
+  }
+
+  .project-card__title {
+    font-size: clamp(1.15rem, 1.1vw + 0.82rem, 1.45rem);
+  }
+
+  .project-card__media {
+    flex: 1 1 50%;
+    align-self: center;
+    aspect-ratio: var(--project-card-media-aspect);
+    border-left: 1px solid color-mix(in srgb, var(--pastel-ink) 12%, transparent);
+  }
+
+  :root.dark .project-card__media {
+    border-left-color: color-mix(in srgb, var(--pastel-ink) 28%, transparent);
+  }
+}
+
 @media (max-width: 520px) {
   .project-card__body {
     padding: 0.92rem 0.86rem 0.85rem;
@@ -276,6 +362,7 @@ const accentStyle = computed<CSSProperties>(() => {
 
 @media (prefers-reduced-motion: reduce) {
   .project-card-link,
+  .project-card__body,
   .project-card__image,
   .project-card__title,
   .project-card__cta,

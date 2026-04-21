@@ -13,11 +13,10 @@ defineProps<{
 
 <template>
   <RevealOnScroll :delay="240" class="resume-section-outer">
-    <hr class="section-rule" aria-hidden="true">
     <div class="resume-grid grid-12">
       <div class="resume-marker">
         <span class="section-marker">
-          <span class="section-marker-word">Experience</span>
+          <span class="section-marker-word">Background</span>
         </span>
       </div>
 
@@ -104,15 +103,15 @@ defineProps<{
   --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
   --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, transparent);
   --btn-attention-bg: var(--pastel-blush);
-  background-color: var(--pastel-mint);
-  padding-top: clamp(4rem, 8vw, 7rem);
-  padding-bottom: clamp(4rem, 8vw, 7rem);
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .resume-grid {
   row-gap: clamp(1.5rem, 3vw, 2.5rem);
   align-items: start;
-  padding-top: clamp(1.25rem, 2.5vw, 2rem);
+  padding-top: clamp(1.25rem, 3vw, 2.5rem);
+  padding-bottom: clamp(1.25rem, 3vw, 2.5rem);
 }
 
 .resume-marker {
@@ -200,7 +199,7 @@ defineProps<{
   height: 48px;
   object-fit: contain;
   padding: 4px;
-  background: var(--bg-secondary);
+  background: #fff;
   border: 1px solid var(--rule-soft);
   align-self: start;
   position: relative;

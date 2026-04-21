@@ -13,7 +13,6 @@ defineProps<{
 
 <template>
   <RevealOnScroll id="story" :delay="160" class="story-section-outer content-flow">
-    <hr class="section-rule" aria-hidden="true">
     <div class="story-grid grid-12">
       <div class="story-marker">
         <div class="story-marker-sticky">
@@ -78,14 +77,14 @@ defineProps<{
   --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
   --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, transparent);
   --btn-attention-bg: var(--pastel-sky);
-  padding-top: clamp(4rem, 8vw, 7rem);
-  padding-bottom: clamp(4rem, 8vw, 7rem);
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .story-grid {
   row-gap: clamp(2rem, 4vw, 3rem);
   align-items: start;
-  padding-top: clamp(1.25rem, 2.5vw, 2rem);
+  padding-top: 0;
 }
 
 .story-marker {
@@ -101,7 +100,6 @@ defineProps<{
 }
 
 .story-body-prose {
-  background-color: var(--pastel-peach);
   padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.25rem, 3vw, 2rem);
   display: flex;
   flex-direction: column;
@@ -139,9 +137,10 @@ defineProps<{
 }
 
 @media (min-width: 1024px) {
-  .story-marker-sticky {
+  .story-marker {
     position: sticky;
     top: 6.5rem;
+    align-self: start;
   }
 }
 

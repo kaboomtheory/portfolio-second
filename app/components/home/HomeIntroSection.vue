@@ -88,8 +88,9 @@ const focusRailValue = computed(() => {
 
 <template>
   <RevealOnScroll id="intro" :delay="0" class="page-section home-intro">
-    <div class="intro-grid grid-12">
-      <div class="intro-main">
+    <div class="home-hero-band full-bleed">
+      <div class="intro-grid grid-12">
+        <div class="intro-main">
         <h1 class="hero-title hero-fade-in">
           <span v-if="heroTitleParts.lead" class="hero-title-lead">{{ heroTitleParts.lead }}</span><span class="hero-title-accent">{{ heroTitleParts.accent }}</span>
         </h1>
@@ -127,9 +128,9 @@ const focusRailValue = computed(() => {
             <span class="sr-only">(opens in new tab)</span>
           </a>
         </div>
-      </div>
+        </div>
 
-      <aside class="intro-rail" aria-label="Profile">
+        <aside class="intro-rail" aria-label="Profile">
         <p class="intro-rail-line">
           <span class="intro-rail-key">Role</span>
           <span class="intro-rail-val">{{ roleLabel }}</span>
@@ -153,7 +154,8 @@ const focusRailValue = computed(() => {
           <span class="intro-rail-key">Focus</span>
           <span class="intro-rail-val">{{ focusRailValue }}</span>
         </p>
-      </aside>
+        </aside>
+      </div>
     </div>
   </RevealOnScroll>
 </template>
@@ -167,7 +169,12 @@ const focusRailValue = computed(() => {
   --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
   --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, transparent);
   --btn-attention-bg: var(--pastel-peach);
-  background-color: var(--shell-ui-bg, var(--paper));
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.home-hero-band {
+  background-color: #0e1e1d;
   padding-top: clamp(2rem, 4vw, 3.5rem);
   padding-bottom: clamp(1.5rem, 4vw, 3rem);
 }
@@ -259,7 +266,7 @@ const focusRailValue = computed(() => {
   font-size: var(--text-body-lg);
   font-weight: 400;
   line-height: 1.55;
-  color: var(--fg-secondary);
+  color: color-mix(in srgb, #ffffff 84%, transparent);
   letter-spacing: 0;
   font-family: var(--font-sans);
   max-width: 68ch;
@@ -270,8 +277,8 @@ const focusRailValue = computed(() => {
 }
 
 .hero-tagline-em {
-  font-weight: 500;
-  color: var(--fg-primary);
+  font-weight: 600;
+  color: color-mix(in srgb, #ffffff 94%, transparent);
 }
 
 .hero-cta-row {

@@ -5,10 +5,11 @@ import { useSanityStatus } from '~/composables/useSanityStatus'
 import HomeIntroSection from '~/components/home/HomeIntroSection.vue'
 import HomeWorkSection from '~/components/home/HomeWorkSection.vue'
 import HomeStorySection from '~/components/home/HomeStorySection.vue'
+import HomeExperienceCapabilitiesSection from '~/components/home/HomeExperienceCapabilitiesSection.vue'
 import HomeStatusSection from '~/components/home/HomeStatusSection.vue'
 import HomeContactSection from '~/components/home/HomeContactSection.vue'
 
-const { homeHero, aboutMe: fallbackAboutMe } = useMockContent()
+const { homeHero, aboutMe: fallbackAboutMe, experiences: fallbackExperiences } = useMockContent()
 const { orderedProjects, loading, homePage: cmsHome } = useSanityIndexBundle()
 const { statusItems } = useSanityStatus()
 const { aboutPage } = useSanityAbout()
@@ -44,6 +45,28 @@ const hero = computed(() => {
 const story = computed(() =>
   aboutPage.value?.story?.length ? aboutPage.value.story : fallbackAboutMe.story,
 )
+
+const experienceItems = computed(() =>
+  aboutPage.value?.experiences?.length ? aboutPage.value.experiences : fallbackExperiences,
+)
+
+const capabilities = computed(() => {
+  if (aboutPage.value?.capabilities?.length) return aboutPage.value.capabilities
+  return [
+    ...fallbackAboutMe.skills.flatMap((g) =>
+      g.items.map((name) => ({ name, category: g.category })),
+    ),
+    ...fallbackAboutMe.tools.map((name) => ({ name, category: 'Software' })),
+  ]
+})
+
+const groupedCapabilities = computed(() => {
+  const groups: Record<string, string[]> = {}
+  for (const cap of capabilities.value) {
+    (groups[cap.category] ??= []).push(cap.name)
+  }
+  return Object.entries(groups).map(([category, items]) => ({ category, items }))
+})
 
 const resumeHref = computed(() =>
   aboutPage.value?.resumeUrl || '/Bryan_Mendez_resume_2026-1.pdf',
@@ -156,6 +179,10 @@ useSeoMeta({
       :availability-cta-label="availabilityCtaLabel"
     />
     <HomeStatusSection v-if="tickerList.length" :status-items="tickerList" layout="ticker" />
+    <HomeExperienceCapabilitiesSection
+      :experience-items="experienceItems"
+      :groups="groupedCapabilities"
+    />
     <HomeContactSection :availability-mailto="availabilityMailto" :linkedin-href="linkedinHref" />
   </div>
 </template>

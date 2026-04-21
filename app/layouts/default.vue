@@ -1,4 +1,11 @@
 <script setup lang="ts">
+const route = useRoute()
+
+useHead(() => ({
+  htmlAttrs: {
+    class: route.path === '/' ? 'home-landing' : undefined,
+  },
+}))
 </script>
 
 <template>

@@ -50,7 +50,6 @@ const filterAnnouncement = computed(() => {
     <p id="work-filter-status" class="sr-only" aria-live="polite">
       {{ filterAnnouncement }}
     </p>
-    <hr class="section-rule" aria-hidden="true">
     <div class="work-grid grid-12">
       <div class="work-marker">
         <span class="section-marker">
@@ -134,14 +133,14 @@ const filterAnnouncement = computed(() => {
 <style scoped>
 .work-section-outer {
   --signal: var(--signal-mint);
-  padding-top: clamp(1.75rem, 4.5vw, 3.5rem);
-  padding-bottom: clamp(4rem, 8vw, 7rem);
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .work-grid {
   row-gap: clamp(1.25rem, 2.5vw, 2rem);
   align-items: start;
-  padding-top: clamp(0.85rem, 1.8vw, 1.25rem);
+  padding-top: 0;
 }
 
 .work-marker {
@@ -188,8 +187,8 @@ const filterAnnouncement = computed(() => {
 
 .work-list {
   display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: clamp(0.9rem, 1.6vw, 1.2rem);
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.25rem, 2.2vw, 1.85rem);
 }
 
 .work-list :deep(.project-card) {
@@ -201,21 +200,25 @@ const filterAnnouncement = computed(() => {
 .work-list :deep(.project-card:nth-child(4n + 1)) {
   --project-card-surface: var(--pastel-peach);
   --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 86%, var(--pastel-ink));
+  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-peach) 14%);
 }
 
 .work-list :deep(.project-card:nth-child(4n + 2)) {
   --project-card-surface: var(--pastel-mint);
   --project-card-surface-hover: color-mix(in srgb, var(--pastel-mint) 86%, var(--pastel-ink));
+  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-mint) 14%);
 }
 
 .work-list :deep(.project-card:nth-child(4n + 3)) {
   --project-card-surface: var(--pastel-sky);
   --project-card-surface-hover: color-mix(in srgb, var(--pastel-sky) 86%, var(--pastel-ink));
+  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-sky) 14%);
 }
 
 .work-list :deep(.project-card:nth-child(4n + 4)) {
   --project-card-surface: var(--pastel-blush);
   --project-card-surface-hover: color-mix(in srgb, var(--pastel-blush) 86%, var(--pastel-ink));
+  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-blush) 14%);
 }
 
 .work-list :deep(.project-card:hover .project-card__title),
@@ -226,18 +229,6 @@ const filterAnnouncement = computed(() => {
 .work-list :deep(.project-card:hover .project-card__cta),
 .work-list :deep(.project-card-link:focus-visible .project-card__cta) {
   color: var(--pastel-ink);
-}
-
-@media (min-width: 700px) {
-  .work-list {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1180px) {
-  .work-list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 .grid-fade-enter-active {
@@ -271,12 +262,12 @@ const filterAnnouncement = computed(() => {
 
 .work-skeleton {
   display: grid;
-  grid-template-columns: repeat(1, minmax(0, 1fr));
-  gap: clamp(0.9rem, 1.6vw, 1.2rem);
+  grid-template-columns: minmax(0, 1fr);
+  gap: clamp(1.25rem, 2.2vw, 1.85rem);
 }
 
 .work-skeleton-card {
-  min-height: clamp(14rem, 30vw, 18rem);
+  min-height: clamp(11rem, 26vw, 15rem);
   border: 1px solid var(--rule-soft);
   border-radius: var(--radius-card);
   background: linear-gradient(
@@ -287,18 +278,6 @@ const filterAnnouncement = computed(() => {
   );
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s ease-in-out infinite;
-}
-
-@media (min-width: 700px) {
-  .work-skeleton {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1180px) {
-  .work-skeleton {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
 }
 
 .work-empty {

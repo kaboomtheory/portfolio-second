@@ -27,7 +27,6 @@ const emailAddress = computed(() => {
     class="closing-cta-section content-flow"
     aria-labelledby="closing-cta-heading"
   >
-    <hr class="section-rule" aria-hidden="true">
     <div class="closing-grid grid-12">
       <div class="closing-marker">
         <span class="section-marker">
@@ -73,21 +72,22 @@ const emailAddress = computed(() => {
 
 <style scoped>
 .closing-cta-section {
-  --signal: var(--signal-mint);
-  --fg-primary: var(--pastel-ink);
-  --fg-secondary: var(--pastel-ink-muted);
-  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
-  --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
+  --signal: var(--ink);
+  --fg-primary: var(--ink);
+  --fg-secondary: var(--ink);
+  --fg-muted: color-mix(in srgb, var(--ink) 62%, transparent);
+  --rule: color-mix(in srgb, var(--ink) 16%, transparent);
   --btn-attention-bg: var(--pastel-sky);
-  background-color: var(--pastel-blush);
-  padding-top: clamp(4rem, 8vw, 7rem);
-  padding-bottom: clamp(4rem, 8vw, 7rem);
+  background-color: transparent;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .closing-grid {
   row-gap: clamp(1.25rem, 2.5vw, 2rem);
   align-items: start;
-  padding-top: clamp(1.25rem, 2.5vw, 2rem);
+  padding-top: clamp(0.5rem, 1.25vw, 0.9rem);
+  padding-bottom: clamp(0.5rem, 1.25vw, 0.9rem);
 }
 
 .closing-marker {

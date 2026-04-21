@@ -71,14 +71,13 @@ const tickerCells = computed(() => {
                       :src="cell.item.images[0]"
                       alt=""
                     >
-                    <Icon v-else-if="cell.item.icon" :icon="cell.item.icon" class="h-5 w-5 text-[var(--fg-muted)]" />
+                    <Icon v-else-if="cell.item.icon" :icon="cell.item.icon" class="ticker-icon h-5 w-5" />
                   </div>
                   <div class="ticker-info">
                     <span class="ticker-label">{{ cell.item.label }}</span>
                     <span class="ticker-title">{{ cell.item.title }}</span>
                   </div>
                 </div>
-                <span v-if="cell.showSep" class="ticker-sep" aria-hidden="true">·</span>
               </div>
             </template>
           </div>
@@ -236,11 +235,15 @@ const tickerCells = computed(() => {
 }
 
 .ticker-item {
+  --ticker-card-bg: var(--pastel-peach);
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-peach) 86%, #000000);
+  --ticker-card-ink: #000000;
   display: flex;
   align-items: center;
   gap: 0.75rem;
   padding: 0.5rem 0.875rem;
-  background: var(--bg-primary);
+  background: var(--ticker-card-bg);
+  color: var(--ticker-card-ink);
   border: var(--card-border);
   box-shadow: var(--shadow-sm);
   border-radius: var(--radius-card);
@@ -248,7 +251,27 @@ const tickerCells = computed(() => {
 }
 
 .ticker-item:hover {
-  background: var(--bg-tertiary);
+  background: var(--ticker-card-bg-hover);
+}
+
+.ticker-content > .ticker-cluster:nth-child(4n + 1) .ticker-item {
+  --ticker-card-bg: var(--pastel-peach);
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-peach) 86%, #000000);
+}
+
+.ticker-content > .ticker-cluster:nth-child(4n + 2) .ticker-item {
+  --ticker-card-bg: var(--pastel-mint);
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-mint) 86%, #000000);
+}
+
+.ticker-content > .ticker-cluster:nth-child(4n + 3) .ticker-item {
+  --ticker-card-bg: var(--pastel-sky);
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-sky) 86%, #000000);
+}
+
+.ticker-content > .ticker-cluster:nth-child(4n + 4) .ticker-item {
+  --ticker-card-bg: var(--pastel-blush);
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-blush) 86%, #000000);
 }
 
 .ticker-image {
@@ -259,7 +282,11 @@ const tickerCells = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-tertiary);
+  background: color-mix(in srgb, #ffffff 70%, var(--ticker-card-bg));
+}
+
+.ticker-icon {
+  color: #000000;
 }
 
 .ticker-image img {
@@ -279,13 +306,13 @@ const tickerCells = computed(() => {
   font-weight: 500;
   letter-spacing: var(--label-tracking-mono);
   text-transform: uppercase;
-  color: var(--signal);
+  color: #000000;
 }
 
 .ticker-title {
   font-size: 0.875rem;
   font-weight: 500;
-  color: var(--fg-primary);
+  color: #000000;
   white-space: nowrap;
   max-width: min(14rem, 42vw);
   overflow: hidden;

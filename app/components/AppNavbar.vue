@@ -31,10 +31,40 @@ function isNavActive(path: string) {
 }
 
 const CONDENSE_THRESHOLD = 72
+/** When intro bottom rises above this (viewport px), content behind the fixed nav is mostly light. */
+const HOME_INTRO_NAV_THRESHOLD_PX = 88
+
 const scrollY = useSharedScrollY()
 const isCondensed = computed(() => scrollY.value > CONDENSE_THRESHOLD)
+const isHomeHero = computed(() => route.path === '/')
 
-useScrollLayoutSubscription(() => {})
+const isPastHomeIntro = ref(false)
+
+function updatePastHomeIntro() {
+  if (!import.meta.client) return
+  if (route.path !== '/') {
+    isPastHomeIntro.value = false
+    return
+  }
+  const intro = document.getElementById('intro')
+  if (!intro) {
+    isPastHomeIntro.value = false
+    return
+  }
+  const { bottom } = intro.getBoundingClientRect()
+  isPastHomeIntro.value = bottom < HOME_INTRO_NAV_THRESHOLD_PX
+}
+
+useScrollLayoutSubscription(() => {
+  updatePastHomeIntro()
+})
+
+watch(
+  () => route.fullPath,
+  () => {
+    nextTick(() => updatePastHomeIntro())
+  },
+)
 
 function parseInPageHash(path: string): { pathOnly: string, hash: string } | null {
   if (!path.includes('#')) return null
@@ -60,7 +90,14 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 </script>
 
 <template>
-  <header class="navbar" :class="{ 'navbar--condensed': isCondensed }">
+  <header
+    class="navbar"
+    :class="{
+      'navbar--condensed': isCondensed,
+      'navbar--home-hero': isHomeHero,
+      'navbar--home-on-light': isHomeHero && isPastHomeIntro,
+    }"
+  >
     <div
       class="navbar-inner container mx-auto w-full min-w-0 max-w-full px-[clamp(1.25rem,3vw,2.5rem)] md:max-w-[82rem]"
       :class="{ 'navbar-inner--condensed': isCondensed }"
@@ -100,9 +137,14 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   left: 0;
   right: 0;
   z-index: 50;
+  width: 100%;
   padding: 1.1rem 0;
   pointer-events: none;
   transition: padding 0.25s ease;
+}
+
+.navbar--home-hero {
+  background-color: transparent;
 }
 
 .navbar--condensed {
@@ -269,6 +311,148 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 
 :root.dark .nav-link.nav-link--active:hover {
   box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 48%, transparent);
+}
+
+/* Homepage: no painted bar — hero green shows through; condensed stays transparent too */
+.navbar--home-hero .navbar-inner:not(.navbar-inner--condensed) {
+  background-color: transparent;
+}
+
+.navbar--home-hero .navbar-inner--condensed {
+  background-color: transparent;
+  border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
+  box-shadow: none;
+  backdrop-filter: blur(14px) saturate(1.2);
+  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+}
+
+:root.dark .navbar--home-hero .navbar-inner--condensed {
+  background-color: transparent;
+  border-color: color-mix(in srgb, #ffffff 18%, transparent);
+  box-shadow: none;
+}
+
+.navbar--home-hero .navbar-row {
+  border-bottom-color: color-mix(in srgb, #ffffff 16%, transparent);
+}
+
+.navbar--home-hero .navbar-brand {
+  color: color-mix(in srgb, #ffffff 94%, transparent);
+}
+
+.navbar--home-hero .navbar-brand-name {
+  color: color-mix(in srgb, #ffffff 94%, transparent);
+}
+
+.navbar--home-hero .navbar-brand-avatar {
+  border-color: color-mix(in srgb, #ffffff 32%, transparent);
+}
+
+/* On dark bar: light labels; on light pills (active): keep dark ink */
+.navbar--home-hero .nav-link:not(.nav-link--active) {
+  color: color-mix(in srgb, #ffffff 62%, transparent);
+}
+
+.navbar--home-hero .nav-link:not(.nav-link--active):hover {
+  color: #ffffff;
+  background-color: color-mix(in srgb, #ffffff 10%, transparent);
+}
+
+.navbar--home-hero .nav-link.nav-link--active {
+  color: var(--pastel-ink);
+}
+
+.navbar--home-hero .nav-link.nav-link--active:hover {
+  color: var(--pastel-ink);
+  background-color: color-mix(in srgb, var(--pastel-blush) 90%, var(--pastel-ink));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 20%, transparent);
+}
+
+.navbar--home-hero :deep(.theme-toggle) {
+  background-color: color-mix(in srgb, #ffffff 12%, transparent);
+  border: 1px solid color-mix(in srgb, #ffffff 26%, transparent);
+  box-shadow: none;
+}
+
+.navbar--home-hero :deep(.theme-toggle__rail--on) {
+  color: color-mix(in srgb, #ffffff 95%, transparent);
+}
+
+.navbar--home-hero :deep(.theme-toggle__rail--muted) {
+  color: color-mix(in srgb, #ffffff 42%, transparent);
+}
+
+.navbar--home-hero :deep(.theme-toggle__pill) {
+  background-color: color-mix(in srgb, #ffffff 92%, transparent);
+}
+
+.navbar--home-hero :deep(.theme-toggle__orbit-icon) {
+  color: #0e1e1d;
+}
+
+/* Scrolled past dark hero: default ink + shell chrome so nav reads on light sections */
+.navbar--home-hero.navbar--home-on-light .navbar-brand,
+.navbar--home-hero.navbar--home-on-light .navbar-brand-name {
+  color: var(--fg-primary);
+}
+
+.navbar--home-hero.navbar--home-on-light .navbar-brand-avatar {
+  border-color: color-mix(in srgb, var(--accent) 25%, transparent);
+}
+
+.navbar--home-hero.navbar--home-on-light .navbar-row {
+  border-bottom-color: color-mix(in srgb, var(--fg-muted) 22%, transparent);
+}
+
+.navbar--home-hero.navbar--home-on-light .nav-link:not(.nav-link--active) {
+  color: var(--fg-muted);
+}
+
+.navbar--home-hero.navbar--home-on-light .nav-link:not(.nav-link--active):hover {
+  color: var(--fg-primary);
+  background-color: color-mix(in srgb, var(--accent) 8%, transparent);
+}
+
+.navbar--home-hero.navbar--home-on-light :deep(.theme-toggle) {
+  background-color: var(--bg-primary);
+  border: var(--card-border);
+  box-shadow: var(--card-ring);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
+}
+
+.navbar--home-hero.navbar--home-on-light :deep(.theme-toggle__rail--on) {
+  color: var(--theme-toggle-rail-emphasis);
+}
+
+.navbar--home-hero.navbar--home-on-light :deep(.theme-toggle__rail--muted) {
+  color: var(--theme-toggle-rail-muted);
+}
+
+.navbar--home-hero.navbar--home-on-light :deep(.theme-toggle__pill) {
+  background-color: var(--theme-toggle-knob-bg);
+}
+
+.navbar--home-hero.navbar--home-on-light :deep(.theme-toggle__orbit-icon) {
+  color: var(--theme-toggle-knob-fg);
+}
+
+.navbar--home-hero.navbar--home-on-light .navbar-inner--condensed {
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 92%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--fg-muted));
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, transparent);
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+:root.dark .navbar--home-hero.navbar--home-on-light .navbar-inner--condensed {
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 94%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
