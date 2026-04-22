@@ -68,6 +68,7 @@ const filterAnnouncement = computed(() => {
           role="group"
           aria-label="Filter projects by tag"
         >
+          <span class="work-filters-label mono" aria-hidden="true">Filter</span>
           <button
             type="button"
             :aria-pressed="filterTag === 'all'"
@@ -181,10 +182,19 @@ const filterAnnouncement = computed(() => {
 .work-filters {
   display: flex;
   flex-wrap: wrap;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5rem 0.65rem;
   row-gap: 0.55rem;
   margin-bottom: var(--home-stack-gap-comfortable);
+}
+
+.work-filters-label {
+  font-size: var(--label-size);
+  font-weight: 500;
+  letter-spacing: var(--label-tracking-mono);
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  margin-right: 0.25rem;
 }
 
 .work-list {

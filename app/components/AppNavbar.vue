@@ -314,24 +314,23 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 }
 
 .nav-link--active {
-  color: var(--pastel-ink);
+  color: var(--fg-primary);
   font-weight: 600;
-  background-color: var(--pastel-blush);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 14%, var(--pastel-blush));
+  background-color: transparent;
+  box-shadow: inset 0 -2px 0 0 var(--fg-primary);
+  border-radius: 0;
 }
 
 .nav-link.nav-link--active:hover {
-  color: var(--pastel-ink);
-  background-color: color-mix(in srgb, var(--pastel-blush) 94%, var(--pastel-ink));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 20%, var(--pastel-blush));
+  color: var(--fg-primary);
+  background-color: color-mix(in srgb, var(--accent) 8%, var(--paper));
+  box-shadow: inset 0 -2px 0 0 var(--fg-primary);
 }
 
-:root.dark .nav-link--active {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 36%, var(--pastel-blush));
-}
-
+:root.dark .nav-link--active,
 :root.dark .nav-link.nav-link--active:hover {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 48%, var(--pastel-blush));
+  color: var(--fg-primary);
+  box-shadow: inset 0 -2px 0 0 var(--fg-primary);
 }
 
 /* Homepage: no painted bar — hero green shows through; condensed stays transparent too */
@@ -364,7 +363,7 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 }
 
 .navbar--home-hero .nav-link:not(.nav-link--active) {
-  color: var(--fg-muted);
+  color: var(--fg-secondary);
 }
 
 .navbar--home-hero .nav-link:not(.nav-link--active):hover {
@@ -373,13 +372,14 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 }
 
 .navbar--home-hero .nav-link.nav-link--active {
-  color: var(--pastel-ink);
+  color: var(--fg-primary);
+  box-shadow: inset 0 -2px 0 0 var(--fg-primary);
 }
 
 .navbar--home-hero .nav-link.nav-link--active:hover {
-  color: var(--pastel-ink);
-  background-color: color-mix(in srgb, var(--pastel-blush) 94%, var(--pastel-ink));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 20%, var(--pastel-blush));
+  color: var(--fg-primary);
+  background-color: color-mix(in srgb, var(--accent) 10%, var(--paper));
+  box-shadow: inset 0 -2px 0 0 var(--fg-primary);
 }
 
 .navbar--home-hero :deep(.theme-toggle) {

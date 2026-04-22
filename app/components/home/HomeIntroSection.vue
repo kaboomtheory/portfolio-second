@@ -85,8 +85,8 @@ const heroTitleParts = computed(() => {
   const trimmed = heroTitleDisplay.value
   if (!trimmed) return { lead: '', accent: '' }
   const idx = Math.max(trimmed.lastIndexOf(' '), trimmed.lastIndexOf(NBSP))
-  if (idx === -1) return { lead: '', accent: trimmed }
-  const accent = trimmed.slice(idx + 1).replace(/^[\s\u00a0]+/u, '')
+  if (idx === -1) return { lead: '', accent: trimmed.replace(/\.+$/u, '') }
+  const accent = trimmed.slice(idx + 1).replace(/^[\s\u00a0]+/u, '').replace(/\.+$/u, '')
   const lead = trimmed.slice(0, idx).replace(/[\s\u00a0]+$/u, '')
   return { lead, accent }
 })
@@ -373,20 +373,28 @@ const focusRailValue = computed(() => {
   padding: 0.65rem 1.4rem;
   outline-offset: 4px;
   box-shadow: none;
+  transform: translateZ(0);
   transition:
-    background-color 120ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1)),
-    color 120ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1)),
-    border-color 120ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1));
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.18s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
-.intro-linkedin:hover {
-  background: color-mix(in srgb, var(--pastel-sky) 88%, var(--pastel-ink));
-  border-color: color-mix(in srgb, var(--pastel-ink) 32%, var(--pastel-sky));
-  color: var(--pastel-ink);
+.intro-linkedin:is(:hover, :focus-visible) {
+  background: var(--pastel-ink);
+  border-color: var(--pastel-ink);
+  color: var(--pastel-sky);
+  box-shadow: none;
 }
 
 .intro-linkedin:active {
-  transform: translateY(1px);
+  background: color-mix(in srgb, var(--pastel-ink) 88%, var(--pastel-sky));
+  border-color: var(--pastel-ink);
+  color: var(--pastel-sky);
+  transform: scale(0.98);
+  box-shadow: none;
+  transition-duration: 0.1s;
 }
 
 .intro-linkedin:focus-visible {
@@ -397,7 +405,21 @@ const focusRailValue = computed(() => {
 .intro-linkedin-icon {
   width: 1rem;
   height: 1rem;
+  flex-shrink: 0;
   color: currentColor;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .intro-linkedin {
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .intro-linkedin:active {
+    transform: none;
+  }
 }
 
 .intro-rail-line {

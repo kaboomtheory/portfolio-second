@@ -56,7 +56,7 @@ onUnmounted(() => {
         >
           <feTurbulence
             type="fractalNoise"
-            baseFrequency="0.78"
+            baseFrequency="0.68"
             numOctaves="3"
             stitchTiles="stitch"
             result="noise"
@@ -66,6 +66,15 @@ onUnmounted(() => {
             type="saturate"
             values="0"
             result="mono"
+          />
+          <!-- Bias noise toward mid-gray so multiply / overlay read as texture, not soot or snow. -->
+          <feColorMatrix
+            in="mono"
+            type="matrix"
+            values="0.4 0 0 0 0.3
+                    0 0.4 0 0 0.3
+                    0 0 0.4 0 0.3
+                    0 0 0 1 0"
           />
         </filter>
       </defs>
@@ -84,7 +93,8 @@ onUnmounted(() => {
 .grain-root {
   position: fixed;
   inset: 0;
-  z-index: 0;
+  /* Below in-flow page content — see `.page-content--home` (z-index: 0) in main.css. */
+  z-index: -1;
   pointer-events: none;
   overflow: hidden;
 }
@@ -104,7 +114,7 @@ onUnmounted(() => {
 
 .grain-anim--reduced {
   animation: none;
-  opacity: 0.055;
+  opacity: 0.07;
 }
 
 .grain-surface {
@@ -112,38 +122,19 @@ onUnmounted(() => {
   inset: -25%;
   width: 150%;
   height: 150%;
-  background: #0a0a0a;
+  /* Tint toward theme ink so multiply tints pastels gently instead of a gray wash */
+  background: color-mix(in srgb, var(--ink) 14%, var(--paper));
   mix-blend-mode: multiply;
-}
-
-:global(html.dark) .grain-surface {
-  mix-blend-mode: overlay;
-  background: #888;
 }
 
 @keyframes grain-breathe {
   0%,
   100% {
-    opacity: 0.032;
+    opacity: 0.045;
   }
 
   50% {
-    opacity: 0.11;
-  }
-}
-
-:global(html.dark) .grain-anim:not(.grain-anim--reduced) {
-  animation-name: grain-breathe-dark;
-}
-
-@keyframes grain-breathe-dark {
-  0%,
-  100% {
-    opacity: 0.05;
-  }
-
-  50% {
-    opacity: 0.16;
+    opacity: 0.125;
   }
 }
 
@@ -153,8 +144,44 @@ onUnmounted(() => {
     opacity: 0.06;
   }
 
-  :global(html.dark) .grain-anim {
-    opacity: 0.08;
+}
+</style>
+
+<style>
+/**
+ * Unscoped: Vue scopes @keyframes names; `html.dark` rules here reference these globals.
+ * Dark mode avoids mix-blend on the grain plane: inside `.page-content--home`’s
+ * `isolation: isolate`, blend backdrops are effectively empty, so overlay/multiply
+ * turns into a flat veil and hides pastel section fills.
+ */
+@keyframes grain-breathe-dark {
+  0%,
+  100% {
+    opacity: 0.07;
+  }
+
+  50% {
+    opacity: 0.14;
+  }
+}
+
+html.dark .grain-surface {
+  mix-blend-mode: normal;
+  /* Slightly lifted from shell so filtered noise reads; alpha comes from `.grain-anim` opacity. */
+  background: color-mix(in srgb, var(--ink) 12%, var(--paper));
+}
+
+html.dark .grain-anim:not(.grain-anim--reduced) {
+  animation-name: grain-breathe-dark;
+}
+
+html.dark .grain-anim--reduced {
+  opacity: 0.09;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html.dark .grain-anim {
+    opacity: 0.075;
   }
 }
 </style>

@@ -35,6 +35,15 @@ function normalizeHex(input: string): string | null {
   return `#${h.toLowerCase()}`
 }
 
+function normalizeThemeValue(input: string): string | null {
+  const hex = normalizeHex(input)
+  if (hex) {
+    return hex
+  }
+  const raw = input.trim()
+  return raw.length > 0 ? raw : null
+}
+
 function mergeMaps(
   defaults: Record<ThemeColorToken['var'], string>,
   overrides: ThemeColorOverrides,
@@ -188,19 +197,19 @@ export function useThemeColorLab() {
   }
 
   function setColor(mode: 'light' | 'dark', tokenVar: ThemeColorToken['var'], raw: string) {
-    const hex = normalizeHex(raw)
-    if (!hex) {
+    const nextValue = normalizeThemeValue(raw)
+    if (!nextValue) {
       return
     }
     if (mode === 'light') {
       overridesLight.value = {
         ...overridesLight.value,
-        [tokenVar]: hex,
+        [tokenVar]: nextValue,
       }
     } else {
       overridesDark.value = {
         ...overridesDark.value,
-        [tokenVar]: hex,
+        [tokenVar]: nextValue,
       }
     }
     applyDom()

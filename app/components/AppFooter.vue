@@ -42,9 +42,9 @@ import { profile } from '~/data/site'
 }
 
 .footer-meta {
-  max-width: 28rem;
   line-height: 1.45;
   text-align: right;
+  min-width: 0;
 }
 
 @media (max-width: 640px) {

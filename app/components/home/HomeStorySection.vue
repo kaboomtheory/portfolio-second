@@ -71,11 +71,8 @@ defineProps<{
 <style scoped>
 .story-section-outer {
   --signal: var(--signal-peach);
-  --fg-primary: var(--pastel-ink);
-  --fg-secondary: var(--pastel-ink-muted);
-  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, var(--pastel-sky));
-  --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--pastel-sky));
-  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, var(--pastel-sky));
+  --rule: color-mix(in srgb, var(--fg-primary) 16%, var(--paper));
+  --rule-soft: color-mix(in srgb, var(--fg-primary) 12%, var(--paper));
   --btn-attention-bg: var(--pastel-sky);
   padding-top: 0;
   padding-bottom: 0;
@@ -154,7 +151,7 @@ defineProps<{
   font-family: var(--font-sans);
   font-size: var(--text-body);
   line-height: 1.55;
-  color: var(--pastel-ink);
+  color: var(--fg-primary);
   margin: 0;
   letter-spacing: 0;
 }

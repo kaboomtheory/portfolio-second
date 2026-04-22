@@ -67,21 +67,22 @@ export default defineNuxtConfig({
         { name: 'twitter:title', content: siteTitle },
         { name: 'twitter:description', content: siteDescription },
         { name: 'twitter:image', content: ogImage },
-        {
-          name: 'theme-color',
-          content: '#ffffff',
-          media: '(prefers-color-scheme: light)',
-        },
-        {
-          name: 'theme-color',
-          content: '#07060f',
-          media: '(prefers-color-scheme: dark)',
-        },
+        { name: 'color-scheme', content: 'light dark' },
+        { name: 'theme-color', content: '#ffffff' },
       ],
       link: [
         { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' },
         { rel: 'manifest', href: '/manifest.webmanifest' },
+      ],
+      // Pre-hydration theme init: set the `dark` class on <html> before first paint
+      // so the page doesn't flash the wrong theme. Mirrors logic in utils/theme.ts.
+      script: [
+        {
+          innerHTML:
+            "(function(){try{var s=localStorage.getItem('color-mode');var dark=s==='dark'||(s!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);var el=document.documentElement;var mode=dark?'dark':'light';el.classList.toggle('dark',dark);el.dataset.theme=mode;el.style.colorScheme=mode;var m=document.querySelector('meta[name=\"theme-color\"]');if(m){m.setAttribute('content',dark?'#212530':'#ffffff');}}catch(e){}})();",
+          tagPosition: 'head',
+        },
       ],
     },
   },

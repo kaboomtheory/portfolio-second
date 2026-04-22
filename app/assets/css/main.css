@@ -5,6 +5,7 @@
   (--bg-primary, --accent, …) for existing components.
 */
 :root {
+  color-scheme: light;
   --font-sans: 'Geist', system-ui, sans-serif;
   --font-display: 'Geist', system-ui, sans-serif;
   --font-serif: 'Fraunces', Georgia, serif;
@@ -114,12 +115,13 @@
 }
 
 :root.dark {
+  color-scheme: dark;
   --paper: #212530;
   --paper-sunk: #181B24;
   /* Text/chrome: cool lavender-white primary; blue-tinted neutrals */
   --ink: #EEF2FF;
   --ink-mid: #AABCD8;
-  --ink-muted: #7888A8;
+  --ink-muted: #8092B3;
   /* Hairlines: ink stepped up for legibility vs dark navy shell */
   --rule-token: color-mix(in srgb, var(--ink) 22%, var(--paper));
   --signal: #F1A06E;
@@ -179,12 +181,9 @@
   --project-card-surface: var(--pastel-peach);
   --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 92%, var(--pastel-ink));
   --project-card-border: color-mix(in srgb, var(--pastel-ink) 40%, var(--project-card-surface, var(--pastel-peach)));
-  --project-card-shadow-idle:
-    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 28%, var(--project-card-surface, var(--pastel-peach))),
-    0 0.35rem 1.35rem color-mix(in srgb, var(--paper) 55%, #0a0908);
-  --project-card-shadow-hover:
-    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 38%, var(--project-card-surface, var(--pastel-peach))),
-    0 0.5rem 1.75rem color-mix(in srgb, var(--paper) 48%, #0a0908);
+  /* Flat hairlines only (no diffuse shadow)—matches light mode treatment. */
+  --project-card-shadow-idle: var(--shadow-sm);
+  --project-card-shadow-hover: var(--shadow-md);
   --card-border: 1px solid color-mix(in srgb, var(--pastel-ink) 36%, var(--pastel-peach));
   --card-ring: none;
   --rule: var(--rule-token);
@@ -213,10 +212,12 @@
   color: var(--btn-attention-fg, var(--pastel-ink));
   background: var(--btn-attention-bg, var(--pastel-peach));
   box-shadow: none;
+  transform: translateZ(0);
   transition:
-    background-color 120ms var(--motion-ease-reveal),
-    color 120ms var(--motion-ease-reveal),
-    border-color 120ms var(--motion-ease-reveal);
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.18s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .cta-button.btn-attention.cta-attention-pill .cta-attention-pill__inner,
@@ -227,15 +228,48 @@
   gap: 0.5rem;
 }
 
-.cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible),
-.back-to-top.cta-attention-pill:is(:hover, :focus-visible) {
-  background: color-mix(in srgb, var(--btn-attention-bg, var(--pastel-peach)) 88%, var(--pastel-ink));
-  border-color: color-mix(in srgb, var(--pastel-ink) 32%, var(--btn-attention-bg, var(--pastel-peach)));
-  color: var(--btn-attention-fg, var(--pastel-ink));
+.cta-button.btn-attention.cta-attention-pill .cta-attention-pill__inner svg,
+.back-to-top.cta-attention-pill .cta-attention-pill__inner svg {
+  flex-shrink: 0;
 }
 
-.cta-button.btn-attention.cta-attention-pill:active {
-  transform: translateY(1px);
+/* Flat invert: tile-colored label on ink (no shadows / no “glow”) */
+.cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible),
+.back-to-top.cta-attention-pill:is(:hover, :focus-visible) {
+  background: var(--pastel-ink);
+  border-color: var(--pastel-ink);
+  color: var(--btn-attention-bg, var(--pastel-peach));
+  box-shadow: none;
+}
+
+.cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible) .cta-attention-dot,
+.back-to-top.cta-attention-pill:is(:hover, :focus-visible) .cta-attention-dot {
+  background: color-mix(in srgb, var(--btn-attention-bg, var(--pastel-peach)) 78%, var(--pastel-ink));
+}
+
+.cta-button.btn-attention.cta-attention-pill:active,
+.back-to-top.cta-attention-pill:active {
+  background: color-mix(in srgb, var(--pastel-ink) 88%, var(--btn-attention-bg, var(--pastel-peach)));
+  border-color: var(--pastel-ink);
+  color: var(--btn-attention-bg, var(--pastel-peach));
+  transform: scale(0.98);
+  box-shadow: none;
+  transition-duration: 0.1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-button.btn-attention.cta-attention-pill,
+  .back-to-top.cta-attention-pill {
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .cta-button.btn-attention.cta-attention-pill:active,
+  .back-to-top.cta-attention-pill:active {
+    transform: none;
+  }
 }
 
 .back-to-top.cta-attention-pill {
@@ -328,11 +362,6 @@
 :root.dark .cta-button.btn-attention.cta-attention-pill,
 :root.dark .back-to-top.cta-attention-pill {
   border-color: color-mix(in srgb, var(--pastel-ink) 42%, var(--btn-attention-bg, var(--pastel-peach)));
-}
-
-:root.dark .cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible),
-:root.dark .back-to-top.cta-attention-pill:is(:hover, :focus-visible) {
-  border-color: color-mix(in srgb, var(--pastel-ink) 52%, var(--btn-attention-bg, var(--pastel-peach)));
 }
 
 .skip-link {
@@ -455,7 +484,7 @@ html {
 }
 
 /* Homepage hero: match shell gutter + status bar to hero green */
-html.home-landing {
+html[data-home-landing='true'] {
   background-color: var(--shell-ui-bg, var(--paper));
 }
 
@@ -669,6 +698,12 @@ pre,
 }
 
 .page-content--home {
+  /* Stacking context so `GrainBackdrop` can use z-index: -1 and sit *under* sections (Chromium
+     paints fixed z-index:0 above in-flow siblings, which made mix-blend read as a full-page veil). */
+  position: relative;
+  z-index: 0;
+  /* Keep film-grain compositing local to the home column (reduces dark-mode veil glitches). */
+  isolation: isolate;
   /* Slightly tighter than legacy --home-section-gap: more “magazine stack”, less elevator shaft */
   gap: clamp(2rem, 5.25vw, 3.85rem);
   padding-bottom: clamp(2.5rem, 6vw, 4.75rem);
@@ -850,6 +885,7 @@ pre,
 }
 
 :root.dark .filter-pill {
+  color: var(--fg-secondary);
   background-color: var(--paper-sunk);
   border-color: color-mix(in srgb, var(--pastel-ink) 36%, var(--paper-sunk));
 }
@@ -860,26 +896,37 @@ pre,
 }
 
 :root.dark .filter-pill:hover {
+  color: var(--fg-primary);
   background-color: color-mix(in srgb, var(--pastel-ink) 10%, var(--paper-sunk));
 }
 
 .filter-pill-active,
 .filter-pill--active {
-  color: var(--pastel-ink);
+  color: var(--paper);
   font-weight: 600;
-  background-color: var(--paper);
+  background-color: var(--ink);
+  border-color: var(--ink);
   transform: none;
-  box-shadow:
-    var(--shadow-sm),
-    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 35%, var(--paper));
+  box-shadow: none;
+}
+
+.filter-pill-active:hover,
+.filter-pill--active:hover {
+  color: var(--paper);
+  background-color: var(--ink);
 }
 
 :root.dark .filter-pill-active,
 :root.dark .filter-pill--active {
-  background-color: color-mix(in srgb, var(--ink) 6%, var(--paper-sunk));
-  box-shadow:
-    var(--shadow-sm),
-    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 55%, var(--paper-sunk));
+  color: var(--paper);
+  background-color: var(--ink);
+  border-color: var(--ink);
+}
+
+:root.dark .filter-pill-active:hover,
+:root.dark .filter-pill--active:hover {
+  color: var(--paper);
+  background-color: var(--ink);
 }
 
 .section-header {

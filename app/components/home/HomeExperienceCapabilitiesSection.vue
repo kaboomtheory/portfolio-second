@@ -97,11 +97,8 @@ defineProps<{
 <style scoped>
 .resume-section-outer {
   --signal: var(--signal-mint);
-  --fg-primary: var(--pastel-ink);
-  --fg-secondary: var(--pastel-ink-muted);
-  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, var(--bg-primary));
-  --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--bg-primary));
-  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, var(--bg-primary));
+  --rule: color-mix(in srgb, var(--fg-primary) 16%, var(--bg-primary));
+  --rule-soft: color-mix(in srgb, var(--fg-primary) 12%, var(--bg-primary));
   --btn-attention-bg: var(--pastel-blush);
   padding-top: 0;
   padding-bottom: 0;
@@ -131,8 +128,8 @@ defineProps<{
 
   .resume-cols {
     grid-column: 4 / span 9;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 0.9fr);
-    align-items: start;
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: clamp(2rem, 4vw, 3.25rem);
   }
 }
 
@@ -141,12 +138,6 @@ defineProps<{
     position: sticky;
     top: 6.5rem;
     align-self: start;
-  }
-}
-
-@media (max-width: 767px) {
-  .resume-cols {
-    grid-template-columns: 1fr;
   }
 }
 
@@ -275,7 +266,7 @@ defineProps<{
   font-weight: 500;
   letter-spacing: var(--label-tracking-mono);
   text-transform: uppercase;
-  color: var(--signal);
+  color: var(--fg-secondary);
 }
 
 .capability-tags {

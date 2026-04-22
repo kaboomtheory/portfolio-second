@@ -73,10 +73,7 @@ const emailAddress = computed(() => {
 <style scoped>
 .closing-cta-section {
   --signal: var(--ink);
-  --fg-primary: var(--ink);
-  --fg-secondary: var(--ink);
-  --fg-muted: color-mix(in srgb, var(--ink) 62%, var(--bg-primary));
-  --rule: color-mix(in srgb, var(--ink) 16%, var(--bg-primary));
+  --rule: color-mix(in srgb, var(--fg-primary) 16%, var(--bg-primary));
   --btn-attention-bg: var(--pastel-sky);
   background-color: transparent;
   padding-top: 0;

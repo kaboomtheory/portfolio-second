@@ -242,6 +242,7 @@ const tickerCells = computed(() => {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-height: 3.25rem;
   padding: 0.5rem 0.875rem;
   background: var(--ticker-card-bg);
   color: var(--ticker-card-ink);

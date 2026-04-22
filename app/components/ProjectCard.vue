@@ -89,8 +89,13 @@ const accentStyle = computed<CSSProperties>(() => {
 .project-card {
   position: relative;
   transform: translateY(0);
-  /* Same crop frame for every project thumbnail (desktop + mobile). */
-  --project-card-media-aspect: 16 / 10;
+  --project-card-media-aspect: 4 / 3;
+}
+
+@media (min-width: 720px) {
+  .project-card {
+    --project-card-media-aspect: 16 / 10;
+  }
 }
 
 .project-card-link {
@@ -114,7 +119,7 @@ const accentStyle = computed<CSSProperties>(() => {
 }
 
 .project-card-link:hover {
-  border-color: color-mix(in srgb, var(--project-accent, var(--accent)) 42%, var(--rule));
+  border-color: color-mix(in srgb, var(--pastel-ink) 34%, var(--project-card-surface, var(--paper)));
   box-shadow: var(--project-card-shadow-hover, var(--shadow-md));
   transform: translate3d(0, -3px, 0);
 }
@@ -132,7 +137,8 @@ const accentStyle = computed<CSSProperties>(() => {
 }
 
 .project-card-link:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--project-accent, var(--accent)) 55%, var(--paper));
+  /* Neutral ring: brand accent reads as stray “orange border” on bright tile fills + dark shell. */
+  outline: 2px solid color-mix(in srgb, var(--pastel-ink) 42%, var(--project-card-surface, var(--paper)));
   outline-offset: 3px;
 }
 
@@ -245,9 +251,9 @@ const accentStyle = computed<CSSProperties>(() => {
   line-height: 1;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: color-mix(in srgb, var(--fg-primary) 88%, var(--fg-muted));
-  background: color-mix(in srgb, var(--bg-primary) 78%, var(--project-card-media-bg, var(--bg-secondary)));
-  border: 1px solid color-mix(in srgb, var(--fg-muted) 30%, var(--bg-primary));
+  color: var(--fg-primary);
+  background: color-mix(in srgb, var(--project-card-surface, var(--paper)) 80%, var(--paper));
+  border: 1px solid color-mix(in srgb, var(--fg-primary) 22%, var(--project-card-surface, var(--paper)));
 }
 
 .project-card__media-fallback-icon {
@@ -283,7 +289,16 @@ const accentStyle = computed<CSSProperties>(() => {
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 0.42rem;
+  gap: 0 0.7rem;
+  row-gap: 0.2rem;
+}
+
+.project-card__tags .tag-chip {
+  padding: 0;
+  background: transparent;
+  border: 0;
+  color: color-mix(in srgb, var(--fg-primary) 76%, var(--project-card-surface, var(--paper)));
+  font-size: calc(var(--label-size) * 0.95);
 }
 
 .project-card__summary {
@@ -291,11 +306,17 @@ const accentStyle = computed<CSSProperties>(() => {
   font-size: 0.9rem;
   line-height: 1.48;
   display: -webkit-box;
-  -webkit-line-clamp: 3;
+  -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-  color: var(--fg-secondary);
+  color: color-mix(in srgb, var(--fg-primary) 82%, var(--project-card-surface, var(--paper)));
   text-decoration: none;
+}
+
+@media (min-width: 720px) {
+  .project-card__summary {
+    -webkit-line-clamp: 3;
+  }
 }
 
 .project-card__cta {
@@ -355,11 +376,12 @@ const accentStyle = computed<CSSProperties>(() => {
     flex: 1 1 50%;
     align-self: center;
     aspect-ratio: var(--project-card-media-aspect);
-    border-left: 1px solid color-mix(in srgb, var(--pastel-ink) 12%, var(--project-card-media-bg, var(--bg-secondary)));
+    /* Tie divider to tile ink × surface—media-bg pulls in peach-heavy bg-secondary in dark and reads orange. */
+    border-left: 1px solid color-mix(in srgb, var(--pastel-ink) 12%, var(--project-card-surface, var(--bg-secondary)));
   }
 
   :root.dark .project-card__media {
-    border-left-color: color-mix(in srgb, var(--pastel-ink) 28%, var(--project-card-media-bg, var(--bg-secondary)));
+    border-left-color: color-mix(in srgb, var(--pastel-ink) 28%, var(--project-card-surface, var(--bg-secondary)));
   }
 }
 

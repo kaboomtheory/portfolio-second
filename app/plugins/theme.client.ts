@@ -1,9 +1,22 @@
 import type { ThemeMode } from '~/utils/theme'
 import { getInitialTheme, hasStoredColorMode } from '~/utils/theme'
 
+const THEME_COLORS: Record<ThemeMode, string> = {
+  light: '#ffffff',
+  dark: '#212530',
+}
+
 function applyTheme(mode: ThemeMode) {
-  document.documentElement.dataset.theme = mode
-  document.documentElement.classList.toggle('dark', mode === 'dark')
+  const root = document.documentElement
+  root.dataset.theme = mode
+  root.classList.toggle('dark', mode === 'dark')
+  // Chromium uses this to style built-in UI (scrollbars/form controls) per theme.
+  root.style.colorScheme = mode
+
+  const themeMeta = document.querySelector('meta[name="theme-color"]')
+  if (themeMeta) {
+    themeMeta.setAttribute('content', THEME_COLORS[mode])
+  }
 }
 
 export default defineNuxtPlugin(() => {

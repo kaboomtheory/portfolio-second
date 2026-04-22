@@ -145,6 +145,11 @@ const inlineStyle = computed(() => {
   overflow: hidden;
 }
 
+/* Hue-matched hover shadows paint outside the box; attention pills opt out of clipping */
+.cta-button.btn-attention {
+  overflow: visible;
+}
+
 /* Swiss flat pill: mono label, hairline border — corners match .nav-link */
 .cta-button {
   font-family: var(--font-mono);

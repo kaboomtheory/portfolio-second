@@ -84,6 +84,18 @@ function onHexInput(token: ThemeColorToken, side: 'light' | 'dark', raw: string)
   setColor(side, token.var, raw)
 }
 
+function supportsColorPicker(token: ThemeColorToken, side: 'light' | 'dark') {
+  return /^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(valueFor(token, side))
+}
+
+function colorPickerValue(token: ThemeColorToken, side: 'light' | 'dark') {
+  const value = valueFor(token, side)
+  if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(value)) {
+    return value
+  }
+  return '#000000'
+}
+
 async function copyReport() {
   copyStatus.value = 'idle'
   const text = reportMarkdown()
@@ -232,7 +244,8 @@ async function copyReport() {
                   <input
                     type="color"
                     class="theme-lab__color"
-                    :value="valueFor(token, 'light')"
+                    :value="colorPickerValue(token, 'light')"
+                    :disabled="!supportsColorPicker(token, 'light')"
                     @input="onHexInput(token, 'light', ($event.target as HTMLInputElement).value)"
                   >
                 </label>
@@ -311,7 +324,8 @@ async function copyReport() {
                   <input
                     type="color"
                     class="theme-lab__color"
-                    :value="valueFor(token, 'dark')"
+                    :value="colorPickerValue(token, 'dark')"
+                    :disabled="!supportsColorPicker(token, 'dark')"
                     @input="onHexInput(token, 'dark', ($event.target as HTMLInputElement).value)"
                   >
                 </label>
@@ -539,6 +553,11 @@ async function copyReport() {
   border-radius: 0.5rem;
   background: transparent;
   cursor: pointer;
+}
+
+.theme-lab__color:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
 }
 
 .theme-lab__hex {
