@@ -138,7 +138,7 @@ const filterAnnouncement = computed(() => {
 }
 
 .work-grid {
-  row-gap: clamp(1.25rem, 2.5vw, 2rem);
+  row-gap: var(--home-grid-gap-dense);
   align-items: start;
   padding-top: 0;
 }
@@ -171,7 +171,7 @@ const filterAnnouncement = computed(() => {
 }
 
 .work-lede {
-  margin: 0 0 clamp(1rem, 2vw, 1.5rem);
+  margin: 0 0 var(--home-stack-gap-tight);
   font-size: var(--text-body);
   line-height: 1.55;
   max-width: min(42rem, 68ch);
@@ -181,20 +181,22 @@ const filterAnnouncement = computed(() => {
 .work-filters {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-bottom: clamp(1rem, 2vw, 1.5rem);
+  align-items: flex-start;
+  gap: 0.5rem 0.65rem;
+  row-gap: 0.55rem;
+  margin-bottom: var(--home-stack-gap-comfortable);
 }
 
 .work-list {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(1.25rem, 2.2vw, 1.85rem);
+  gap: var(--home-card-stack-gap);
 }
 
 .work-list :deep(.project-card) {
   --fg-primary: var(--pastel-ink);
   --fg-secondary: var(--pastel-ink-muted);
-  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, var(--project-card-surface, var(--pastel-peach)));
 }
 
 .work-list :deep(.project-card:nth-child(4n + 1)) {
@@ -231,12 +233,13 @@ const filterAnnouncement = computed(() => {
   color: var(--pastel-ink);
 }
 
+/* Easing: decisive ease-out (motion-design) — not generic ease */
 .grid-fade-enter-active {
-  transition: opacity 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: opacity 0.32s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .grid-fade-leave-active {
-  transition: opacity 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: opacity 0.2s cubic-bezier(0.7, 0, 0.84, 0);
 }
 
 .grid-fade-enter-from,
@@ -244,26 +247,29 @@ const filterAnnouncement = computed(() => {
   opacity: 0;
 }
 
-.grid-fade-enter-active :deep(.project-card) {
-  animation: card-enter 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
-  animation-delay: calc(var(--i, 0) * 50ms);
+/* Staggered cards whenever the work block is in view (scroll + filter remount) */
+.reveal-on-scroll--visible .work-list > :deep(.project-card) {
+  animation: work-card-enter 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
+  /* Cap index so long lists do not stretch choreography past ~0.5s */
+  animation-delay: calc(min(var(--i, 0), 8) * 52ms);
 }
 
-@keyframes card-enter {
+@keyframes work-card-enter {
   from {
     opacity: 0;
-    transform: translateY(12px) scale(0.97);
+    transform: translate3d(0, 14px, 0) scale(0.985);
   }
+
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate3d(0, 0, 0) scale(1);
   }
 }
 
 .work-skeleton {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  gap: clamp(1.25rem, 2.2vw, 1.85rem);
+  gap: var(--home-card-stack-gap);
 }
 
 .work-skeleton-card {
@@ -328,7 +334,7 @@ const filterAnnouncement = computed(() => {
     opacity: 1;
   }
 
-  .grid-fade-enter-active :deep(.project-card) {
+  .reveal-on-scroll--visible .work-list > :deep(.project-card) {
     animation: none;
     opacity: 1;
     transform: none;

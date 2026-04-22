@@ -4,11 +4,13 @@ const STORAGE_KEY = 'portfolio-theme-lab-v1'
 const STYLE_ID = 'portfolio-theme-lab-overrides'
 
 export type ThemeColorOverrides = Partial<Record<ThemeColorToken['var'], string>>
+export type PastelVariant = 'bright' | 'moody'
 
 export interface ThemeLabPersisted {
   v: 1
   light: ThemeColorOverrides
   dark: ThemeColorOverrides
+  pastelVariant?: PastelVariant
 }
 
 function defaultMap(mode: 'light' | 'dark'): Record<ThemeColorToken['var'], string> {
@@ -98,6 +100,15 @@ function readStorage(): ThemeLabPersisted | null {
   }
 }
 
+function applyPastelVariantClass(variant: PastelVariant) {
+  if (!import.meta.client) return
+  if (variant === 'moody') {
+    document.documentElement.classList.add('pastel-moody')
+  } else {
+    document.documentElement.classList.remove('pastel-moody')
+  }
+}
+
 function writeStorage(payload: ThemeLabPersisted) {
   if (!import.meta.client) {
     return
@@ -111,6 +122,7 @@ export function useThemeColorLab() {
 
   const overridesLight = useState<ThemeColorOverrides>('theme-lab-overrides-light', () => ({}))
   const overridesDark = useState<ThemeColorOverrides>('theme-lab-overrides-dark', () => ({}))
+  const pastelVariant = useState<PastelVariant>('theme-lab-pastel-variant', () => 'bright')
 
   const effectiveLight = computed(() => mergeMaps(defaultsLight, overridesLight.value))
   const effectiveDark = computed(() => mergeMaps(defaultsDark, overridesDark.value))
@@ -136,7 +148,8 @@ export function useThemeColorLab() {
     }
     const emptyLight = Object.keys(overridesLight.value).length === 0
     const emptyDark = Object.keys(overridesDark.value).length === 0
-    if (emptyLight && emptyDark) {
+    const variantIsDefault = pastelVariant.value === 'bright'
+    if (emptyLight && emptyDark && variantIsDefault) {
       localStorage.removeItem(STORAGE_KEY)
       return
     }
@@ -144,6 +157,7 @@ export function useThemeColorLab() {
       v: 1,
       light: { ...overridesLight.value },
       dark: { ...overridesDark.value },
+      pastelVariant: pastelVariant.value,
     })
   }
 
@@ -156,11 +170,21 @@ export function useThemeColorLab() {
       removeStyleTag()
       overridesLight.value = {}
       overridesDark.value = {}
+      pastelVariant.value = 'bright'
+      applyPastelVariantClass('bright')
       return
     }
     overridesLight.value = { ...stored.light }
     overridesDark.value = { ...stored.dark }
+    pastelVariant.value = stored.pastelVariant ?? 'bright'
+    applyPastelVariantClass(pastelVariant.value)
     applyDom()
+  }
+
+  function setPastelVariant(v: PastelVariant) {
+    pastelVariant.value = v
+    applyPastelVariantClass(v)
+    persist()
   }
 
   function setColor(mode: 'light' | 'dark', tokenVar: ThemeColorToken['var'], raw: string) {
@@ -201,7 +225,9 @@ export function useThemeColorLab() {
   function resetAll() {
     overridesLight.value = {}
     overridesDark.value = {}
+    pastelVariant.value = 'bright'
     removeStyleTag()
+    applyPastelVariantClass('bright')
     if (import.meta.client) {
       localStorage.removeItem(STORAGE_KEY)
     }
@@ -263,12 +289,14 @@ export function useThemeColorLab() {
     tokens: THEME_COLOR_TOKENS,
     overridesLight,
     overridesDark,
+    pastelVariant,
     effectiveLight,
     effectiveDark,
     normalizeHex,
     setColor,
     resetToken,
     resetAll,
+    setPastelVariant,
     hydrateFromStorage,
     applyDom,
     reportMarkdown,

@@ -8,7 +8,7 @@ const { isDark, toggle } = useTheme()
   <button
     type="button"
     role="switch"
-    class="theme-toggle relative inline-flex h-9 shrink-0 items-center rounded-lg px-2 transition-all duration-300 hover:scale-105 active:scale-95 motion-reduce:transition-colors motion-reduce:hover:scale-100 motion-reduce:active:scale-100"
+    class="theme-toggle theme-toggle--motion relative inline-flex h-9 shrink-0 items-center rounded-lg px-2"
     :class="{ 'theme-toggle--dark': isDark }"
     :data-theme="isDark ? 'dark' : 'light'"
     :aria-label="isDark ? 'Switch to light theme' : 'Switch to dark theme'"
@@ -18,13 +18,13 @@ const { isDark, toggle } = useTheme()
     <span class="theme-toggle__labels relative z-0 flex w-full items-center justify-between px-0.5 text-sm pointer-events-none">
       <Icon
         icon="lucide:sun"
-        class="theme-toggle__rail h-4 w-4 shrink-0 transition-all duration-300"
+        class="theme-toggle__rail h-4 w-4 shrink-0"
         :class="isDark ? 'theme-toggle__rail--muted' : 'theme-toggle__rail--on'"
         aria-hidden="true"
       />
       <Icon
         icon="lucide:moon"
-        class="theme-toggle__rail h-4 w-4 shrink-0 transition-all duration-300"
+        class="theme-toggle__rail h-4 w-4 shrink-0"
         :class="!isDark ? 'theme-toggle__rail--muted' : 'theme-toggle__rail--on'"
         aria-hidden="true"
       />
@@ -61,10 +61,26 @@ const { isDark, toggle } = useTheme()
   box-shadow: var(--card-ring);
   backdrop-filter: blur(15px) saturate(1.2);
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
+  transition:
+    box-shadow 0.22s cubic-bezier(0.25, 1, 0.5, 1),
+    border-color 0.22s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.theme-toggle--motion:hover {
+  box-shadow: var(--shadow-md);
+  border-color: color-mix(in srgb, var(--accent) 22%, var(--rule));
+}
+
+.theme-toggle--motion:active {
+  transform: scale(0.98);
 }
 
 .theme-toggle__rail {
   color: var(--theme-toggle-rail-emphasis);
+  transition:
+    color 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+    transform 0.28s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .theme-toggle__rail--on {
@@ -85,8 +101,8 @@ const { isDark, toggle } = useTheme()
   box-shadow: var(--shadow-sm);
   transform: translateY(-50%) translateX(0);
   transition:
-    transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1),
-    background-color 0.3s ease;
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0.28s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .theme-toggle--dark .theme-toggle__pill {
@@ -94,7 +110,22 @@ const { isDark, toggle } = useTheme()
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .theme-toggle,
+  .theme-toggle__rail {
+    transition-duration: 0.01ms;
+  }
+
+  .theme-toggle--motion:hover,
+  .theme-toggle--motion:active {
+    transform: none;
+    box-shadow: var(--card-ring);
+  }
+
   .theme-toggle__pill {
+    transition-duration: 0.01ms;
+  }
+
+  .theme-toggle__orbit-icon {
     transition-duration: 0.01ms;
   }
 }
@@ -102,8 +133,8 @@ const { isDark, toggle } = useTheme()
 .theme-toggle__orbit-icon {
   color: var(--theme-toggle-knob-fg);
   transition:
-    transform 0.5s cubic-bezier(0.34, 1.2, 0.64, 1),
-    opacity 0.4s ease;
+    transform 0.42s cubic-bezier(0.22, 1, 0.36, 1),
+    opacity 0.32s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .theme-toggle__orbit-icon--sun {
@@ -124,11 +155,5 @@ const { isDark, toggle } = useTheme()
 .theme-toggle__icon-wrap--dark .theme-toggle__orbit-icon--moon {
   opacity: 1;
   transform: translate(-50%, -50%) rotate(0deg) scale(1);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .theme-toggle__orbit-icon {
-    transition-duration: 0.01ms;
-  }
 }
 </style>

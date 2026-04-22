@@ -8,6 +8,7 @@ import HomeStorySection from '~/components/home/HomeStorySection.vue'
 import HomeExperienceCapabilitiesSection from '~/components/home/HomeExperienceCapabilitiesSection.vue'
 import HomeStatusSection from '~/components/home/HomeStatusSection.vue'
 import HomeContactSection from '~/components/home/HomeContactSection.vue'
+import GrainBackdrop from '~/components/GrainBackdrop.vue'
 
 const { homeHero, aboutMe: fallbackAboutMe, experiences: fallbackExperiences } = useMockContent()
 const { orderedProjects, loading, homePage: cmsHome } = useSanityIndexBundle()
@@ -160,6 +161,7 @@ useSeoMeta({
 
 <template>
   <div class="page-content page-content--home content-flow">
+    <GrainBackdrop />
     <HomeIntroSection
       :hero-title="heroTitle"
       :hero-taglines="heroTaglines"

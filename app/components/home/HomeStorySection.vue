@@ -73,16 +73,16 @@ defineProps<{
   --signal: var(--signal-peach);
   --fg-primary: var(--pastel-ink);
   --fg-secondary: var(--pastel-ink-muted);
-  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
-  --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
-  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, transparent);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, var(--pastel-sky));
+  --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--pastel-sky));
+  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, var(--pastel-sky));
   --btn-attention-bg: var(--pastel-sky);
   padding-top: 0;
   padding-bottom: 0;
 }
 
 .story-grid {
-  row-gap: clamp(2rem, 4vw, 3rem);
+  row-gap: var(--home-grid-gap-editorial);
   align-items: start;
   padding-top: 0;
 }
@@ -95,7 +95,7 @@ defineProps<{
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
-  gap: clamp(1.25rem, 2vw, 1.75rem);
+  gap: var(--home-stack-gap-comfortable);
   min-width: 0;
 }
 
@@ -103,7 +103,7 @@ defineProps<{
   padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.25rem, 3vw, 2rem);
   display: flex;
   flex-direction: column;
-  gap: clamp(1rem, 1.5vw, 1.25rem);
+  gap: var(--home-stack-gap-tight);
   min-width: 0;
   border-radius: 0.25rem;
 }
@@ -112,7 +112,7 @@ defineProps<{
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
-  gap: clamp(1.25rem, 2vw, 1.75rem);
+  gap: var(--home-stack-gap-comfortable);
 }
 
 @media (min-width: 768px) {

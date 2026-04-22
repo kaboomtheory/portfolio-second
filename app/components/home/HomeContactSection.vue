@@ -75,19 +75,20 @@ const emailAddress = computed(() => {
   --signal: var(--ink);
   --fg-primary: var(--ink);
   --fg-secondary: var(--ink);
-  --fg-muted: color-mix(in srgb, var(--ink) 62%, transparent);
-  --rule: color-mix(in srgb, var(--ink) 16%, transparent);
+  --fg-muted: color-mix(in srgb, var(--ink) 62%, var(--bg-primary));
+  --rule: color-mix(in srgb, var(--ink) 16%, var(--bg-primary));
   --btn-attention-bg: var(--pastel-sky);
   background-color: transparent;
   padding-top: 0;
-  padding-bottom: 0;
+  /* Final band: settle the eye after dense resume columns */
+  padding-bottom: clamp(1.25rem, 3vw, 2.25rem);
 }
 
 .closing-grid {
-  row-gap: clamp(1.25rem, 2.5vw, 2rem);
+  row-gap: var(--home-grid-gap-editorial);
   align-items: start;
-  padding-top: clamp(0.5rem, 1.25vw, 0.9rem);
-  padding-bottom: clamp(0.5rem, 1.25vw, 0.9rem);
+  padding-top: clamp(0.65rem, 1.5vw, 1.15rem);
+  padding-bottom: clamp(0.65rem, 1.5vw, 1.15rem);
 }
 
 .closing-marker {
@@ -99,7 +100,7 @@ const emailAddress = computed(() => {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--space-md);
+  gap: var(--home-stack-gap-comfortable);
   min-width: 0;
 }
 

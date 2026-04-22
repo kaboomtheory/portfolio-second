@@ -83,6 +83,6 @@ const handleAnchorClick = (e: MouseEvent) => {
 }
 
 :global(html.dark) .app-shell-ui {
-  background-color: var(--shell-ui-bg, var(--paper, #0b0a08));
+  background-color: var(--shell-ui-bg, var(--paper, #07060f));
 }
 </style>

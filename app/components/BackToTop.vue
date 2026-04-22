@@ -56,15 +56,22 @@ onUnmounted(() => window.removeEventListener('scroll', onScroll))
   }
 }
 
-.fade-up-enter-active,
+.fade-up-enter-active {
+  transition:
+    opacity 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .fade-up-leave-active {
-  transition: all 0.3s ease;
+  transition:
+    opacity 0.18s cubic-bezier(0.7, 0, 0.84, 0),
+    transform 0.18s cubic-bezier(0.7, 0, 0.84, 0);
 }
 
 .fade-up-enter-from,
 .fade-up-leave-to {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translate3d(0, 10px, 0);
 }
 
 @media (prefers-reduced-motion: reduce) {

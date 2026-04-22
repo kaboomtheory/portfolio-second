@@ -100,7 +100,7 @@ useSeoMeta({
           :style="{
             backgroundColor: 'var(--pastel-mint)',
             color: 'var(--pastel-ink)',
-            border: '1px solid color-mix(in srgb, var(--pastel-ink) 18%, transparent)',
+            border: '1px solid color-mix(in srgb, var(--pastel-ink) 18%, var(--pastel-mint))',
           }"
           :disabled="submitting"
         >

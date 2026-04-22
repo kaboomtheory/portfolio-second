@@ -24,6 +24,49 @@ function stripLeadingLocationByline(text: string, location: string) {
   return text.replace(new RegExp(`^\\s*Based in\\s+${esc}\\.?\\s*`, 'i'), '').trim()
 }
 
+const NBSP = '\u00a0'
+
+function countWordRuns(s: string): number {
+  const m = s.match(/\S+/gu)
+  return m?.length ?? 0
+}
+
+/** Collapse the gap between the last two word runs into NBSP (does not rewrite inner spaces). */
+function glueLastTwoWordRuns(t: string, minWords: number): string {
+  if (countWordRuns(t) < minWords) return t
+  const ranges: { start: number; end: number }[] = []
+  const re = /\S+/gu
+  let m: RegExpExecArray | null
+  while ((m = re.exec(t)) != null)
+    ranges.push({ start: m.index, end: m.index + m[0].length })
+
+  const a = ranges[ranges.length - 2]!
+  const b = ranges[ranges.length - 1]!
+  return `${t.slice(0, a.end)}${NBSP}${t.slice(b.start)}`
+}
+
+/**
+ * Non-breaking glue so short words (e.g. "and") and lead/accent pairs do not wrap awkwardly.
+ * Pairs with fluid font-size so breakpoints stay similar.
+ */
+function withHeroTitleTypographicGlue(raw: string): string {
+  let t = raw.trim()
+  if (!t) return t
+
+  // "packaging, and …" → avoid a line with only "and"
+  t = t.replace(/,\s+and\s+/gi, `,${NBSP}and${NBSP}`)
+
+  // Long titles: keep the last two words together (e.g. "digital experiences.")
+  t = glueLastTwoWordRuns(t, 6)
+
+  // First line: keep the first two words together
+  const firstSpace = t.indexOf(' ')
+  if (firstSpace !== -1)
+    t = `${t.slice(0, firstSpace)}${NBSP}${t.slice(firstSpace + 1)}`
+
+  return t
+}
+
 const props = defineProps<{
   heroTitle: string
   heroTaglines: HomeHeroTaglineLine[]
@@ -36,12 +79,16 @@ const props = defineProps<{
   location?: string
 }>()
 
+const heroTitleDisplay = computed(() => withHeroTitleTypographicGlue((props.heroTitle ?? '').trim()))
+
 const heroTitleParts = computed(() => {
-  const trimmed = (props.heroTitle ?? '').trim()
+  const trimmed = heroTitleDisplay.value
   if (!trimmed) return { lead: '', accent: '' }
-  const idx = trimmed.lastIndexOf(' ')
+  const idx = Math.max(trimmed.lastIndexOf(' '), trimmed.lastIndexOf(NBSP))
   if (idx === -1) return { lead: '', accent: trimmed }
-  return { lead: trimmed.slice(0, idx), accent: trimmed.slice(idx + 1) }
+  const accent = trimmed.slice(idx + 1).replace(/^[\s\u00a0]+/u, '')
+  const lead = trimmed.slice(0, idx).replace(/[\s\u00a0]+$/u, '')
+  return { lead, accent }
 })
 
 const roleLabel = computed(() => props.role ?? profile.role)
@@ -91,8 +138,18 @@ const focusRailValue = computed(() => {
     <div class="home-hero-band full-bleed">
       <div class="intro-grid grid-12">
         <div class="intro-main">
-        <h1 class="hero-title hero-fade-in">
-          <span v-if="heroTitleParts.lead" class="hero-title-lead">{{ heroTitleParts.lead }}</span><span class="hero-title-accent">{{ heroTitleParts.accent }}</span>
+        <h1 class="hero-title hero-fade-in" lang="en">
+          <span v-if="heroTitleParts.lead" class="hero-title-lead">{{ heroTitleParts.lead }}</span>
+          <span
+            v-if="heroTitleParts.lead && heroTitleParts.accent"
+            class="hero-title-sep"
+            aria-hidden="true"
+          >{{ ' ' }}</span>
+          <span
+            v-if="heroTitleParts.accent"
+            class="hero-title-accent"
+            :class="{ 'hero-title-accent--after-lead': !!heroTitleParts.lead }"
+          >{{ heroTitleParts.accent }}</span>
         </h1>
 
         <div class="hero-tagline hero-fade-in hero-delay-1">
@@ -165,22 +222,22 @@ const focusRailValue = computed(() => {
   --signal: var(--signal-sky);
   --fg-primary: var(--pastel-ink);
   --fg-secondary: var(--pastel-ink-muted);
-  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
-  --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
-  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, transparent);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, var(--pastel-blush));
+  --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--pastel-blush));
+  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, var(--pastel-blush));
   --btn-attention-bg: var(--pastel-peach);
   padding-top: 0;
   padding-bottom: 0;
 }
 
 .home-hero-band {
-  background-color: #0e1e1d;
-  padding-top: clamp(2rem, 4vw, 3.5rem);
-  padding-bottom: clamp(1.5rem, 4vw, 3rem);
+  padding-top: clamp(0.8rem, 1.6vw, 1.4rem);
+  /* Extra exhale before Work — hero reads as a complete “spread” */
+  padding-bottom: clamp(1rem, 2.2vw, 1.85rem);
 }
 
 .intro-grid {
-  row-gap: clamp(2rem, 4vw, 3rem);
+  row-gap: var(--home-grid-gap-hero);
   align-items: start;
   padding-top: clamp(1.25rem, 2.5vw, 2rem);
 }
@@ -189,7 +246,7 @@ const focusRailValue = computed(() => {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
-  gap: clamp(1.25rem, 2.5vw, 2rem);
+  gap: var(--home-stack-gap-comfortable);
   min-width: 0;
 }
 
@@ -221,17 +278,23 @@ const focusRailValue = computed(() => {
 .hero-title {
   margin: 0;
   font-family: var(--font-display);
-  font-size: var(--text-h1);
+  /* Slightly under global H1 scale; still fluid so line breaks track across breakpoints */
+  font-size: clamp(1.75rem, 2.4vw + 0.85rem, 3.25rem);
   font-weight: 500;
-  line-height: 1.06;
+  line-height: 1.08;
   letter-spacing: 0;
   color: var(--fg-primary);
   background-color: var(--pastel-mint);
   padding: clamp(1rem, 2.2vw, 1.75rem) clamp(1.25rem, 2.8vw, 2.25rem);
   border-radius: 0.5rem;
   width: fit-content;
-  max-width: 100%;
+  /* em tracks this element’s font-size (clamp), so measure scales with type and line breaks stay stable */
+  max-width: min(100%, 21em);
   box-sizing: border-box;
+  hyphens: none;
+  -webkit-hyphens: none;
+  overflow-wrap: normal;
+  word-break: normal;
 }
 
 .hero-title-lead {
@@ -239,12 +302,13 @@ const focusRailValue = computed(() => {
   letter-spacing: -0.035em;
 }
 
-/*
-  Physical gap between sans lead and serif accent: a real space inside a span can disappear
-  (Vue whitespace condense / letter-spacing on the lead span still tightens a trailing space).
-*/
-.hero-title-lead + .hero-title-accent {
-  margin-inline-start: 0.22em;
+.hero-title-sep {
+  white-space: pre;
+  user-select: none;
+}
+
+.hero-title-accent--after-lead {
+  margin-inline-start: 0.08em;
 }
 
 .hero-title-accent {
@@ -266,7 +330,7 @@ const focusRailValue = computed(() => {
   font-size: var(--text-body-lg);
   font-weight: 400;
   line-height: 1.55;
-  color: color-mix(in srgb, #ffffff 84%, transparent);
+  color: var(--fg-secondary);
   letter-spacing: 0;
   font-family: var(--font-sans);
   max-width: 68ch;
@@ -278,7 +342,7 @@ const focusRailValue = computed(() => {
 
 .hero-tagline-em {
   font-weight: 600;
-  color: color-mix(in srgb, #ffffff 94%, transparent);
+  color: var(--fg-primary);
 }
 
 .hero-cta-row {
@@ -304,7 +368,7 @@ const focusRailValue = computed(() => {
   text-decoration: none;
   color: var(--pastel-ink);
   background: var(--pastel-sky);
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, var(--pastel-sky));
   border-radius: var(--radius-control, 0.35rem);
   padding: 0.65rem 1.4rem;
   outline-offset: 4px;
@@ -316,8 +380,8 @@ const focusRailValue = computed(() => {
 }
 
 .intro-linkedin:hover {
-  background: color-mix(in srgb, var(--pastel-sky) 82%, var(--pastel-ink));
-  border-color: color-mix(in srgb, var(--pastel-ink) 32%, transparent);
+  background: color-mix(in srgb, var(--pastel-sky) 88%, var(--pastel-ink));
+  border-color: color-mix(in srgb, var(--pastel-ink) 32%, var(--pastel-sky));
   color: var(--pastel-ink);
 }
 
@@ -394,12 +458,12 @@ const focusRailValue = computed(() => {
 }
 
 .status-dot {
-  --status-dot-color: #22c55e;
+  --status-dot-color: var(--status-online);
   width: 0.5rem;
   height: 0.5rem;
   border-radius: 999px;
   background: var(--status-dot-color);
-  box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-dot-color) 55%, transparent);
+  box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-dot-color) 55%, var(--pastel-blush));
   animation: status-dot-pulse 2.2s var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1)) infinite;
   flex-shrink: 0;
   position: relative;
@@ -408,13 +472,13 @@ const focusRailValue = computed(() => {
 
 @keyframes status-dot-pulse {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-dot-color) 55%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-dot-color) 55%, var(--pastel-blush));
   }
   70% {
-    box-shadow: 0 0 0 0.5rem color-mix(in srgb, var(--status-dot-color) 0%, transparent);
+    box-shadow: 0 0 0 0.5rem color-mix(in srgb, var(--status-dot-color) 0%, var(--pastel-blush));
   }
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-dot-color) 0%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-dot-color) 0%, var(--pastel-blush));
   }
 }
 

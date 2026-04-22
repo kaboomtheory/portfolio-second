@@ -99,19 +99,19 @@ defineProps<{
   --signal: var(--signal-mint);
   --fg-primary: var(--pastel-ink);
   --fg-secondary: var(--pastel-ink-muted);
-  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
-  --rule: color-mix(in srgb, var(--pastel-ink) 16%, transparent);
-  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, transparent);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, var(--bg-primary));
+  --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--bg-primary));
+  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, var(--bg-primary));
   --btn-attention-bg: var(--pastel-blush);
   padding-top: 0;
   padding-bottom: 0;
 }
 
 .resume-grid {
-  row-gap: clamp(1.5rem, 3vw, 2.5rem);
+  row-gap: var(--home-grid-gap-resume);
   align-items: start;
-  padding-top: clamp(1.25rem, 3vw, 2.5rem);
-  padding-bottom: clamp(1.25rem, 3vw, 2.5rem);
+  padding-top: clamp(1.35rem, 3vw, 2.65rem);
+  padding-bottom: clamp(1.35rem, 3vw, 2.65rem);
 }
 
 .resume-marker {
@@ -121,7 +121,7 @@ defineProps<{
 .resume-cols {
   grid-column: 1 / -1;
   display: grid;
-  gap: clamp(2rem, 5vw, 3.5rem);
+  gap: var(--home-resume-cols-gap);
 }
 
 @media (min-width: 768px) {
@@ -199,7 +199,7 @@ defineProps<{
   height: 48px;
   object-fit: contain;
   padding: 4px;
-  background: #fff;
+  background: color-mix(in srgb, var(--paper) 84%, var(--pastel-peach));
   border: 1px solid var(--rule-soft);
   align-self: start;
   position: relative;

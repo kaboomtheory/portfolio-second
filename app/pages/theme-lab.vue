@@ -23,9 +23,11 @@ const {
   effectiveDark,
   overridesLight,
   overridesDark,
+  pastelVariant,
   setColor,
   resetToken,
   resetAll,
+  setPastelVariant,
   reportMarkdown,
 } = useThemeColorLab()
 
@@ -259,9 +261,30 @@ async function copyReport() {
           class="theme-lab__panel"
           aria-label="Dark palette"
         >
-          <h2 class="theme-lab__panel-title">
-            Dark tokens
-          </h2>
+          <div class="theme-lab__variant-bar">
+            <div class="theme-lab__variant-bar-label">
+              <span class="theme-lab__panel-title" style="margin: 0;">Dark tokens</span>
+              <span class="text-meta">Pastel variant (staging only)</span>
+            </div>
+            <div class="theme-lab__variant-btns" role="group" aria-label="Pastel variant">
+              <button
+                type="button"
+                class="filter-pill"
+                :class="{ 'filter-pill--active': pastelVariant === 'bright' }"
+                @click="setPastelVariant('bright')"
+              >
+                Bright
+              </button>
+              <button
+                type="button"
+                class="filter-pill"
+                :class="{ 'filter-pill--active': pastelVariant === 'moody' }"
+                @click="setPastelVariant('moody')"
+              >
+                Moody
+              </button>
+            </div>
+          </div>
           <div
             v-for="[group, items] in groups"
             :key="`dark-${group}`"
@@ -394,7 +417,7 @@ async function copyReport() {
   flex-direction: column;
   gap: var(--space-md);
   padding-top: var(--space-sm);
-  border-top: 1px solid color-mix(in srgb, var(--fg-muted) 22%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--fg-muted) 22%, var(--paper));
 }
 
 @media (min-width: 768px) {
@@ -449,7 +472,7 @@ async function copyReport() {
   align-items: center;
   padding: var(--space-sm) var(--space-sm);
   border-radius: var(--radius-inner);
-  background: color-mix(in srgb, var(--surface-interactive) 40%, transparent);
+  background: color-mix(in srgb, var(--surface-interactive) 40%, var(--paper));
 }
 
 .theme-lab__preview {
@@ -512,7 +535,7 @@ async function copyReport() {
   width: 2.5rem;
   height: 2.5rem;
   padding: 0;
-  border: 1px solid color-mix(in srgb, var(--fg-muted) 25%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg-muted) 25%, var(--paper));
   border-radius: 0.5rem;
   background: transparent;
   cursor: pointer;
@@ -522,7 +545,7 @@ async function copyReport() {
   width: 7.25rem;
   max-width: 100%;
   border-radius: 0.5rem;
-  border: 1px solid color-mix(in srgb, var(--fg-muted) 25%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg-muted) 25%, var(--paper));
   padding: 0.4rem 0.5rem;
   font-size: 0.8125rem;
   background: var(--bg-primary);
@@ -569,6 +592,26 @@ async function copyReport() {
   min-width: 0;
 }
 
+.theme-lab__variant-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-md);
+}
+
+.theme-lab__variant-bar-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.theme-lab__variant-btns {
+  display: flex;
+  gap: var(--space-sm);
+}
+
 .theme-lab__banner {
   margin: 0;
   padding: var(--space-sm) var(--space-md);
@@ -577,12 +620,12 @@ async function copyReport() {
 }
 
 .theme-lab__banner--ok {
-  background: color-mix(in srgb, var(--fg-muted) 14%, transparent);
+  background: color-mix(in srgb, var(--fg-muted) 14%, var(--paper));
   color: var(--fg-primary);
 }
 
 .theme-lab__banner--err {
-  background: color-mix(in srgb, var(--danger) 18%, transparent);
+  background: color-mix(in srgb, var(--danger) 18%, var(--paper));
   color: var(--fg-primary);
 }
 
@@ -614,7 +657,7 @@ async function copyReport() {
   resize: vertical;
   min-height: 12rem;
   border-radius: var(--radius-inner);
-  border: 1px solid color-mix(in srgb, var(--fg-muted) 25%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg-muted) 25%, var(--paper));
   padding: var(--space-sm);
   font-size: 0.75rem;
   line-height: 1.5;
@@ -656,7 +699,7 @@ async function copyReport() {
 .theme-lab__btn--ghost {
   background: var(--surface-interactive);
   color: var(--fg-primary);
-  border-color: color-mix(in srgb, var(--fg-muted) 22%, transparent);
+  border-color: color-mix(in srgb, var(--fg-muted) 22%, var(--paper));
   box-shadow: var(--shadow-sm);
 }
 

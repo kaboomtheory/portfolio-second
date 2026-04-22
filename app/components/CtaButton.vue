@@ -42,7 +42,8 @@ const secondaryFg = computed(() =>
 const btnClass = computed(() =>
   [
     'cta-button inline-flex items-center gap-2 origin-center',
-    !props.attention ? 'transition-colors duration-150' : '',
+    !props.attention && !props.secondary ? 'cta-button--primary-surface' : '',
+    !props.attention && props.secondary ? 'transition-colors duration-150' : '',
     props.attention
       ? 'btn-attention cta-attention-pill'
       : props.pill
@@ -170,7 +171,7 @@ const inlineStyle = computed(() => {
 }
 
 .btn-attention .cta-attention-dot {
-  background: color-mix(in srgb, var(--pastel-ink) 42%, transparent);
+  background: color-mix(in srgb, var(--pastel-ink) 42%, var(--btn-attention-bg, var(--pastel-peach)));
 }
 
 .cta-button-secondary {
@@ -186,6 +187,36 @@ const inlineStyle = computed(() => {
 .cta-button-secondary:hover {
   background-color: var(--fg-primary) !important;
   color: var(--bg-primary) !important;
+}
+
+.cta-button--primary-surface {
+  transition:
+    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
+    background-color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
+    color 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.cta-button--primary-surface:hover {
+  transform: translate3d(0, -1px, 0);
+  box-shadow: 0 0.35rem 1.1rem color-mix(in srgb, var(--btn-primary-bg) 28%, transparent);
+}
+
+.cta-button--primary-surface:active {
+  transform: translate3d(0, 0.5px, 0) scale(0.99);
+  transition-duration: 0.1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-button--primary-surface {
+    transition: none;
+  }
+
+  .cta-button--primary-surface:hover,
+  .cta-button--primary-surface:active {
+    transform: none;
+    box-shadow: none;
+  }
 }
 
 /* Icon wrapper to maintain spacing */

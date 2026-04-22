@@ -103,20 +103,25 @@ const accentStyle = computed<CSSProperties>(() => {
   text-decoration: none;
   color: inherit;
   background: var(--bg-primary);
-  border: 1px solid var(--project-card-border, color-mix(in srgb, var(--rule) 58%, transparent));
+  border: 1px solid var(--project-card-border, color-mix(in srgb, var(--rule) 58%, var(--paper)));
   border-radius: 0.5rem;
   box-shadow: var(--project-card-shadow-idle, var(--shadow-sm));
   transition:
-    background-color 240ms ease,
-    box-shadow 280ms ease,
-    transform 280ms ease,
-    border-color 220ms ease;
+    background-color 220ms cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 200ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .project-card-link:hover {
   border-color: color-mix(in srgb, var(--project-accent, var(--accent)) 42%, var(--rule));
   box-shadow: var(--project-card-shadow-hover, var(--shadow-md));
-  transform: translateY(-3px);
+  transform: translate3d(0, -3px, 0);
+}
+
+.project-card-link:active {
+  transform: translate3d(0, -1px, 0) scale(0.995);
+  transition-duration: 120ms;
 }
 
 .project-card-link:hover .project-card__body {
@@ -127,7 +132,7 @@ const accentStyle = computed<CSSProperties>(() => {
 }
 
 .project-card-link:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--project-accent, var(--accent)) 55%, white);
+  outline: 2px solid color-mix(in srgb, var(--project-accent, var(--accent)) 55%, var(--paper));
   outline-offset: 3px;
 }
 
@@ -144,12 +149,12 @@ const accentStyle = computed<CSSProperties>(() => {
   min-height: 0;
   padding: 1.05rem 1rem 0.95rem;
   background: var(--project-card-surface, var(--bg-secondary));
-  border-bottom: 1px solid color-mix(in srgb, var(--pastel-ink) 10%, transparent);
-  transition: background-color 240ms ease;
+  border-bottom: 1px solid color-mix(in srgb, var(--pastel-ink) 10%, var(--project-card-surface, var(--bg-secondary)));
+  transition: background-color 220ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 :root.dark .project-card__body {
-  border-bottom-color: color-mix(in srgb, var(--pastel-ink) 22%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--pastel-ink) 22%, var(--project-card-surface, var(--bg-secondary)));
 }
 
 .project-card__client {
@@ -171,8 +176,8 @@ const accentStyle = computed<CSSProperties>(() => {
   background-color: var(--project-card-media-bg, var(--bg-secondary));
   background-image: radial-gradient(
     circle,
-    color-mix(in srgb, var(--fg-muted) 18%, transparent) 0.5px,
-    transparent 0.6px
+    color-mix(in srgb, var(--fg-muted) 18%, var(--project-card-media-bg, var(--bg-secondary))) 0.5px,
+    var(--project-card-media-bg, var(--bg-secondary)) 0.6px
   );
   background-size: 11px 11px;
   border-bottom: none;
@@ -185,8 +190,8 @@ const accentStyle = computed<CSSProperties>(() => {
 :root.dark .project-card__media {
   background-image: radial-gradient(
     circle,
-    color-mix(in srgb, var(--fg-muted) 30%, transparent) 0.5px,
-    transparent 0.6px
+    color-mix(in srgb, var(--fg-muted) 30%, var(--project-card-media-bg, var(--bg-secondary))) 0.5px,
+    var(--project-card-media-bg, var(--bg-secondary)) 0.6px
   );
 }
 
@@ -195,11 +200,11 @@ const accentStyle = computed<CSSProperties>(() => {
   height: 100%;
   object-fit: cover;
   transform: scale(1);
-  transition: transform 420ms cubic-bezier(0.2, 0.6, 0.2, 1);
+  transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .project-card:hover .project-card__image {
-  transform: scale(1.06);
+  transform: scale3d(1.05, 1.05, 1);
 }
 
 .project-card__media-fallback {
@@ -210,7 +215,11 @@ const accentStyle = computed<CSSProperties>(() => {
   gap: 0.4rem;
   color: var(--fg-muted);
   background:
-    radial-gradient(circle at 22% 24%, color-mix(in srgb, var(--project-accent, var(--accent)) 14%, transparent), transparent 42%),
+    radial-gradient(
+      circle at 22% 24%,
+      color-mix(in srgb, var(--project-accent, var(--accent)) 14%, var(--project-card-media-bg, var(--bg-secondary))),
+      var(--project-card-media-bg, var(--bg-secondary)) 42%
+    ),
     linear-gradient(
       140deg,
       var(--project-card-media-bg, var(--bg-secondary)),
@@ -237,8 +246,8 @@ const accentStyle = computed<CSSProperties>(() => {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: color-mix(in srgb, var(--fg-primary) 88%, var(--fg-muted));
-  background: color-mix(in srgb, var(--bg-primary) 78%, transparent);
-  border: 1px solid color-mix(in srgb, var(--fg-muted) 30%, transparent);
+  background: color-mix(in srgb, var(--bg-primary) 78%, var(--project-card-media-bg, var(--bg-secondary)));
+  border: 1px solid color-mix(in srgb, var(--fg-muted) 30%, var(--bg-primary));
 }
 
 .project-card__media-fallback-icon {
@@ -261,7 +270,7 @@ const accentStyle = computed<CSSProperties>(() => {
   letter-spacing: -0.016em;
   color: var(--fg-primary);
   text-decoration: none;
-  transition: color 220ms ease;
+  transition: color 200ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .project-card:hover .project-card__title {
@@ -301,7 +310,7 @@ const accentStyle = computed<CSSProperties>(() => {
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--fg-primary);
-  transition: color 220ms ease;
+  transition: color 200ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .project-card__cta-label {
@@ -313,7 +322,7 @@ const accentStyle = computed<CSSProperties>(() => {
   height: 0.82rem;
   flex-shrink: 0;
   transform: translateY(0);
-  transition: transform 220ms ease;
+  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-card:hover .project-card__cta {
@@ -322,7 +331,7 @@ const accentStyle = computed<CSSProperties>(() => {
 
 .project-card:hover .project-card__cta-icon,
 .project-card-link:focus-visible .project-card__cta-icon {
-  transform: translate3d(2px, -1px, 0);
+  transform: translate3d(3px, -2px, 0);
 }
 
 @media (min-width: 720px) {
@@ -346,11 +355,11 @@ const accentStyle = computed<CSSProperties>(() => {
     flex: 1 1 50%;
     align-self: center;
     aspect-ratio: var(--project-card-media-aspect);
-    border-left: 1px solid color-mix(in srgb, var(--pastel-ink) 12%, transparent);
+    border-left: 1px solid color-mix(in srgb, var(--pastel-ink) 12%, var(--project-card-media-bg, var(--bg-secondary)));
   }
 
   :root.dark .project-card__media {
-    border-left-color: color-mix(in srgb, var(--pastel-ink) 28%, transparent);
+    border-left-color: color-mix(in srgb, var(--pastel-ink) 28%, var(--project-card-media-bg, var(--bg-secondary)));
   }
 }
 
@@ -371,6 +380,7 @@ const accentStyle = computed<CSSProperties>(() => {
   }
 
   .project-card-link:hover,
+  .project-card-link:active,
   .project-card:hover .project-card__cta-icon {
     transform: none;
   }

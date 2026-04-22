@@ -35,14 +35,14 @@
   --motion-ease-standard: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --duration-reveal: 320ms;
 
-  /* Pastel tiles (same hexes in .dark — pop on dark shell) + ink on tiles */
-  --pastel-peach: #fef3e2;
-  --pastel-mint: #ecf9eb;
-  --pastel-sky: #ddf4ff;
-  --pastel-blush: #ffebff;
+  /* Pastel tiles (light = bright fills; dark = muted fills in :root.dark) + ink on tiles */
+  --pastel-peach: #ffe9cf;
+  --pastel-mint: #def7dc;
+  --pastel-sky: #cfeeff;
+  --pastel-blush: #ffe1fb;
   --pastel-pink: var(--pastel-blush);
   --pastel-ink: #000000;
-  --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, transparent);
+  --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, var(--paper));
   /* Dark accent inks on pastel bands (section markers, links) */
   --signal-sky: #1a4a6e;
   --signal-mint: #1f5c42;
@@ -56,7 +56,7 @@
   --ink-mid: #6b645b;
   --ink-muted: #a69c8e;
   --rule-token: #15120f;
-  --signal: #c5583b;
+  --signal: #d4522f;
   --signal-ink: #ffffff;
 
   --shell-ui-bg: var(--paper);
@@ -69,7 +69,7 @@
   --fg-muted: var(--ink-muted);
   --border: var(--rule-token);
   --accent: var(--signal);
-  --accent-soft: color-mix(in srgb, var(--signal) 82%, var(--ink));
+  --accent-soft: color-mix(in srgb, var(--signal) 88%, var(--ink));
   --accent-2: var(--signal);
   --accent-2-soft: var(--accent-soft);
   --on-accent: var(--signal-ink);
@@ -80,12 +80,14 @@
   --on-emphasis-muted: var(--on-accent-muted);
   /* Neutral “available” — no second hue */
   --status-available: var(--ink-mid);
-  --danger: #b04836;
+  /* Saturated “online / open” indicator (dots, presence) */
+  --status-online: #22c55e;
+  --danger: #c44a34;
   --neon: var(--signal);
   --neon-mid: var(--accent-soft);
   --neon-soft: var(--ink-mid);
   --neon-frost: var(--ink);
-  --muted-neon: color-mix(in srgb, var(--ink) 70%, transparent);
+  --muted-neon: color-mix(in srgb, var(--ink) 70%, var(--paper));
   --btn-primary-bg: var(--signal);
   --btn-primary-fg: var(--signal-ink);
   --btn-attention-bg: var(--pastel-peach);
@@ -93,18 +95,18 @@
   --surface-interactive: var(--pastel-sky);
   --btn-secondary-bg: transparent;
   --chrome-ring-idle: var(--ink);
-  --shadow-sm: 0 0 0 1px color-mix(in srgb, var(--ink) 8%, transparent);
-  --shadow-md: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
-  --shadow-lg: 0 0 0 1px color-mix(in srgb, var(--ink) 12%, transparent);
+  --shadow-sm: 0 0 0 1px color-mix(in srgb, var(--ink) 8%, var(--paper));
+  --shadow-md: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper));
+  --shadow-lg: 0 0 0 1px color-mix(in srgb, var(--ink) 12%, var(--paper));
   --project-card-surface: var(--pastel-peach);
-  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 88%, var(--pastel-ink));
-  --project-card-border: color-mix(in srgb, var(--pastel-ink) 14%, transparent);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 92%, var(--pastel-ink));
+  --project-card-border: color-mix(in srgb, var(--pastel-ink) 14%, var(--project-card-surface, var(--pastel-peach)));
   --project-card-shadow-idle: var(--shadow-sm);
   --project-card-shadow-hover: var(--shadow-md);
   --card-border: 1px solid var(--rule-token);
   --card-ring: none;
   --rule: var(--rule-token);
-  --rule-soft: color-mix(in srgb, var(--ink) 18%, transparent);
+  --rule-soft: color-mix(in srgb, var(--ink) 18%, var(--paper));
   --theme-toggle-knob-bg: var(--paper);
   --theme-toggle-knob-fg: var(--ink);
   --theme-toggle-rail-emphasis: var(--ink);
@@ -112,31 +114,31 @@
 }
 
 :root.dark {
-  --paper: #0b0a08;
-  --paper-sunk: #14120f;
-  /* Text/chrome: same primary as light paper (#fff); neutrals without warm tan */
-  --ink: #ffffff;
-  --ink-mid: #b0b0b0;
-  --ink-muted: #949494;
-  /* Hairlines: ink stepped up for legibility vs charcoal shell */
-  --rule-token: color-mix(in srgb, var(--ink) 46%, var(--paper));
-  --signal: #e87a5b;
-  --signal-ink: #0b0a08;
+  --paper: #212530;
+  --paper-sunk: #181B24;
+  /* Text/chrome: cool lavender-white primary; blue-tinted neutrals */
+  --ink: #EEF2FF;
+  --ink-mid: #AABCD8;
+  --ink-muted: #7888A8;
+  /* Hairlines: ink stepped up for legibility vs dark navy shell */
+  --rule-token: color-mix(in srgb, var(--ink) 22%, var(--paper));
+  --signal: #F1A06E;
+  --signal-ink: #212530;
 
-  /* Hue-locked dark tiles — higher chroma than sRGB pastel-mix into paper */
-  --pastel-peach: #523a26;
-  --pastel-mint: #1f3a30;
-  --pastel-sky: #223948;
-  --pastel-blush: #3a2840;
+  /* Tiles — direct palette values: peach · lime · sky · lavender */
+  --pastel-peach: #F1A06E;
+  --pastel-mint: #C3F27E;
+  --pastel-sky: #A5D9F7;
+  --pastel-blush: #C2A2F9;
   --pastel-pink: var(--pastel-blush);
-  /* Light ink on pastel bands — matches light-mode paper for primary type */
-  --pastel-ink: var(--ink);
-  --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 72%, transparent);
-  /* Accent inks re-tuned to pop on muted dark tiles (were dark navy/forest/brown/wine in light) */
-  --signal-sky: #8fc4e8;
-  --signal-mint: #9edbb5;
-  --signal-peach: #f0b58a;
-  --signal-blush: #f3a6c8;
+  /* Type on bright tiles = dark navy (tiles are light fills) */
+  --pastel-ink: #212530;
+  --pastel-ink-muted: color-mix(in srgb, #212530 62%, var(--pastel-peach));
+  /* Dark accent inks within each tile band */
+  --signal-sky: #1A3C58;
+  --signal-mint: #2A4820;
+  --signal-peach: #5A3018;
+  --signal-blush: #3C2070;
 
   --shell-ui-bg: var(--paper);
   --bg-primary: var(--paper);
@@ -147,7 +149,7 @@
   --fg-muted: var(--ink-muted);
   --border: var(--rule-token);
   --accent: var(--signal);
-  --accent-soft: color-mix(in srgb, var(--signal) 78%, var(--ink));
+  --accent-soft: color-mix(in srgb, var(--signal) 78%, var(--paper-sunk));
   --accent-2: var(--signal);
   --accent-2-soft: var(--accent-soft);
   --on-accent: var(--signal-ink);
@@ -157,35 +159,36 @@
   --on-emphasis: var(--signal-ink);
   --on-emphasis-muted: var(--on-accent-muted);
   --status-available: var(--ink-mid);
-  --danger: #e5836f;
+  --status-online: #22c55e;
+  --danger: #ef7b65;
   --neon: var(--signal);
   --neon-mid: var(--accent-soft);
   --neon-soft: var(--ink-mid);
   --neon-frost: var(--ink);
-  --muted-neon: color-mix(in srgb, var(--ink) 65%, transparent);
+  --muted-neon: color-mix(in srgb, var(--ink) 65%, var(--paper));
   --btn-primary-bg: var(--signal);
   --btn-primary-fg: var(--signal-ink);
   --btn-attention-bg: var(--pastel-peach);
   --btn-attention-fg: var(--pastel-ink);
-  --surface-interactive: var(--pastel-sky);
+  --surface-interactive: color-mix(in srgb, var(--pastel-sky) 88%, var(--pastel-peach));
   --btn-secondary-bg: transparent;
   --chrome-ring-idle: var(--ink);
-  --shadow-sm: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
-  --shadow-md: 0 0 0 1px color-mix(in srgb, var(--ink) 14%, transparent);
-  --shadow-lg: 0 0 0 1px color-mix(in srgb, var(--ink) 18%, transparent);
+  --shadow-sm: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper));
+  --shadow-md: 0 0 0 1px color-mix(in srgb, var(--ink) 14%, var(--paper));
+  --shadow-lg: 0 0 0 1px color-mix(in srgb, var(--ink) 18%, var(--paper));
   --project-card-surface: var(--pastel-peach);
-  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 88%, var(--pastel-ink));
-  --project-card-border: color-mix(in srgb, var(--pastel-ink) 40%, transparent);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 92%, var(--pastel-ink));
+  --project-card-border: color-mix(in srgb, var(--pastel-ink) 40%, var(--project-card-surface, var(--pastel-peach)));
   --project-card-shadow-idle:
-    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 28%, transparent),
-    0 0.35rem 1.35rem color-mix(in srgb, #000000 32%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 28%, var(--project-card-surface, var(--pastel-peach))),
+    0 0.35rem 1.35rem color-mix(in srgb, var(--paper) 55%, #0a0908);
   --project-card-shadow-hover:
-    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 38%, transparent),
-    0 0.5rem 1.75rem color-mix(in srgb, #000000 42%, transparent);
-  --card-border: 1px solid color-mix(in srgb, var(--pastel-ink) 36%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 38%, var(--project-card-surface, var(--pastel-peach))),
+    0 0.5rem 1.75rem color-mix(in srgb, var(--paper) 48%, #0a0908);
+  --card-border: 1px solid color-mix(in srgb, var(--pastel-ink) 36%, var(--pastel-peach));
   --card-ring: none;
   --rule: var(--rule-token);
-  --rule-soft: color-mix(in srgb, var(--ink) 22%, transparent);
+  --rule-soft: color-mix(in srgb, var(--ink) 18%, var(--paper));
   --theme-toggle-knob-bg: var(--ink);
   --theme-toggle-knob-fg: var(--paper);
   --theme-toggle-rail-emphasis: var(--ink);
@@ -205,7 +208,7 @@
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, var(--btn-attention-bg, var(--pastel-peach)));
   border-radius: var(--radius-control);
   color: var(--btn-attention-fg, var(--pastel-ink));
   background: var(--btn-attention-bg, var(--pastel-peach));
@@ -226,8 +229,8 @@
 
 .cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible),
 .back-to-top.cta-attention-pill:is(:hover, :focus-visible) {
-  background: color-mix(in srgb, var(--btn-attention-bg, var(--pastel-peach)) 82%, var(--pastel-ink));
-  border-color: color-mix(in srgb, var(--pastel-ink) 32%, transparent);
+  background: color-mix(in srgb, var(--btn-attention-bg, var(--pastel-peach)) 88%, var(--pastel-ink));
+  border-color: color-mix(in srgb, var(--pastel-ink) 32%, var(--btn-attention-bg, var(--pastel-peach)));
   color: var(--btn-attention-fg, var(--pastel-ink));
 }
 
@@ -273,6 +276,15 @@
   --page-content-gap: clamp(var(--space-lg), 3vw, var(--space-xl));
   /* Homepage section rhythm: single source for section-to-section balance */
   --home-section-gap: clamp(2.5rem, 6vw, 4.5rem);
+  /* Homepage vertical rhythm — consumed by Home* section components */
+  --home-grid-gap-hero: clamp(2rem, 4.25vw, 3.15rem);
+  --home-grid-gap-editorial: clamp(1.85rem, 3.75vw, 2.85rem);
+  --home-grid-gap-dense: clamp(1.15rem, 2.35vw, 1.95rem);
+  --home-grid-gap-resume: clamp(1.65rem, 3.25vw, 2.65rem);
+  --home-stack-gap-comfortable: clamp(1.15rem, 2.1vw, 1.75rem);
+  --home-stack-gap-tight: clamp(0.85rem, 1.5vw, 1.35rem);
+  --home-card-stack-gap: clamp(1.35rem, 2.4vw, 2rem);
+  --home-resume-cols-gap: clamp(2.2rem, 5vw, 3.75rem);
   /* Swiss: sharp corners. Keep tokens as 0 so existing .radius usage flattens automatically. */
   --radius-card: 0;
   --radius-inner: 0;
@@ -315,12 +327,12 @@
 /* Pastel-ink-based hairlines — bump alpha in dark so borders stay visible on fills */
 :root.dark .cta-button.btn-attention.cta-attention-pill,
 :root.dark .back-to-top.cta-attention-pill {
-  border-color: color-mix(in srgb, var(--pastel-ink) 42%, transparent);
+  border-color: color-mix(in srgb, var(--pastel-ink) 42%, var(--btn-attention-bg, var(--pastel-peach)));
 }
 
 :root.dark .cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible),
 :root.dark .back-to-top.cta-attention-pill:is(:hover, :focus-visible) {
-  border-color: color-mix(in srgb, var(--pastel-ink) 52%, transparent);
+  border-color: color-mix(in srgb, var(--pastel-ink) 52%, var(--btn-attention-bg, var(--pastel-peach)));
 }
 
 .skip-link {
@@ -356,14 +368,14 @@ section[id] {
   /* Opacity + ring only — avoids fighting `.reveal-on-scroll` transform transitions. */
   0% {
     opacity: 0.82;
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, var(--paper));
   }
 
   42% {
     opacity: 1;
     box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--accent) 28%, transparent),
-      0 0 2.25rem color-mix(in srgb, var(--accent) 12%, transparent);
+      0 0 0 1px color-mix(in srgb, var(--accent) 28%, var(--paper)),
+      0 0 2.25rem color-mix(in srgb, var(--accent) 22%, var(--paper));
   }
 
   100% {
@@ -399,9 +411,9 @@ section[id].section-arrival::after {
   pointer-events: none;
   background: linear-gradient(
     180deg,
-    color-mix(in srgb, var(--accent) 16%, transparent) 0%,
-    color-mix(in srgb, var(--accent) 9%, transparent) 50%,
-    transparent 100%
+    color-mix(in srgb, var(--accent) 16%, var(--paper)) 0%,
+    color-mix(in srgb, var(--accent) 9%, var(--paper)) 50%,
+    var(--paper) 100%
   );
   animation: section-arrival-wash 620ms cubic-bezier(0.18, 0.84, 0.22, 1) both;
 }
@@ -414,8 +426,8 @@ section[id].section-arrival::after {
 .layout-header-pad:has(main .page-content--home) {
   background-image: linear-gradient(
     to bottom,
-    #0e1e1d 0,
-    #0e1e1d var(--layout-header-clearance),
+    var(--shell-ui-bg) 0,
+    var(--shell-ui-bg) var(--layout-header-clearance),
     transparent var(--layout-header-clearance)
   );
 }
@@ -444,7 +456,7 @@ html {
 
 /* Homepage hero: match shell gutter + status bar to hero green */
 html.home-landing {
-  background-color: #0e1e1d;
+  background-color: var(--shell-ui-bg, var(--paper));
 }
 
 html.lenis,
@@ -501,7 +513,7 @@ body {
 }
 
 :root.dark body {
-  background-color: var(--shell-ui-bg, #0c0a09);
+  background-color: var(--shell-ui-bg, #212530);
 }
 
 .font-display,
@@ -657,7 +669,9 @@ pre,
 }
 
 .page-content--home {
-  gap: var(--home-section-gap);
+  /* Slightly tighter than legacy --home-section-gap: more “magazine stack”, less elevator shaft */
+  gap: clamp(2rem, 5.25vw, 3.85rem);
+  padding-bottom: clamp(2.5rem, 6vw, 4.75rem);
 }
 
 .page-content--home > section {
@@ -766,7 +780,7 @@ pre,
 .eyebrow-link:hover {
   color: var(--fg-secondary);
   text-decoration: underline;
-  text-decoration-color: color-mix(in srgb, var(--fg-primary) 45%, transparent);
+  text-decoration-color: color-mix(in srgb, var(--fg-primary) 45%, var(--paper));
 }
 
 .eyebrow-link:focus-visible {
@@ -823,7 +837,7 @@ pre,
   font-weight: 500;
   color: var(--pastel-ink);
   background-color: var(--paper);
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 16%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 16%, var(--paper));
   box-shadow: none;
   transition:
     background-color 180ms var(--motion-ease-reveal),
@@ -837,7 +851,7 @@ pre,
 
 :root.dark .filter-pill {
   background-color: var(--paper-sunk);
-  border-color: color-mix(in srgb, var(--pastel-ink) 36%, transparent);
+  border-color: color-mix(in srgb, var(--pastel-ink) 36%, var(--paper-sunk));
 }
 
 .filter-pill:hover {
@@ -857,7 +871,7 @@ pre,
   transform: none;
   box-shadow:
     var(--shadow-sm),
-    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 35%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 35%, var(--paper));
 }
 
 :root.dark .filter-pill-active,
@@ -865,7 +879,7 @@ pre,
   background-color: color-mix(in srgb, var(--ink) 6%, var(--paper-sunk));
   box-shadow:
     var(--shadow-sm),
-    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 55%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--pastel-ink) 55%, var(--paper-sunk));
 }
 
 .section-header {
@@ -898,11 +912,11 @@ pre,
 .card-surface {
   --fg-primary: var(--pastel-ink);
   --fg-secondary: var(--pastel-ink-muted);
-  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, transparent);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, var(--pastel-peach));
   background: var(--pastel-peach);
   color: var(--pastel-ink);
   border-radius: var(--radius-card);
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 14%, var(--pastel-peach));
   box-shadow: var(--card-ring), var(--shadow-sm);
 }
 
@@ -912,18 +926,18 @@ pre,
 }
 
 :root.dark .card-surface {
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 36%, transparent);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 36%, var(--pastel-peach));
   box-shadow: var(--card-ring), var(--project-card-shadow-idle);
 }
 
 /* Reusable project/work card primitives */
 .work-media-frame {
   background: var(--project-card-surface, var(--pastel-mint));
-  border-bottom: 1px solid color-mix(in srgb, var(--pastel-ink) 12%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--pastel-ink) 12%, var(--project-card-surface, var(--pastel-mint)));
 }
 
 :root.dark .work-media-frame {
-  border-bottom-color: color-mix(in srgb, var(--pastel-ink) 30%, transparent);
+  border-bottom-color: color-mix(in srgb, var(--pastel-ink) 30%, var(--project-card-surface, var(--pastel-mint)));
 }
 
 .page-enter-active,

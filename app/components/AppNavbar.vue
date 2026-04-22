@@ -140,7 +140,7 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   width: 100%;
   padding: 1.1rem 0;
   pointer-events: none;
-  transition: padding 0.25s ease;
+  transition: padding 0.25s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
 }
 
 .navbar--home-hero {
@@ -163,26 +163,27 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 
 .navbar-inner {
   pointer-events: auto;
+  border-bottom: 1px solid var(--rule);
   transition:
-    background-color 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
-    box-shadow 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
-    border-color 0.3s ease;
+    background-color 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    box-shadow 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    border-color 0.28s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
 }
 
 .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 92%, transparent);
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 92%, var(--paper));
   border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--fg-muted));
   box-shadow:
     var(--shadow-md),
-    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, var(--paper));
 }
 
 :root.dark .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 94%, transparent);
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 94%, var(--paper));
   border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
   box-shadow:
     var(--shadow-md),
-    0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper));
 }
 
 .navbar-row {
@@ -194,7 +195,6 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   width: 100%;
   min-height: 2.75rem;
   padding: 0.35rem 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--fg-muted) 22%, transparent);
 }
 
 .navbar--condensed .navbar-row {
@@ -208,11 +208,16 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   flex-shrink: 0;
   text-decoration: none;
   color: var(--fg-primary);
-  transition: opacity 0.2s ease;
+  transition: transform 0.22s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .navbar-brand:hover {
-  opacity: 0.82;
+  transform: translate3d(0, -1px, 0);
+}
+
+.navbar-brand:active {
+  transform: translate3d(0, 0, 0) scale(0.99);
+  transition-duration: 0.1s;
 }
 
 .navbar-brand-avatar {
@@ -221,7 +226,15 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   border-radius: var(--radius-control, 0.35rem);
   object-fit: cover;
   flex-shrink: 0;
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--paper));
+  transition:
+    border-color 0.22s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    box-shadow 0.24s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.navbar-brand:hover .navbar-brand-avatar {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--paper));
+  box-shadow: 0 0.35rem 1rem color-mix(in srgb, var(--fg-primary) 8%, transparent);
 }
 
 .navbar--condensed .navbar-brand-avatar {
@@ -274,9 +287,10 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   color: var(--fg-muted);
   text-decoration: none;
   transition:
-    color 0.2s ease,
-    background-color 0.24s var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
-    box-shadow 0.24s var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+    color 0.2s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    background-color 0.22s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    box-shadow 0.22s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform 0.2s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 @media (min-width: 640px) {
@@ -289,38 +303,46 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 
 .nav-link:hover {
   color: var(--fg-primary);
-  background-color: color-mix(in srgb, var(--accent) 8%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 12%, var(--paper));
+  transform: translate3d(0, -1px, 0);
+  box-shadow: 0 0.2rem 0.65rem color-mix(in srgb, var(--fg-primary) 6%, transparent);
+}
+
+.nav-link:active {
+  transform: translate3d(0, 0, 0) scale(0.98);
+  transition-duration: 0.1s;
 }
 
 .nav-link--active {
   color: var(--pastel-ink);
   font-weight: 600;
   background-color: var(--pastel-blush);
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 14%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 14%, var(--pastel-blush));
 }
 
 .nav-link.nav-link--active:hover {
   color: var(--pastel-ink);
-  background-color: color-mix(in srgb, var(--pastel-blush) 90%, var(--pastel-ink));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 20%, transparent);
+  background-color: color-mix(in srgb, var(--pastel-blush) 94%, var(--pastel-ink));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 20%, var(--pastel-blush));
 }
 
 :root.dark .nav-link--active {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 36%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 36%, var(--pastel-blush));
 }
 
 :root.dark .nav-link.nav-link--active:hover {
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 48%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 48%, var(--pastel-blush));
 }
 
 /* Homepage: no painted bar — hero green shows through; condensed stays transparent too */
 .navbar--home-hero .navbar-inner:not(.navbar-inner--condensed) {
   background-color: transparent;
+  border-bottom-color: color-mix(in srgb, var(--pastel-ink) 34%, var(--pastel-mint));
 }
 
 .navbar--home-hero .navbar-inner--condensed {
   background-color: transparent;
-  border: 1px solid color-mix(in srgb, #ffffff 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--fg-muted));
   box-shadow: none;
   backdrop-filter: blur(14px) saturate(1.2);
   -webkit-backdrop-filter: blur(14px) saturate(1.2);
@@ -328,34 +350,26 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 
 :root.dark .navbar--home-hero .navbar-inner--condensed {
   background-color: transparent;
-  border-color: color-mix(in srgb, #ffffff 18%, transparent);
+  border-color: color-mix(in srgb, var(--ink) 18%, var(--paper));
   box-shadow: none;
 }
 
-.navbar--home-hero .navbar-row {
-  border-bottom-color: color-mix(in srgb, #ffffff 16%, transparent);
-}
-
-.navbar--home-hero .navbar-brand {
-  color: color-mix(in srgb, #ffffff 94%, transparent);
-}
-
+.navbar--home-hero .navbar-brand,
 .navbar--home-hero .navbar-brand-name {
-  color: color-mix(in srgb, #ffffff 94%, transparent);
+  color: var(--fg-primary);
 }
 
 .navbar--home-hero .navbar-brand-avatar {
-  border-color: color-mix(in srgb, #ffffff 32%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 25%, var(--paper));
 }
 
-/* On dark bar: light labels; on light pills (active): keep dark ink */
 .navbar--home-hero .nav-link:not(.nav-link--active) {
-  color: color-mix(in srgb, #ffffff 62%, transparent);
+  color: var(--fg-muted);
 }
 
 .navbar--home-hero .nav-link:not(.nav-link--active):hover {
-  color: #ffffff;
-  background-color: color-mix(in srgb, #ffffff 10%, transparent);
+  color: var(--fg-primary);
+  background-color: color-mix(in srgb, var(--accent) 12%, var(--paper));
 }
 
 .navbar--home-hero .nav-link.nav-link--active {
@@ -364,30 +378,32 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 
 .navbar--home-hero .nav-link.nav-link--active:hover {
   color: var(--pastel-ink);
-  background-color: color-mix(in srgb, var(--pastel-blush) 90%, var(--pastel-ink));
-  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 20%, transparent);
+  background-color: color-mix(in srgb, var(--pastel-blush) 94%, var(--pastel-ink));
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--pastel-ink) 20%, var(--pastel-blush));
 }
 
 .navbar--home-hero :deep(.theme-toggle) {
-  background-color: color-mix(in srgb, #ffffff 12%, transparent);
-  border: 1px solid color-mix(in srgb, #ffffff 26%, transparent);
-  box-shadow: none;
+  background-color: var(--bg-primary);
+  border: var(--card-border);
+  box-shadow: var(--card-ring);
+  backdrop-filter: blur(15px) saturate(1.2);
+  -webkit-backdrop-filter: blur(15px) saturate(1.2);
 }
 
 .navbar--home-hero :deep(.theme-toggle__rail--on) {
-  color: color-mix(in srgb, #ffffff 95%, transparent);
+  color: var(--theme-toggle-rail-emphasis);
 }
 
 .navbar--home-hero :deep(.theme-toggle__rail--muted) {
-  color: color-mix(in srgb, #ffffff 42%, transparent);
+  color: var(--theme-toggle-rail-muted);
 }
 
 .navbar--home-hero :deep(.theme-toggle__pill) {
-  background-color: color-mix(in srgb, #ffffff 92%, transparent);
+  background-color: var(--theme-toggle-knob-bg);
 }
 
 .navbar--home-hero :deep(.theme-toggle__orbit-icon) {
-  color: #0e1e1d;
+  color: var(--theme-toggle-knob-fg);
 }
 
 /* Scrolled past dark hero: default ink + shell chrome so nav reads on light sections */
@@ -397,11 +413,11 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 }
 
 .navbar--home-hero.navbar--home-on-light .navbar-brand-avatar {
-  border-color: color-mix(in srgb, var(--accent) 25%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 25%, var(--paper));
 }
 
-.navbar--home-hero.navbar--home-on-light .navbar-row {
-  border-bottom-color: color-mix(in srgb, var(--fg-muted) 22%, transparent);
+.navbar--home-hero.navbar--home-on-light .navbar-inner:not(.navbar-inner--condensed) {
+  border-bottom-color: var(--rule);
 }
 
 .navbar--home-hero.navbar--home-on-light .nav-link:not(.nav-link--active) {
@@ -410,7 +426,7 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 
 .navbar--home-hero.navbar--home-on-light .nav-link:not(.nav-link--active):hover {
   color: var(--fg-primary);
-  background-color: color-mix(in srgb, var(--accent) 8%, transparent);
+  background-color: color-mix(in srgb, var(--accent) 12%, var(--paper));
 }
 
 .navbar--home-hero.navbar--home-on-light :deep(.theme-toggle) {
@@ -438,28 +454,42 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 }
 
 .navbar--home-hero.navbar--home-on-light .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 92%, transparent);
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 92%, var(--paper));
   border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--fg-muted));
   box-shadow:
     var(--shadow-md),
-    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, var(--paper));
   backdrop-filter: none;
   -webkit-backdrop-filter: none;
 }
 
 :root.dark .navbar--home-hero.navbar--home-on-light .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 94%, transparent);
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 94%, var(--paper));
   border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
   box-shadow:
     var(--shadow-md),
-    0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper));
 }
 
 @media (prefers-reduced-motion: reduce) {
   .navbar,
+  .navbar-brand,
   .navbar-brand-avatar,
-  .navbar-inner {
+  .navbar-inner,
+  .nav-link {
     transition: none;
+  }
+
+  .navbar-brand:hover,
+  .navbar-brand:active,
+  .nav-link:hover,
+  .nav-link:active {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .navbar-brand:hover .navbar-brand-avatar {
+    box-shadow: none;
   }
 }
 </style>

@@ -142,9 +142,10 @@ const tickerCells = computed(() => {
 
 .ticker-section {
   margin-block: 0;
-  padding: var(--space-md) 0;
+  /* Slightly roomier than single --space-md: reads as its own “ribbon” between story and resume */
+  padding: clamp(1rem, 2vw, 1.35rem) 0;
   overflow: hidden;
-  border-top: 1px solid color-mix(in srgb, var(--fg-muted) 14%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--fg-muted) 14%, var(--shell-ui-bg));
   /* Inherits .story-band surface; avoids tone seam vs parent */
   background: transparent;
 }
@@ -156,15 +157,15 @@ const tickerCells = computed(() => {
   -webkit-mask-image: linear-gradient(
     to right,
     transparent,
-    #000 3.25rem,
-    #000 calc(100% - 3.25rem),
+    black 3.25rem,
+    black calc(100% - 3.25rem),
     transparent
   );
   mask-image: linear-gradient(
     to right,
     transparent,
-    #000 3.25rem,
-    #000 calc(100% - 3.25rem),
+    black 3.25rem,
+    black calc(100% - 3.25rem),
     transparent
   );
 }
@@ -236,8 +237,8 @@ const tickerCells = computed(() => {
 
 .ticker-item {
   --ticker-card-bg: var(--pastel-peach);
-  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-peach) 86%, #000000);
-  --ticker-card-ink: #000000;
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-peach) 86%, var(--pastel-ink));
+  --ticker-card-ink: var(--pastel-ink);
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -247,31 +248,36 @@ const tickerCells = computed(() => {
   border: var(--card-border);
   box-shadow: var(--shadow-sm);
   border-radius: var(--radius-card);
-  transition: background-color 200ms ease;
+  transition:
+    background-color 0.22s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    box-shadow 0.24s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform 0.2s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .ticker-item:hover {
   background: var(--ticker-card-bg-hover);
+  transform: translate3d(0, -1px, 0);
+  box-shadow: var(--shadow-md);
 }
 
 .ticker-content > .ticker-cluster:nth-child(4n + 1) .ticker-item {
   --ticker-card-bg: var(--pastel-peach);
-  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-peach) 86%, #000000);
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-peach) 86%, var(--pastel-ink));
 }
 
 .ticker-content > .ticker-cluster:nth-child(4n + 2) .ticker-item {
   --ticker-card-bg: var(--pastel-mint);
-  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-mint) 86%, #000000);
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-mint) 86%, var(--pastel-ink));
 }
 
 .ticker-content > .ticker-cluster:nth-child(4n + 3) .ticker-item {
   --ticker-card-bg: var(--pastel-sky);
-  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-sky) 86%, #000000);
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-sky) 86%, var(--pastel-ink));
 }
 
 .ticker-content > .ticker-cluster:nth-child(4n + 4) .ticker-item {
   --ticker-card-bg: var(--pastel-blush);
-  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-blush) 86%, #000000);
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-blush) 86%, var(--pastel-ink));
 }
 
 .ticker-image {
@@ -282,11 +288,11 @@ const tickerCells = computed(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: color-mix(in srgb, #ffffff 70%, var(--ticker-card-bg));
+  background: color-mix(in srgb, var(--paper) 70%, var(--ticker-card-bg));
 }
 
 .ticker-icon {
-  color: #000000;
+  color: var(--ticker-card-ink);
 }
 
 .ticker-image img {
@@ -306,13 +312,13 @@ const tickerCells = computed(() => {
   font-weight: 500;
   letter-spacing: var(--label-tracking-mono);
   text-transform: uppercase;
-  color: #000000;
+  color: var(--ticker-card-ink);
 }
 
 .ticker-title {
   font-size: 0.875rem;
   font-weight: 500;
-  color: #000000;
+  color: var(--ticker-card-ink);
   white-space: nowrap;
   max-width: min(14rem, 42vw);
   overflow: hidden;
@@ -322,6 +328,17 @@ const tickerCells = computed(() => {
 @media (min-width: 768px) {
   .ticker-title {
     max-width: min(20rem, 32vw);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-item {
+    transition: background-color 0.01ms;
+  }
+
+  .ticker-item:hover {
+    transform: none;
+    box-shadow: var(--shadow-sm);
   }
 }
 </style>

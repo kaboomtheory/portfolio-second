@@ -21,21 +21,21 @@ defineProps<{
     <div
       v-else-if="kind === 'surface-primary'"
       class="theme-token-preview__fill theme-token-preview__fill--inset"
-      :style="{ backgroundColor: hex, boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${ctx.border} 18%, transparent)` }"
+      :style="{ backgroundColor: hex, boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${ctx.border} 18%, ${hex})` }"
       title="Cards and main panels"
     />
 
     <div
       v-else-if="kind === 'surface-secondary'"
       class="theme-token-preview__fill theme-token-preview__fill--inset"
-      :style="{ backgroundColor: hex, boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${ctx.border} 14%, transparent)` }"
+      :style="{ backgroundColor: hex, boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${ctx.border} 14%, ${hex})` }"
       title="Secondary panels"
     />
 
     <div
       v-else-if="kind === 'surface-tertiary'"
       class="theme-token-preview__fill theme-token-preview__fill--inset"
-      :style="{ backgroundColor: hex, boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${ctx.border} 12%, transparent)` }"
+      :style="{ backgroundColor: hex, boxShadow: `inset 0 0 0 1px color-mix(in srgb, ${ctx.border} 12%, ${hex})` }"
       title="Tertiary bands"
     />
 
@@ -44,7 +44,7 @@ defineProps<{
       class="theme-token-preview__pill"
       :style="{
         backgroundColor: hex,
-        border: `1px solid color-mix(in srgb, ${ctx.border} 35%, transparent)`,
+        border: `1px solid color-mix(in srgb, ${ctx.border} 35%, ${hex})`,
         color: ctx.accent,
         boxShadow: '0 1px 2px rgba(0,0,0,0.06)',
       }"
@@ -68,7 +68,7 @@ defineProps<{
       class="theme-token-preview__pill theme-token-preview__pill--pastel"
       :style="{
         backgroundColor: hex,
-        border: `1px solid color-mix(in srgb, ${ctx.pastelInk} 18%, transparent)`,
+        border: `1px solid color-mix(in srgb, ${ctx.pastelInk} 18%, ${hex})`,
         color: ctx.pastelInk,
       }"
       title="Sparse pastel chip"
@@ -128,13 +128,13 @@ defineProps<{
       class="theme-token-preview__track"
       :style="{
         backgroundColor: ctx.bgTertiary,
-        border: `1px solid color-mix(in srgb, ${ctx.border} 25%, transparent)`,
+        border: `1px solid color-mix(in srgb, ${ctx.border} 25%, ${ctx.bgTertiary})`,
       }"
       title="Theme switch knob"
     >
       <span
         class="theme-token-preview__knob"
-        :style="{ backgroundColor: hex, boxShadow: `0 1px 2px color-mix(in srgb, ${ctx.border} 20%, transparent)` }"
+        :style="{ backgroundColor: hex, boxShadow: `0 1px 2px color-mix(in srgb, ${ctx.border} 20%, ${hex})` }"
       />
     </div>
 
@@ -209,7 +209,7 @@ defineProps<{
         class="theme-token-preview__neon-dot"
         :style="{
           backgroundColor: hex,
-          boxShadow: `0 0 14px color-mix(in srgb, ${hex} 65%, transparent)`,
+          boxShadow: `0 0 14px color-mix(in srgb, ${hex} 65%, ${ctx.bgSecondary})`,
         }"
       />
     </div>
@@ -269,7 +269,7 @@ defineProps<{
   display: flex;
   align-items: stretch;
   justify-content: stretch;
-  border: 1px solid color-mix(in srgb, var(--fg-muted) 18%, transparent);
+  border: 1px solid color-mix(in srgb, var(--fg-muted) 18%, var(--paper));
 }
 
 .theme-token-preview__fill {

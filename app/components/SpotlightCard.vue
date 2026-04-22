@@ -16,7 +16,7 @@ const handleMouseMove = (e: MouseEvent) => {
 <template>
   <div
     ref="cardRef"
-    class="spotlight-card group relative overflow-hidden rounded-lg bg-[var(--pastel-peach)] text-[color:var(--pastel-ink)] transition-all duration-300 hover:bg-[var(--pastel-mint)]"
+    class="spotlight-card group relative overflow-hidden rounded-lg text-[color:var(--pastel-ink)]"
     @mousemove="handleMouseMove"
     :style="{
       '--mouse-x': `${mouseX}px`,
@@ -25,7 +25,7 @@ const handleMouseMove = (e: MouseEvent) => {
   >
     <!-- Spotlight Overlay -->
     <div
-      class="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+      class="spotlight-card__glow pointer-events-none absolute -inset-px opacity-0 group-hover:opacity-100"
       :style="{
         background: `radial-gradient(400px circle at var(--mouse-x) var(--mouse-y), var(--accent-soft), transparent 40%)`,
         opacity: 0.15
@@ -40,5 +40,36 @@ const handleMouseMove = (e: MouseEvent) => {
 </template>
 
 <style scoped>
-/* Scoped styles if needed */
+.spotlight-card {
+  background-color: var(--pastel-peach);
+  transition:
+    background-color 0.28s cubic-bezier(0.25, 1, 0.5, 1),
+    box-shadow 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.24s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.spotlight-card:hover {
+  background-color: var(--pastel-mint);
+  transform: translate3d(0, -2px, 0);
+  box-shadow: var(--shadow-md);
+}
+
+.spotlight-card__glow {
+  transition: opacity 0.32s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spotlight-card {
+    transition: background-color 0.01ms;
+  }
+
+  .spotlight-card:hover {
+    transform: none;
+    box-shadow: none;
+  }
+
+  .spotlight-card__glow {
+    transition: none;
+  }
+}
 </style>
