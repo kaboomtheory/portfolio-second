@@ -31,6 +31,13 @@ const props = withDefaults(
 
 const isMailto = computed(() => Boolean(props.href?.toLowerCase().startsWith('mailto:')))
 
+/** http(s) links only: same-site paths, hashes, mailto, tel, and files stay in-page / same tab. */
+const isExternalHttpHref = computed(() => /^https?:\/\//i.test((props.href ?? '').trim()))
+
+const opensInNewTab = computed(
+  () => !props.download && !isMailto.value && isExternalHttpHref.value,
+)
+
 const secondaryBg = computed(() =>
   props.secondary && props.elevatedSecondary ? 'var(--btn-secondary-bg)' : 'transparent',
 )
@@ -78,8 +85,8 @@ const inlineStyle = computed(() => {
   <a
     v-if="href"
     :href="href"
-    :target="download || isMailto ? undefined : '_blank'"
-    :rel="download || isMailto ? undefined : 'noopener noreferrer'"
+    :target="download || isMailto || !opensInNewTab ? undefined : '_blank'"
+    :rel="download || isMailto || !opensInNewTab ? undefined : 'noopener noreferrer'"
     :download="download || undefined"
     :class="btnClass"
     :style="inlineStyle"
@@ -90,9 +97,11 @@ const inlineStyle = computed(() => {
           v-if="withDot"
           class="inline-block h-2 w-2 shrink-0 rounded-full cta-attention-dot"
         />
-        <slot name="icon">
-          <span class="icon-wrapper" />
-        </slot>
+        <span class="cta-icon-wrap">
+          <slot name="icon">
+            <span class="icon-wrapper" />
+          </slot>
+        </span>
         {{ label }}
       </span>
     </template>
@@ -101,12 +110,14 @@ const inlineStyle = computed(() => {
         v-if="withDot"
         class="inline-block h-2 w-2 shrink-0 rounded-full cta-attention-dot"
       />
-      <slot name="icon">
-        <span class="icon-wrapper" />
-      </slot>
+      <span class="cta-icon-wrap">
+        <slot name="icon">
+          <span class="icon-wrapper" />
+        </slot>
+      </span>
       {{ label }}
     </template>
-    <span v-if="!download && !isMailto" class="sr-only">(opens in new tab)</span>
+    <span v-if="opensInNewTab" class="sr-only">(opens in new tab)</span>
   </a>
   <NuxtLink
     v-else-if="to"
@@ -120,9 +131,11 @@ const inlineStyle = computed(() => {
           v-if="withDot"
           class="inline-block h-2 w-2 shrink-0 rounded-full cta-attention-dot"
         />
-        <slot name="icon">
-          <span class="icon-wrapper" />
-        </slot>
+        <span class="cta-icon-wrap">
+          <slot name="icon">
+            <span class="icon-wrapper" />
+          </slot>
+        </span>
         {{ label }}
       </span>
     </template>
@@ -131,9 +144,11 @@ const inlineStyle = computed(() => {
         v-if="withDot"
         class="inline-block h-2 w-2 shrink-0 rounded-full cta-attention-dot"
       />
-      <slot name="icon">
-        <span class="icon-wrapper" />
-      </slot>
+      <span class="cta-icon-wrap">
+        <slot name="icon">
+          <span class="icon-wrapper" />
+        </slot>
+      </span>
       {{ label }}
     </template>
   </NuxtLink>
@@ -227,6 +242,32 @@ const inlineStyle = computed(() => {
 /* Icon wrapper to maintain spacing */
 .icon-wrapper:empty {
   display: none;
+}
+
+/* B3: Icon micro-animation on hover */
+.cta-icon-wrap {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 240ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.cta-button--primary-surface:hover .cta-icon-wrap {
+  transform: translateY(-1px) scale(1.1);
+}
+
+.btn-attention:is(:hover, :focus-visible) .cta-icon-wrap {
+  transform: scale(1.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cta-icon-wrap {
+    transition: none;
+  }
+
+  .cta-button--primary-surface:hover .cta-icon-wrap,
+  .btn-attention:is(:hover, :focus-visible) .cta-icon-wrap {
+    transform: none;
+  }
 }
 
 </style>

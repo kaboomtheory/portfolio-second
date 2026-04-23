@@ -32,15 +32,16 @@
 
   /* Motion */
   --motion-ease-reveal: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --motion-ease-hero: cubic-bezier(0.16, 1, 0.3, 1);
   --motion-ease-out: var(--motion-ease-reveal);
   --motion-ease-standard: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --duration-reveal: 320ms;
 
-  /* Pastel tiles (light = bright fills; dark = muted fills in :root.dark) + ink on tiles */
-  --pastel-peach: #ffe9cf;
-  --pastel-mint: #def7dc;
-  --pastel-sky: #cfeeff;
-  --pastel-blush: #ffe1fb;
+  /* Pastel tiles (same peach / mint / sky / blush in light and dark; dark differs in shell + ink) */
+  --pastel-peach: #ffd4b3;
+  --pastel-mint: #c5f0bd;
+  --pastel-sky: #b0e6ff;
+  --pastel-blush: #ffcaf3;
   --pastel-pink: var(--pastel-blush);
   --pastel-ink: #000000;
   --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, var(--paper));
@@ -61,6 +62,8 @@
   --signal-ink: #ffffff;
 
   --shell-ui-bg: var(--paper);
+  /* Layout shell: gradient toward slightly deeper base */
+  --shell-ui-bg-deep: color-mix(in srgb, var(--ink) 14%, var(--shell-ui-bg));
   --bg-primary: var(--paper);
   /* Box surfaces: peach → mint → sky (project cards, etc.) */
   --bg-secondary: var(--pastel-peach);
@@ -127,22 +130,24 @@
   --signal: #F1A06E;
   --signal-ink: #212530;
 
-  /* Tiles — direct palette values: peach · lime · sky · lavender */
-  --pastel-peach: #F1A06E;
-  --pastel-mint: #C3F27E;
-  --pastel-sky: #A5D9F7;
-  --pastel-blush: #C2A2F9;
+  /* Tiles — slightly punchier than light so bands read clearly on navy shell */
+  --pastel-peach: #f9c095;
+  --pastel-mint: #a8ec9c;
+  --pastel-sky: #9edaf5;
+  --pastel-blush: #fbbcec;
   --pastel-pink: var(--pastel-blush);
-  /* Type on bright tiles = dark navy (tiles are light fills) */
-  --pastel-ink: #212530;
-  --pastel-ink-muted: color-mix(in srgb, #212530 62%, var(--pastel-peach));
-  /* Dark accent inks within each tile band */
-  --signal-sky: #1A3C58;
-  --signal-mint: #2A4820;
-  --signal-peach: #5A3018;
-  --signal-blush: #3C2070;
+  /* Type on pastel tiles (same as light) */
+  --pastel-ink: #000000;
+  --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, #ffffff);
+  /* Accent inks on pastel bands (same as light) */
+  --signal-sky: #1a4a6e;
+  --signal-mint: #1f5c42;
+  --signal-peach: #5c3d26;
+  --signal-blush: #6b2a52;
 
   --shell-ui-bg: var(--paper);
+  /* Dark shell: fade toward deeper navy (ink is light; do not use it to darken) */
+  --shell-ui-bg-deep: color-mix(in srgb, #000 42%, var(--shell-ui-bg));
   --bg-primary: var(--paper);
   --bg-secondary: var(--pastel-peach);
   --bg-tertiary: var(--pastel-mint);
@@ -172,7 +177,7 @@
   --btn-primary-fg: var(--signal-ink);
   --btn-attention-bg: var(--pastel-peach);
   --btn-attention-fg: var(--pastel-ink);
-  --surface-interactive: color-mix(in srgb, var(--pastel-sky) 88%, var(--pastel-peach));
+  --surface-interactive: var(--pastel-sky);
   --btn-secondary-bg: transparent;
   --chrome-ring-idle: var(--ink);
   --shadow-sm: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper));
@@ -180,11 +185,11 @@
   --shadow-lg: 0 0 0 1px color-mix(in srgb, var(--ink) 18%, var(--paper));
   --project-card-surface: var(--pastel-peach);
   --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 92%, var(--pastel-ink));
-  --project-card-border: color-mix(in srgb, var(--pastel-ink) 40%, var(--project-card-surface, var(--pastel-peach)));
+  --project-card-border: color-mix(in srgb, var(--pastel-ink) 14%, var(--project-card-surface, var(--pastel-peach)));
   /* Flat hairlines only (no diffuse shadow)—matches light mode treatment. */
   --project-card-shadow-idle: var(--shadow-sm);
   --project-card-shadow-hover: var(--shadow-md);
-  --card-border: 1px solid color-mix(in srgb, var(--pastel-ink) 36%, var(--pastel-peach));
+  --card-border: 1px solid var(--rule-token);
   --card-ring: none;
   --rule: var(--rule-token);
   --rule-soft: color-mix(in srgb, var(--ink) 18%, var(--paper));
@@ -192,6 +197,47 @@
   --theme-toggle-knob-fg: var(--paper);
   --theme-toggle-rail-emphasis: var(--ink);
   --theme-toggle-rail-muted: var(--ink-mid);
+  /* Layout circuit grid (see default.vue `.layout-circuit-bg`) — explicit ink alpha, no color-mix(transparent). */
+  --layout-circuit-grid-line-alpha: 0.05;
+  --layout-circuit-grid-dot-alpha: 0.08;
+}
+
+/* Shell circuit grid: global so dark overrides scoped light gradients (rgba gray on navy was invisible). */
+:root.dark .layout-circuit-bg,
+html.dark .layout-circuit-bg {
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 19px,
+      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 19px,
+      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 20px,
+      transparent 20px,
+      transparent 39px,
+      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 39px,
+      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 40px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 19px,
+      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 19px,
+      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 20px,
+      transparent 20px,
+      transparent 39px,
+      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 39px,
+      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 40px
+    ),
+    radial-gradient(
+      circle at 20px 20px,
+      rgb(from var(--ink) r g b / var(--layout-circuit-grid-dot-alpha)) 2px,
+      transparent 2px
+    ),
+    radial-gradient(
+      circle at 40px 40px,
+      rgb(from var(--ink) r g b / var(--layout-circuit-grid-dot-alpha)) 2px,
+      transparent 2px
+    );
 }
 
 /* Swiss flat attention pill (CTA + back-to-top) — pastel fill + black label */
@@ -207,7 +253,7 @@
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, var(--btn-attention-bg, var(--pastel-peach)));
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, var(--btn-attention-bg, var(--pastel-peach))) !important;
   border-radius: var(--radius-control);
   color: var(--btn-attention-fg, var(--pastel-ink));
   background: var(--btn-attention-bg, var(--pastel-peach));
@@ -237,7 +283,7 @@
 .cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible),
 .back-to-top.cta-attention-pill:is(:hover, :focus-visible) {
   background: var(--pastel-ink);
-  border-color: var(--pastel-ink);
+  border-color: var(--pastel-ink) !important;
   color: var(--btn-attention-bg, var(--pastel-peach));
   box-shadow: none;
 }
@@ -250,7 +296,7 @@
 .cta-button.btn-attention.cta-attention-pill:active,
 .back-to-top.cta-attention-pill:active {
   background: color-mix(in srgb, var(--pastel-ink) 88%, var(--btn-attention-bg, var(--pastel-peach)));
-  border-color: var(--pastel-ink);
+  border-color: var(--pastel-ink) !important;
   color: var(--btn-attention-bg, var(--pastel-peach));
   transform: scale(0.98);
   box-shadow: none;
@@ -361,7 +407,8 @@
 /* Pastel-ink-based hairlines — bump alpha in dark so borders stay visible on fills */
 :root.dark .cta-button.btn-attention.cta-attention-pill,
 :root.dark .back-to-top.cta-attention-pill {
-  border-color: color-mix(in srgb, var(--pastel-ink) 42%, var(--btn-attention-bg, var(--pastel-peach)));
+  border-color: color-mix(in srgb, var(--pastel-ink) 42%, var(--btn-attention-bg, var(--pastel-peach)))
+    !important;
 }
 
 .skip-link {
@@ -393,58 +440,25 @@ section[id] {
   scroll-margin-top: var(--scroll-anchor-offset);
 }
 
-@keyframes section-arrival-lift {
-  /* Opacity + ring only — avoids fighting `.reveal-on-scroll` transform transitions. */
+@keyframes section-nav-spotlight-pulse {
+  /* Inset ring only — no section opacity (avoids flashing children). */
   0% {
-    opacity: 0.82;
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 0%, var(--paper));
+    box-shadow: inset 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
   }
 
-  42% {
-    opacity: 1;
+  40% {
     box-shadow:
-      0 0 0 1px color-mix(in srgb, var(--accent) 28%, var(--paper)),
-      0 0 2.25rem color-mix(in srgb, var(--accent) 22%, var(--paper));
+      inset 0 0 0 1px color-mix(in srgb, var(--accent) 32%, var(--paper)),
+      0 0 1.5rem color-mix(in srgb, var(--accent) 14%, transparent);
   }
 
   100% {
-    opacity: 1;
-    box-shadow: 0 0 0 0 transparent;
+    box-shadow: inset 0 0 0 0 transparent;
   }
 }
 
-@keyframes section-arrival-wash {
-  0% {
-    opacity: 0;
-    transform: scaleY(0.92);
-  }
-
-  30% {
-    opacity: 0.2;
-  }
-
-  100% {
-    opacity: 0;
-    transform: scaleY(1);
-  }
-}
-
-section[id].section-arrival {
-  animation: section-arrival-lift 620ms cubic-bezier(0.18, 0.84, 0.22, 1) both;
-}
-
-section[id].section-arrival::after {
-  content: '';
-  position: absolute;
-  inset: -0.35rem 0;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    color-mix(in srgb, var(--accent) 16%, var(--paper)) 0%,
-    color-mix(in srgb, var(--accent) 9%, var(--paper)) 50%,
-    var(--paper) 100%
-  );
-  animation: section-arrival-wash 620ms cubic-bezier(0.18, 0.84, 0.22, 1) both;
+section[id].section-nav-spotlight {
+  animation: section-nav-spotlight-pulse 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .layout-header-pad {
@@ -875,8 +889,9 @@ pre,
   border: 1px solid color-mix(in srgb, var(--pastel-ink) 16%, var(--paper));
   box-shadow: none;
   transition:
-    background-color 180ms var(--motion-ease-reveal),
-    color 150ms ease,
+    background-color 180ms var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
+    color 180ms var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
+    border-color 180ms var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
     box-shadow 180ms ease;
 }
 
@@ -1016,7 +1031,7 @@ pre,
 /* Scroll-triggered section entrance (IntersectionObserver toggles --visible) */
 .reveal-on-scroll {
   opacity: 0;
-  transform: translateY(8px);
+  transform: translateY(12px);
   transition:
     opacity var(--duration-reveal) var(--motion-ease-reveal),
     transform var(--duration-reveal) var(--motion-ease-reveal);
@@ -1025,6 +1040,52 @@ pre,
 .reveal-on-scroll--visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+/* A5: Section marker slide-in when parent section reveals */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-on-scroll--visible .section-marker {
+    animation: marker-slide-in 380ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)) both;
+    animation-delay: 80ms;
+  }
+
+  @keyframes marker-slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+/* Home `/` first paint: backdrop + nav settle in with the hero (see `default.vue` `data-home-landing`). */
+@keyframes home-circuit-land {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes home-navbar-land {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-home-landing='true'] .layout-circuit-bg {
+    opacity: 0;
+    animation: home-circuit-land 880ms var(--motion-ease-hero) 90ms forwards;
+  }
+
+  html[data-home-landing='true'] .navbar.navbar--home-hero .navbar-inner {
+    opacity: 0;
+    transform: translate3d(0, -7px, 0);
+    animation: home-navbar-land 560ms var(--motion-ease-hero) 45ms forwards;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1050,13 +1111,8 @@ pre,
     transition: none;
   }
 
-  section[id].section-arrival {
+  section[id].section-nav-spotlight {
     animation: none;
-  }
-
-  section[id].section-arrival::after {
-    animation: none;
-    opacity: 0;
   }
 
   .btn-attention {

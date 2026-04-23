@@ -166,8 +166,8 @@ useSeoMeta({
       :hero-title="heroTitle"
       :hero-taglines="heroTaglines"
       :linkedin-href="linkedinHref"
-      :availability-mailto="availabilityMailto"
-      :availability-cta-label="availabilityCtaLabel"
+      intro-cta-href="/#story"
+      intro-cta-label="Resume"
       :availability-line="hero.availabilityText"
       :tagline-one-line="heroTaglineOneLine"
     />

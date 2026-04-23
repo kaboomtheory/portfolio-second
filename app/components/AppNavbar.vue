@@ -4,6 +4,7 @@ import { useHomeSectionScroll } from '~/composables/useHomeSectionScroll'
 import { useSharedScrollY, useScrollLayoutSubscription } from '~/composables/useScrollLayoutBus'
 
 const route = useRoute()
+const router = useRouter()
 const { scrollToHomeHash } = useHomeSectionScroll()
 
 const effectiveHash = computed(() => {
@@ -75,18 +76,102 @@ function parseInPageHash(path: string): { pathOnly: string, hash: string } | nul
   }
 }
 
-/** Re-scroll + replay arrival when the primary link target is already active (Vue Router no-op). */
+/**
+ * Same-page hash nav: the default `<a href="/#..">` behavior is an instant jump.
+ * We prevent that, let the router update the URL, then `app.vue` + Lenis run the
+ * glide. Re-clicking the current section re-scrolls and replays the spotlight.
+ */
 function onInPageNavClick(e: MouseEvent, path: string) {
   const parsed = parseInPageHash(path)
   if (!parsed) return
   const { pathOnly, hash } = parsed
   if (route.path !== pathOnly) return
 
-  if (route.hash !== hash) return
-
   e.preventDefault()
-  scrollToHomeHash(hash)
+
+  if (isNavActive(path)) {
+    void scrollToHomeHash(hash)
+    return
+  }
+
+  void router.push({ path: pathOnly, hash })
 }
+
+/** Sliding accent under Home / Work / About — measured so it never fights border-radius. */
+const inPageTrackRef = ref<HTMLElement | null>(null)
+const inPageMarkerStyle = ref<Record<string, string>>({
+  left: '0px',
+  top: '0px',
+  width: '0px',
+  height: '2px',
+  opacity: '0',
+})
+
+function updateInPageMarker() {
+  if (!import.meta.client) return
+  const track = inPageTrackRef.value
+  if (!track) return
+  const active = track.querySelector<HTMLElement>('.nav-link--active')
+  if (!active) {
+    inPageMarkerStyle.value = {
+      left: '0px',
+      top: '0px',
+      width: '0px',
+      height: '2px',
+      opacity: '0',
+    }
+    return
+  }
+  const t = track.getBoundingClientRect()
+  const a = active.getBoundingClientRect()
+  const h = 2
+  inPageMarkerStyle.value = {
+    left: `${a.left - t.left}px`,
+    top: `${a.top - t.top + a.height - h}px`,
+    width: `${a.width}px`,
+    height: `${h}px`,
+    opacity: '1',
+  }
+}
+
+let inPageTrackResize: ResizeObserver | null = null
+
+onMounted(() => {
+  if (!import.meta.client) return
+  nextTick(() => {
+    requestAnimationFrame(() => {
+      updateInPageMarker()
+      if (inPageTrackRef.value) {
+        inPageTrackResize = new ResizeObserver(() => updateInPageMarker())
+        inPageTrackResize.observe(inPageTrackRef.value)
+      }
+    })
+  })
+  window.addEventListener('resize', updateInPageMarker)
+  if ('fonts' in document) {
+    void document.fonts.ready.then(() => {
+      nextTick(() => requestAnimationFrame(updateInPageMarker))
+    })
+  }
+})
+
+onUnmounted(() => {
+  inPageTrackResize?.disconnect()
+  inPageTrackResize = null
+  if (import.meta.client) {
+    window.removeEventListener('resize', updateInPageMarker)
+  }
+})
+
+watch(
+  [effectiveHash, isCondensed, isHomeHero, () => route.path],
+  () => {
+    nextTick(() => {
+      requestAnimationFrame(updateInPageMarker)
+    })
+  },
+  { flush: 'post' },
+)
 </script>
 
 <template>
@@ -113,16 +198,19 @@ function onInPageNavClick(e: MouseEvent, path: string) {
         </NuxtLink>
 
         <nav class="navbar-nav" aria-label="Primary">
-          <NuxtLink
-            v-for="item in navItems"
-            :key="item.path"
-            :to="navTarget(item.path)"
-            class="nav-link"
-            :class="{ 'nav-link--active': isNavActive(item.path) }"
-            @click="onInPageNavClick($event, item.path)"
-          >
-            {{ item.title }}
-          </NuxtLink>
+          <div ref="inPageTrackRef" class="navbar-inpage">
+            <NuxtLink
+              v-for="item in navItems"
+              :key="item.path"
+              :to="navTarget(item.path)"
+              class="nav-link"
+              :class="{ 'nav-link--active': isNavActive(item.path) }"
+              @click="onInPageNavClick($event, item.path)"
+            >
+              {{ item.title }}
+            </NuxtLink>
+            <span class="navbar-inpage__marker" :style="inPageMarkerStyle" aria-hidden="true" />
+          </div>
           <ThemeToggle />
         </nav>
       </div>
@@ -261,18 +349,54 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
-  gap: 0.125rem;
+  gap: 0.5rem;
   min-width: 0;
   flex: 1 1 auto;
 }
 
 @media (min-width: 640px) {
   .navbar-nav {
+    gap: 0.65rem;
+  }
+}
+
+.navbar-inpage {
+  position: relative;
+  z-index: 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.125rem;
+  min-width: 0;
+}
+
+@media (min-width: 640px) {
+  .navbar-inpage {
     gap: 0.35rem;
   }
 }
 
+.navbar-inpage__marker {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 0;
+  z-index: 0;
+  box-sizing: border-box;
+  border-radius: 1px;
+  background-color: var(--fg-primary);
+  pointer-events: none;
+  transition:
+    left 0.6s cubic-bezier(0.45, 0.1, 0.2, 1),
+    top 0.6s cubic-bezier(0.45, 0.1, 0.2, 1),
+    width 0.6s cubic-bezier(0.45, 0.1, 0.2, 1),
+    opacity 0.35s cubic-bezier(0.45, 0.1, 0.2, 1);
+}
+
 .nav-link {
+  position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -288,9 +412,7 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   text-decoration: none;
   transition:
     color 0.2s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
-    background-color 0.22s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
-    box-shadow 0.22s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1)),
-    transform 0.2s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
+    background-color 0.22s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
 }
 
 @media (min-width: 640px) {
@@ -304,12 +426,11 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 .nav-link:hover {
   color: var(--fg-primary);
   background-color: color-mix(in srgb, var(--accent) 12%, var(--paper));
-  transform: translate3d(0, -1px, 0);
   box-shadow: 0 0.2rem 0.65rem color-mix(in srgb, var(--fg-primary) 6%, transparent);
 }
 
 .nav-link:active {
-  transform: translate3d(0, 0, 0) scale(0.98);
+  filter: brightness(0.95);
   transition-duration: 0.1s;
 }
 
@@ -317,20 +438,16 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   color: var(--fg-primary);
   font-weight: 600;
   background-color: transparent;
-  box-shadow: inset 0 -2px 0 0 var(--fg-primary);
-  border-radius: 0;
 }
 
 .nav-link.nav-link--active:hover {
   color: var(--fg-primary);
   background-color: color-mix(in srgb, var(--accent) 8%, var(--paper));
-  box-shadow: inset 0 -2px 0 0 var(--fg-primary);
 }
 
 :root.dark .nav-link--active,
 :root.dark .nav-link.nav-link--active:hover {
   color: var(--fg-primary);
-  box-shadow: inset 0 -2px 0 0 var(--fg-primary);
 }
 
 /* Homepage: no painted bar — hero green shows through; condensed stays transparent too */
@@ -373,13 +490,11 @@ function onInPageNavClick(e: MouseEvent, path: string) {
 
 .navbar--home-hero .nav-link.nav-link--active {
   color: var(--fg-primary);
-  box-shadow: inset 0 -2px 0 0 var(--fg-primary);
 }
 
 .navbar--home-hero .nav-link.nav-link--active:hover {
   color: var(--fg-primary);
   background-color: color-mix(in srgb, var(--accent) 10%, var(--paper));
-  box-shadow: inset 0 -2px 0 0 var(--fg-primary);
 }
 
 .navbar--home-hero :deep(.theme-toggle) {
@@ -476,7 +591,8 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   .navbar-brand,
   .navbar-brand-avatar,
   .navbar-inner,
-  .nav-link {
+  .nav-link,
+  .navbar-inpage__marker {
     transition: none;
   }
 
@@ -486,6 +602,7 @@ function onInPageNavClick(e: MouseEvent, path: string) {
   .nav-link:active {
     transform: none;
     box-shadow: none;
+    filter: none;
   }
 
   .navbar-brand:hover .navbar-brand-avatar {

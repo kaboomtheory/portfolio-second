@@ -1,5 +1,14 @@
 <script setup lang="ts">
 const route = useRoute()
+const router = useRouter()
+
+const transitionName = ref('layout-page')
+
+router.beforeEach((to, from) => {
+  const involvesProject =
+    to.path.startsWith('/projects/') || from.path.startsWith('/projects/')
+  transitionName.value = involvesProject ? 'project-blur' : 'layout-page'
+})
 
 useHead(() => ({
   htmlAttrs: {
@@ -9,10 +18,10 @@ useHead(() => ({
 </script>
 
 <template>
-  <div
-    class="layout-root relative min-h-screen w-full bg-[var(--shell-ui-bg)] text-[var(--fg-primary)]"
-  >
-    <!-- Circuit board pattern (fades out by ~25% from top) -->
+  <div class="layout-root relative min-h-screen w-full text-[var(--fg-primary)]">
+    <ScrollProgress />
+
+    <!-- Circuit board pattern (full strength top half; fades over bottom half) -->
     <div
       class="layout-circuit-bg pointer-events-none absolute inset-0 z-0"
       aria-hidden="true"
@@ -26,9 +35,13 @@ useHead(() => ({
         <div
           class="layout-main-shell relative z-[1] container mx-auto flex min-h-screen w-full min-w-0 max-w-full flex-col px-0 pb-6 md:max-w-[82rem]"
         >
-          <main id="main-content" class="min-w-0 w-full" tabindex="-1">
-            <Transition name="layout-page" mode="default">
-              <div :key="route.path" class="layout-page-frame min-w-0 w-full">
+          <main id="main-content" class="relative min-w-0 w-full" tabindex="-1">
+            <Transition :name="transitionName" mode="default">
+              <div
+                :key="route.path"
+                class="layout-page-frame min-w-0 w-full"
+                :class="{ 'layout-page-frame--home-landing': route.path === '/' }"
+              >
                 <slot />
               </div>
             </Transition>
@@ -47,6 +60,12 @@ useHead(() => ({
 <style scoped>
 .layout-root {
   background-color: var(--shell-ui-bg, var(--paper));
+  background-image: linear-gradient(
+    180deg,
+    var(--shell-ui-bg, var(--paper)) 0%,
+    var(--shell-ui-bg-deep, var(--paper-sunk)) 100%
+  );
+  background-repeat: no-repeat;
   color: var(--fg-primary);
 }
 
@@ -56,83 +75,66 @@ useHead(() => ({
       0deg,
       transparent,
       transparent 19px,
-      rgba(75, 85, 99, 0.08) 19px,
-      rgba(75, 85, 99, 0.08) 20px,
+      rgba(75, 85, 99, 0.05) 19px,
+      rgba(75, 85, 99, 0.05) 20px,
       transparent 20px,
       transparent 39px,
-      rgba(75, 85, 99, 0.08) 39px,
-      rgba(75, 85, 99, 0.08) 40px
+      rgba(75, 85, 99, 0.05) 39px,
+      rgba(75, 85, 99, 0.05) 40px
     ),
     repeating-linear-gradient(
       90deg,
       transparent,
       transparent 19px,
-      rgba(75, 85, 99, 0.08) 19px,
-      rgba(75, 85, 99, 0.08) 20px,
+      rgba(75, 85, 99, 0.05) 19px,
+      rgba(75, 85, 99, 0.05) 20px,
       transparent 20px,
       transparent 39px,
-      rgba(75, 85, 99, 0.08) 39px,
-      rgba(75, 85, 99, 0.08) 40px
+      rgba(75, 85, 99, 0.05) 39px,
+      rgba(75, 85, 99, 0.05) 40px
     ),
     radial-gradient(
       circle at 20px 20px,
-      rgba(55, 65, 81, 0.12) 2px,
+      rgba(55, 65, 81, 0.08) 2px,
       transparent 2px
     ),
     radial-gradient(
       circle at 40px 40px,
-      rgba(55, 65, 81, 0.12) 2px,
+      rgba(55, 65, 81, 0.08) 2px,
       transparent 2px
     );
   background-size: 40px 40px, 40px 40px, 40px 40px, 40px 40px;
+  /* Bottom 50%: ease-out → strong drop after midpoint, gentle final feather */
   -webkit-mask-image: linear-gradient(
     to bottom,
     #000 0%,
-    transparent 25%
+    #000 50%,
+    rgb(0 0 0 / 0.42) 66%,
+    rgb(0 0 0 / 0.14) 82%,
+    rgb(0 0 0 / 0.04) 94%,
+    transparent 100%
   );
-  mask-image: linear-gradient(to bottom, #000 0%, transparent 25%);
-}
-
-:global(html.dark) .layout-circuit-bg {
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 19px,
-      color-mix(in srgb, var(--ink) 24%, transparent) 19px,
-      color-mix(in srgb, var(--ink) 24%, transparent) 20px,
-      transparent 20px,
-      transparent 39px,
-      color-mix(in srgb, var(--ink) 24%, transparent) 39px,
-      color-mix(in srgb, var(--ink) 24%, transparent) 40px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 19px,
-      color-mix(in srgb, var(--ink) 24%, transparent) 19px,
-      color-mix(in srgb, var(--ink) 24%, transparent) 20px,
-      transparent 20px,
-      transparent 39px,
-      color-mix(in srgb, var(--ink) 24%, transparent) 39px,
-      color-mix(in srgb, var(--ink) 24%, transparent) 40px
-    ),
-    radial-gradient(
-      circle at 20px 20px,
-      color-mix(in srgb, var(--ink) 37.5%, transparent) 2px,
-      transparent 2px
-    ),
-    radial-gradient(
-      circle at 40px 40px,
-      color-mix(in srgb, var(--ink) 37.5%, transparent) 2px,
-      transparent 2px
-    );
+  mask-image: linear-gradient(
+    to bottom,
+    #000 0%,
+    #000 50%,
+    rgb(0 0 0 / 0.42) 66%,
+    rgb(0 0 0 / 0.14) 82%,
+    rgb(0 0 0 / 0.04) 94%,
+    transparent 100%
+  );
 }
 
 .layout-page-enter-active {
   transition:
-    opacity 0.24s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1)),
-    transform 0.24s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
+    opacity 0.32s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform 0.32s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.layout-page-frame--home-landing.layout-page-enter-active {
+  /* Shorter than generic layout enter so it does not stack awkwardly with scroll reveals */
+  transition-duration: 0.26s;
+  transition-timing-function: var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .layout-page-leave-active {
@@ -144,7 +146,11 @@ useHead(() => ({
 .layout-page-enter-from,
 .layout-page-leave-to {
   opacity: 0;
-  transform: translate3d(0, 8px, 0);
+  transform: translate3d(0, 8px, 0) scale(0.995);
+}
+
+.layout-page-frame--home-landing.layout-page-enter-from {
+  transform: translate3d(0, 5px, 0) scale(0.997);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -153,10 +159,62 @@ useHead(() => ({
     transition-duration: 0.01ms;
   }
 
+  .layout-page-frame--home-landing.layout-page-enter-active {
+    transition-duration: 0.01ms;
+  }
+
   .layout-page-enter-from,
   .layout-page-leave-to {
     opacity: 1;
     transform: none;
+  }
+
+  .layout-page-frame--home-landing.layout-page-enter-from {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.project-blur-enter-active,
+.project-blur-leave-active {
+  will-change: opacity, filter, transform;
+}
+
+.project-blur-leave-active {
+  position: absolute;
+  inset: 0;
+  transition:
+    opacity 0.28s cubic-bezier(0.7, 0, 0.84, 0),
+    filter 0.28s cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+.project-blur-enter-active {
+  transition:
+    opacity 0.34s cubic-bezier(0.16, 1, 0.3, 1),
+    filter 0.34s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.project-blur-leave-to {
+  opacity: 0;
+  filter: blur(6px);
+}
+
+.project-blur-enter-from {
+  opacity: 0;
+  filter: blur(6px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .project-blur-leave-active,
+  .project-blur-enter-active {
+    transition-duration: 0.01ms;
+    position: static;
+  }
+
+  .project-blur-leave-to,
+  .project-blur-enter-from {
+    opacity: 1;
+    filter: none;
   }
 }
 </style>

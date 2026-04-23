@@ -1,5 +1,8 @@
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+import { useScrollRevealGroup } from '~/composables/useScrollReveal'
+
+const props = defineProps<{
   experienceItems: {
     title: string
     company: string
@@ -9,6 +12,11 @@ defineProps<{
   }[]
   groups: { category: string; items: string[] }[]
 }>()
+
+const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGroup(
+  computed(() => props.experienceItems.length),
+  { staggerDelay: 80, threshold: 0.08, rootMargin: '0px 0px -40px 0px' },
+)
 </script>
 
 <template>
@@ -30,11 +38,12 @@ defineProps<{
             Experience
           </h2>
 
-          <div v-if="experienceItems.length" class="experience-list">
+          <div v-if="experienceItems.length" ref="xpListRef" class="experience-list">
             <article
               v-for="(item, index) in experienceItems"
               :key="`${item.company}-${item.year}-${index}`"
               class="experience-row"
+              :class="{ 'xp-row--visible': xpVisible[index] }"
             >
               <SanityImage
                 v-if="item.image"
@@ -79,9 +88,12 @@ defineProps<{
             <div v-for="group in groups" :key="group.category" class="capability-group">
               <h3 class="capability-group-title mono">{{ group.category }}</h3>
               <div class="capability-tags">
-                <span v-for="item in group.items" :key="item" class="capability-tag">
-                  {{ item }}
-                </span>
+                <span
+                  v-for="(item, tagIndex) in group.items"
+                  :key="item"
+                  class="capability-tag"
+                  :style="{ '--tag-i': tagIndex }"
+                >{{ item }}</span>
               </div>
             </div>
           </div>
@@ -275,6 +287,37 @@ defineProps<{
   gap: 0.4rem;
 }
 
+/* ── A1: Experience row stagger reveal ───────────────────────────────── */
+.experience-row {
+  opacity: 0;
+  transform: translateY(8px);
+  transition:
+    opacity 360ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform 360ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    background-color 200ms var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
+    border-left-color 200ms var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94));
+  border-left: 2px solid transparent;
+}
+
+.experience-row.xp-row--visible {
+  opacity: 1;
+  transform: none;
+}
+
+.experience-row:hover {
+  background-color: color-mix(in srgb, var(--signal) 5%, var(--bg-primary));
+  border-left-color: var(--signal);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .experience-row {
+    opacity: 1;
+    transform: none;
+    transition: background-color 200ms ease, border-left-color 200ms ease;
+  }
+}
+
+/* ── A2: Capability tag hover + stagger ──────────────────────────────── */
 .capability-tag {
   padding: 0.35rem 0.65rem;
   font-family: var(--font-mono);
@@ -285,5 +328,37 @@ defineProps<{
   color: var(--fg-secondary);
   border: 1px solid var(--rule-soft);
   background: var(--bg-primary);
+  cursor: default;
+  transition:
+    transform 180ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    border-color 180ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    background-color 180ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    color 180ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.capability-tag:hover {
+  transform: translateY(-1px);
+  border-color: var(--signal);
+  background-color: color-mix(in srgb, var(--signal) 6%, var(--bg-primary));
+  color: var(--fg-primary);
+}
+
+.capability-tag:active {
+  transform: scale(0.97);
+  transition-duration: 100ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .capability-tag {
+    transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+  }
+
+  .capability-tag:hover {
+    transform: none;
+  }
+
+  .capability-tag:active {
+    transform: none;
+  }
 }
 </style>

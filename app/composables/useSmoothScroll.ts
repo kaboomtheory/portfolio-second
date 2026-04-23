@@ -1,5 +1,5 @@
-/** In-app hash / anchor scrolling (see app.vue). */
-export const SMOOTH_SCROLL_HASH_MS = 1320
+/** In-app hash / anchor scrolling (see app.vue) — long enough to read as a glide, not a snap. */
+export const SMOOTH_SCROLL_HASH_MS = 1200
 
 export type SmoothScrollPreset = 'default' | 'hashNav'
 
@@ -8,17 +8,15 @@ export interface SmoothScrollOptions {
   offset?: number
   easing?: (t: number) => number
   preset?: SmoothScrollPreset
+  /** Lenis only: when true, blocks user wheel/touch until the scroll finishes. */
+  lock?: boolean
   /** Fires after scroll reaches the target (Lenis, rAF fallback, or instant reduced-motion). */
   onComplete?: () => void
 }
 
 const easeOutQuart = (t: number): number => 1 - Math.pow(1 - t, 4)
-const easeCinematic = (t: number): number => {
-  // Smooth cinematic curve: gentle launch, decisive finish.
-  return t < 0.34
-    ? 3.4 * t * t
-    : 1 - Math.pow(-1.15 * t + 1.15, 2.75)
-}
+/** In-out sine: soft start and end — reads as a continuous glide (Lenis + rAF fallback). */
+const easeInOutSine = (t: number): number => 0.5 * (1 - Math.cos(Math.PI * t))
 
 const SCROLL_PRESETS: Record<SmoothScrollPreset, { duration: number; easing: (t: number) => number }> = {
   default: {
@@ -27,7 +25,7 @@ const SCROLL_PRESETS: Record<SmoothScrollPreset, { duration: number; easing: (t:
   },
   hashNav: {
     duration: SMOOTH_SCROLL_HASH_MS,
-    easing: easeCinematic,
+    easing: easeInOutSine,
   },
 }
 
@@ -106,8 +104,9 @@ export const useSmoothScroll = () => {
     target: string | number | HTMLElement,
     options: SmoothScrollOptions = {},
   ) => {
-    const { duration, offset = 0, easing, preset = 'default', onComplete } = options
+    const { duration, offset = 0, easing, preset = 'default', onComplete, lock } = options
     const presetConfig = SCROLL_PRESETS[preset]
+    const useLock = lock !== undefined ? lock : preset !== 'hashNav'
 
     if (prefersReducedMotion()) {
       fallbackScrollTo(target, {
@@ -134,7 +133,7 @@ export const useSmoothScroll = () => {
       duration: lenisDuration,
       easing: easing || presetConfig.easing,
       immediate: false,
-      lock: true,
+      lock: useLock,
       force: true,
       onComplete: () => {
         document.documentElement.classList.remove('is-programmatic-scrolling')

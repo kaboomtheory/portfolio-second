@@ -71,8 +71,10 @@ const props = defineProps<{
   heroTitle: string
   heroTaglines: HomeHeroTaglineLine[]
   linkedinHref: string
-  availabilityMailto: string
-  availabilityCtaLabel: string
+  /** Intro bento primary action (e.g. resume PDF or contact). */
+  introCtaHref: string
+  introCtaLabel: string
+  introCtaDownload?: boolean
   availabilityLine?: string
   taglineOneLine?: string
   role?: string
@@ -134,83 +136,97 @@ const focusRailValue = computed(() => {
 </script>
 
 <template>
-  <RevealOnScroll id="intro" :delay="0" class="page-section home-intro">
+  <RevealOnScroll
+    id="intro"
+    :delay="0"
+    :threshold="0"
+    root-margin="0px"
+    class="page-section home-intro"
+  >
     <div class="home-hero-band full-bleed">
-      <div class="intro-grid grid-12">
-        <div class="intro-main">
-        <h1 class="hero-title hero-fade-in" lang="en">
-          <span v-if="heroTitleParts.lead" class="hero-title-lead">{{ heroTitleParts.lead }}</span>
-          <span
-            v-if="heroTitleParts.lead && heroTitleParts.accent"
-            class="hero-title-sep"
-            aria-hidden="true"
-          >{{ ' ' }}</span>
-          <span
-            v-if="heroTitleParts.accent"
-            class="hero-title-accent"
-            :class="{ 'hero-title-accent--after-lead': !!heroTitleParts.lead }"
-          >{{ heroTitleParts.accent }}</span>
-        </h1>
-
-        <div class="hero-tagline hero-fade-in hero-delay-1">
-          <p
-            v-for="(line, lineIndex) in heroTaglinesDisplay"
-            :key="lineIndex"
-            class="hero-tagline-line"
+      <div class="intro-bento intro-grid grid-12">
+        <div class="intro-bento__tile intro-bento__tile--headline hero-fade-in">
+          <h1 class="hero-title" lang="en">
+            <span v-if="heroTitleParts.lead" class="hero-title-lead">{{ heroTitleParts.lead }}</span>
+            <span
+              v-if="heroTitleParts.lead && heroTitleParts.accent"
+              class="hero-title-sep"
+              aria-hidden="true"
+            >{{ ' ' }}</span>
+            <span
+              v-if="heroTitleParts.accent"
+              class="hero-title-accent"
+              :class="{ 'hero-title-accent--after-lead': !!heroTitleParts.lead }"
+            >{{ heroTitleParts.accent }}</span>
+          </h1>
+          <div
+            v-if="heroTaglinesDisplay.length"
+            class="hero-tagline"
           >
-            <template v-for="(seg, segIndex) in line.segments" :key="segIndex">
-              <strong v-if="seg.em" class="hero-tagline-em">{{ seg.text }}</strong>
-              <template v-else>{{ seg.text }}</template>
-            </template>
-          </p>
+            <p
+              v-for="(line, lineIndex) in heroTaglinesDisplay"
+              :key="lineIndex"
+              class="hero-tagline-line"
+            >
+              <template v-for="(seg, segIndex) in line.segments" :key="segIndex">
+                <strong v-if="seg.em" class="hero-tagline-em">{{ seg.text }}</strong>
+                <template v-else>{{ seg.text }}</template>
+              </template>
+            </p>
+          </div>
         </div>
 
-        <div class="hero-cta-row hero-fade-in hero-delay-2">
+        <div class="intro-bento__tile intro-bento__tile--cta hero-fade-in hero-delay-1">
           <CtaButton
-            :href="availabilityMailto"
-            :label="availabilityCtaLabel"
+            :href="introCtaHref"
+            :label="introCtaLabel"
+            :download="introCtaDownload"
             attention
             preserve-case
+            class="intro-bento__cta-fill"
           >
-            <template #icon><Icon icon="lucide:mail" class="text-sm" /></template>
+            <template #icon><Icon icon="lucide:book-open" class="text-sm" /></template>
           </CtaButton>
-          <a
-            :href="linkedinHref"
-            class="intro-linkedin"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Icon icon="ri:linkedin-fill" class="intro-linkedin-icon" aria-hidden="true" />
-            LinkedIn
-            <span class="sr-only">(opens in new tab)</span>
-          </a>
-        </div>
         </div>
 
-        <aside class="intro-rail" aria-label="Profile">
-        <p class="intro-rail-line">
-          <span class="intro-rail-key">Role</span>
-          <span class="intro-rail-val">{{ roleLabel }}</span>
-        </p>
-        <p class="intro-rail-line">
-          <span class="intro-rail-key">Location</span>
-          <span class="intro-rail-val">{{ locationLabel }}</span>
-        </p>
-        <p class="intro-rail-line">
-          <span class="intro-rail-key">Status</span>
-          <span class="intro-rail-val intro-rail-val--status">
-            <span
-              v-if="isAvailable"
-              class="status-dot"
-              aria-hidden="true"
-            />
-            {{ statusLine }}
-          </span>
-        </p>
-        <p v-if="focusRailValue" class="intro-rail-line">
-          <span class="intro-rail-key">Focus</span>
-          <span class="intro-rail-val">{{ focusRailValue }}</span>
-        </p>
+        <a
+          :href="linkedinHref"
+          class="intro-bento__tile intro-bento__tile--linkedin intro-linkedin hero-fade-in hero-delay-1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon icon="ri:linkedin-fill" class="intro-linkedin-icon" aria-hidden="true" />
+          LinkedIn
+          <span class="sr-only">(opens in new tab)</span>
+        </a>
+
+        <aside
+          class="intro-bento__tile intro-bento__tile--rail intro-rail hero-fade-in hero-delay-2"
+          aria-label="Profile"
+        >
+          <p class="intro-rail-line">
+            <span class="intro-rail-key">Role</span>
+            <span class="intro-rail-val">{{ roleLabel }}</span>
+          </p>
+          <p class="intro-rail-line">
+            <span class="intro-rail-key">Location</span>
+            <span class="intro-rail-val">{{ locationLabel }}</span>
+          </p>
+          <p class="intro-rail-line">
+            <span class="intro-rail-key">Status</span>
+            <span class="intro-rail-val intro-rail-val--status">
+              <span
+                v-if="isAvailable"
+                class="status-dot"
+                aria-hidden="true"
+              />
+              {{ statusLine }}
+            </span>
+          </p>
+          <p v-if="focusRailValue" class="intro-rail-line">
+            <span class="intro-rail-key">Focus</span>
+            <span class="intro-rail-val">{{ focusRailValue }}</span>
+          </p>
         </aside>
       </div>
     </div>
@@ -236,43 +252,124 @@ const focusRailValue = computed(() => {
   padding-bottom: clamp(1rem, 2.2vw, 1.85rem);
 }
 
-.intro-grid {
-  row-gap: var(--home-grid-gap-hero);
-  align-items: start;
+/* Bento: four tiles on a 12-col grid; rail spans two rows on md+ */
+.intro-bento {
+  --intro-bento-gap: clamp(0.65rem, 1.25vw, 1.05rem);
+  --intro-bento-radius: clamp(0.85rem, 1.4vw, 1.2rem);
+  row-gap: var(--intro-bento-gap);
+  column-gap: var(--intro-bento-gap);
+  align-items: stretch;
   padding-top: clamp(1.25rem, 2.5vw, 2rem);
 }
 
-.intro-main {
+.intro-bento__tile--headline {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   gap: var(--home-stack-gap-comfortable);
   min-width: 0;
+  background-color: var(--pastel-mint);
+  border-radius: var(--intro-bento-radius);
+  padding: clamp(1.1rem, 2.1vw, 1.85rem) clamp(1.2rem, 2.5vw, 2rem);
+  box-sizing: border-box;
+}
+
+.intro-bento__tile--rail {
+  /* aside.intro-rail: layout + color below */
+  grid-column: 1 / -1;
+  min-width: 0;
+  border-radius: var(--intro-bento-radius);
+}
+
+.intro-bento__tile--cta {
+  grid-column: 1 / 7;
+  display: flex;
+  min-width: 0;
+  min-height: 3.35rem;
+  padding: 0;
+  align-self: stretch;
+}
+
+.intro-bento__tile--linkedin {
+  grid-column: 7 / 13;
+  min-width: 0;
+  min-height: 3.35rem;
+  height: 100%;
+  box-sizing: border-box;
+  align-self: stretch;
+}
+
+.intro-bento__tile--cta :deep(.intro-bento__cta-fill) {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0 !important;
+  box-sizing: border-box;
+}
+
+.intro-bento__tile--cta :deep(.intro-bento__cta-fill.btn-attention) {
+  align-self: stretch;
+  height: 100%;
+}
+
+/*
+ * Inverted CTA/LinkedIn fill (main.css :is(:hover, :focus-visible)) sets box-shadow: none; use
+ * a double ring (paper + emphasis) with !important so the ring stays visible on ink, and
+ * a light outline so the edge reads even when the signal sits on the dark fill.
+ */
+.intro-bento__tile--cta :deep(.intro-bento__cta-fill.btn-attention:focus-visible) {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--paper) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 1px var(--paper), 0 0 0 3px var(--emphasis) !important;
+}
+
+:root.dark .intro-bento__tile--cta :deep(.intro-bento__cta-fill.btn-attention:focus-visible) {
+  outline: 2px solid color-mix(in srgb, var(--signal) 50%, var(--ink)) !important;
+  box-shadow: 0 0 0 1px var(--ink), 0 0 0 3px color-mix(in srgb, var(--signal) 45%, var(--ink)) !important;
+}
+
+@media (min-width: 768px) {
+  .intro-bento__tile--headline {
+    grid-column: 1 / span 8;
+    grid-row: 1;
+  }
+
+  .intro-bento__tile--rail {
+    grid-column: 9 / span 4;
+    grid-row: 1 / span 2;
+    height: 100%;
+    align-self: stretch;
+  }
+
+  .intro-bento__tile--cta {
+    grid-column: 1 / span 4;
+    grid-row: 2;
+  }
+
+  .intro-bento__tile--linkedin {
+    grid-column: 5 / span 4;
+    grid-row: 2;
+  }
+}
+
+@media (min-width: 1024px) {
+  .intro-bento {
+    --intro-bento-gap: clamp(0.75rem, 1.4vw, 1.2rem);
+  }
 }
 
 .intro-rail {
-  grid-column: 1 / -1;
   display: grid;
   grid-template-columns: 1fr;
   gap: 0;
   background-color: var(--pastel-blush);
-  padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.25rem, 3vw, 2rem);
-  border-radius: 0.25rem;
+  padding: clamp(1.15rem, 2.2vw, 1.7rem) clamp(1.15rem, 2.8vw, 1.85rem);
   min-width: 0;
-}
-
-@media (min-width: 768px) {
-  .intro-rail {
-    grid-column: 9 / span 4;
-    grid-row: 1;
-    grid-template-columns: 1fr;
-    align-self: start;
-  }
-
-  .intro-main {
-    grid-column: 1 / span 8;
-    grid-row: 1;
-  }
 }
 
 .hero-title {
@@ -284,12 +381,10 @@ const focusRailValue = computed(() => {
   line-height: 1.08;
   letter-spacing: 0;
   color: var(--fg-primary);
-  background-color: var(--pastel-mint);
-  padding: clamp(1rem, 2.2vw, 1.75rem) clamp(1.25rem, 2.8vw, 2.25rem);
-  border-radius: 0.5rem;
-  width: fit-content;
-  /* em tracks this element’s font-size (clamp), so measure scales with type and line breaks stay stable */
-  max-width: min(100%, 21em);
+  background: none;
+  padding: 0;
+  width: 100%;
+  max-width: min(100%, 24em);
   box-sizing: border-box;
   hyphens: none;
   -webkit-hyphens: none;
@@ -345,15 +440,8 @@ const focusRailValue = computed(() => {
   color: var(--fg-primary);
 }
 
-.hero-cta-row {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 1rem;
-}
-
 .intro-linkedin {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
@@ -368,7 +456,7 @@ const focusRailValue = computed(() => {
   text-decoration: none;
   color: var(--pastel-ink);
   background: var(--pastel-sky);
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, var(--pastel-sky));
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, var(--pastel-sky)) !important;
   border-radius: var(--radius-control, 0.35rem);
   padding: 0.65rem 1.4rem;
   outline-offset: 4px;
@@ -381,25 +469,38 @@ const focusRailValue = computed(() => {
     border-color 0.18s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
+/* Square corners for intro bento actions (overrides .intro-linkedin) */
+.intro-bento__tile--linkedin.intro-linkedin {
+  border-radius: 0;
+}
+
 .intro-linkedin:is(:hover, :focus-visible) {
   background: var(--pastel-ink);
-  border-color: var(--pastel-ink);
+  border-color: var(--pastel-ink) !important;
   color: var(--pastel-sky);
   box-shadow: none;
 }
 
 .intro-linkedin:active {
   background: color-mix(in srgb, var(--pastel-ink) 88%, var(--pastel-sky));
-  border-color: var(--pastel-ink);
+  border-color: var(--pastel-ink) !important;
   color: var(--pastel-sky);
   transform: scale(0.98);
   box-shadow: none;
   transition-duration: 0.1s;
 }
 
-.intro-linkedin:focus-visible {
-  outline: 2px solid var(--emphasis);
-  outline-offset: 4px;
+.intro-bento__tile--linkedin.intro-linkedin:focus-visible {
+  position: relative;
+  z-index: 1;
+  outline: 2px solid var(--paper) !important;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 1px var(--paper), 0 0 0 3px var(--emphasis) !important;
+}
+
+:root.dark .intro-bento__tile--linkedin.intro-linkedin:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--signal) 50%, var(--ink)) !important;
+  box-shadow: 0 0 0 1px var(--ink), 0 0 0 3px color-mix(in srgb, var(--signal) 45%, var(--ink)) !important;
 }
 
 .intro-linkedin-icon {
@@ -510,30 +611,82 @@ const focusRailValue = computed(() => {
   }
 }
 
+/**
+ * Choreograph with `.reveal-on-scroll--visible` so keyframes do not run while the
+ * section is still scroll-hidden (opacity 0).
+ */
 .hero-fade-in {
   opacity: 0;
-  animation: hero-fade-in 320ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1)) forwards;
+  transform: translate3d(0, 10px, 0);
 }
 
-.hero-delay-1 { animation-delay: 0.08s; }
-.hero-delay-2 { animation-delay: 0.16s; }
+.reveal-on-scroll--visible .hero-fade-in {
+  animation: hero-fade-in 520ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+
+.reveal-on-scroll--visible .hero-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.reveal-on-scroll--visible .hero-delay-2 {
+  animation-delay: 0.2s;
+}
 
 @keyframes hero-fade-in {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translate3d(0, 10px, 0) scale(0.992);
   }
+
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+/*
+ * One motion layer: outer snaps opacity so the mint band reads immediately; lift + hero
+ * keyframes carry the choreography (avoids nested opacity fades fighting each other).
+ */
+:deep(section.page-section.home-intro.reveal-on-scroll),
+:deep(section.page-section.home-intro.reveal-on-scroll--visible) {
+  transition-property: transform;
+  transition-duration: 480ms;
+  transition-timing-function: var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+/* B1: Hero accent word secondary reveal — blooms in after the block fade */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-on-scroll--visible .hero-title-accent {
+    animation: hero-accent-bloom 600ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)) both;
+    animation-delay: 0.2s;
+  }
+
+  @keyframes hero-accent-bloom {
+    from {
+      opacity: 0;
+      transform: translateX(6px) skewX(-4deg);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0) skewX(0deg);
+    }
   }
 }
 
 @media (prefers-reduced-motion: reduce) {
+  :deep(section.page-section.home-intro.reveal-on-scroll),
+  :deep(section.page-section.home-intro.reveal-on-scroll--visible) {
+    transition: none;
+  }
+
   .hero-fade-in {
-    animation: none;
     opacity: 1;
     transform: none;
+  }
+
+  .reveal-on-scroll--visible .hero-fade-in {
+    animation: none;
   }
 }
 </style>

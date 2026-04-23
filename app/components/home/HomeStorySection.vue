@@ -1,7 +1,10 @@
 <script setup lang="ts">
+import { ref, computed } from 'vue'
 import { Icon } from '@iconify/vue'
+import { useScrollExpandImage } from '~/composables/useScrollExpand'
+import { useScrollRevealGroup } from '~/composables/useScrollReveal'
 
-defineProps<{
+const props = defineProps<{
   name: string
   avatar: string
   story: string[]
@@ -9,6 +12,22 @@ defineProps<{
   availabilityMailto: string
   availabilityCtaLabel: string
 }>()
+
+const avatarRef = ref<HTMLElement | null>(null)
+const { scale: avatarScale, displayedOpacity: avatarOpacity } = useScrollExpandImage(avatarRef, {
+  minScale: 0.94,
+})
+const avatarStyle = computed(() => ({
+  transform: `scale(${avatarScale.value})`,
+  opacity: avatarOpacity.value,
+  transition: 'transform 0.1s ease-out, opacity 0.15s ease-out',
+  willChange: 'transform, opacity',
+}))
+
+const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollRevealGroup(
+  props.story.length,
+  { staggerDelay: 60, threshold: 0.05, rootMargin: '0px 0px -30px 0px' },
+)
 </script>
 
 <template>
@@ -23,11 +42,12 @@ defineProps<{
       </div>
 
       <div class="story-body">
-        <div class="story-body-prose">
+        <div ref="storyProseRef" class="story-body-prose">
           <p
             v-for="(paragraph, index) in story"
             :key="index"
             class="story-paragraph"
+            :class="{ 'para--visible': paraVisible[index] }"
           >
             {{ paragraph }}
           </p>
@@ -48,7 +68,7 @@ defineProps<{
 
       <div class="story-aside">
         <figure class="story-avatar">
-          <div class="story-avatar-frame">
+          <div ref="avatarRef" class="story-avatar-frame" :style="avatarStyle">
             <SanityImage
               :src="avatar"
               :alt="name"
@@ -154,6 +174,24 @@ defineProps<{
   color: var(--fg-primary);
   margin: 0;
   letter-spacing: 0;
+  opacity: 0;
+  transform: translateY(6px);
+  transition:
+    opacity 360ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform 360ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.story-paragraph.para--visible {
+  opacity: 1;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .story-paragraph {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
 }
 
 .story-cta-row {

@@ -153,16 +153,48 @@ const emailAddress = computed(() => {
   line-height: 1.15;
   color: var(--signal);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
   word-break: break-word;
+  position: relative;
+  display: inline-block;
   transition:
-    color 120ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1)),
-    border-color 120ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1));
+    color 240ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform 240ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.closing-email::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--signal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 320ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .closing-email:hover {
   color: var(--fg-primary);
-  border-bottom-color: var(--signal);
+  transform: translateY(-2px);
+}
+
+.closing-email:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .closing-email {
+    transition: color 150ms ease;
+  }
+
+  .closing-email::after {
+    transition: none;
+  }
+
+  .closing-email:hover {
+    transform: none;
+  }
 }
 
 .closing-email:focus-visible {
@@ -189,16 +221,47 @@ const emailAddress = computed(() => {
   text-transform: uppercase;
   color: var(--signal);
   text-decoration: none;
-  border-bottom: 1px solid transparent;
   padding-bottom: 0.1rem;
+  position: relative;
   transition:
-    color 120ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1)),
-    border-color 120ms var(--motion-ease-reveal, cubic-bezier(0.2, 0.6, 0.2, 1));
+    color 200ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform 200ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.closing-linkedin::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--signal);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 240ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .closing-linkedin:hover {
   color: var(--fg-primary);
-  border-bottom-color: var(--signal);
+  transform: translateY(-1px);
+}
+
+.closing-linkedin:hover::after {
+  transform: scaleX(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .closing-linkedin {
+    transition: color 150ms ease;
+  }
+
+  .closing-linkedin::after {
+    transition: none;
+  }
+
+  .closing-linkedin:hover {
+    transform: none;
+  }
 }
 
 .closing-linkedin:focus-visible {

@@ -290,6 +290,11 @@ const tickerCells = computed(() => {
   align-items: center;
   justify-content: center;
   background: color-mix(in srgb, var(--paper) 70%, var(--ticker-card-bg));
+  transition: transform 240ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.ticker-item:hover .ticker-image {
+  transform: scale(1.12) rotate(3deg);
 }
 
 .ticker-icon {
@@ -340,6 +345,14 @@ const tickerCells = computed(() => {
   .ticker-item:hover {
     transform: none;
     box-shadow: var(--shadow-sm);
+  }
+
+  .ticker-image {
+    transition: none;
+  }
+
+  .ticker-item:hover .ticker-image {
+    transform: none;
   }
 }
 </style>

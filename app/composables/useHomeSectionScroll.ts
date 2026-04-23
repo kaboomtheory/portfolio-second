@@ -1,3 +1,4 @@
+import { takeInPageHashScrollY } from '~/composables/inPageHashScrollMemory'
 import { SMOOTH_SCROLL_HASH_MS, useSmoothScroll } from '~/composables/useSmoothScroll'
 import { getScrollAnchorOffsetPx } from '~/utils/scrollAnchor'
 
@@ -6,16 +7,16 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-function triggerSectionArrival(el: HTMLElement) {
+function triggerSectionSpotlight(el: HTMLElement) {
   if (prefersReducedMotion()) return
-  el.classList.remove('section-arrival')
+  el.classList.remove('section-nav-spotlight')
   void el.offsetWidth
-  el.classList.add('section-arrival')
+  el.classList.add('section-nav-spotlight')
 
   const onAnimEnd = (e: AnimationEvent) => {
-    if (e.animationName !== 'section-arrival-lift' || e.target !== el) return
+    if (e.animationName !== 'section-nav-spotlight-pulse' || e.target !== el) return
     el.removeEventListener('animationend', onAnimEnd)
-    el.classList.remove('section-arrival')
+    el.classList.remove('section-nav-spotlight')
   }
   el.addEventListener('animationend', onAnimEnd)
 }
@@ -28,10 +29,15 @@ export function useHomeSectionScroll() {
     const el = document.querySelector(hash)
     if (!(el instanceof HTMLElement)) return
 
+    const undoY = takeInPageHashScrollY()
+    if (undoY != null) {
+      window.scrollTo(0, undoY)
+    }
+
     scrollToHashNav(hash, {
       duration: SMOOTH_SCROLL_HASH_MS,
       offset: getScrollAnchorOffsetPx(),
-      onComplete: () => triggerSectionArrival(el),
+      onComplete: () => triggerSectionSpotlight(el),
     })
   }
 
