@@ -3,8 +3,12 @@ import { Icon } from '@iconify/vue'
 import { useScrollRevealGroup } from '~/composables/useScrollReveal'
 import { projectItemsFromSanityRaw, useSanityProjects } from '~/composables/useSanityProjects'
 import type { ProjectItem, ProjectStorySection, SanityProjectItem } from '~/types/project'
+import { useInPageHashLink } from '~/composables/useInPageHashLink'
 import { sanitizeEmbedUrl } from '~/utils/embed'
 import { normalizeProjectSlug } from '~/utils/projectSlug'
+
+const backToWorkHref = '/#work'
+const { onInPageHashLinkClick } = useInPageHashLink()
 
 definePageMeta({
   middleware: 'project-protect'
@@ -212,8 +216,9 @@ function isMediaSection(section: ProjectStorySection): boolean {
   <div v-else-if="project" class="page-content project-detail-page">
     <section class="page-section">
       <NuxtLink
-        to="/#work"
+        :to="backToWorkHref"
         class="back-link mb-8 inline-flex items-center gap-2 text-sm transition-colors"
+        @click="(e) => onInPageHashLinkClick(e, backToWorkHref)"
       >
         <span>← Back to work</span>
       </NuxtLink>

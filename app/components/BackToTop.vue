@@ -3,38 +3,30 @@ import { ref, computed } from 'vue'
 import { Icon } from '@iconify/vue'
 import {
   useSharedScrollY,
+  useSharedScrollMax,
   useScrollLayoutSubscription,
 } from '~/composables/useScrollLayoutBus'
+import { useSmoothScroll } from '~/composables/useSmoothScroll'
 
 const isVisible = ref(false)
-const docHeight = ref(0)
-const innerHeight = ref(0)
 
 const scrollY = useSharedScrollY()
+const maxScroll = useSharedScrollMax()
+const { scrollToTop: smoothScrollToTop } = useSmoothScroll()
 
-useScrollLayoutSubscription((source) => {
+useScrollLayoutSubscription(() => {
   if (!import.meta.client) return
-  if (source === 'resize' || source === 'init') {
-    docHeight.value = document.documentElement.scrollHeight
-    innerHeight.value = window.innerHeight
-  }
   isVisible.value = scrollY.value > 280
 })
 
-const max = computed(() => Math.max(1, docHeight.value - innerHeight.value))
-const progress = computed(() => Math.min(1, Math.max(0, scrollY.value / max.value)))
+const progress = computed(() => Math.min(1, Math.max(0, scrollY.value / maxScroll.value)))
 
 const RADIUS = 22
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const dashOffset = computed(() => CIRCUMFERENCE * (1 - progress.value))
 
-function prefersReducedMotion() {
-  if (!import.meta.client) return false
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-}
-
-const scrollToTop = () => {
-  window.scrollTo({ top: 0, behavior: prefersReducedMotion() ? 'auto' : 'smooth' })
+function scrollToTop() {
+  smoothScrollToTop()
 }
 </script>
 

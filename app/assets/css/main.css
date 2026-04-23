@@ -448,8 +448,8 @@ section[id] {
 
   40% {
     box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--accent) 32%, var(--paper)),
-      0 0 1.5rem color-mix(in srgb, var(--accent) 14%, transparent);
+      inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, var(--paper)),
+      0 0 1rem color-mix(in srgb, var(--accent) 9%, transparent);
   }
 
   100% {
@@ -458,21 +458,11 @@ section[id] {
 }
 
 section[id].section-nav-spotlight {
-  animation: section-nav-spotlight-pulse 400ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: section-nav-spotlight-pulse 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .layout-header-pad {
   padding-top: var(--layout-header-clearance);
-}
-
-/* Homepage: fill clearance under fixed nav so no white strip above dark hero */
-.layout-header-pad:has(main .page-content--home) {
-  background-image: linear-gradient(
-    to bottom,
-    var(--shell-ui-bg) 0,
-    var(--shell-ui-bg) var(--layout-header-clearance),
-    transparent var(--layout-header-clearance)
-  );
 }
 
 .sr-only {

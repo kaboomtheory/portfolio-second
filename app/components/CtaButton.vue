@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { useInPageHashLink } from '~/composables/useInPageHashLink'
+
+const { onInPageHashLinkClick } = useInPageHashLink()
 
 const props = withDefaults(
   defineProps<{
@@ -64,6 +67,11 @@ const btnClass = computed(() =>
     .join(' '),
 )
 
+function onNuxtLinkClick(e: MouseEvent) {
+  if (!props.to) return
+  onInPageHashLinkClick(e, props.to)
+}
+
 const inlineStyle = computed(() => {
   if (props.secondary) {
     return {
@@ -124,6 +132,7 @@ const inlineStyle = computed(() => {
     :to="to"
     :class="btnClass"
     :style="inlineStyle"
+    @click="onNuxtLinkClick"
   >
     <template v-if="attention">
       <span class="cta-attention-pill__inner">

@@ -1,28 +1,17 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import {
   useSharedScrollY,
+  useSharedScrollMax,
   useScrollLayoutSubscription,
 } from '~/composables/useScrollLayoutBus'
 
-if (!import.meta.client) {
-  // SSR: no-op — component renders empty on server
-}
-
-const docHeight = ref(0)
-const innerHeight = ref(0)
-
 const scrollY = useSharedScrollY()
+const maxScroll = useSharedScrollMax()
 
-useScrollLayoutSubscription((source) => {
-  if (source === 'resize' || source === 'init') {
-    docHeight.value = document.documentElement.scrollHeight
-    innerHeight.value = window.innerHeight
-  }
-})
+useScrollLayoutSubscription(() => {})
 
-const max = computed(() => Math.max(1, docHeight.value - innerHeight.value))
-const progress = computed(() => Math.min(1, Math.max(0, scrollY.value / max.value)))
+const progress = computed(() => Math.min(1, Math.max(0, scrollY.value / maxScroll.value)))
 const visible = computed(() => progress.value > 0.03)
 </script>
 

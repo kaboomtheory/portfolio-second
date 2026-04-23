@@ -166,7 +166,7 @@ useSeoMeta({
       :hero-title="heroTitle"
       :hero-taglines="heroTaglines"
       :linkedin-href="linkedinHref"
-      intro-cta-href="/#story"
+      intro-cta-to="/#story"
       intro-cta-label="Resume"
       :availability-line="hero.availabilityText"
       :tagline-one-line="heroTaglineOneLine"

@@ -26,7 +26,7 @@ watch(
       main?.focus({ preventScroll: true })
     })
   },
-  { immediate: true },
+  { immediate: true, flush: 'post' },
 )
 
 onMounted(() => {

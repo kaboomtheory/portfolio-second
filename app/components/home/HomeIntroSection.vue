@@ -71,8 +71,8 @@ const props = defineProps<{
   heroTitle: string
   heroTaglines: HomeHeroTaglineLine[]
   linkedinHref: string
-  /** Intro bento primary action (e.g. resume PDF or contact). */
-  introCtaHref: string
+  /** Intro bento primary action — use `to` for in-app routes/hashes (same smooth scroll as nav). */
+  introCtaTo: string
   introCtaLabel: string
   introCtaDownload?: boolean
   availabilityLine?: string
@@ -178,7 +178,7 @@ const focusRailValue = computed(() => {
 
         <div class="intro-bento__tile intro-bento__tile--cta hero-fade-in hero-delay-1">
           <CtaButton
-            :href="introCtaHref"
+            :to="introCtaTo"
             :label="introCtaLabel"
             :download="introCtaDownload"
             attention

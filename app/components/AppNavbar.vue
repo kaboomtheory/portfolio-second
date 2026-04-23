@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { navItems, profile } from '~/data/site'
-import { useHomeSectionScroll } from '~/composables/useHomeSectionScroll'
+import { useInPageHashLink } from '~/composables/useInPageHashLink'
+import { isInPageHashActive, parseInPageHash } from '~/utils/inPageHashNav'
 import { useSharedScrollY, useScrollLayoutSubscription } from '~/composables/useScrollLayoutBus'
 
 const route = useRoute()
-const router = useRouter()
-const { scrollToHomeHash } = useHomeSectionScroll()
+const { onInPageHashLinkClick } = useInPageHashLink()
 
 const effectiveHash = computed(() => {
   if (route.path !== '/') return ''
@@ -22,13 +22,9 @@ function isNavActive(path: string) {
   if (!path.includes('#')) {
     return route.path === path && !route.hash
   }
-  const hash = path.slice(path.indexOf('#'))
-  const pathOnly = path.slice(0, path.indexOf('#')) || '/'
-  if (route.path !== pathOnly) return false
-  if (hash === '#intro') {
-    return effectiveHash.value === '#intro' || effectiveHash.value === ''
-  }
-  return effectiveHash.value === hash
+  const parsed = parseInPageHash(path)
+  if (!parsed) return false
+  return isInPageHashActive(route.path, route.hash || '', parsed.pathOnly, parsed.hash)
 }
 
 const CONDENSE_THRESHOLD = 72
@@ -66,36 +62,6 @@ watch(
     nextTick(() => updatePastHomeIntro())
   },
 )
-
-function parseInPageHash(path: string): { pathOnly: string, hash: string } | null {
-  if (!path.includes('#')) return null
-  const i = path.indexOf('#')
-  return {
-    pathOnly: path.slice(0, i) || '/',
-    hash: path.slice(i),
-  }
-}
-
-/**
- * Same-page hash nav: the default `<a href="/#..">` behavior is an instant jump.
- * We prevent that, let the router update the URL, then `app.vue` + Lenis run the
- * glide. Re-clicking the current section re-scrolls and replays the spotlight.
- */
-function onInPageNavClick(e: MouseEvent, path: string) {
-  const parsed = parseInPageHash(path)
-  if (!parsed) return
-  const { pathOnly, hash } = parsed
-  if (route.path !== pathOnly) return
-
-  e.preventDefault()
-
-  if (isNavActive(path)) {
-    void scrollToHomeHash(hash)
-    return
-  }
-
-  void router.push({ path: pathOnly, hash })
-}
 
 /** Sliding accent under Home / Work / About — measured so it never fights border-radius. */
 const inPageTrackRef = ref<HTMLElement | null>(null)
@@ -191,7 +157,7 @@ watch(
         <NuxtLink
           :to="navTarget('/#intro')"
           class="navbar-brand"
-          @click="onInPageNavClick($event, '/#intro')"
+          @click="onInPageHashLinkClick($event, '/#intro')"
         >
           <img :src="profile.photo" :alt="profile.name" class="navbar-brand-avatar">
           <span class="navbar-brand-name eyebrow-sans">{{ profile.name }}</span>
@@ -205,7 +171,8 @@ watch(
               :to="navTarget(item.path)"
               class="nav-link"
               :class="{ 'nav-link--active': isNavActive(item.path) }"
-              @click="onInPageNavClick($event, item.path)"
+              :aria-current="isNavActive(item.path) ? 'location' : undefined"
+              @click="onInPageHashLinkClick($event, item.path)"
             >
               {{ item.title }}
             </NuxtLink>
@@ -388,10 +355,10 @@ watch(
   background-color: var(--fg-primary);
   pointer-events: none;
   transition:
-    left 0.6s cubic-bezier(0.45, 0.1, 0.2, 1),
-    top 0.6s cubic-bezier(0.45, 0.1, 0.2, 1),
-    width 0.6s cubic-bezier(0.45, 0.1, 0.2, 1),
-    opacity 0.35s cubic-bezier(0.45, 0.1, 0.2, 1);
+    left 0.46s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    top 0.46s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    width 0.46s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    opacity 0.26s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
 }
 
 .nav-link {
@@ -412,7 +379,7 @@ watch(
   text-decoration: none;
   transition:
     color 0.2s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
-    background-color 0.22s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
+    opacity 0.2s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
 }
 
 @media (min-width: 640px) {
@@ -425,8 +392,7 @@ watch(
 
 .nav-link:hover {
   color: var(--fg-primary);
-  background-color: color-mix(in srgb, var(--accent) 12%, var(--paper));
-  box-shadow: 0 0.2rem 0.65rem color-mix(in srgb, var(--fg-primary) 6%, transparent);
+  opacity: 0.96;
 }
 
 .nav-link:active {
@@ -436,13 +402,7 @@ watch(
 
 .nav-link--active {
   color: var(--fg-primary);
-  font-weight: 600;
-  background-color: transparent;
-}
-
-.nav-link.nav-link--active:hover {
-  color: var(--fg-primary);
-  background-color: color-mix(in srgb, var(--accent) 8%, var(--paper));
+  font-weight: 500;
 }
 
 :root.dark .nav-link--active,
@@ -485,16 +445,10 @@ watch(
 
 .navbar--home-hero .nav-link:not(.nav-link--active):hover {
   color: var(--fg-primary);
-  background-color: color-mix(in srgb, var(--accent) 12%, var(--paper));
 }
 
 .navbar--home-hero .nav-link.nav-link--active {
   color: var(--fg-primary);
-}
-
-.navbar--home-hero .nav-link.nav-link--active:hover {
-  color: var(--fg-primary);
-  background-color: color-mix(in srgb, var(--accent) 10%, var(--paper));
 }
 
 .navbar--home-hero :deep(.theme-toggle) {
@@ -537,11 +491,6 @@ watch(
 
 .navbar--home-hero.navbar--home-on-light .nav-link:not(.nav-link--active) {
   color: var(--fg-muted);
-}
-
-.navbar--home-hero.navbar--home-on-light .nav-link:not(.nav-link--active):hover {
-  color: var(--fg-primary);
-  background-color: color-mix(in srgb, var(--accent) 12%, var(--paper));
 }
 
 .navbar--home-hero.navbar--home-on-light :deep(.theme-toggle) {

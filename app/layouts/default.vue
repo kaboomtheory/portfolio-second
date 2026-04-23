@@ -59,13 +59,7 @@ useHead(() => ({
 
 <style scoped>
 .layout-root {
-  background-color: var(--shell-ui-bg, var(--paper));
-  background-image: linear-gradient(
-    180deg,
-    var(--shell-ui-bg, var(--paper)) 0%,
-    var(--shell-ui-bg-deep, var(--paper-sunk)) 100%
-  );
-  background-repeat: no-repeat;
+  background: var(--shell-ui-bg, var(--paper));
   color: var(--fg-primary);
 }
 
