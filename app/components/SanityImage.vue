@@ -20,7 +20,15 @@ const props = withDefaults(defineProps<Props>(), {
   decoding: 'async',
 })
 
+const emit = defineEmits<{
+  load: [event: Event]
+}>()
+
 const isSanityCdn = computed(() => isSanityCdnUrl(props.src))
+
+function onLoad(event: Event) {
+  emit('load', event)
+}
 </script>
 
 <template>
@@ -33,6 +41,7 @@ const isSanityCdn = computed(() => isSanityCdnUrl(props.src))
     :height="height"
     :loading="loading"
     :decoding="decoding"
+    @load="onLoad"
   >
   <NuxtImg
     v-else
@@ -43,5 +52,6 @@ const isSanityCdn = computed(() => isSanityCdnUrl(props.src))
     :height="height"
     :loading="loading"
     :decoding="decoding"
+    @load="onLoad"
   />
 </template>

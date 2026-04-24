@@ -56,6 +56,9 @@ const tickerCells = computed(() => {
     class="status-band ticker-section full-bleed"
   >
     <div class="full-bleed-inner">
+      <div class="ticker-header">
+        <SectionMarker index="04" word="Right Now" />
+      </div>
       <div class="ticker-wrapper">
         <div
           class="ticker-track"
@@ -140,12 +143,16 @@ const tickerCells = computed(() => {
   line-height: 1.35;
 }
 
+.ticker-header {
+  padding: 0 clamp(0.5rem, 2vw, 1.25rem) clamp(0.85rem, 1.6vw, 1.2rem);
+  opacity: 0.7;
+}
+
 .ticker-section {
   margin-block: 0;
-  /* Slightly roomier than single --space-md: reads as its own “ribbon” between story and resume */
-  padding: clamp(1rem, 2vw, 1.35rem) 0;
+  /* Symmetric vertical padding; home page trims ticker→resume stack in `main.css` */
+  padding: clamp(0.4rem, 1vw, 0.75rem) 0 clamp(0.4rem, 1vw, 0.75rem);
   overflow: hidden;
-  border-top: 1px solid color-mix(in srgb, var(--fg-muted) 14%, var(--shell-ui-bg));
   /* Inherits .story-band surface; avoids tone seam vs parent */
   background: transparent;
 }
@@ -257,28 +264,47 @@ const tickerCells = computed(() => {
 
 .ticker-item:hover {
   background: var(--ticker-card-bg-hover);
-  transform: translate3d(0, -1px, 0);
+  transform: translate3d(0, -3px, 0) scale(1.03);
   box-shadow: var(--shadow-md);
 }
 
-.ticker-content > .ticker-cluster:nth-child(4n + 1) .ticker-item {
+/* Neighbor ripple — sibling clusters scale up gently when any item is hovered */
+@supports selector(:has(*)) {
+  .ticker-content:has(.ticker-cluster:hover) .ticker-cluster:not(:hover) .ticker-item {
+    transform: translate3d(0, -1px, 0) scale(1.015);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ticker-item:hover,
+  .ticker-content:has(.ticker-cluster:hover) .ticker-cluster:not(:hover) .ticker-item {
+    transform: none;
+  }
+}
+
+.ticker-content > .ticker-cluster:nth-child(5n + 1) .ticker-item {
   --ticker-card-bg: var(--pastel-peach);
   --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-peach) 86%, var(--pastel-ink));
 }
 
-.ticker-content > .ticker-cluster:nth-child(4n + 2) .ticker-item {
+.ticker-content > .ticker-cluster:nth-child(5n + 2) .ticker-item {
   --ticker-card-bg: var(--pastel-mint);
   --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-mint) 86%, var(--pastel-ink));
 }
 
-.ticker-content > .ticker-cluster:nth-child(4n + 3) .ticker-item {
+.ticker-content > .ticker-cluster:nth-child(5n + 3) .ticker-item {
   --ticker-card-bg: var(--pastel-sky);
   --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-sky) 86%, var(--pastel-ink));
 }
 
-.ticker-content > .ticker-cluster:nth-child(4n + 4) .ticker-item {
+.ticker-content > .ticker-cluster:nth-child(5n + 4) .ticker-item {
   --ticker-card-bg: var(--pastel-blush);
   --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-blush) 86%, var(--pastel-ink));
+}
+
+.ticker-content > .ticker-cluster:nth-child(5n + 5) .ticker-item {
+  --ticker-card-bg: var(--pastel-lemon);
+  --ticker-card-bg-hover: color-mix(in srgb, var(--pastel-lemon) 86%, var(--pastel-ink));
 }
 
 .ticker-image {

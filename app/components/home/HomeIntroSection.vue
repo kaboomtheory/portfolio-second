@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { useCardTilt } from '~/composables/useCardTilt'
 import { Icon } from '@iconify/vue'
 import { profile } from '~/data/site'
 import type { HomeHeroTaglineLine } from '~/data/home'
+import { useSharedScrollY } from '~/composables/useScrollLayoutBus'
 
 function joinTaglineLine(line: HomeHeroTaglineLine | undefined) {
   return line?.segments?.map((s) => s.text).join('')?.trim() ?? ''
@@ -97,6 +99,22 @@ const roleLabel = computed(() => props.role ?? profile.role)
 const locationLabel = computed(() => props.location ?? profile.location)
 const statusLine = computed(() => (props.availabilityLine ?? '').trim() || 'Open to new projects')
 const isAvailable = computed(() => /\b(open|available|accepting|hiring)\b/i.test(statusLine.value))
+const sharedScrollY = useSharedScrollY()
+const prefersReducedMotion = ref(false)
+
+let motionQuery: MediaQueryList | null = null
+
+const heroLeadTracking = computed(() => {
+  if (prefersReducedMotion.value) return '-0.035em'
+  const progress = Math.min(1, Math.max(0, sharedScrollY.value / 400))
+  const base = -0.035
+  const target = -0.055
+  return `${(base + (target - base) * progress).toFixed(4)}em`
+})
+
+const heroLeadStyle = computed(() => ({
+  letterSpacing: heroLeadTracking.value,
+}))
 
 /** Hero paragraphs: drop lines that only repeat the Location rail. */
 const heroTaglinesDisplay = computed(() => {
@@ -133,6 +151,25 @@ const focusRailValue = computed(() => {
 
   return parentOne.length > 140 ? `${parentOne.slice(0, 137)}\u2026` : parentOne
 })
+
+function syncMotionPreference() {
+  prefersReducedMotion.value = motionQuery?.matches ?? false
+}
+
+onMounted(() => {
+  if (!import.meta.client) return
+  motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
+  syncMotionPreference()
+  motionQuery.addEventListener('change', syncMotionPreference)
+})
+
+onUnmounted(() => {
+  motionQuery?.removeEventListener('change', syncMotionPreference)
+})
+
+const headlineTiltHostRef = ref<HTMLElement | null>(null)
+const headlineTiltRef = ref<HTMLElement | null>(null)
+useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
 </script>
 
 <template>
@@ -143,65 +180,50 @@ const focusRailValue = computed(() => {
     root-margin="0px"
     class="page-section home-intro"
   >
-    <div class="home-hero-band full-bleed">
+    <div class="home-hero-band">
       <div class="intro-bento intro-grid grid-12">
-        <div class="intro-bento__tile intro-bento__tile--headline hero-fade-in">
-          <h1 class="hero-title" lang="en">
-            <span v-if="heroTitleParts.lead" class="hero-title-lead">{{ heroTitleParts.lead }}</span>
-            <span
-              v-if="heroTitleParts.lead && heroTitleParts.accent"
-              class="hero-title-sep"
-              aria-hidden="true"
-            >{{ ' ' }}</span>
-            <span
-              v-if="heroTitleParts.accent"
-              class="hero-title-accent"
-              :class="{ 'hero-title-accent--after-lead': !!heroTitleParts.lead }"
-            >{{ heroTitleParts.accent }}</span>
-          </h1>
-          <div
-            v-if="heroTaglinesDisplay.length"
-            class="hero-tagline"
-          >
-            <p
-              v-for="(line, lineIndex) in heroTaglinesDisplay"
-              :key="lineIndex"
-              class="hero-tagline-line"
+        <div
+          ref="headlineTiltHostRef"
+          class="intro-bento__tile intro-bento__tile--headline hero-fade-in"
+        >
+          <div ref="headlineTiltRef" class="intro-headline-tilt">
+            <h1 class="hero-title" lang="en">
+              <span
+                v-if="heroTitleParts.lead"
+                class="hero-title-lead"
+                :style="heroLeadStyle"
+              >{{ heroTitleParts.lead }}</span>
+              <span
+                v-if="heroTitleParts.lead && heroTitleParts.accent"
+                class="hero-title-sep"
+                aria-hidden="true"
+              >{{ ' ' }}</span>
+              <span
+                v-if="heroTitleParts.accent"
+                class="hero-title-accent"
+                :class="{ 'hero-title-accent--after-lead': !!heroTitleParts.lead }"
+              >{{ heroTitleParts.accent }}</span>
+            </h1>
+            <div
+              v-if="heroTaglinesDisplay.length"
+              class="hero-tagline"
             >
-              <template v-for="(seg, segIndex) in line.segments" :key="segIndex">
-                <strong v-if="seg.em" class="hero-tagline-em">{{ seg.text }}</strong>
-                <template v-else>{{ seg.text }}</template>
-              </template>
-            </p>
+              <p
+                v-for="(line, lineIndex) in heroTaglinesDisplay"
+                :key="lineIndex"
+                class="hero-tagline-line"
+              >
+                <template v-for="(seg, segIndex) in line.segments" :key="segIndex">
+                  <strong v-if="seg.em" class="hero-tagline-em">{{ seg.text }}</strong>
+                  <template v-else>{{ seg.text }}</template>
+                </template>
+              </p>
+            </div>
           </div>
         </div>
 
-        <div class="intro-bento__tile intro-bento__tile--cta hero-fade-in hero-delay-1">
-          <CtaButton
-            :to="introCtaTo"
-            :label="introCtaLabel"
-            :download="introCtaDownload"
-            attention
-            preserve-case
-            class="intro-bento__cta-fill"
-          >
-            <template #icon><Icon icon="lucide:book-open" class="text-sm" /></template>
-          </CtaButton>
-        </div>
-
-        <a
-          :href="linkedinHref"
-          class="intro-bento__tile intro-bento__tile--linkedin intro-linkedin hero-fade-in hero-delay-1"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Icon icon="ri:linkedin-fill" class="intro-linkedin-icon" aria-hidden="true" />
-          LinkedIn
-          <span class="sr-only">(opens in new tab)</span>
-        </a>
-
         <aside
-          class="intro-bento__tile intro-bento__tile--rail intro-rail hero-fade-in hero-delay-2"
+          class="intro-bento__tile intro-bento__tile--rail intro-rail hero-fade-in hero-delay-1"
           aria-label="Profile"
         >
           <p class="intro-rail-line">
@@ -228,6 +250,30 @@ const focusRailValue = computed(() => {
             <span class="intro-rail-val">{{ focusRailValue }}</span>
           </p>
         </aside>
+
+        <div class="intro-bento__tile intro-bento__tile--cta hero-fade-in hero-delay-1">
+          <CtaButton
+            :to="introCtaTo"
+            :label="introCtaLabel"
+            :download="introCtaDownload"
+            attention
+            preserve-case
+            class="intro-bento__cta-fill"
+          >
+            <template #icon><Icon icon="lucide:book-open" class="text-sm" /></template>
+          </CtaButton>
+        </div>
+
+        <a
+          :href="linkedinHref"
+          class="intro-bento__tile intro-bento__tile--linkedin intro-linkedin hero-fade-in hero-delay-1"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <Icon icon="ri:linkedin-fill" class="intro-linkedin-icon" aria-hidden="true" />
+          LinkedIn
+          <span class="sr-only">(opens in new tab)</span>
+        </a>
       </div>
     </div>
   </RevealOnScroll>
@@ -247,15 +293,19 @@ const focusRailValue = computed(() => {
 }
 
 .home-hero-band {
+  position: relative;
+  width: 100%;
+  min-width: 0;
   padding-top: clamp(0.8rem, 1.6vw, 1.4rem);
-  /* Extra exhale before Work — hero reads as a complete “spread” */
   padding-bottom: clamp(1rem, 2.2vw, 1.85rem);
 }
 
-/* Bento: four tiles on a 12-col grid; rail spans two rows on md+ */
 .intro-bento {
   --intro-bento-gap: clamp(0.65rem, 1.25vw, 1.05rem);
   --intro-bento-radius: clamp(0.85rem, 1.4vw, 1.2rem);
+  position: relative;
+  width: 100%;
+  min-width: 0;
   row-gap: var(--intro-bento-gap);
   column-gap: var(--intro-bento-gap);
   align-items: stretch;
@@ -274,6 +324,15 @@ const focusRailValue = computed(() => {
   box-sizing: border-box;
 }
 
+.intro-headline-tilt {
+  display: flex;
+  flex-direction: column;
+  gap: var(--home-stack-gap-comfortable);
+  min-width: 0;
+  width: 100%;
+  transform-origin: 50% 40%;
+}
+
 .intro-bento__tile--rail {
   /* aside.intro-rail: layout + color below */
   grid-column: 1 / -1;
@@ -285,34 +344,40 @@ const focusRailValue = computed(() => {
   grid-column: 1 / 7;
   display: flex;
   min-width: 0;
-  min-height: 3.35rem;
+  min-height: 2.75rem;
   padding: 0;
-  align-self: stretch;
+  align-self: start;
 }
 
 .intro-bento__tile--linkedin {
   grid-column: 7 / 13;
   min-width: 0;
-  min-height: 3.35rem;
-  height: 100%;
+  min-height: 2.75rem;
   box-sizing: border-box;
-  align-self: stretch;
+  align-self: start;
 }
 
 .intro-bento__tile--cta :deep(.intro-bento__cta-fill) {
-  flex: 1 1 auto;
   width: 100%;
-  min-height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0 !important;
   box-sizing: border-box;
 }
 
-.intro-bento__tile--cta :deep(.intro-bento__cta-fill.btn-attention) {
-  align-self: stretch;
-  height: 100%;
+@media (min-width: 768px) {
+  .intro-bento__tile--cta :deep(.intro-bento__cta-fill) {
+    flex: 1 1 auto;
+    min-height: 100%;
+  }
+}
+
+/* Bento CTAs sit flush on the grid — no hairline ring from global attention-pill */
+.intro-bento__tile--cta :deep(.intro-bento__cta-fill.btn-attention.cta-attention-pill),
+.intro-bento__tile--cta
+  :deep(.intro-bento__cta-fill.btn-attention.cta-attention-pill:is(:hover, :focus-visible)),
+.intro-bento__tile--cta :deep(.intro-bento__cta-fill.btn-attention.cta-attention-pill:active) {
+  border: none;
 }
 
 /*
@@ -341,19 +406,21 @@ const focusRailValue = computed(() => {
 
   .intro-bento__tile--rail {
     grid-column: 9 / span 4;
-    grid-row: 1 / span 2;
+    grid-row: 1;
     height: 100%;
     align-self: stretch;
   }
 
   .intro-bento__tile--cta {
-    grid-column: 1 / span 4;
+    grid-column: 1 / 7;
     grid-row: 2;
+    align-self: start;
   }
 
   .intro-bento__tile--linkedin {
-    grid-column: 5 / span 4;
+    grid-column: 7 / 13;
     grid-row: 2;
+    align-self: start;
   }
 }
 
@@ -395,6 +462,7 @@ const focusRailValue = computed(() => {
 .hero-title-lead {
   display: inline;
   letter-spacing: -0.035em;
+  transition: letter-spacing 140ms linear;
 }
 
 .hero-title-sep {
@@ -409,10 +477,30 @@ const focusRailValue = computed(() => {
 .hero-title-accent {
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 300;
+  /* 400+ reads sharper on a tinted tile than 300 (less “mush” at color edges) */
+  font-weight: 400;
   letter-spacing: -0.04em;
-  font-variation-settings: 'opsz' 144;
-  color: var(--fg-primary);
+  /* Solid ink: hue animation between green/brown smears through muddy sRGB midpoints on mint */
+  color: var(--pastel-ink);
+  position: relative;
+  /* isolation creates stacking context so ::after { z-index: -1 } sits behind text */
+  isolation: isolate;
+}
+
+.hero-title-accent::after {
+  content: '';
+  position: absolute;
+  inset: -0.1em -0.05em;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--signal-coral-ink) 55%, transparent) 50%,
+    transparent 100%
+  );
+  transform: scaleX(0);
+  transform-origin: left center;
+  z-index: -1;
+  pointer-events: none;
 }
 
 .hero-tagline {
@@ -433,6 +521,31 @@ const focusRailValue = computed(() => {
 
 .hero-tagline-line + .hero-tagline-line {
   margin-top: 0.45rem;
+}
+
+/* Pilcrow ornament — editorial mark at end of last tagline */
+.hero-tagline-line:last-child::after {
+  content: ' ¶';
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 0.9em;
+  color: var(--signal-coral-ink);
+  opacity: 0;
+  animation: pilcrow-fade-in 600ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)) 0.55s both;
+  pointer-events: none;
+}
+
+@keyframes pilcrow-fade-in {
+  from { opacity: 0; transform: translateX(-4px); }
+  to   { opacity: 0.45; transform: translateX(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-tagline-line:last-child::after {
+    animation: none;
+    opacity: 0.45;
+  }
 }
 
 .hero-tagline-em {
@@ -456,7 +569,7 @@ const focusRailValue = computed(() => {
   text-decoration: none;
   color: var(--pastel-ink);
   background: var(--pastel-sky);
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, var(--pastel-sky)) !important;
+  border: none;
   border-radius: var(--radius-control, 0.35rem);
   padding: 0.65rem 1.4rem;
   outline-offset: 4px;
@@ -465,8 +578,7 @@ const focusRailValue = computed(() => {
   transition:
     transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
     background-color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
-    color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
-    border-color 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+    color 0.18s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 /* Square corners for intro bento actions (overrides .intro-linkedin) */
@@ -476,14 +588,12 @@ const focusRailValue = computed(() => {
 
 .intro-linkedin:is(:hover, :focus-visible) {
   background: var(--pastel-ink);
-  border-color: var(--pastel-ink) !important;
   color: var(--pastel-sky);
   box-shadow: none;
 }
 
 .intro-linkedin:active {
   background: color-mix(in srgb, var(--pastel-ink) 88%, var(--pastel-sky));
-  border-color: var(--pastel-ink) !important;
   color: var(--pastel-sky);
   transform: scale(0.98);
   box-shadow: none;
@@ -514,8 +624,7 @@ const focusRailValue = computed(() => {
   .intro-linkedin {
     transition:
       background-color 0.15s ease,
-      color 0.15s ease,
-      border-color 0.15s ease;
+      color 0.15s ease;
   }
 
   .intro-linkedin:active {
@@ -595,13 +704,24 @@ const focusRailValue = computed(() => {
 
 @keyframes status-dot-pulse {
   0% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-dot-color) 55%, var(--pastel-blush));
+    box-shadow:
+      0 0 0 0 color-mix(in srgb, var(--status-dot-color) 55%, var(--pastel-blush)),
+      0 0 0 0 color-mix(in srgb, var(--status-dot-color) 28%, var(--pastel-blush));
+  }
+  50% {
+    box-shadow:
+      0 0 0 0.5rem color-mix(in srgb, var(--status-dot-color) 0%, var(--pastel-blush)),
+      0 0 0 0 color-mix(in srgb, var(--status-dot-color) 20%, var(--pastel-blush));
   }
   70% {
-    box-shadow: 0 0 0 0.5rem color-mix(in srgb, var(--status-dot-color) 0%, var(--pastel-blush));
+    box-shadow:
+      0 0 0 0.5rem color-mix(in srgb, var(--status-dot-color) 0%, var(--pastel-blush)),
+      0 0 0 0.85rem color-mix(in srgb, var(--status-dot-color) 0%, var(--pastel-blush));
   }
   100% {
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--status-dot-color) 0%, var(--pastel-blush));
+    box-shadow:
+      0 0 0 0 color-mix(in srgb, var(--status-dot-color) 0%, var(--pastel-blush)),
+      0 0 0 0 color-mix(in srgb, var(--status-dot-color) 0%, var(--pastel-blush));
   }
 }
 
@@ -655,11 +775,10 @@ const focusRailValue = computed(() => {
   transition-timing-function: var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
-/* B1: Hero accent word secondary reveal — blooms in after the block fade */
+/* B1: Accent = typography only (bloom in). No color keyframes — sRGB lerp between hues reads murky. */
 @media (prefers-reduced-motion: no-preference) {
   .reveal-on-scroll--visible .hero-title-accent {
     animation: hero-accent-bloom 600ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)) both;
-    animation-delay: 0.2s;
   }
 
   @keyframes hero-accent-bloom {
@@ -672,6 +791,17 @@ const focusRailValue = computed(() => {
       transform: translateX(0) skewX(0deg);
     }
   }
+
+  .reveal-on-scroll--visible .hero-title-accent::after {
+    animation: hero-ink-sweep 720ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)) both;
+  }
+
+  @keyframes hero-ink-sweep {
+    0%   { transform: scaleX(0); opacity: 0; }
+    20%  { opacity: 1; }
+    70%  { transform: scaleX(1); opacity: 1; }
+    100% { transform: scaleX(1); opacity: 0; }
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -683,6 +813,11 @@ const focusRailValue = computed(() => {
   .hero-fade-in {
     opacity: 1;
     transform: none;
+  }
+
+  .hero-title-lead,
+  .hero-title-accent {
+    transition: none;
   }
 
   .reveal-on-scroll--visible .hero-fade-in {

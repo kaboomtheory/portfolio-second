@@ -1,6 +1,12 @@
 <script setup lang="ts">
+import { activeSectionSignalKey, useActiveSectionSignal } from '~/composables/useActiveSectionSignal'
+
 const route = useRoute()
 const router = useRouter()
+const { ambientTint } = useTimeOfDay()
+
+const activeSectionSignal = useActiveSectionSignal()
+provide(activeSectionSignalKey, activeSectionSignal)
 
 const transitionName = ref('layout-page')
 
@@ -13,6 +19,7 @@ router.beforeEach((to, from) => {
 useHead(() => ({
   htmlAttrs: {
     'data-home-landing': route.path === '/' ? 'true' : undefined,
+    style: ambientTint.value !== 'transparent' ? `--ambient-tint: ${ambientTint.value};` : undefined,
   },
 }))
 </script>
@@ -20,6 +27,7 @@ useHead(() => ({
 <template>
   <div class="layout-root relative min-h-screen w-full text-[var(--fg-primary)]">
     <ScrollProgress />
+    <ScrollDriftLayer />
 
     <!-- Circuit board pattern (full strength top half; fades over bottom half) -->
     <div
@@ -59,7 +67,7 @@ useHead(() => ({
 
 <style scoped>
 .layout-root {
-  background: var(--shell-ui-bg, var(--paper));
+  background: color-mix(in srgb, var(--ambient-tint, transparent) 2%, var(--shell-ui-bg, var(--paper)));
   color: var(--fg-primary);
 }
 

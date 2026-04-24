@@ -53,11 +53,6 @@ const resumeHref = computed(() =>
   aboutPage.value?.resumeUrl || '/Bryan_Mendez_resume_2026-1.pdf',
 )
 
-const availabilityMailto = computed(() => `mailto:${profile.email}`)
-const availabilityCtaLabel = computed(() =>
-  (hero.value.availabilityText || 'Available for freelance').toLocaleUpperCase('en-US'),
-)
-
 const { siteUrl } = useRuntimeConfig().public
 const aboutCanonicalUrl = `${String(siteUrl).replace(/\/$/, '')}/about`
 const aboutOgImage = `${String(siteUrl).replace(/\/$/, '')}/og-default.png`
@@ -87,8 +82,6 @@ useSeoMeta({
       :avatar="hero.avatar ?? ''"
       :story="story"
       :resume-href="resumeHref"
-      :availability-mailto="availabilityMailto"
-      :availability-cta-label="availabilityCtaLabel"
     />
     <HomeExperienceCapabilitiesSection
       :experience-items="experienceItems"

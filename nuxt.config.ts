@@ -10,17 +10,12 @@ const sanityDataset = process.env.SANITY_DATASET || 'production'
 const sanityApiVersion = process.env.SANITY_API_VERSION || '2025-01-01'
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
-/** Geist, Fraunces, Geist Mono — loaded via `@nuxt/fonts` (weights 400–600). */
+/** Geist, Averia Serif Libre, Geist Mono — loaded via `@nuxt/fonts` (weights 400–600). */
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: process.env.NODE_ENV !== 'production' },
-  /**
-   * SPA mode: client-rendered shell; `npm run generate` still emits a static host
-   * but first paint is JS-driven. For stronger SEO/social previews (HTML in first
-   * response), switch to `ssr: true` or hybrid route rules and retest client-only
-   * plugins (theme, smooth scroll, Lenis if added).
-   */
-  ssr: false,
+  /** Server-render marketing pages so first paint and social crawlers get real HTML. */
+  ssr: true,
   modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sanity', '@nuxt/image', '@nuxt/fonts'],
   css: ['~/assets/css/main.css'],
 
@@ -41,7 +36,7 @@ export default defineNuxtConfig({
     },
     families: [
       { name: 'Geist', provider: 'google', global: true },
-      { name: 'Fraunces', provider: 'google', global: true },
+      { name: 'Averia Serif Libre', provider: 'google', global: true },
       { name: 'Geist Mono', provider: 'google', global: true },
     ],
   },
@@ -97,7 +92,16 @@ export default defineNuxtConfig({
     },
   },
 
+  /**
+   * Contact form (`server/api/contact.post.ts` → Resend). Set on the host, never commit secrets:
+   * - NUXT_RESEND_API_KEY
+   * - NUXT_CONTACT_TO_EMAIL (your inbox)
+   * - NUXT_CONTACT_FROM_EMAIL (verified sender in Resend, e.g. "Portfolio <hello@yourdomain.com>")
+   */
   runtimeConfig: {
+    resendApiKey: '',
+    contactToEmail: '',
+    contactFromEmail: '',
     public: {
       sanityProjectId,
       sanityDataset,

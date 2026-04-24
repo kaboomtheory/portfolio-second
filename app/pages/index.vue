@@ -1,4 +1,5 @@
 <script setup lang="ts">
+/** Ambient drift reads section signals via `activeSectionSignalKey` from `layouts/default.vue`. */
 import { socialLinks, profile } from '~/data/site'
 import { useSanityAbout } from '~/composables/useSanityAbout'
 import { useSanityStatus } from '~/composables/useSanityStatus'
@@ -19,7 +20,6 @@ const heroTitle = computed(() => cmsHome.value?.hero.title || homeHero.title)
 const heroTaglines = computed(() =>
   cmsHome.value?.hero.taglines?.length ? cmsHome.value.hero.taglines : homeHero.taglines,
 )
-const heroEmail = computed(() => cmsHome.value?.email || profile.email)
 
 const linkedinHref = computed(() => {
   const list = cmsHome.value?.socialLinks?.length ? cmsHome.value.socialLinks : socialLinks
@@ -73,12 +73,6 @@ const resumeHref = computed(() =>
   aboutPage.value?.resumeUrl || '/Bryan_Mendez_resume_2026-1.pdf',
 )
 
-const availabilityMailto = computed(() => `mailto:${heroEmail.value}`)
-
-const availabilityCtaLabel = computed(() =>
-  (hero.value.availabilityText || 'Available for freelance').toLocaleUpperCase('en-US'),
-)
-
 const heroTaglineOneLine = computed(() => {
   const lines = heroTaglines.value
   const segs = lines?.[0]?.segments
@@ -105,7 +99,6 @@ const homeStructuredDataJsonLd = computed(() => {
     '@id': personId,
     name: profile.name,
     jobTitle: profile.role,
-    email: profile.email,
     image: `${base}${imagePath}`,
     url: homeCanonicalUrl,
     address: {
@@ -115,6 +108,11 @@ const homeStructuredDataJsonLd = computed(() => {
       addressCountry: 'US',
     },
     sameAs: linkedinHref.value ? [linkedinHref.value] : [],
+    contactPoint: {
+      '@type': 'ContactPoint',
+      contactType: 'business inquiries',
+      url: `${homeCanonicalUrl}#contact`,
+    },
   }
 
   const website = {
@@ -177,14 +175,12 @@ useSeoMeta({
       :avatar="hero.avatar"
       :story="story"
       :resume-href="resumeHref"
-      :availability-mailto="availabilityMailto"
-      :availability-cta-label="availabilityCtaLabel"
     />
     <HomeStatusSection v-if="tickerList.length" :status-items="tickerList" layout="ticker" />
     <HomeExperienceCapabilitiesSection
       :experience-items="experienceItems"
       :groups="groupedCapabilities"
     />
-    <HomeContactSection :availability-mailto="availabilityMailto" :linkedin-href="linkedinHref" />
+    <HomeContactSection :linkedin-href="linkedinHref" />
   </div>
 </template>

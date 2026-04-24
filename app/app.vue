@@ -16,6 +16,7 @@ function scrollToHashIfPresent() {
 watch(
   () => [route.path, route.hash] as const,
   ([path, hash], prev) => {
+    if (!import.meta.client) return
     nextTick(() => {
       const main = document.getElementById('main-content')
       if (hash) {
@@ -30,10 +31,12 @@ watch(
 )
 
 onMounted(() => {
+  if (!import.meta.client) return
   document.addEventListener('click', handleAnchorClick)
 })
 
 onUnmounted(() => {
+  if (!import.meta.client) return
   document.removeEventListener('click', handleAnchorClick)
 })
 

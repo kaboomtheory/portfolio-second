@@ -10,7 +10,6 @@ export const profile = {
   role: 'Visual Designer',
   location: 'Los Angeles, CA',
   photo: '/profile-photo.jpg',
-  email: 'hello@bryanxmendez.com',
 }
 
 export const navItems: NavItem[] = [

@@ -53,6 +53,16 @@ Do not edit generated/build artifacts:
 - Use `npm` (lockfile is `package-lock.json`).
 - Node version: use a modern LTS compatible with Nuxt 4.
 
+### Contact form (Resend)
+
+The home page contact form calls `POST /api/contact` ([`server/api/contact.post.ts`](server/api/contact.post.ts)). Email delivery requires these **private** runtime variables (set on the host; never commit real values):
+
+- `NUXT_RESEND_API_KEY` — Resend API key.
+- `NUXT_CONTACT_TO_EMAIL` — Inbox that receives submissions.
+- `NUXT_CONTACT_FROM_EMAIL` — Verified sender in Resend (for example `Portfolio <hello@yourdomain.com>`).
+
+For local development, copy [`.env.example`](.env.example) to `.env` and fill the three keys. On Vercel, Netlify, or Cloudflare, add the same variable names in the project’s environment settings.
+
 ## 5) Build / Lint / Test Commands
 
 ### Core project commands

@@ -52,9 +52,7 @@ const filterAnnouncement = computed(() => {
     </p>
     <div class="work-grid grid-12">
       <div class="work-marker">
-        <span class="section-marker">
-          <span class="section-marker-word">Work</span>
-        </span>
+        <SectionMarker index="02" word="Work" />
       </div>
 
       <div class="work-content">
@@ -122,7 +120,7 @@ const filterAnnouncement = computed(() => {
               :key="item.slug"
               :project="item"
               :project-index="idx + 1"
-              :style="{ '--i': idx }"
+              :style="{ '--card-index': Math.min(idx, 8) }"
             />
           </div>
         </Transition>
@@ -209,30 +207,6 @@ const filterAnnouncement = computed(() => {
   --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, var(--project-card-surface, var(--pastel-peach)));
 }
 
-.work-list :deep(.project-card:nth-child(4n + 1)) {
-  --project-card-surface: var(--pastel-peach);
-  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 86%, var(--pastel-ink));
-  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-peach) 14%);
-}
-
-.work-list :deep(.project-card:nth-child(4n + 2)) {
-  --project-card-surface: var(--pastel-mint);
-  --project-card-surface-hover: color-mix(in srgb, var(--pastel-mint) 86%, var(--pastel-ink));
-  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-mint) 14%);
-}
-
-.work-list :deep(.project-card:nth-child(4n + 3)) {
-  --project-card-surface: var(--pastel-sky);
-  --project-card-surface-hover: color-mix(in srgb, var(--pastel-sky) 86%, var(--pastel-ink));
-  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-sky) 14%);
-}
-
-.work-list :deep(.project-card:nth-child(4n + 4)) {
-  --project-card-surface: var(--pastel-blush);
-  --project-card-surface-hover: color-mix(in srgb, var(--pastel-blush) 86%, var(--pastel-ink));
-  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-blush) 14%);
-}
-
 .work-list :deep(.project-card:hover .project-card__title),
 .work-list :deep(.project-card-link:focus-visible .project-card__title) {
   color: var(--pastel-ink);
@@ -257,22 +231,26 @@ const filterAnnouncement = computed(() => {
   opacity: 0;
 }
 
-/* Staggered cards whenever the work block is in view (scroll + filter remount) */
-.reveal-on-scroll--visible .work-list > :deep(.project-card) {
-  animation: work-card-enter 0.52s cubic-bezier(0.16, 1, 0.3, 1) both;
-  /* Cap index so long lists do not stretch choreography past ~0.5s */
-  animation-delay: calc(min(var(--i, 0), 8) * 52ms);
+/* Cards start hidden; transition into view when the section becomes visible */
+.work-list > :deep(.project-card) {
+  opacity: 0;
+  transform: translateY(14px);
+  transition:
+    opacity 420ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform 420ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+  transition-delay: calc(var(--card-index, 0) * 40ms);
 }
 
-@keyframes work-card-enter {
-  from {
-    opacity: 0;
-    transform: translate3d(0, 14px, 0) scale(0.985);
-  }
+.reveal-on-scroll--visible .work-list > :deep(.project-card) {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-  to {
-    opacity: 1;
-    transform: translate3d(0, 0, 0) scale(1);
+@media (prefers-reduced-motion: reduce) {
+  .work-list > :deep(.project-card) {
+    transform: none;
+    transition: opacity 200ms linear;
+    transition-delay: 0ms;
   }
 }
 

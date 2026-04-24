@@ -91,8 +91,8 @@ function scrollToTop() {
 /* Make the button compact and circular for the ring to fit */
 .back-to-top {
   position: relative;
-  border-radius: 999px !important;
-  padding: 0.6rem !important;
+  border-radius: 999px;
+  padding: 0.6rem;
   width: 2.5rem;
   height: 2.5rem;
   display: flex;

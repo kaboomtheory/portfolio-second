@@ -1,6 +1,10 @@
 import type { SanityProjectItem, ProjectItem, ContentBlock, ProjectStorySection } from '~/types/project'
 import { buildImageUrl } from '~/utils/sanity'
 
+function isPresent<T>(value: T | null | undefined): value is T {
+  return value != null
+}
+
 function mapSection(section: ContentBlock): ProjectStorySection {
   switch (section._type) {
     case 'textSection':
@@ -27,11 +31,11 @@ function mapSection(section: ContentBlock): ProjectStorySection {
             if (!image) return null
             return {
               image,
-              alt: img.alt,
-              caption: img.caption,
+              ...(img.alt ? { alt: img.alt } : {}),
+              ...(img.caption ? { caption: img.caption } : {}),
             }
           })
-          .filter((img): img is { image: string; alt?: string; caption?: string } => Boolean(img))
+          .filter(isPresent)
 
         return {
           type: 'imageGallery',

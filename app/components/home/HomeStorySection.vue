@@ -9,13 +9,12 @@ const props = defineProps<{
   avatar: string
   story: string[]
   resumeHref: string
-  availabilityMailto: string
-  availabilityCtaLabel: string
 }>()
 
 const avatarRef = ref<HTMLElement | null>(null)
 const { scale: avatarScale, displayedOpacity: avatarOpacity } = useScrollExpandImage(avatarRef, {
-  minScale: 0.94,
+  minScale: 0.9,
+  maxScale: 1.04,
 })
 const avatarStyle = computed(() => ({
   transform: `scale(${avatarScale.value})`,
@@ -35,54 +34,51 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
     <div class="story-grid grid-12">
       <div class="story-marker">
         <div class="story-marker-sticky">
-          <span class="section-marker">
-            <span class="section-marker-word">Story</span>
-          </span>
+          <SectionMarker index="03" word="Story" />
         </div>
       </div>
 
-      <div class="story-body">
-        <div ref="storyProseRef" class="story-body-prose">
-          <p
-            v-for="(paragraph, index) in story"
-            :key="index"
-            class="story-paragraph"
-            :class="{ 'para--visible': paraVisible[index] }"
-          >
-            {{ paragraph }}
-          </p>
-        </div>
-
-        <div class="story-cta-row">
-          <CtaButton
-            :href="resumeHref"
-            label="Download résumé"
-            attention
-            preserve-case
-            target="_blank"
-          >
-            <template #icon><Icon icon="lucide:download" class="text-sm" /></template>
-          </CtaButton>
-        </div>
-      </div>
-
-      <div class="story-aside">
-        <figure class="story-avatar">
-          <div ref="avatarRef" class="story-avatar-frame" :style="avatarStyle">
-            <SanityImage
-              :src="avatar"
-              :alt="name"
-              sizes="(max-width: 767px) 100vw, 22rem"
-              class="story-avatar-image"
-              loading="lazy"
-              decoding="async"
-            />
+      <!-- One `4 / span 9` block so the split matches Work + Background (marker 1–3, main 4–12) -->
+      <div class="story-main">
+        <div class="story-body">
+          <div ref="storyProseRef" class="story-body-prose">
+            <p
+              v-for="(paragraph, index) in story"
+              :key="index"
+              class="story-paragraph"
+              :class="{ 'para--visible': paraVisible[index] }"
+            >
+              {{ paragraph }}
+            </p>
           </div>
-          <figcaption class="story-avatar-caption">
-            <span class="story-avatar-key">Fig.&nbsp;01</span>
-            <span class="story-avatar-val">{{ name }}, Los Angeles</span>
-          </figcaption>
-        </figure>
+
+          <div class="story-cta-row">
+            <CtaButton
+              :href="resumeHref"
+              label="Download résumé"
+              attention
+              preserve-case
+              target="_blank"
+            >
+              <template #icon><Icon icon="lucide:download" class="text-sm" /></template>
+            </CtaButton>
+          </div>
+        </div>
+
+        <div class="story-aside">
+          <figure class="story-avatar">
+            <div ref="avatarRef" class="story-avatar-frame" :style="avatarStyle">
+              <SanityImage
+                :src="avatar"
+                :alt="name"
+                sizes="(max-width: 767px) 100vw, 22rem"
+                class="story-avatar-image"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </figure>
+        </div>
       </div>
     </div>
   </RevealOnScroll>
@@ -93,7 +89,7 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   --signal: var(--signal-peach);
   --rule: color-mix(in srgb, var(--fg-primary) 16%, var(--paper));
   --rule-soft: color-mix(in srgb, var(--fg-primary) 12%, var(--paper));
-  --btn-attention-bg: var(--pastel-sky);
+  --btn-attention-bg: var(--pastel-blush);
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -108,12 +104,20 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   grid-column: 1 / -1;
 }
 
-.story-body {
+.story-main {
   grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   gap: var(--home-stack-gap-comfortable);
   min-width: 0;
+}
+
+.story-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--home-stack-gap-comfortable);
+  min-width: 0;
+  width: 100%;
 }
 
 .story-body-prose {
@@ -123,13 +127,16 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   gap: var(--home-stack-gap-tight);
   min-width: 0;
   border-radius: 0.25rem;
+  max-width: min(42rem, 68ch);
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .story-aside {
-  grid-column: 1 / -1;
   display: flex;
   flex-direction: column;
   gap: var(--home-stack-gap-comfortable);
+  min-width: 0;
 }
 
 @media (min-width: 768px) {
@@ -138,18 +145,30 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
     grid-row: 1;
   }
 
-  .story-body {
-    grid-column: 4 / span 5;
+  /* Match `.work-content` / `.resume-cols`: main block starts on column 4 and spans 9. */
+  .story-main {
+    grid-column: 4 / span 9;
     grid-row: 1;
-    max-width: 68ch;
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+    column-gap: clamp(1.25rem, 2.5vw, 2.25rem);
+    align-items: start;
+  }
+
+  .story-body {
+    grid-column: 1;
+  }
+
+  .story-body-prose {
+    max-width: none;
+    padding: 0;
   }
 
   .story-aside {
-    grid-column: 9 / span 4;
-    grid-row: 1;
-    max-width: 22rem;
+    grid-column: 2;
     justify-self: end;
     width: 100%;
+    max-width: 22rem;
   }
 }
 
@@ -204,51 +223,26 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 
 .story-avatar {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.65rem;
 }
 
 .story-avatar-frame {
+  position: relative;
   aspect-ratio: 1 / 1;
   width: 100%;
   max-width: 100%;
-  border: 1px solid var(--rule);
-  background: var(--pastel-sky);
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: hidden;
+  background: transparent;
 }
 
 .story-avatar-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
   display: block;
-}
-
-.story-avatar-caption {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-  padding-top: 0.55rem;
-  border-top: 1px solid var(--rule-soft);
-}
-
-.story-avatar-key {
-  font-family: var(--font-mono);
-  font-size: var(--label-size);
-  font-weight: 500;
-  letter-spacing: var(--label-tracking-mono);
-  text-transform: uppercase;
-  color: var(--signal);
-}
-
-.story-avatar-val {
-  font-family: var(--font-sans);
-  font-size: 0.85rem;
-  color: var(--fg-secondary);
-  letter-spacing: -0.005em;
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  box-sizing: border-box;
+  border: clamp(0.45rem, 1.35vw, 0.8rem) solid var(--pastel-sky);
 }
 </style>

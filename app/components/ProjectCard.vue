@@ -3,6 +3,34 @@ import { Icon } from '@iconify/vue'
 import type { CSSProperties } from 'vue'
 import type { ProjectItem } from '~/types/project'
 
+const CARD_SURFACES = [
+  {
+    surface: 'var(--pastel-peach)',
+    hover: 'color-mix(in srgb, var(--pastel-peach) 86%, var(--pastel-ink))',
+    media: 'color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-peach) 14%)',
+  },
+  {
+    surface: 'var(--pastel-mint)',
+    hover: 'color-mix(in srgb, var(--pastel-mint) 86%, var(--pastel-ink))',
+    media: 'color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-mint) 14%)',
+  },
+  {
+    surface: 'var(--pastel-sky)',
+    hover: 'color-mix(in srgb, var(--pastel-sky) 86%, var(--pastel-ink))',
+    media: 'color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-sky) 14%)',
+  },
+  {
+    surface: 'var(--pastel-blush)',
+    hover: 'color-mix(in srgb, var(--pastel-blush) 86%, var(--pastel-ink))',
+    media: 'color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-blush) 14%)',
+  },
+  {
+    surface: 'var(--pastel-lemon)',
+    hover: 'color-mix(in srgb, var(--pastel-lemon) 86%, var(--pastel-ink))',
+    media: 'color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-lemon) 14%)',
+  },
+] as const
+
 const props = defineProps<{
   project: ProjectItem
   projectIndex?: number
@@ -19,14 +47,39 @@ const projectIndexLabel = computed(() => {
   return String(props.projectIndex).padStart(2, '0')
 })
 
-const accentStyle = computed<CSSProperties>(() => {
-  if (!props.project.color?.trim()) return {}
-  return { '--project-accent': props.project.color.trim() }
+const paletteStyle = computed<CSSProperties>(() => {
+  const paletteIndex = ((props.projectIndex ?? 1) - 1 + CARD_SURFACES.length) % CARD_SURFACES.length
+  const palette = CARD_SURFACES[paletteIndex]!
+
+  return {
+    '--project-accent': props.project.color?.trim() || 'var(--accent)',
+    '--project-card-surface': palette.surface,
+    '--project-card-surface-hover': palette.hover,
+    '--project-card-media-bg': palette.media,
+  }
 })
+
+const mediaHostRef = ref<HTMLElement | null>(null)
+const mediaTiltRef = ref<HTMLElement | null>(null)
+const imageLoaded = ref(false)
+
+useCardTilt(mediaHostRef, mediaTiltRef)
+
+watch(
+  hasThumbnail,
+  (value) => {
+    imageLoaded.value = !value
+  },
+  { immediate: true },
+)
+
+function handleImageLoad() {
+  imageLoaded.value = true
+}
 </script>
 
 <template>
-  <div class="project-card group relative" :style="accentStyle">
+  <div class="project-card group relative" :style="paletteStyle">
     <NuxtLink
       :to="projectHref"
       class="project-card-link"
@@ -59,19 +112,31 @@ const accentStyle = computed<CSSProperties>(() => {
         </span>
       </div>
 
-      <div class="project-card__media work-media-frame">
-        <SanityImage
-          v-if="hasThumbnail"
-          :src="project.thumbnail"
-          :alt="project.name"
-          sizes="(max-width: 719px) 100vw, 50vw"
-          loading="lazy"
-          decoding="async"
-          class="project-card__image"
-        />
-        <div v-else class="project-card__media-fallback">
-          <Icon icon="lucide:image-off" class="project-card__media-fallback-icon" aria-hidden="true" />
-          <span class="project-card__media-fallback-copy">Preview coming soon</span>
+      <div
+        ref="mediaHostRef"
+        class="project-card__media work-media-frame"
+        :class="{ 'project-card__media--loaded': imageLoaded }"
+      >
+        <div v-if="hasThumbnail" class="project-card__media-skeleton" aria-hidden="true" />
+        <div
+          ref="mediaTiltRef"
+          class="project-card__media-tilt"
+        >
+          <SanityImage
+            v-if="hasThumbnail"
+            :src="project.thumbnail"
+            :alt="project.name"
+            sizes="(max-width: 719px) 100vw, 50vw"
+            loading="lazy"
+            decoding="async"
+            class="project-card__image"
+            :class="{ 'project-card__image--loaded': imageLoaded }"
+            @load="handleImageLoad"
+          />
+          <div v-else class="project-card__media-fallback">
+            <Icon icon="lucide:image-off" class="project-card__media-fallback-icon" aria-hidden="true" />
+            <span class="project-card__media-fallback-copy">Preview coming soon</span>
+          </div>
         </div>
         <div
           v-if="projectIndexLabel"
@@ -107,6 +172,9 @@ const accentStyle = computed<CSSProperties>(() => {
   overflow: hidden;
   text-decoration: none;
   color: inherit;
+  cursor:
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Crect x='2.5' y='2.5' width='23' height='23' fill='%23f7f4ed' stroke='%2315120f'/%3E%3Cpath d='M10 18L18 10M12 10h6v6' fill='none' stroke='%2315120f' stroke-width='1.8' stroke-linecap='square'/%3E%3C/svg%3E") 14 14,
+    pointer;
   background: var(--bg-primary);
   border: 1px solid var(--project-card-border, color-mix(in srgb, var(--rule) 58%, var(--paper)));
   border-radius: 0.5rem;
@@ -189,8 +257,52 @@ const accentStyle = computed<CSSProperties>(() => {
   border-bottom: none;
 }
 
+.project-card__media-skeleton {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(
+      110deg,
+      color-mix(in srgb, var(--project-card-media-bg, var(--bg-secondary)) 78%, var(--paper)) 0%,
+      color-mix(in srgb, var(--paper) 78%, var(--project-card-media-bg, var(--bg-secondary))) 42%,
+      color-mix(in srgb, var(--project-card-media-bg, var(--bg-secondary)) 78%, var(--paper)) 100%
+    );
+  background-size: 220% 100%;
+  animation: project-card-media-shimmer 1.4s linear infinite;
+  transition: opacity 220ms cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+.project-card__media--loaded .project-card__media-skeleton {
+  opacity: 0;
+}
+
+.project-card__media::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgb(255 255 255 / 0.1) 50%,
+    transparent 60%
+  );
+  transform: translate3d(-110%, 0, 0);
+  transition: transform 650ms cubic-bezier(0.16, 1, 0.3, 1);
+  pointer-events: none;
+}
+
 .project-card__media.work-media-frame {
   border-bottom: none;
+}
+
+.project-card__media-tilt {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  transform-style: preserve-3d;
+  will-change: transform;
 }
 
 :root.dark .project-card__media {
@@ -205,12 +317,24 @@ const accentStyle = computed<CSSProperties>(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  opacity: 0;
   transform: scale(1);
   transition: transform 480ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+.project-card__image--loaded {
+  opacity: 1;
+  transition:
+    opacity 240ms cubic-bezier(0.25, 1, 0.5, 1),
+    transform 480ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .project-card:hover .project-card__image {
   transform: scale3d(1.05, 1.05, 1);
+}
+
+.project-card:hover .project-card__media::after {
+  transform: translate3d(110%, 0, 0);
 }
 
 .project-card__media-fallback {
@@ -238,6 +362,24 @@ const accentStyle = computed<CSSProperties>(() => {
   top: 0.72rem;
   left: 0.72rem;
   z-index: 1;
+  display: flex;
+  align-items: center;
+  gap: 0;
+}
+
+/* Thin rule that draws right from the index badge on card hover */
+.project-card__media-meta::after {
+  content: '';
+  display: block;
+  height: 1px;
+  width: 0;
+  background: color-mix(in srgb, var(--project-card-surface, var(--paper)) 72%, var(--pastel-ink));
+  transition: width 320ms var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  margin-left: 0.35rem;
+}
+
+.project-card:hover .project-card__media-meta::after {
+  width: clamp(2rem, 4vw, 3.5rem);
 }
 
 .project-card__index {
@@ -391,10 +533,22 @@ const accentStyle = computed<CSSProperties>(() => {
   }
 }
 
+@keyframes project-card-media-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .project-card-link,
   .project-card__body,
+  .project-card__media-skeleton,
   .project-card__image,
+  .project-card__media::after,
   .project-card__title,
   .project-card__cta,
   .project-card__cta-icon {
@@ -405,6 +559,10 @@ const accentStyle = computed<CSSProperties>(() => {
   .project-card-link:active,
   .project-card:hover .project-card__cta-icon {
     transform: none;
+  }
+
+  .project-card__media-skeleton {
+    animation: none;
   }
 }
 </style>

@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "studio": "npm run dev --prefix sanity-studio",
-    "test:e2e": "playwright test"
+    "test:e2e": "npx playwright test"
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",

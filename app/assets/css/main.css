@@ -1,4 +1,11 @@
-/* Geist + Fraunces + Geist Mono: loaded via @nuxt/fonts */
+/* Geist + Averia Serif Libre + Geist Mono: loaded via @nuxt/fonts */
+
+/* Ambient drift: allows ScrollDriftLayer to interpolate `--blob-signal` over ~800ms */
+@property --blob-signal {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1a4a6e;
+}
 
 /*
   Swiss neo-grid: canonical --paper / --ink / --signal plus legacy aliases
@@ -8,7 +15,7 @@
   color-scheme: light;
   --font-sans: 'Geist', system-ui, sans-serif;
   --font-display: 'Geist', system-ui, sans-serif;
-  --font-serif: 'Fraunces', Georgia, serif;
+  --font-serif: 'Averia Serif Libre', Georgia, serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
 
   /* Modular type scale (1.25 ratio baseline) */
@@ -36,12 +43,17 @@
   --motion-ease-out: var(--motion-ease-reveal);
   --motion-ease-standard: cubic-bezier(0.25, 0.46, 0.45, 0.94);
   --duration-reveal: 320ms;
+  --flourish-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ornament-rule-weight: 1px;
+  --ornament-index-size: 0.72rem;
+  --ornament-index-tracking: 0.14em;
 
-  /* Pastel tiles (same peach / mint / sky / blush in light and dark; dark differs in shell + ink) */
+  /* Pastel tiles (same peach / mint / sky / blush / lemon in light and dark; dark differs in shell + ink) */
   --pastel-peach: #ffd4b3;
   --pastel-mint: #c5f0bd;
   --pastel-sky: #b0e6ff;
   --pastel-blush: #ffcaf3;
+  --pastel-lemon: #fef0c8;
   --pastel-pink: var(--pastel-blush);
   --pastel-ink: #000000;
   --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, var(--paper));
@@ -50,6 +62,7 @@
   --signal-mint: #1f5c42;
   --signal-peach: #5c3d26;
   --signal-blush: #6b2a52;
+  --signal-lemon: #5c4a1f;
 
   /* Light: white page; semantic surfaces = pastels (peach / mint / sky) */
   --paper: #ffffff;
@@ -59,6 +72,7 @@
   --ink-muted: #a69c8e;
   --rule-token: #15120f;
   --signal: #d4522f;
+  --signal-coral-ink: #d4522f;
   --signal-ink: #ffffff;
 
   --shell-ui-bg: var(--paper);
@@ -99,9 +113,15 @@
   --surface-interactive: var(--pastel-sky);
   --btn-secondary-bg: transparent;
   --chrome-ring-idle: var(--ink);
-  --shadow-sm: 0 0 0 1px color-mix(in srgb, var(--ink) 8%, var(--paper));
-  --shadow-md: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper));
-  --shadow-lg: 0 0 0 1px color-mix(in srgb, var(--ink) 12%, var(--paper));
+  --shadow-sm:
+    0 0 0 1px color-mix(in srgb, var(--ink) 8%, var(--paper)),
+    0 0.35rem 0.9rem -0.6rem color-mix(in srgb, var(--ink) 16%, transparent);
+  --shadow-md:
+    0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper)),
+    0 0.9rem 2rem -1.15rem color-mix(in srgb, var(--ink) 22%, transparent);
+  --shadow-lg:
+    0 0 0 1px color-mix(in srgb, var(--ink) 12%, var(--paper)),
+    0 1.5rem 3.25rem -1.9rem color-mix(in srgb, var(--ink) 28%, transparent);
   --project-card-surface: var(--pastel-peach);
   --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 92%, var(--pastel-ink));
   --project-card-border: color-mix(in srgb, var(--pastel-ink) 14%, var(--project-card-surface, var(--pastel-peach)));
@@ -128,6 +148,7 @@
   /* Hairlines: ink stepped up for legibility vs dark navy shell */
   --rule-token: color-mix(in srgb, var(--ink) 22%, var(--paper));
   --signal: #F1A06E;
+  --signal-coral-ink: #F1A06E;
   --signal-ink: #212530;
 
   /* Tiles — slightly punchier than light so bands read clearly on navy shell */
@@ -135,6 +156,7 @@
   --pastel-mint: #a8ec9c;
   --pastel-sky: #9edaf5;
   --pastel-blush: #fbbcec;
+  --pastel-lemon: #f5e8a8;
   --pastel-pink: var(--pastel-blush);
   /* Type on pastel tiles (same as light) */
   --pastel-ink: #000000;
@@ -144,6 +166,7 @@
   --signal-mint: #1f5c42;
   --signal-peach: #5c3d26;
   --signal-blush: #6b2a52;
+  --signal-lemon: #5c4a1f;
 
   --shell-ui-bg: var(--paper);
   /* Dark shell: fade toward deeper navy (ink is light; do not use it to darken) */
@@ -180,9 +203,15 @@
   --surface-interactive: var(--pastel-sky);
   --btn-secondary-bg: transparent;
   --chrome-ring-idle: var(--ink);
-  --shadow-sm: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper));
-  --shadow-md: 0 0 0 1px color-mix(in srgb, var(--ink) 14%, var(--paper));
-  --shadow-lg: 0 0 0 1px color-mix(in srgb, var(--ink) 18%, var(--paper));
+  --shadow-sm:
+    0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper)),
+    0 0.4rem 1rem -0.6rem color-mix(in srgb, #000 34%, transparent);
+  --shadow-md:
+    0 0 0 1px color-mix(in srgb, var(--ink) 14%, var(--paper)),
+    0 1rem 2.25rem -1.2rem color-mix(in srgb, #000 42%, transparent);
+  --shadow-lg:
+    0 0 0 1px color-mix(in srgb, var(--ink) 18%, var(--paper)),
+    0 1.7rem 3.7rem -2rem color-mix(in srgb, #000 50%, transparent);
   --project-card-surface: var(--pastel-peach);
   --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 92%, var(--pastel-ink));
   --project-card-border: color-mix(in srgb, var(--pastel-ink) 14%, var(--project-card-surface, var(--pastel-peach)));
@@ -443,13 +472,19 @@ section[id] {
 @keyframes section-nav-spotlight-pulse {
   /* Inset ring only — no section opacity (avoids flashing children). */
   0% {
-    box-shadow: inset 0 0 0 0 color-mix(in srgb, var(--accent) 0%, transparent);
+    box-shadow: inset 0 0 0 0 transparent;
   }
 
-  40% {
+  18% {
     box-shadow:
-      inset 0 0 0 1px color-mix(in srgb, var(--accent) 22%, var(--paper)),
-      0 0 1rem color-mix(in srgb, var(--accent) 9%, transparent);
+      inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, var(--paper)),
+      0 0 0.65rem color-mix(in srgb, var(--accent) 5%, transparent);
+  }
+
+  44% {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, var(--paper)),
+      0 0 0.65rem color-mix(in srgb, var(--accent) 5%, transparent);
   }
 
   100% {
@@ -458,7 +493,7 @@ section[id] {
 }
 
 section[id].section-nav-spotlight {
-  animation: section-nav-spotlight-pulse 300ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: section-nav-spotlight-pulse 840ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
 }
 
 .layout-header-pad {
@@ -718,6 +753,106 @@ pre,
   padding-bottom: 0;
 }
 
+.page-content--home > section + section::before {
+  content: '';
+  display: block;
+  /* Do not use inherited `var(--rule)`: Work omits a section --rule (full ink); later sections
+     re-map --rule to a soft 16% mix, which made the first bar read much darker. */
+  --home-section-hair: color-mix(in srgb, var(--fg-primary) 16%, var(--paper));
+  width: min(100%, 44rem);
+  height: 1px;
+  margin: 0 auto clamp(0.75rem, 2vw, 1.25rem);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--home-section-hair) 50%, var(--paper)) 10%,
+    color-mix(in srgb, var(--home-section-hair) 90%, var(--paper)) 48%,
+    color-mix(in srgb, var(--home-section-hair) 90%, var(--paper)) 52%,
+    color-mix(in srgb, var(--home-section-hair) 50%, var(--paper)) 90%,
+    transparent 100%
+  );
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 520ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.page-content--home > section + section.reveal-on-scroll--visible::before {
+  transform: scaleX(1);
+}
+
+.page-content--home > section#work::before {
+  display: none;
+}
+
+.page-content--home > section.story-section-outer::before {
+  width: min(100%, 52rem);
+  margin-bottom: clamp(0.95rem, 2.2vw, 1.5rem);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--signal-mint) 24%, var(--paper)) 10%,
+    color-mix(in srgb, var(--signal-mint) 42%, var(--paper)) 50%,
+    color-mix(in srgb, var(--signal-mint) 24%, var(--paper)) 90%,
+    transparent 100%
+  );
+}
+
+.page-content--home > section.resume-section-outer::before {
+  width: min(100%, 40rem);
+  height: 3px;
+  margin-bottom: clamp(1rem, 2.4vw, 1.6rem);
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--signal-peach) 22%, var(--paper)) 12%,
+      color-mix(in srgb, var(--signal-peach) 34%, var(--paper)) 50%,
+      color-mix(in srgb, var(--signal-peach) 22%, var(--paper)) 88%,
+      transparent 100%
+    )
+    center / 100% 1px no-repeat,
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      color-mix(in srgb, var(--signal-peach) 12%, var(--paper)) 18%,
+      color-mix(in srgb, var(--signal-peach) 20%, var(--paper)) 50%,
+      color-mix(in srgb, var(--signal-peach) 12%, var(--paper)) 82%,
+      transparent 100%
+    )
+    center calc(100% - 1px) / 100% 1px no-repeat;
+}
+
+/* §04 ticker: a touch more air below the inbound hairline so the marker clears the rule cleanly */
+.page-content--home > section.story-section-outer + section.status-band.ticker-section::before {
+  margin-bottom: clamp(1rem, 2.25vw, 1.45rem);
+}
+
+/* §04 → §05: avoid stacking flex section-gap + thick ticker bottom pad + resume rule + resume grid top */
+.page-content--home > section.status-band.ticker-section + section.resume-section-outer {
+  margin-top: calc(-1 * clamp(0.65rem, 1.75vw, 1.35rem));
+}
+
+.page-content--home > section.status-band.ticker-section + section.resume-section-outer::before {
+  margin-bottom: clamp(0.75rem, 1.9vw, 1.2rem);
+}
+
+.page-content--home > section.status-band.ticker-section + section.resume-section-outer .resume-grid {
+  padding-top: clamp(0.95rem, 2.1vw, 1.85rem);
+}
+
+.page-content--home > section.closing-cta-section::before {
+  width: min(100%, 48rem);
+  margin-bottom: clamp(1rem, 2.6vw, 1.65rem);
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    color-mix(in srgb, var(--signal-sky) 14%, var(--paper)) 12%,
+    color-mix(in srgb, var(--signal-sky) 28%, var(--paper)) 50%,
+    color-mix(in srgb, var(--signal-sky) 14%, var(--paper)) 88%,
+    transparent 100%
+  );
+}
+
 .page-section {
   padding: var(--space-md) 0;
 }
@@ -791,8 +926,11 @@ pre,
   gap: 0.65rem;
 }
 
+/* Brand coral — not the contextual `--signal` (pastel-band inks) parents set */
 .section-marker .section-marker-num {
-  color: var(--signal);
+  color: var(--signal-coral-ink, var(--accent));
+  font-size: var(--ornament-index-size, 0.72rem);
+  letter-spacing: var(--ornament-index-tracking, 0.14em);
 }
 
 .section-marker .section-marker-word {
@@ -801,7 +939,6 @@ pre,
   font-size: 1.35rem;
   letter-spacing: -0.01em;
   text-transform: none;
-  font-feature-settings: 'ss01' on;
   line-height: 1;
 }
 
@@ -878,11 +1015,26 @@ pre,
   background-color: var(--paper);
   border: 1px solid color-mix(in srgb, var(--pastel-ink) 16%, var(--paper));
   box-shadow: none;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
   transition:
-    background-color 180ms var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
-    color 180ms var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
-    border-color 180ms var(--motion-ease-standard, cubic-bezier(0.25, 0.46, 0.45, 0.94)),
+    color 200ms var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color 200ms var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1)),
     box-shadow 180ms ease;
+}
+
+/* Ink-sweep fill — scaleX 0→1 left-to-right on active */
+.filter-pill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  z-index: -1;
 }
 
 .filter-pill:active {
@@ -909,29 +1061,48 @@ pre,
 .filter-pill--active {
   color: var(--paper);
   font-weight: 600;
-  background-color: var(--ink);
+  background-color: transparent;
   border-color: var(--ink);
   transform: none;
   box-shadow: none;
 }
 
+.filter-pill-active::before,
+.filter-pill--active::before {
+  transform: scaleX(1);
+}
+
 .filter-pill-active:hover,
 .filter-pill--active:hover {
   color: var(--paper);
-  background-color: var(--ink);
+  background-color: transparent;
 }
 
 :root.dark .filter-pill-active,
 :root.dark .filter-pill--active {
   color: var(--paper);
-  background-color: var(--ink);
+  background-color: transparent;
   border-color: var(--ink);
+}
+
+:root.dark .filter-pill::before {
+  background: var(--ink);
 }
 
 :root.dark .filter-pill-active:hover,
 :root.dark .filter-pill--active:hover {
   color: var(--paper);
-  background-color: var(--ink);
+  background-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-pill::before {
+    transition: none;
+  }
+  .filter-pill-active::before,
+  .filter-pill--active::before {
+    transform: scaleX(1);
+  }
 }
 
 .section-header {
@@ -1088,6 +1259,11 @@ pre,
     transition-duration: 0.01ms !important;
   }
 
+  .page-content--home > section::before {
+    transform: scaleX(1) !important;
+    transition: none !important;
+  }
+
   .reveal-up {
     animation: none;
     opacity: 1;
@@ -1108,31 +1284,4 @@ pre,
   .btn-attention {
     animation: none;
   }
-}
-
-/* Global square-corner mode */
-*,
-*::before,
-*::after {
-  border-radius: 0 !important;
-}
-
-/* Global borderless box mode */
-:where(
-  section,
-  article,
-  aside,
-  div,
-  figure,
-  img,
-  ul,
-  ol,
-  li,
-  button,
-  a,
-  input,
-  textarea,
-  select
-) {
-  border: none !important;
 }

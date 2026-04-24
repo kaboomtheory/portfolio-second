@@ -459,8 +459,7 @@ function isMediaSection(section: ProjectStorySection): boolean {
 .project-quote {
   font-family: var(--font-serif);
   font-style: italic;
-  font-weight: 300;
-  font-variation-settings: 'opsz' 144;
+  font-weight: 400;
   color: var(--fg-primary);
 }
 

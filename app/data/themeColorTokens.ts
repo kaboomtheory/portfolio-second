@@ -143,6 +143,14 @@ export const THEME_COLOR_TOKENS: ThemeColorToken[] = [
     preview: 'pastel-chip',
   },
   {
+    var: '--pastel-lemon',
+    label: 'Pastel lemon tile',
+    group: 'Surfaces',
+    light: '#fef0c8',
+    dark: '#f5e8a8',
+    preview: 'pastel-chip',
+  },
+  {
     var: '--pastel-pink',
     label: 'Pastel pink alias',
     group: 'Surfaces',
