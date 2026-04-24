@@ -202,18 +202,70 @@ function isMediaSection(section: ProjectStorySection): boolean {
   if (section.type === 'section' || !section.type) return Boolean(section.image)
   return false
 }
+
+/** `sizes` for half-width two-column images (phone / tablet / desktop). */
+const twoColImageSizes
+  = '(max-width: 639px) 100vw, (max-width: 1023px) 50vw, min(50vw, 48rem)'
+
+function chunkImagePairs<T>(items: T[]): T[][] {
+  const rows: T[][] = []
+  for (let i = 0; i < items.length; i += 2) {
+    rows.push(items.slice(i, i + 2))
+  }
+  return rows
+}
+
+const twoColAspects = ref<Record<string, number>>({})
+
+function twoColKey(sectionIndex: number, rowIndex: number, itemIndex: number) {
+  return `${sectionIndex}:${rowIndex}:${itemIndex}`
+}
+
+function setTwoColAspect(sectionIndex: number, rowIndex: number, itemIndex: number, ratio: number) {
+  if (!Number.isFinite(ratio) || ratio <= 0) return
+  twoColAspects.value[twoColKey(sectionIndex, rowIndex, itemIndex)] = ratio
+}
+
+function twoColItemStyle(sectionIndex: number, rowIndex: number, itemIndex: number) {
+  const ratio = twoColAspects.value[twoColKey(sectionIndex, rowIndex, itemIndex)] ?? 1
+  return {
+    flexGrow: String(ratio),
+    flexShrink: '1',
+    flexBasis: '0',
+  }
+}
+
+function twoColRowStyle(sectionIndex: number, rowIndex: number) {
+  const a0 = twoColAspects.value[twoColKey(sectionIndex, rowIndex, 0)] ?? 1
+  const a1 = twoColAspects.value[twoColKey(sectionIndex, rowIndex, 1)] ?? 1
+  const sum = a0 + a1
+  return { maxWidth: `calc(95vh * ${sum})` }
+}
 </script>
 
 <template>
-  <div v-if="loading" class="page-content py-16">
-    <div class="project-detail-skeleton animate-pulse space-y-6" aria-busy="true" aria-label="Loading project">
-      <div class="h-4 w-32 rounded bg-[var(--bg-tertiary)]" />
-      <div class="h-10 max-w-md rounded bg-[var(--bg-tertiary)]" />
-      <div class="h-20 max-w-2xl rounded bg-[var(--bg-tertiary)]" />
-      <div class="mt-10 aspect-[4/3] max-w-4xl rounded-xl bg-[var(--bg-tertiary)]" />
+  <div
+    v-if="loading"
+    class="page-content content-flow min-w-0 py-16 [overflow-x:clip]"
+  >
+    <div class="project-viewport-frame mx-auto w-full min-w-0 max-w-full px-4 sm:px-[clamp(1.1rem,3.2vw,2.5rem)]">
+      <div
+        class="project-detail-skeleton animate-pulse space-y-6"
+        aria-busy="true"
+        aria-label="Loading project"
+      >
+        <div class="h-4 w-32 rounded bg-[var(--bg-tertiary)]" />
+        <div class="h-10 max-w-md rounded bg-[var(--bg-tertiary)]" />
+        <div class="h-20 max-w-2xl rounded bg-[var(--bg-tertiary)]" />
+        <div class="mt-10 aspect-[4/3] max-w-4xl rounded-xl bg-[var(--bg-tertiary)]" />
+      </div>
     </div>
   </div>
-  <div v-else-if="project" class="page-content project-detail-page">
+  <div
+    v-else-if="project"
+    class="page-content content-flow min-w-0 [overflow-x:clip]"
+  >
+    <div class="project-viewport-frame project-detail-page mx-auto w-full min-w-0 max-w-full px-4 sm:px-[clamp(1.1rem,3.2vw,2.5rem)]">
     <section class="page-section">
       <NuxtLink
         :to="backToWorkHref"
@@ -271,14 +323,49 @@ function isMediaSection(section: ProjectStorySection): boolean {
             :pre-expanded="index === firstImageSectionIndex"
           />
 
-          <!-- Image Gallery -->
-          <div v-else-if="section.type === 'imageGallery'" :class="{
-            'gallery-grid grid gap-3 sm:gap-4': section.layout !== 'masonry',
-            'grid-cols-1 sm:grid-cols-2': section.layout === 'two-col',
-            'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3': section.layout === 'three-col',
-            'grid-cols-2 sm:grid-cols-2 lg:grid-cols-4': section.layout === 'four-col',
-            'columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3': section.layout === 'masonry',
-          }">
+          <!-- Image Gallery (two-col: sm+ pairs; &lt;sm stacked) -->
+          <div
+            v-else-if="section.type === 'imageGallery' && section.layout === 'two-col' && section.images?.length"
+            class="project-two-col-gallery flex w-full min-w-0 max-w-full flex-col gap-4 sm:gap-6 md:gap-7"
+          >
+            <div
+              v-for="(row, rowIndex) in chunkImagePairs(section.images)"
+              :key="`tc-${rowIndex}`"
+              class="gallery-two-col-row mx-auto flex w-full min-w-0 flex-col items-stretch gap-4 sm:flex-row sm:flex-nowrap sm:items-start sm:gap-2.5 md:gap-4"
+              :style="row.length === 2 ? twoColRowStyle(index, rowIndex) : undefined"
+            >
+              <div
+                v-for="(img, j) in row"
+                :key="`tc-${rowIndex}-${j}-${String(img.image)}`"
+                :class="{
+                  'gallery-item--two-col min-w-0 flex flex-col': true,
+                  'w-full': row.length === 1,
+                }"
+                :style="row.length === 2 ? twoColItemStyle(index, rowIndex, j) : undefined"
+              >
+                <ScrollExpandImage
+                  :src="img.image"
+                  :alt="img.alt || `Gallery image ${rowIndex * 2 + j + 1}`"
+                  :caption="img.caption"
+                  fit-mode="fillBox"
+                  :img-sizes="twoColImageSizes"
+                  :reserve-caption-gutter="row.length === 2"
+                  :pre-expanded="index === firstImageSectionIndex && rowIndex === 0 && j === 0"
+                  @aspect="(ratio) => setTwoColAspect(index, rowIndex, j, ratio)"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div
+            v-else-if="section.type === 'imageGallery'"
+            :class="{
+              'columns-1 gap-4 space-y-4 sm:columns-2 lg:columns-3': section.layout === 'masonry',
+              'gallery-grid grid gap-3 sm:gap-4': section.layout !== 'masonry',
+              'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3': section.layout === 'three-col',
+              'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4': section.layout === 'four-col',
+            }"
+          >
             <div
               v-for="(img, imgIndex) in section.images"
               :key="imgIndex"
@@ -415,12 +502,14 @@ function isMediaSection(section: ProjectStorySection): boolean {
         </NuxtLink>
       </nav>
     </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
 .project-detail-page {
   --signal: var(--signal-peach);
+  position: relative;
 }
 
 .back-link {
@@ -514,6 +603,24 @@ function isMediaSection(section: ProjectStorySection): boolean {
 
 .gallery-grid {
   display: grid;
+}
+
+/* Two-col: flex row groups (see template); item stacks caption under image. */
+.gallery-item--two-col {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+/* Side-by-side pair: equal-height justified row. Each cell's
+   flex-grow is its image's aspect ratio; images are w-full / h-auto
+   so all images land at the same rendered height (row width / sum of
+   aspects). The row's max-width caps that height at 95vh. On &lt;sm,
+   images stack one-per-row at natural height. */
+@media (min-width: 640px) {
+  .gallery-two-col-row {
+    width: 100%;
+  }
 }
 
 .project-sections-stack {

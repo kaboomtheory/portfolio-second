@@ -35,7 +35,7 @@ export default defineCachedEventHandler(async () => {
 
   return { projects, home }
 }, {
-  maxAge: 60,
+  maxAge: 5,
   swr: true,
   staleMaxAge: 3600,
   name: 'sanity-index',

@@ -24,7 +24,8 @@ watch(
       } else if (!prev || path !== prev[0]) {
         window.scrollTo(0, 0)
       }
-      main?.focus({ preventScroll: true })
+      // Move focus for SR / focus order without drawing the global :focus-visible ring (e.g. Firefox).
+      main?.focus({ preventScroll: true, focusVisible: false })
     })
   },
   { immediate: true, flush: 'post' },

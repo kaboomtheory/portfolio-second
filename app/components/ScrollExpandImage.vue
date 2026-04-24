@@ -9,6 +9,16 @@ interface Props {
   layout?: 'full' | 'large' | 'medium'
   /** Passed to `<NuxtImg sizes>` for responsive srcset */
   imgSizes?: string
+  /**
+   * When true and `caption` is empty, still reserves one caption line of vertical space
+   * so paired gallery cells align (e.g. two-column project galleries).
+   */
+  reserveCaptionGutter?: boolean
+  /**
+   * `fillWidth` — default: image fills the block width (`w-full` + `object-cover`).
+   * `fillBox` — image fits its parent cell (`max-w-100%`, `max-h-95vh`, aspect preserved, no crop).
+   */
+  fitMode?: 'fillWidth' | 'fillBox'
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -19,9 +29,31 @@ const props = withDefaults(defineProps<Props>(), {
   caption: undefined,
   layout: 'medium',
   imgSizes: '(max-width: 1024px) 100vw, min(80rem, 92vw)',
+  reserveCaptionGutter: false,
+  fitMode: 'fillWidth',
 })
 
+const emit = defineEmits<{
+  aspect: [ratio: number]
+}>()
+
+function emitAspectFromImg(img: HTMLImageElement | null) {
+  if (!img) return
+  const w = img.naturalWidth
+  const h = img.naturalHeight
+  if (w > 0 && h > 0) emit('aspect', w / h)
+}
+
+function onImageLoad(event: Event) {
+  emitAspectFromImg(event.target as HTMLImageElement | null)
+}
+
 const elementRef = ref<HTMLElement | null>(null)
+
+onMounted(() => {
+  const img = elementRef.value?.querySelector('img') ?? null
+  if (img?.complete) emitAspectFromImg(img)
+})
 
 const { scale, displayedOpacity } = useScrollExpandImage(elementRef, {
   minScale: props.minScale,
@@ -36,6 +68,9 @@ const containerStyle = computed(() => ({
 }))
 
 const layoutClass = computed(() => {
+  if (props.fitMode === 'fillBox') {
+    return 'w-full min-w-0 max-w-full'
+  }
   switch (props.layout) {
     case 'full':
       return 'max-w-full'
@@ -46,6 +81,20 @@ const layoutClass = computed(() => {
       return 'max-w-3xl mx-auto'
   }
 })
+
+const imageClass = computed(() => {
+  if (props.fitMode === 'fillBox') {
+    return 'block w-full h-auto'
+  }
+  return 'w-full object-cover'
+})
+
+const innerFrameClass = computed(() => {
+  if (props.fitMode === 'fillBox') {
+    return 'w-full overflow-hidden rounded-lg'
+  }
+  return 'overflow-hidden rounded-lg'
+})
 </script>
 
 <template>
@@ -54,16 +103,17 @@ const layoutClass = computed(() => {
     :class="['scroll-expand-image', layoutClass]"
   >
     <div
-      class="overflow-hidden rounded-lg"
+      :class="innerFrameClass"
       :style="containerStyle"
     >
       <SanityImage
         :src="src"
         :alt="alt"
         :sizes="imgSizes"
-        class="w-full object-cover"
+        :class="imageClass"
         loading="lazy"
         decoding="async"
+        @load="onImageLoad"
       />
     </div>
     <p
@@ -72,6 +122,13 @@ const layoutClass = computed(() => {
       :style="{ color: 'var(--fg-muted)', opacity: displayedOpacity }"
     >
       {{ caption }}
+    </p>
+    <p
+      v-else-if="reserveCaptionGutter"
+      class="scroll-expand-image__caption-gutter mt-3 text-center text-sm text-transparent"
+      aria-hidden="true"
+    >
+      &nbsp;
     </p>
   </div>
 </template>
@@ -87,5 +144,12 @@ const layoutClass = computed(() => {
     opacity: 1 !important;
     transition: none !important;
   }
+}
+
+/* Matches text-sm line box so the gutter matches real caption height. */
+.scroll-expand-image__caption-gutter {
+  min-height: 1.25em;
+  margin: 0;
+  user-select: none;
 }
 </style>

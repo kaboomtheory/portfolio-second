@@ -73,6 +73,7 @@ For local development, copy [`.env.example`](.env.example) to `.env` and fill th
 - Production build: `npm run build`
 - Generate static output: `npm run generate`
 - Preview production build: `npm run preview`
+- Bulk-upload local project images to Sanity (requires `SANITY_API_TOKEN` in `.env`): `npm run upload:project-images`
 
 ### Type checking
 

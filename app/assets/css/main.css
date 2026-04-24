@@ -862,9 +862,13 @@ pre,
   padding-top: 0;
 }
 
-/* Escape the 72rem column for editorial moments; inner content stays capped. */
+/* Escape the 72rem column for editorial moments; inner content stays capped.
+   max-width: none overrides .page-content's `max-width: 100%` so the bleed
+   actually reaches the viewport edges instead of being capped at the parent
+   container width (which would leave the element left-offset asymmetrically). */
 .full-bleed {
   width: 100vw;
+  max-width: none;
   margin-inline: calc(50% - 50vw);
 }
 

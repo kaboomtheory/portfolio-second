@@ -13,6 +13,9 @@ node_modules
 logs
 *.log
 
+# Upload script output (local manifest; optional to commit)
+scripts/output/
+
 # Misc
 .DS_Store
 .fleet

@@ -10,7 +10,7 @@ export default defineCachedEventHandler(async () => {
     order
   }`) || []
 }, {
-  maxAge: 300,
+  maxAge: 5,
   swr: true,
   staleMaxAge: 3600,
   name: 'sanity-status',

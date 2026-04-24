@@ -9,13 +9,14 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "studio": "npm run dev --prefix sanity-studio",
-    "test:e2e": "npx playwright test"
+    "test:e2e": "npx playwright test",
+    "upload:project-images": "node scripts/upload-sanity-project-images.mjs"
   },
   "dependencies": {
     "@iconify/vue": "^5.0.0",
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/image": "^2.0.0",
-    "@nuxtjs/sanity": "^2.2.0",
+    "@nuxtjs/sanity": "^1.12.2",
     "@sanity/image-url": "^2.0.3",
     "lenis": "^1.3.17",
     "nuxt": "^4.3.1",
@@ -23,9 +24,16 @@
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@sanity/client": "^6.24.1",
+    "dotenv": "^16.4.7",
     "@nuxtjs/tailwindcss": "^6.14.0",
     "@playwright/test": "^1.51.0",
     "@types/three": "^0.183.1",
     "sanity": "^3.68.4"
+  },
+  "overrides": {
+    "glob": "^10.5.0",
+    "prismjs": "^1.30.0",
+    "uuid": "^14.0.0"
   }
 }
