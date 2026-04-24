@@ -75,21 +75,3 @@ export function verifyAccessToken(token: string | null | undefined): string[] {
     return []
   }
 }
-
-export function constantTimeEqual(a: string, b: string): boolean {
-  const aBuf = Buffer.from(a, 'utf8')
-  const bBuf = Buffer.from(b, 'utf8')
-  if (aBuf.length !== bBuf.length) {
-    // Still run a compare against aBuf to keep timing closer to the
-    // successful-path branch. The return is false regardless.
-    try {
-      timingSafeEqual(aBuf, aBuf)
-    } catch {}
-    return false
-  }
-  try {
-    return timingSafeEqual(aBuf, bBuf)
-  } catch {
-    return false
-  }
-}

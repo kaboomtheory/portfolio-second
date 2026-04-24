@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Icon } from '@iconify/vue'
 import type { StatusItem } from '~/data/home'
 
 const props = withDefaults(
@@ -74,7 +73,7 @@ const tickerCells = computed(() => {
                       :src="cell.item.images[0]"
                       alt=""
                     >
-                    <Icon v-else-if="cell.item.icon" :icon="cell.item.icon" class="ticker-icon h-5 w-5" />
+                    <AppIcon v-else-if="cell.item.icon" :icon="cell.item.icon" class="ticker-icon h-5 w-5" />
                   </div>
                   <div class="ticker-info">
                     <span class="ticker-label">{{ cell.item.label }}</span>

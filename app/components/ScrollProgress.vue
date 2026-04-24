@@ -13,13 +13,16 @@ useScrollLayoutSubscription(() => {})
 
 const progress = computed(() => Math.min(1, Math.max(0, scrollY.value / maxScroll.value)))
 const visible = computed(() => progress.value > 0.03)
+const { styleAttr, styleId } = useCspTargetStyle(() => ({
+  transform: `scaleX(${progress.value})`,
+}))
 </script>
 
 <template>
   <div
     class="scroll-progress"
     :class="{ 'scroll-progress--visible': visible }"
-    :style="{ transform: `scaleX(${progress})` }"
+    v-bind:[styleAttr]="styleId"
     aria-hidden="true"
   />
 </template>

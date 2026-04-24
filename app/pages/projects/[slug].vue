@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 import { useScrollRevealGroup } from '~/composables/useScrollReveal'
 import { projectItemsFromSanityRaw, useSanityProjects } from '~/composables/useSanityProjects'
 import type { ProjectItem, ProjectStorySection, SanityProjectItem } from '~/types/project'
@@ -15,6 +14,7 @@ definePageMeta({
 })
 
 const route = useRoute()
+const cspNonce = useState<string>('csp-nonce', () => '')
 const { orderedProjects, loading: loadingList } = useSanityProjects()
 
 const slug = computed(() => normalizeProjectSlug(route.params.slug))
@@ -168,6 +168,7 @@ useHead(() => {
           {
             key: 'ldjson-creative-work',
             type: 'application/ld+json',
+            nonce: cspNonce.value || undefined,
             children: JSON.stringify(json),
           },
         ]
@@ -229,9 +230,9 @@ function setTwoColAspect(sectionIndex: number, rowIndex: number, itemIndex: numb
 function twoColItemStyle(sectionIndex: number, rowIndex: number, itemIndex: number) {
   const ratio = twoColAspects.value[twoColKey(sectionIndex, rowIndex, itemIndex)] ?? 1
   return {
-    flexGrow: String(ratio),
-    flexShrink: '1',
-    flexBasis: '0',
+    'flex-grow': String(ratio),
+    'flex-shrink': '1',
+    'flex-basis': '0',
   }
 }
 
@@ -239,8 +240,54 @@ function twoColRowStyle(sectionIndex: number, rowIndex: number) {
   const a0 = twoColAspects.value[twoColKey(sectionIndex, rowIndex, 0)] ?? 1
   const a1 = twoColAspects.value[twoColKey(sectionIndex, rowIndex, 1)] ?? 1
   const sum = a0 + a1
-  return { maxWidth: `calc(95vh * ${sum})` }
+  return { 'max-width': `calc(95vh * ${sum})` }
 }
+
+function twoColRowId(sectionIndex: number, rowIndex: number) {
+  return `row-${sectionIndex}-${rowIndex}`
+}
+
+function twoColItemId(sectionIndex: number, rowIndex: number, itemIndex: number) {
+  return `item-${sectionIndex}-${rowIndex}-${itemIndex}`
+}
+
+useManagedCspRules(() => {
+  if (!project.value?.sections) return []
+
+  const rules: Array<{
+    id: string
+    selector: string
+    declarations: Record<string, string | number | undefined>
+  }> = []
+
+  project.value.sections.forEach((section, sectionIndex) => {
+    if (section.type !== 'imageGallery' || section.layout !== 'two-col' || !section.images?.length) {
+      return
+    }
+
+    chunkImagePairs(section.images).forEach((row, rowIndex) => {
+      if (row.length !== 2) return
+
+      const rowId = twoColRowId(sectionIndex, rowIndex)
+      rules.push({
+        id: rowId,
+        selector: `[data-two-col-row="${rowId}"]`,
+        declarations: twoColRowStyle(sectionIndex, rowIndex),
+      })
+
+      row.forEach((_, itemIndex) => {
+        const itemId = twoColItemId(sectionIndex, rowIndex, itemIndex)
+        rules.push({
+          id: itemId,
+          selector: `[data-two-col-item="${itemId}"]`,
+          declarations: twoColItemStyle(sectionIndex, rowIndex, itemIndex),
+        })
+      })
+    })
+  })
+
+  return rules
+})
 </script>
 
 <template>
@@ -332,7 +379,7 @@ function twoColRowStyle(sectionIndex: number, rowIndex: number) {
               v-for="(row, rowIndex) in chunkImagePairs(section.images)"
               :key="`tc-${rowIndex}`"
               class="gallery-two-col-row mx-auto flex w-full min-w-0 flex-col items-stretch gap-4 sm:flex-row sm:flex-nowrap sm:items-start sm:gap-2.5 md:gap-4"
-              :style="row.length === 2 ? twoColRowStyle(index, rowIndex) : undefined"
+              :data-two-col-row="row.length === 2 ? twoColRowId(index, rowIndex) : undefined"
             >
               <div
                 v-for="(img, j) in row"
@@ -341,7 +388,7 @@ function twoColRowStyle(sectionIndex: number, rowIndex: number) {
                   'gallery-item--two-col min-w-0 flex flex-col': true,
                   'w-full': row.length === 1,
                 }"
-                :style="row.length === 2 ? twoColItemStyle(index, rowIndex, j) : undefined"
+                :data-two-col-item="row.length === 2 ? twoColItemId(index, rowIndex, j) : undefined"
               >
                 <ScrollExpandImage
                   :src="img.image"
@@ -481,7 +528,7 @@ function twoColRowStyle(sectionIndex: number, rowIndex: number) {
           :to="`/projects/${prevProject.slug}`"
           class="pager-link inline-flex min-w-0 max-w-full items-center gap-2 break-words text-sm font-medium transition-colors"
         >
-          <Icon icon="lucide:arrow-left" class="h-4 w-4 shrink-0" aria-hidden="true" />
+          <AppIcon icon="lucide:arrow-left" class="h-4 w-4 shrink-0" aria-hidden="true" />
           <span>
             <span class="pager-label block text-meta">Previous</span>
             {{ prevProject.name }}
@@ -498,7 +545,7 @@ function twoColRowStyle(sectionIndex: number, rowIndex: number) {
             <span class="pager-label block text-meta">Next</span>
             {{ nextProject.name }}
           </span>
-          <Icon icon="lucide:arrow-right" class="h-4 w-4 shrink-0" aria-hidden="true" />
+          <AppIcon icon="lucide:arrow-right" class="h-4 w-4 shrink-0" aria-hidden="true" />
         </NuxtLink>
       </nav>
     </section>

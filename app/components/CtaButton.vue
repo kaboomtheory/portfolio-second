@@ -41,14 +41,6 @@ const opensInNewTab = computed(
   () => !props.download && !isMailto.value && isExternalHttpHref.value,
 )
 
-const secondaryBg = computed(() =>
-  props.secondary && props.elevatedSecondary ? 'var(--btn-secondary-bg)' : 'transparent',
-)
-
-const secondaryFg = computed(() =>
-  props.secondary && props.elevatedSecondary ? 'var(--fg-primary)' : 'var(--fg-secondary)',
-)
-
 const btnClass = computed(() =>
   [
     'cta-button inline-flex items-center gap-2 origin-center',
@@ -72,21 +64,6 @@ function onNuxtLinkClick(e: MouseEvent) {
   onInPageHashLinkClick(e, props.to)
 }
 
-const inlineStyle = computed(() => {
-  if (props.secondary) {
-    return {
-      backgroundColor: secondaryBg.value,
-      color: secondaryFg.value,
-    }
-  }
-  if (props.attention) {
-    return {}
-  }
-  return {
-    backgroundColor: 'var(--btn-primary-bg)',
-    color: 'var(--btn-primary-fg)',
-  }
-})
 </script>
 
 <template>
@@ -97,7 +74,6 @@ const inlineStyle = computed(() => {
     :rel="download || isMailto || !opensInNewTab ? undefined : 'noopener noreferrer'"
     :download="download || undefined"
     :class="btnClass"
-    :style="inlineStyle"
   >
     <template v-if="attention">
       <span class="cta-attention-pill__inner">
@@ -131,7 +107,6 @@ const inlineStyle = computed(() => {
     v-else-if="to"
     :to="to"
     :class="btnClass"
-    :style="inlineStyle"
     @click="onNuxtLinkClick"
   >
     <template v-if="attention">
@@ -167,6 +142,8 @@ const inlineStyle = computed(() => {
 .cta-button {
   position: relative;
   overflow: hidden;
+  background-color: var(--btn-primary-bg);
+  color: var(--btn-primary-fg);
 }
 
 /* Hue-matched hover shadows paint outside the box; attention pills opt out of clipping */
@@ -211,6 +188,13 @@ const inlineStyle = computed(() => {
 
 .cta-button-secondary--elevated {
   border: 1px solid var(--fg-primary);
+  background-color: var(--btn-secondary-bg) !important;
+  color: var(--fg-primary) !important;
+}
+
+.cta-button-secondary:not(.cta-button-secondary--elevated) {
+  background-color: transparent !important;
+  color: var(--fg-secondary) !important;
 }
 
 .cta-button-secondary:hover {

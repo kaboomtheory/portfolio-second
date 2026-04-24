@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useCardTilt } from '~/composables/useCardTilt'
-import { Icon } from '@iconify/vue'
+import TurnstileWidget from '~/components/TurnstileWidget.vue'
 import { profile, socialLinks } from '~/data/site'
 
 const props = defineProps<{
@@ -19,6 +19,8 @@ const email = ref('')
 const subject = ref('')
 const message = ref('')
 const website = ref('')
+const turnstileToken = ref('')
+const turnstileRef = ref<InstanceType<typeof TurnstileWidget> | null>(null)
 
 const submitting = ref(false)
 const success = ref(false)
@@ -75,6 +77,10 @@ function getFetchMessage(e: unknown): string | undefined {
 async function onSubmit() {
   formError.value = ''
   success.value = false
+  if (!turnstileToken.value) {
+    formError.value = 'Complete the verification challenge first.'
+    return
+  }
   submitting.value = true
   try {
     await $fetch('/api/contact', {
@@ -85,6 +91,7 @@ async function onSubmit() {
         subject: subject.value,
         message: message.value,
         website: website.value,
+        turnstileToken: turnstileToken.value,
       },
     })
     success.value = true
@@ -93,11 +100,14 @@ async function onSubmit() {
     subject.value = ''
     message.value = ''
     website.value = ''
+    turnstileRef.value?.reset()
   } catch (e: unknown) {
     const status = getFetchStatus(e)
     const msg = getFetchMessage(e)
     if (status === 429) {
       formError.value = 'Too many attempts. Please wait a moment and try again.'
+    } else if (status === 403) {
+      formError.value = 'Verification failed. Please complete the challenge again.'
     } else if (status === 503) {
       formError.value = 'This form is not set up yet. Please use LinkedIn for now.'
     } else if (status === 400) {
@@ -105,6 +115,7 @@ async function onSubmit() {
     } else {
       formError.value = 'Something went wrong sending your message. Please try again later.'
     }
+    turnstileRef.value?.reset()
   } finally {
     submitting.value = false
   }
@@ -227,15 +238,22 @@ async function onSubmit() {
 
               <p v-if="formError" class="closing-form-error" role="alert">{{ formError }}</p>
 
+              <TurnstileWidget
+                ref="turnstileRef"
+                v-model="turnstileToken"
+                action="contact"
+                @error="formError = 'Verification failed to load. Refresh and try again.'"
+              />
+
               <div class="closing-actions">
                 <button
                   ref="submitRef"
                   type="submit"
                   class="closing-submit"
-                  :disabled="submitting"
+                  :disabled="submitting || !turnstileToken"
                 >
                   <span class="closing-submit__inner">
-                    <Icon icon="lucide:send" class="closing-submit__icon text-sm" aria-hidden="true" />
+                    <AppIcon icon="lucide:send" class="closing-submit__icon text-sm" aria-hidden="true" />
                     {{ submitting ? 'Sending…' : 'Send message' }}
                   </span>
                 </button>
@@ -245,7 +263,7 @@ async function onSubmit() {
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <Icon icon="ri:linkedin-fill" class="closing-linkedin-icon" aria-hidden="true" />
+                  <AppIcon icon="ri:linkedin-fill" class="closing-linkedin-icon" aria-hidden="true" />
                   LinkedIn
                   <span class="sr-only">(opens in new tab)</span>
                 </a>

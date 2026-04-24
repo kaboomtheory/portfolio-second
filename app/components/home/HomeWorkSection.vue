@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
 import type { ProjectItem } from '~/types/project'
 
 const props = defineProps<{
@@ -102,7 +101,7 @@ const filterAnnouncement = computed(() => {
           v-else-if="filteredProjects.length === 0"
           class="work-empty"
         >
-          <Icon
+          <AppIcon
             icon="lucide:folder-open"
             class="work-empty-icon"
             aria-hidden="true"
@@ -120,7 +119,6 @@ const filterAnnouncement = computed(() => {
               :key="item.slug"
               :project="item"
               :project-index="idx + 1"
-              :style="{ '--card-index': Math.min(idx, 8) }"
             />
           </div>
         </Transition>
@@ -238,8 +236,17 @@ const filterAnnouncement = computed(() => {
   transition:
     opacity 420ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
     transform 420ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
-  transition-delay: calc(var(--card-index, 0) * 40ms);
+  transition-delay: 0ms;
 }
+
+.work-list > :deep(.project-card:nth-child(2)) { transition-delay: 40ms; }
+.work-list > :deep(.project-card:nth-child(3)) { transition-delay: 80ms; }
+.work-list > :deep(.project-card:nth-child(4)) { transition-delay: 120ms; }
+.work-list > :deep(.project-card:nth-child(5)) { transition-delay: 160ms; }
+.work-list > :deep(.project-card:nth-child(6)) { transition-delay: 200ms; }
+.work-list > :deep(.project-card:nth-child(7)) { transition-delay: 240ms; }
+.work-list > :deep(.project-card:nth-child(8)) { transition-delay: 280ms; }
+.work-list > :deep(.project-card:nth-child(9)) { transition-delay: 320ms; }
 
 .reveal-on-scroll--visible .work-list > :deep(.project-card) {
   opacity: 1;

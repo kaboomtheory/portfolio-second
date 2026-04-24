@@ -15,6 +15,7 @@ const { homeHero, aboutMe: fallbackAboutMe, experiences: fallbackExperiences } =
 const { orderedProjects, loading, homePage: cmsHome } = useSanityIndexBundle()
 const { statusItems } = useSanityStatus()
 const { aboutPage } = useSanityAbout()
+const cspNonce = useState<string>('csp-nonce', () => '')
 
 const heroTitle = computed(() => cmsHome.value?.hero.title || homeHero.title)
 const heroTaglines = computed(() =>
@@ -140,6 +141,7 @@ useHead(() => ({
     {
       key: 'ldjson-site-graph',
       type: 'application/ld+json',
+      nonce: cspNonce.value || undefined,
       children: JSON.stringify(homeStructuredDataJsonLd.value),
     },
   ],

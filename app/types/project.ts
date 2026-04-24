@@ -134,7 +134,7 @@ export interface SanityProjectItem {
   summary?: string
   thumbnail?: SanityImage
   protected?: boolean
-  password?: string
+  passwordHash?: string
   tags?: string[]
   sections?: ContentBlock[]
   order?: number

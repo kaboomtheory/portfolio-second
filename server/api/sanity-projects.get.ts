@@ -1,5 +1,5 @@
 // Public project list. This endpoint is intentionally safe to serve
-// without auth: `sections` and `password` are never included for
+// without auth: `sections` and `passwordHash` are never included for
 // protected projects. Full protected content is served by
 // `/api/project/[slug]` after a valid unlock cookie is presented.
 export default defineCachedEventHandler(async () => {

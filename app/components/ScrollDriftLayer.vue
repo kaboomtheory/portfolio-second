@@ -12,14 +12,11 @@ const activeSection = inject(activeSectionSignalKey)
 if (!activeSection) {
   throw new Error('ScrollDriftLayer requires activeSectionSignalKey from default layout')
 }
-const { signalVarName } = activeSection
-
 const blobAStyle = computed(() => buildBlobStyle(1))
 const blobBStyle = computed(() => buildBlobStyle(-0.55))
-
-const blobTintStyle = computed(() => ({
-  '--blob-signal': `var(${signalVarName.value})`,
-}))
+const activeSectionClass = computed(() => `scroll-drift-root--${activeSection.activeSectionId.value}`)
+const { styleAttr: blobAStyleAttr, styleId: blobAStyleId } = useCspTargetStyle(() => blobAStyle.value)
+const { styleAttr: blobBStyleAttr, styleId: blobBStyleId } = useCspTargetStyle(() => blobBStyle.value)
 
 function buildBlobStyle(direction: number) {
   if (isReducedMotion.value) return {}
@@ -62,16 +59,16 @@ onUnmounted(() => {
   <div
     v-if="hasMounted && !isReducedMotion && !isCoarsePointer"
     class="scroll-drift-root pointer-events-none absolute inset-0 z-0 overflow-hidden"
-    :style="blobTintStyle"
+    :class="activeSectionClass"
     aria-hidden="true"
   >
     <div
       class="scroll-drift-blob scroll-drift-blob--a"
-      :style="blobAStyle"
+      v-bind:[blobAStyleAttr]="blobAStyleId"
     />
     <div
       class="scroll-drift-blob scroll-drift-blob--b"
-      :style="blobBStyle"
+      v-bind:[blobBStyleAttr]="blobBStyleId"
     />
   </div>
 </template>
@@ -88,6 +85,24 @@ onUnmounted(() => {
 .scroll-drift-root {
   /* smooth crossfade when section signal changes */
   transition: --blob-signal 800ms ease;
+}
+
+.scroll-drift-root--intro {
+  --blob-signal: var(--signal-sky);
+}
+
+.scroll-drift-root--work,
+.scroll-drift-root--experience,
+.scroll-drift-root--contact {
+  --blob-signal: var(--signal-mint);
+}
+
+.scroll-drift-root--story {
+  --blob-signal: var(--signal-peach);
+}
+
+.scroll-drift-root--status {
+  --blob-signal: var(--signal-blush);
 }
 
 .scroll-drift-blob--a {

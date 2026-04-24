@@ -1,35 +1,5 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-import type { CSSProperties } from 'vue'
 import type { ProjectItem } from '~/types/project'
-
-const CARD_SURFACES = [
-  {
-    surface: 'var(--pastel-peach)',
-    hover: 'color-mix(in srgb, var(--pastel-peach) 86%, var(--pastel-ink))',
-    media: 'color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-peach) 14%)',
-  },
-  {
-    surface: 'var(--pastel-mint)',
-    hover: 'color-mix(in srgb, var(--pastel-mint) 86%, var(--pastel-ink))',
-    media: 'color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-mint) 14%)',
-  },
-  {
-    surface: 'var(--pastel-sky)',
-    hover: 'color-mix(in srgb, var(--pastel-sky) 86%, var(--pastel-ink))',
-    media: 'color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-sky) 14%)',
-  },
-  {
-    surface: 'var(--pastel-blush)',
-    hover: 'color-mix(in srgb, var(--pastel-blush) 86%, var(--pastel-ink))',
-    media: 'color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-blush) 14%)',
-  },
-  {
-    surface: 'var(--pastel-lemon)',
-    hover: 'color-mix(in srgb, var(--pastel-lemon) 86%, var(--pastel-ink))',
-    media: 'color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-lemon) 14%)',
-  },
-] as const
 
 const props = defineProps<{
   project: ProjectItem
@@ -47,17 +17,17 @@ const projectIndexLabel = computed(() => {
   return String(props.projectIndex).padStart(2, '0')
 })
 
-const paletteStyle = computed<CSSProperties>(() => {
-  const paletteIndex = ((props.projectIndex ?? 1) - 1 + CARD_SURFACES.length) % CARD_SURFACES.length
-  const palette = CARD_SURFACES[paletteIndex]!
+const paletteIndex = computed(
+  () => ((props.projectIndex ?? 1) - 1 + 5) % 5,
+)
+const paletteClass = computed(() => `project-card--palette-${paletteIndex.value}`)
 
+const paletteStyle = computed<Record<string, string>>(() => {
   return {
     '--project-accent': props.project.color?.trim() || 'var(--accent)',
-    '--project-card-surface': palette.surface,
-    '--project-card-surface-hover': palette.hover,
-    '--project-card-media-bg': palette.media,
   }
 })
+const { styleAttr, styleId } = useCspTargetStyle(() => paletteStyle.value)
 
 const mediaHostRef = ref<HTMLElement | null>(null)
 const mediaTiltRef = ref<HTMLElement | null>(null)
@@ -79,7 +49,11 @@ function handleImageLoad() {
 </script>
 
 <template>
-  <div class="project-card group relative" :style="paletteStyle">
+  <div
+    class="project-card group relative"
+    :class="paletteClass"
+    v-bind:[styleAttr]="styleId"
+  >
     <NuxtLink
       :to="projectHref"
       class="project-card-link"
@@ -108,7 +82,7 @@ function handleImageLoad() {
         </ul>
         <span class="project-card__cta" aria-hidden="true">
           <span class="project-card__cta-label">View project</span>
-          <Icon icon="lucide:arrow-up-right" class="project-card__cta-icon" />
+          <AppIcon icon="lucide:arrow-up-right" class="project-card__cta-icon" />
         </span>
       </div>
 
@@ -134,7 +108,7 @@ function handleImageLoad() {
             @load="handleImageLoad"
           />
           <div v-else class="project-card__media-fallback">
-            <Icon icon="lucide:image-off" class="project-card__media-fallback-icon" aria-hidden="true" />
+            <AppIcon icon="lucide:image-off" class="project-card__media-fallback-icon" aria-hidden="true" />
             <span class="project-card__media-fallback-copy">Preview coming soon</span>
           </div>
         </div>
@@ -155,6 +129,36 @@ function handleImageLoad() {
   position: relative;
   transform: translateY(0);
   --project-card-media-aspect: 4 / 3;
+}
+
+.project-card--palette-0 {
+  --project-card-surface: var(--pastel-peach);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 86%, var(--pastel-ink));
+  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-peach) 14%);
+}
+
+.project-card--palette-1 {
+  --project-card-surface: var(--pastel-mint);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-mint) 86%, var(--pastel-ink));
+  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-mint) 14%);
+}
+
+.project-card--palette-2 {
+  --project-card-surface: var(--pastel-sky);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-sky) 86%, var(--pastel-ink));
+  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-sky) 14%);
+}
+
+.project-card--palette-3 {
+  --project-card-surface: var(--pastel-blush);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-blush) 86%, var(--pastel-ink));
+  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-blush) 14%);
+}
+
+.project-card--palette-4 {
+  --project-card-surface: var(--pastel-lemon);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-lemon) 86%, var(--pastel-ink));
+  --project-card-media-bg: color-mix(in srgb, var(--bg-secondary) 86%, var(--pastel-lemon) 14%);
 }
 
 @media (min-width: 720px) {

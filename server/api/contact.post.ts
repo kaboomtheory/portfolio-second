@@ -1,9 +1,8 @@
-import { getRequestIP, readBody } from 'h3'
-
-// Simple in-memory rate limiter (best-effort; resets on cold start).
-const attempts = new Map<string, { count: number; reset: number }>()
-const WINDOW_MS = 60_000
-const MAX_ATTEMPTS = 10
+import { readBody } from 'h3'
+import {
+  assertRequestWithinRateLimit,
+  verifyTurnstileToken,
+} from '../utils/requestSecurity'
 
 const MAX_NAME = 120
 const MAX_EMAIL = 254
@@ -13,26 +12,11 @@ const MAX_SUBJECT = 200
 /** Pragmatic check — not exhaustive RFC validation. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
-function rateLimit(ip: string): void {
-  const now = Date.now()
-  const rec = attempts.get(ip)
-  if (!rec || rec.reset <= now) {
-    attempts.set(ip, { count: 1, reset: now + WINDOW_MS })
-    return
-  }
-  rec.count++
-  if (rec.count > MAX_ATTEMPTS) {
-    throw createError({ statusCode: 429, statusMessage: 'Too many requests' })
-  }
-}
-
 function str(v: unknown): string {
   return typeof v === 'string' ? v.trim() : ''
 }
 
 export default defineEventHandler(async (event) => {
-  const ip = getRequestIP(event, { xForwardedFor: true }) || 'unknown'
-
   let raw: Record<string, unknown>
   try {
     raw = (await readBody(event)) as Record<string, unknown>
@@ -50,12 +34,11 @@ export default defineEventHandler(async (event) => {
     return { ok: true }
   }
 
-  rateLimit(ip)
-
   const name = str(raw.name)
   const email = str(raw.email).toLowerCase()
   const message = str(raw.message)
   const subject = str(raw.subject)
+  const turnstileToken = str(raw.turnstileToken)
 
   if (!name || name.length > MAX_NAME) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid name' })
@@ -69,6 +52,9 @@ export default defineEventHandler(async (event) => {
   if (subject.length > MAX_SUBJECT) {
     throw createError({ statusCode: 400, statusMessage: 'Invalid subject' })
   }
+
+  await verifyTurnstileToken(event, turnstileToken)
+  await assertRequestWithinRateLimit(event, 'contact')
 
   const config = useRuntimeConfig(event)
   const apiKey = config.resendApiKey

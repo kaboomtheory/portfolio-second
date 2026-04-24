@@ -1,10 +1,10 @@
 import { computed, onMounted, ref } from 'vue'
 
-function getAmbientTint(hour: number) {
-  if (hour >= 6 && hour <= 11) return 'oklch(0.72 0.02 240)'
-  if (hour >= 18 && hour <= 22) return 'oklch(0.76 0.025 55)'
-  if (hour >= 23 || hour <= 5) return 'oklch(0.62 0.018 255)'
-  return 'transparent'
+function getAmbientTone(hour: number) {
+  if (hour >= 6 && hour <= 11) return 'morning'
+  if (hour >= 18 && hour <= 22) return 'evening'
+  if (hour >= 23 || hour <= 5) return 'night'
+  return 'none'
 }
 
 export function useTimeOfDay() {
@@ -14,12 +14,12 @@ export function useTimeOfDay() {
     hour.value = new Date().getHours()
   })
 
-  const ambientTint = computed(() => {
-    if (hour.value == null) return 'transparent'
-    return getAmbientTint(hour.value)
+  const ambientTone = computed(() => {
+    if (hour.value == null) return 'none'
+    return getAmbientTone(hour.value)
   })
 
   return {
-    ambientTint,
+    ambientTone,
   }
 }

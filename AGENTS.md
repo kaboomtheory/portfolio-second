@@ -7,8 +7,8 @@ Operational guide for coding agents working in this repository.
 - Framework: Nuxt 4 (Vue 3 + Vue Router).
 - Styling: Tailwind CSS + custom CSS tokens in `app/assets/css/main.css`.
 - Language: TypeScript (`<script setup lang="ts">` in Vue SFCs).
-- Data source (current): local mock content in `app/data/*`.
-- Runtime mode: SPA (`ssr: false` in `nuxt.config.ts`).
+- Data source: Sanity CMS via server routes (`server/api/sanity-*.get.ts`, `server/api/project/*`); some pages still use `useMockContent()` fallbacks from `app/data/*`.
+- Runtime mode: SSR enabled (`ssr: true` in `nuxt.config.ts`).
 
 ## 2) Rule Files (Cursor/Copilot)
 
@@ -39,7 +39,7 @@ If any are added later, treat them as higher-priority project instructions and u
 - `app/middleware/*`: route middleware (`project-protect`).
 - `app/data/*`: typed mock data models.
   - `home.ts`, `projects.ts`, `trinkets.ts`, `resume.ts`, `friends.ts`, `writing.ts`, `site.ts`.
-- `nuxt.config.ts`: Nuxt config, modules, SPA mode.
+- `nuxt.config.ts`: Nuxt config, modules, SSR and security headers.
 - `Todos.md`: implementation roadmap and optional CMS phase notes.
 
 Do not edit generated/build artifacts:
@@ -53,15 +53,40 @@ Do not edit generated/build artifacts:
 - Use `npm` (lockfile is `package-lock.json`).
 - Node version: use a modern LTS compatible with Nuxt 4.
 
-### Contact form (Resend)
+### Environment variables (local and production)
 
-The home page contact form calls `POST /api/contact` ([`server/api/contact.post.ts`](server/api/contact.post.ts)). Email delivery requires these **private** runtime variables (set on the host; never commit real values):
+Copy [`.env.example`](.env.example) to `.env` locally. On Vercel (or any host), set the same names in the project environment UI — never commit real secrets.
+
+**Contact form (Resend)** — [`server/api/contact.post.ts`](server/api/contact.post.ts) (`POST /api/contact`):
 
 - `NUXT_RESEND_API_KEY` — Resend API key.
 - `NUXT_CONTACT_TO_EMAIL` — Inbox that receives submissions.
 - `NUXT_CONTACT_FROM_EMAIL` — Verified sender in Resend (for example `Portfolio <hello@yourdomain.com>`).
 
-For local development, copy [`.env.example`](.env.example) to `.env` and fill the three keys. On Vercel, Netlify, or Cloudflare, add the same variable names in the project’s environment settings.
+**Sanity (server-side GROQ)** — [`server/utils/sanityFetch.ts`](server/utils/sanityFetch.ts):
+
+- `SANITY_READ_TOKEN` — Bearer token for queries that use `useToken: true` (password-protected projects, password hashes, and full project payloads). Use a **read-only** token with minimal dataset permissions. Not the same variable as the upload script token below.
+
+**Local Sanity tooling only** — [`scripts/upload-sanity-project-images.mjs`](scripts/upload-sanity-project-images.mjs):
+
+- `SANITY_API_TOKEN` — Write-capable token for uploads. Do not use this name for the Nuxt server; the app reads `SANITY_READ_TOKEN` for runtime queries.
+
+**Password-protected case studies** — [`server/utils/projectAccess.ts`](server/utils/projectAccess.ts), [`server/api/project-unlock.post.ts`](server/api/project-unlock.post.ts):
+
+- `PROJECT_UNLOCK_SECRET` — **Required in production** (minimum 16 characters). Signs the HttpOnly `project_access` cookie. Without it, unlock flows error in production.
+
+**Abuse protection (shared rate limits + Turnstile)** — [`server/utils/requestSecurity.ts`](server/utils/requestSecurity.ts), [`app/components/TurnstileWidget.vue`](app/components/TurnstileWidget.vue):
+
+- `UPSTASH_REDIS_REST_URL` — Upstash Redis REST URL for cross-instance rate limiting.
+- `UPSTASH_REDIS_REST_TOKEN` — Upstash Redis REST token.
+- `TURNSTILE_SECRET_KEY` — Cloudflare Turnstile secret used by Nitro server routes.
+- `NUXT_PUBLIC_TURNSTILE_SITE_KEY` — Cloudflare Turnstile site key exposed to the browser widget.
+
+**Public site URL**
+
+- `NUXT_PUBLIC_SITE_URL` — Production origin for canonical URLs and OG image base (`nuxt.config.ts`).
+
+A step-by-step production checklist (including post-deploy smoke tests) lives in [`Production-ToDo.md`](Production-ToDo.md).
 
 ## 5) Build / Lint / Test Commands
 
@@ -73,7 +98,10 @@ For local development, copy [`.env.example`](.env.example) to `.env` and fill th
 - Production build: `npm run build`
 - Generate static output: `npm run generate`
 - Preview production build: `npm run preview`
+- Dependency audit (ad-hoc, before release): `npm audit`
+- Hash a protected-project password for Sanity: `npm run hash:project-password -- "your-password"`
 - Bulk-upload local project images to Sanity (requires `SANITY_API_TOKEN` in `.env`): `npm run upload:project-images`
+- Sanity Studio lives in `sanity-studio/` (separate `package-lock.json`). After dependency changes there: `npm audit --prefix sanity-studio`.
 
 ### Type checking
 

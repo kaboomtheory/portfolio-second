@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useCardTilt } from '~/composables/useCardTilt'
-import { Icon } from '@iconify/vue'
 import { profile } from '~/data/site'
 import type { HomeHeroTaglineLine } from '~/data/home'
 import { useSharedScrollY } from '~/composables/useScrollLayoutBus'
@@ -115,6 +114,7 @@ const heroLeadTracking = computed(() => {
 const heroLeadStyle = computed(() => ({
   letterSpacing: heroLeadTracking.value,
 }))
+const { styleAttr: heroLeadStyleAttr, styleId: heroLeadStyleId } = useCspTargetStyle(() => heroLeadStyle.value)
 
 /** Hero paragraphs: drop lines that only repeat the Location rail. */
 const heroTaglinesDisplay = computed(() => {
@@ -191,7 +191,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
               <span
                 v-if="heroTitleParts.lead"
                 class="hero-title-lead"
-                :style="heroLeadStyle"
+                v-bind:[heroLeadStyleAttr]="heroLeadStyleId"
               >{{ heroTitleParts.lead }}</span>
               <span
                 v-if="heroTitleParts.lead && heroTitleParts.accent"
@@ -260,7 +260,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
             preserve-case
             class="intro-bento__cta-fill"
           >
-            <template #icon><Icon icon="lucide:book-open" class="text-sm" /></template>
+            <template #icon><AppIcon icon="lucide:book-open" class="text-sm" /></template>
           </CtaButton>
         </div>
 
@@ -270,7 +270,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
           target="_blank"
           rel="noopener noreferrer"
         >
-          <Icon icon="ri:linkedin-fill" class="intro-linkedin-icon" aria-hidden="true" />
+          <AppIcon icon="ri:linkedin-fill" class="intro-linkedin-icon" aria-hidden="true" />
           LinkedIn
           <span class="sr-only">(opens in new tab)</span>
         </a>

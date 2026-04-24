@@ -57,11 +57,6 @@ const handleAnchorClick = (e: MouseEvent) => {
 <template>
   <div class="app-shell">
     <div class="app-shell-ui">
-      <NuxtLoadingIndicator
-        color="var(--emphasis)"
-        :height="2"
-        :duration="3000"
-      />
       <NuxtRouteAnnouncer />
       <NuxtLayout>
         <NuxtPage :page-key="route => route.path" />

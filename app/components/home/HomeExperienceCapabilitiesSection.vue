@@ -87,10 +87,9 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
               <h3 class="capability-group-title">{{ group.category }}</h3>
               <div class="capability-tags">
                 <span
-                  v-for="(item, tagIndex) in group.items"
+                  v-for="item in group.items"
                   :key="item"
                   class="capability-tag"
-                  :style="{ '--tag-i': tagIndex }"
                 >{{ item }}</span>
               </div>
             </div>
@@ -366,8 +365,24 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 
 .reveal-on-scroll--visible .capability-tag {
   animation: capability-tag-enter 360ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)) both;
-  animation-delay: calc(min(var(--tag-i, 0), 16) * 28ms);
 }
+
+.reveal-on-scroll--visible .capability-tag:nth-child(1) { animation-delay: 0ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(2) { animation-delay: 28ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(3) { animation-delay: 56ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(4) { animation-delay: 84ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(5) { animation-delay: 112ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(6) { animation-delay: 140ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(7) { animation-delay: 168ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(8) { animation-delay: 196ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(9) { animation-delay: 224ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(10) { animation-delay: 252ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(11) { animation-delay: 280ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(12) { animation-delay: 308ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(13) { animation-delay: 336ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(14) { animation-delay: 364ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(15) { animation-delay: 392ms; }
+.reveal-on-scroll--visible .capability-tag:nth-child(16) { animation-delay: 420ms; }
 
 @keyframes capability-tag-enter {
   from {

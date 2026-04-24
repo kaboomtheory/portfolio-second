@@ -100,6 +100,8 @@ function updateInPageMarker() {
   }
 }
 
+const { styleAttr: markerStyleAttr, styleId: markerStyleId } = useCspTargetStyle(() => inPageMarkerStyle.value)
+
 let inPageTrackResize: ResizeObserver | null = null
 
 onMounted(() => {
@@ -176,7 +178,11 @@ watch(
             >
               {{ item.title }}
             </NuxtLink>
-            <span class="navbar-inpage__marker" :style="inPageMarkerStyle" aria-hidden="true" />
+            <span
+              class="navbar-inpage__marker"
+              v-bind:[markerStyleAttr]="markerStyleId"
+              aria-hidden="true"
+            />
           </div>
           <ThemeToggle />
         </nav>

@@ -15,7 +15,7 @@ interface SanityIndexPayload {
 
 /**
  * Single request for home page: projects + home CMS (saves a round trip
- * vs separate fetches). Passwords are never exposed through this API —
+ * vs separate fetches). Password hashes are never exposed through this API —
  * see /api/project-unlock for the auth flow.
  */
 export function useSanityIndexBundle() {

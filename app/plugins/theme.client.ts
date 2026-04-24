@@ -10,8 +10,6 @@ function applyTheme(mode: ThemeMode) {
   const root = document.documentElement
   root.dataset.theme = mode
   root.classList.toggle('dark', mode === 'dark')
-  // Chromium uses this to style built-in UI (scrollbars/form controls) per theme.
-  root.style.colorScheme = mode
 
   const themeMeta = document.querySelector('meta[name="theme-color"]')
   if (themeMeta) {

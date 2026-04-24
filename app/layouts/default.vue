@@ -3,7 +3,7 @@ import { activeSectionSignalKey, useActiveSectionSignal } from '~/composables/us
 
 const route = useRoute()
 const router = useRouter()
-const { ambientTint } = useTimeOfDay()
+const { ambientTone } = useTimeOfDay()
 
 const activeSectionSignal = useActiveSectionSignal()
 provide(activeSectionSignalKey, activeSectionSignal)
@@ -19,7 +19,7 @@ router.beforeEach((to, from) => {
 useHead(() => ({
   htmlAttrs: {
     'data-home-landing': route.path === '/' ? 'true' : undefined,
-    style: ambientTint.value !== 'transparent' ? `--ambient-tint: ${ambientTint.value};` : undefined,
+    'data-ambient-tone': ambientTone.value,
   },
 }))
 </script>

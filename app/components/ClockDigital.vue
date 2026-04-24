@@ -46,12 +46,16 @@ const timezoneLabel = computed(() => {
   <span v-if="compact" class="clock-compact">
     {{ hour }}:{{ minute }} {{ meridiem }}
   </span>
-  <p v-else class="text-[12px] font-semibold tracking-[0.05em]" :style="{ color: 'var(--fg-primary)' }">
+  <p v-else class="clock-default text-[12px] font-semibold tracking-[0.05em]">
     {{ dateLabel }} / {{ hour }} : {{ minute }} {{ meridiem }}
   </p>
 </template>
 
 <style scoped>
+.clock-default {
+  color: var(--fg-primary);
+}
+
 .clock-compact {
   font-size: 0.75rem;
   font-weight: 600;

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Icon } from '@iconify/vue'
 import { useScrollExpandImage } from '~/composables/useScrollExpand'
 import { useScrollRevealGroup } from '~/composables/useScrollReveal'
 
@@ -19,9 +18,8 @@ const { scale: avatarScale, displayedOpacity: avatarOpacity } = useScrollExpandI
 const avatarStyle = computed(() => ({
   transform: `scale(${avatarScale.value})`,
   opacity: avatarOpacity.value,
-  transition: 'transform 0.1s ease-out, opacity 0.15s ease-out',
-  willChange: 'transform, opacity',
 }))
+const { styleAttr: avatarStyleAttr, styleId: avatarStyleId } = useCspTargetStyle(() => avatarStyle.value)
 
 const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollRevealGroup(
   props.story.length,
@@ -60,14 +58,18 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
               preserve-case
               target="_blank"
             >
-              <template #icon><Icon icon="lucide:download" class="text-sm" /></template>
+              <template #icon><AppIcon icon="lucide:download" class="text-sm" /></template>
             </CtaButton>
           </div>
         </div>
 
         <div class="story-aside">
           <figure class="story-avatar">
-            <div ref="avatarRef" class="story-avatar-frame" :style="avatarStyle">
+            <div
+              ref="avatarRef"
+              class="story-avatar-frame"
+              v-bind:[avatarStyleAttr]="avatarStyleId"
+            >
               <SanityImage
                 :src="avatar"
                 :alt="name"
@@ -137,6 +139,11 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   flex-direction: column;
   gap: var(--home-stack-gap-comfortable);
   min-width: 0;
+}
+
+.story-avatar-frame {
+  transition: transform 0.1s ease-out, opacity 0.15s ease-out;
+  will-change: transform, opacity;
 }
 
 @media (min-width: 768px) {

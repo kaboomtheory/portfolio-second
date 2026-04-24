@@ -1,6 +1,6 @@
 import { sanityQuery } from '../utils/sanityFetch'
 
-// Public index bundle. Passwords are NOT returned here — they are
+// Public index bundle. Password hashes are NOT returned here — they are
 // compared server-side in `/api/project-unlock`. Protected projects
 // have their `sections` stripped; full protected content is served
 // by `/api/project/[slug]` after unlock.

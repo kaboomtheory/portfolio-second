@@ -70,12 +70,9 @@ export default defineNuxtConfig({
         { rel: 'apple-touch-icon', href: '/apple-touch-icon.png', sizes: '180x180' },
         { rel: 'manifest', href: '/manifest.webmanifest' },
       ],
-      // Pre-hydration theme init: set the `dark` class on <html> before first paint
-      // so the page doesn't flash the wrong theme. Mirrors logic in utils/theme.ts.
       script: [
         {
-          innerHTML:
-            "(function(){try{var s=localStorage.getItem('color-mode');var dark=s==='dark'||(s!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);var el=document.documentElement;var mode=dark?'dark':'light';el.classList.toggle('dark',dark);el.dataset.theme=mode;el.style.colorScheme=mode;var m=document.querySelector('meta[name=\"theme-color\"]');if(m){m.setAttribute('content',dark?'#212530':'#ffffff');}}catch(e){}})();",
+          src: '/theme-init.js',
           tagPosition: 'head',
         },
       ],
@@ -86,10 +83,6 @@ export default defineNuxtConfig({
     projectId: sanityProjectId,
     dataset: sanityDataset,
     apiVersion: sanityApiVersion,
-    typegen: {
-      enabled: true,
-      schemaTypesPath: './sanity-studio/schemas',
-    },
   },
 
   /**
@@ -102,53 +95,22 @@ export default defineNuxtConfig({
     resendApiKey: '',
     contactToEmail: '',
     contactFromEmail: '',
+    /** Prefer `TURNSTILE_SECRET_KEY` / `NUXT_TURNSTILE_SECRET_KEY` (Nuxt override). */
+    turnstileSecretKey:
+      process.env.TURNSTILE_SECRET_KEY || process.env.NUXT_TURNSTILE_SECRET_KEY || '',
+    /** Prefer `UPSTASH_REDIS_REST_*` / `NUXT_UPSTASH_REDIS_REST_*` (Nuxt override). */
+    upstashRedisRestUrl:
+      process.env.UPSTASH_REDIS_REST_URL || process.env.NUXT_UPSTASH_REDIS_REST_URL || '',
+    upstashRedisRestToken:
+      process.env.UPSTASH_REDIS_REST_TOKEN || process.env.NUXT_UPSTASH_REDIS_REST_TOKEN || '',
     public: {
       sanityProjectId,
       sanityDataset,
       sanityApiVersion,
       siteUrl,
       siteDescription,
+      /** Set `NUXT_PUBLIC_TURNSTILE_SITE_KEY` on the host. */
+      turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
     },
   },
-
-  // Baseline security headers. CSP is tuned for the assets actually
-  // used by this site: Sanity CDN for images, Google Fonts,
-  // YouTube/Vimeo iframes, Iconify API for on-demand icon JSON.
-  // CSP is applied in production only — dev uses Vite HMR over
-  // WebSockets and benefits from looser defaults.
-  routeRules: (() => {
-    const isProd = process.env.NODE_ENV === 'production'
-
-    const baseHeaders: Record<string, string> = {
-      'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'X-Content-Type-Options': 'nosniff',
-      'X-Frame-Options': 'DENY',
-      'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
-      'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
-    }
-
-    if (isProd) {
-      baseHeaders['Content-Security-Policy'] = [
-        "default-src 'self'",
-        "base-uri 'self'",
-        "form-action 'self'",
-        "frame-ancestors 'none'",
-        "object-src 'none'",
-        "img-src 'self' data: blob: https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com",
-        "font-src 'self' data: blob:",
-        "style-src 'self' 'unsafe-inline'",
-        "style-src-elem 'self' 'unsafe-inline'",
-        "script-src 'self' 'unsafe-inline'",
-        "connect-src 'self' https://*.api.sanity.io https://*.apicdn.sanity.io https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com",
-        "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com",
-        "media-src 'self' blob:",
-        "worker-src 'self' blob:",
-      ].join('; ')
-    }
-
-    return {
-      '/**': { headers: baseHeaders },
-    }
-  })(),
-
 })

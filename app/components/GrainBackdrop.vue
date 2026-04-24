@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useScrollLayoutSubscription, useSharedScrollY } from '~/composables/useScrollLayoutBus'
 
-const filterId = useId().replace(/:/g, '')
+const filterId = 'grain-filter'
 const sharedScrollY = useSharedScrollY()
 const scrollPhaseS = ref(0)
 const isReducedMotion = ref(false)
@@ -25,6 +25,7 @@ const animStyle = computed(() => {
   if (isReducedMotion.value) return {}
   return { animationDelay: `${-scrollPhaseS.value}s` }
 })
+const { styleAttr: animStyleAttr, styleId: animStyleId } = useCspTargetStyle(() => animStyle.value)
 
 function onMqChange() {
   isReducedMotion.value = mq?.matches ?? false
@@ -82,9 +83,9 @@ onUnmounted(() => {
     <div
       class="grain-anim"
       :class="{ 'grain-anim--reduced': isReducedMotion }"
-      :style="animStyle"
+      v-bind:[animStyleAttr]="animStyleId"
     >
-      <div class="grain-surface" :style="{ filter: `url(#${filterId})` }" />
+      <div class="grain-surface" />
     </div>
   </div>
 </template>
@@ -122,6 +123,7 @@ onUnmounted(() => {
   inset: -25%;
   width: 150%;
   height: 150%;
+  filter: url(#grain-filter);
   /* Tint toward theme ink so multiply tints pastels gently instead of a gray wash */
   background: color-mix(in srgb, var(--ink) 14%, var(--paper));
   mix-blend-mode: multiply;

@@ -52,11 +52,6 @@ function tryAgain() {
             <button
               type="button"
               class="error-panel__primary rounded-md px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.1em]"
-              :style="{
-                backgroundColor: 'var(--pastel-mint)',
-                color: 'var(--pastel-ink)',
-                border: '1px solid color-mix(in srgb, var(--pastel-ink) 18%, var(--pastel-mint))',
-              }"
               @click="tryAgain"
             >
               Try again
@@ -64,11 +59,6 @@ function tryAgain() {
             <button
               type="button"
               class="error-panel__ghost rounded-md px-5 py-2.5 text-xs font-semibold uppercase tracking-[0.1em]"
-              :style="{
-                backgroundColor: 'var(--pastel-peach)',
-                color: 'var(--pastel-ink)',
-                border: '1px solid color-mix(in srgb, var(--pastel-ink) 18%, var(--pastel-peach))',
-              }"
               @click="goHome"
             >
               Back to home
@@ -188,11 +178,24 @@ function tryAgain() {
 .error-panel__primary,
 .error-panel__ghost {
   cursor: pointer;
+  color: var(--pastel-ink);
+  border-width: 1px;
+  border-style: solid;
   transition:
     background-color 0.2s cubic-bezier(0.25, 1, 0.5, 1),
     border-color 0.2s cubic-bezier(0.25, 1, 0.5, 1),
     box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
     transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.error-panel__primary {
+  background-color: var(--pastel-mint);
+  border-color: color-mix(in srgb, var(--pastel-ink) 18%, var(--pastel-mint));
+}
+
+.error-panel__ghost {
+  background-color: var(--pastel-peach);
+  border-color: color-mix(in srgb, var(--pastel-ink) 18%, var(--pastel-peach));
 }
 
 .error-panel__primary:hover {

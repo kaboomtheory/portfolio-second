@@ -4,7 +4,7 @@ import { ACCESS_COOKIE_NAME, verifyAccessToken } from '../../utils/projectAccess
 
 // Returns a single project including sections. For protected
 // projects, requires a valid unlock cookie (set by
-// `/api/project-unlock`). Never returns the `password` field.
+// `/api/project-unlock`). Never returns the `passwordHash` field.
 export default defineEventHandler(async (event) => {
   const slug = (getRouterParam(event, 'slug') || '').trim()
   if (!slug) {

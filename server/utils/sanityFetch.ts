@@ -2,7 +2,7 @@ interface SanityQueryOptions {
   params?: Record<string, unknown>
   // When true, include the SANITY_READ_TOKEN in the request. Use for
   // any query that touches fields that should NOT be served via the
-  // public CDN/dataset (for example, project passwords).
+  // public CDN/dataset (for example, project password hashes).
   useToken?: boolean
 }
 

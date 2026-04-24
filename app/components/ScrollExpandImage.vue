@@ -61,10 +61,12 @@ const { scale, displayedOpacity } = useScrollExpandImage(elementRef, {
   preExpanded: props.preExpanded,
 })
 
-const containerStyle = computed(() => ({
+const { styleAttr: containerStyleAttr, styleId: containerStyleId } = useCspTargetStyle(() => ({
   opacity: displayedOpacity.value,
   transform: `scale(${scale.value})`,
-  transition: 'transform 0.1s ease-out, opacity 0.15s ease-out',
+}))
+const { styleAttr: captionStyleAttr, styleId: captionStyleId } = useCspTargetStyle(() => ({
+  opacity: displayedOpacity.value,
 }))
 
 const layoutClass = computed(() => {
@@ -103,8 +105,8 @@ const innerFrameClass = computed(() => {
     :class="['scroll-expand-image', layoutClass]"
   >
     <div
-      :class="innerFrameClass"
-      :style="containerStyle"
+      :class="['scroll-expand-image__frame', innerFrameClass]"
+      v-bind:[containerStyleAttr]="containerStyleId"
     >
       <SanityImage
         :src="src"
@@ -118,8 +120,8 @@ const innerFrameClass = computed(() => {
     </div>
     <p
       v-if="caption"
-      class="mt-3 text-center text-sm"
-      :style="{ color: 'var(--fg-muted)', opacity: displayedOpacity }"
+      class="scroll-expand-image__caption mt-3 text-center text-sm"
+      v-bind:[captionStyleAttr]="captionStyleId"
     >
       {{ caption }}
     </p>
@@ -136,6 +138,14 @@ const innerFrameClass = computed(() => {
 <style scoped>
 .scroll-expand-image {
   will-change: transform, opacity;
+}
+
+.scroll-expand-image__frame {
+  transition: transform 0.1s ease-out, opacity 0.15s ease-out;
+}
+
+.scroll-expand-image__caption {
+  color: var(--fg-muted);
 }
 
 @media (prefers-reduced-motion: reduce) {

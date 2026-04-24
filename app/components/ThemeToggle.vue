@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { Icon } from '@iconify/vue'
-
 const { isDark, toggle } = useTheme()
 </script>
 
@@ -16,13 +14,13 @@ const { isDark, toggle } = useTheme()
     @click="toggle"
   >
     <span class="theme-toggle__labels relative z-0 flex w-full items-center justify-between px-0.5 text-sm pointer-events-none">
-      <Icon
+      <AppIcon
         icon="lucide:sun"
         class="theme-toggle__rail h-4 w-4 shrink-0"
         :class="isDark ? 'theme-toggle__rail--muted' : 'theme-toggle__rail--on'"
         aria-hidden="true"
       />
-      <Icon
+      <AppIcon
         icon="lucide:moon"
         class="theme-toggle__rail h-4 w-4 shrink-0"
         :class="!isDark ? 'theme-toggle__rail--muted' : 'theme-toggle__rail--on'"
@@ -34,12 +32,12 @@ const { isDark, toggle } = useTheme()
         class="theme-toggle__icon-wrap relative h-4 w-4 shrink-0"
         :class="{ 'theme-toggle__icon-wrap--dark': isDark }"
       >
-        <Icon
+        <AppIcon
           icon="lucide:sun"
           class="theme-toggle__orbit-icon theme-toggle__orbit-icon--sun absolute left-1/2 top-1/2 h-4 w-4"
           aria-hidden="true"
         />
-        <Icon
+        <AppIcon
           icon="lucide:moon"
           class="theme-toggle__orbit-icon theme-toggle__orbit-icon--moon absolute left-1/2 top-1/2 h-4 w-4"
           aria-hidden="true"

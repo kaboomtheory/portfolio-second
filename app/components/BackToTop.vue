@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { Icon } from '@iconify/vue'
 import {
   useSharedScrollY,
   useSharedScrollMax,
@@ -63,7 +62,7 @@ function scrollToTop() {
         @click="scrollToTop"
       >
         <span class="cta-attention-pill__inner">
-          <Icon icon="lucide:arrow-up" aria-hidden="true" />
+          <AppIcon icon="lucide:arrow-up" aria-hidden="true" />
         </span>
       </button>
     </div>

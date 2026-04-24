@@ -328,9 +328,10 @@ export const project = defineType({
       initialValue: false,
     }),
     defineField({
-      name: 'password',
+      name: 'passwordHash',
       type: 'string',
-      title: 'Password',
+      title: 'Password Hash',
+      description: 'Generate with `npm run hash:project-password "your-password"` and paste the bcrypt hash here.',
       hidden: ({ document }) => !document?.protected,
     }),
   ],

@@ -1,33 +1,61 @@
-# Nuxt dev/build outputs
-.output
-.data
-.nuxt
-.nitro
-.cache
-dist
-
-# Node dependencies
-node_modules
-
-# Logs
-logs
-*.log
-
-# Upload script output (local manifest; optional to commit)
-scripts/output/
-
-# Misc
+# --- OS ---
 .DS_Store
-.fleet
-.idea
-.claude
+Thumbs.db
 
-# Local env files
+# --- IDEs & editors ---
+.idea
+.fleet
+*.swp
+*.swo
+*~
+
+# --- Local agent / tool folders (do not commit) ---
+.claude
+.agents
+.kiro
+
+# --- Environment (secrets) ---
 .env
 .env.*
 !.env.example
 
-# Sanity Studio
+# --- Nuxt / Nitro / Vite ---
+.output
+.nuxt
+.nitro
+.data
+dist
+.cache
+node_modules
+
+# --- Logs ---
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# --- TypeScript build info (incremental; regenerated) ---
+*.tsbuildinfo
+
+# --- Test & coverage ---
+coverage
+.nyc_output
+test-results
+playwright-report
+blob-report
+
+# --- Deploy tooling ---
+.vercel
+
+# --- Monorepo / task caches ---
+.turbo
+
+# --- This repo: scripts ---
+scripts/output/
+
+# --- Sanity Studio ---
 sanity-studio/node_modules
 sanity-studio/.sanity
 sanity-studio/dist
