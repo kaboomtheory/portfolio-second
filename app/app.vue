@@ -25,7 +25,10 @@ watch(
         window.scrollTo(0, 0)
       }
       // Move focus for SR / focus order without drawing the global :focus-visible ring (e.g. Firefox).
-      main?.focus({ preventScroll: true, focusVisible: false })
+      main?.focus({
+        preventScroll: true,
+        focusVisible: false,
+      } as FocusOptions & { focusVisible?: boolean })
     })
   },
   { immediate: true, flush: 'post' },
