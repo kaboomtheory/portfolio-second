@@ -24,7 +24,13 @@ const RADIUS = 22
 const CIRCUMFERENCE = 2 * Math.PI * RADIUS
 const dashOffset = computed(() => CIRCUMFERENCE * (1 - progress.value))
 
+const isSquashing = ref(false)
+
 function scrollToTop() {
+  if (import.meta.client && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    isSquashing.value = true
+    window.setTimeout(() => { isSquashing.value = false }, 360)
+  }
   smoothScrollToTop()
 }
 </script>
@@ -58,6 +64,7 @@ function scrollToTop() {
       <button
         type="button"
         class="back-to-top cta-attention-pill"
+        :class="{ 'back-to-top--squashing': isSquashing }"
         aria-label="Back to top"
         @click="scrollToTop"
       >
@@ -97,6 +104,29 @@ function scrollToTop() {
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 220ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Squash + lift on click — releases with a tiny overshoot via back-out curve. */
+.back-to-top--squashing {
+  animation: btt-squash 360ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes btt-squash {
+  0%   { transform: scaleY(1) scaleX(1); }
+  22%  { transform: scaleY(0.78) scaleX(1.12); }
+  60%  { transform: scaleY(1.08) scaleX(0.96) translateY(-2px); }
+  100% { transform: scaleY(1) scaleX(1); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back-to-top {
+    transition: none;
+  }
+
+  .back-to-top--squashing {
+    animation: none;
+  }
 }
 
 /* SVG ring positioned around the button */

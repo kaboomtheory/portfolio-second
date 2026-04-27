@@ -1,8 +1,11 @@
 <script setup lang="ts">
 import { useHomeSectionScroll } from '~/composables/useHomeSectionScroll'
+import { usePlayfulTitle } from '~/composables/usePlayfulTitle'
 
 const { scrollToHomeHash } = useHomeSectionScroll()
 const route = useRoute()
+
+usePlayfulTitle()
 
 function scrollToHashIfPresent() {
   if (!import.meta.client || !route.hash) return
@@ -39,7 +42,27 @@ watch(
 onMounted(() => {
   if (!import.meta.client) return
   document.addEventListener('click', handleAnchorClick)
+  printConsoleSignature()
 })
+
+let consoleSignaturePrinted = false
+function printConsoleSignature() {
+  if (consoleSignaturePrinted) return
+  consoleSignaturePrinted = true
+  const headline = 'color: #15120f; font: 600 14px/1.2 ui-monospace, monospace; padding: 6px 0;'
+  const body = 'color: #6b6258; font: 400 12px/1.5 ui-monospace, monospace;'
+  const link = 'color: #15120f; font: 500 12px/1.5 ui-monospace, monospace; text-decoration: underline;'
+  /* eslint-disable no-console */
+  console.log('%cBryan X. Mendez — designer, Los Angeles', headline)
+  console.log(
+    '%cPoking around? Likewise.\n'
+      + 'Brand identity, packaging, and thoughtful digital things.\n'
+      + 'If you\'re hiring or just want to swap notes, find me on LinkedIn ↘',
+    body,
+  )
+  console.log('%cor say hi via the form at /#contact', link)
+  /* eslint-enable no-console */
+}
 
 onUnmounted(() => {
   if (!import.meta.client) return

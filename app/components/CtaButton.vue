@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useInPageHashLink } from '~/composables/useInPageHashLink'
+import { useMagneticHover } from '~/composables/useMagneticHover'
 
 const { onInPageHashLinkClick } = useInPageHashLink()
 
@@ -31,6 +32,20 @@ const props = withDefaults(
     pill: false,
   },
 )
+
+const buttonRef = ref<HTMLElement | null>(null)
+function setButtonRef(el: unknown) {
+  if (!el) {
+    buttonRef.value = null
+    return
+  }
+  // NuxtLink/RouterLink may expose its component instance; unwrap to the rendered <a>.
+  const raw = el as { $el?: HTMLElement } & HTMLElement
+  buttonRef.value = raw.$el ?? raw
+}
+if (props.attention || props.pill) {
+  useMagneticHover(buttonRef, { maxPx: 3, radius: 64, lerpK: 0.2 })
+}
 
 const isMailto = computed(() => Boolean(props.href?.toLowerCase().startsWith('mailto:')))
 
@@ -69,6 +84,7 @@ function onNuxtLinkClick(e: MouseEvent) {
 <template>
   <a
     v-if="href"
+    :ref="setButtonRef"
     :href="href"
     :target="download || isMailto || !opensInNewTab ? undefined : '_blank'"
     :rel="download || isMailto || !opensInNewTab ? undefined : 'noopener noreferrer'"
@@ -105,6 +121,7 @@ function onNuxtLinkClick(e: MouseEvent) {
   </a>
   <NuxtLink
     v-else-if="to"
+    :ref="setButtonRef"
     :to="to"
     :class="btnClass"
     @click="onNuxtLinkClick"
@@ -204,7 +221,8 @@ function onNuxtLinkClick(e: MouseEvent) {
 
 .cta-button--primary-surface {
   transition:
-    transform 0.2s cubic-bezier(0.22, 1, 0.36, 1),
+    /* Back-out curve gives a tiny overshoot on press release — adds physicality */
+    transform 0.32s cubic-bezier(0.34, 1.56, 0.64, 1),
     box-shadow 0.22s cubic-bezier(0.16, 1, 0.3, 1),
     background-color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
     color 0.18s cubic-bezier(0.25, 1, 0.5, 1);
@@ -216,8 +234,9 @@ function onNuxtLinkClick(e: MouseEvent) {
 }
 
 .cta-button--primary-surface:active {
-  transform: translate3d(0, 0.5px, 0) scale(0.99);
-  transition-duration: 0.1s;
+  transform: translate3d(0, 0.5px, 0) scale(0.95);
+  transition-duration: 0.09s;
+  transition-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
 }
 
 @media (prefers-reduced-motion: reduce) {

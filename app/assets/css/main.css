@@ -314,9 +314,9 @@ html.dark .layout-circuit-bg {
   transform: translateZ(0);
   transition:
     transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
-    background-color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
-    color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
-    border-color 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+    background-color 0s linear,
+    color 0s linear,
+    border-color 0s linear;
 }
 
 .cta-button.btn-attention.cta-attention-pill .cta-attention-pill__inner,
@@ -621,17 +621,18 @@ h2 {
   margin: 0;
   color: var(--fg-primary);
   hyphens: none;
+  text-wrap: pretty;
 }
 
 h1 {
   font-size: var(--text-h1);
-  letter-spacing: -0.035em;
+  letter-spacing: -0.05em;
   line-height: 1.02;
 }
 
 h2 {
   font-size: var(--text-h2);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.035em;
   line-height: 1.08;
 }
 
@@ -645,11 +646,12 @@ h6 {
   margin: 0;
   color: var(--fg-primary);
   hyphens: none;
+  text-wrap: pretty;
 }
 
 h3 {
   font-size: var(--text-h3);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 .font-serif {
@@ -659,6 +661,7 @@ h3 {
 p {
   margin: 0;
   color: var(--fg-secondary);
+  text-wrap: pretty;
 }
 
 a {

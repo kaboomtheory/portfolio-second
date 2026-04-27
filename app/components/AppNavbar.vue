@@ -131,6 +131,19 @@ onUnmounted(() => {
   }
 })
 
+/**
+ * Cursor-driven hover underline: each nav link's underline grows from where the
+ * pointer entered, and retracts toward where it left. Pure CSS var pass-through.
+ */
+function onNavPointerMove(e: PointerEvent) {
+  const target = (e.currentTarget as HTMLElement | null)
+  if (!target) return
+  const r = target.getBoundingClientRect()
+  if (r.width < 1) return
+  const pct = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100))
+  target.style.setProperty('--nav-hover-origin', `${pct.toFixed(1)}%`)
+}
+
 watch(
   [effectiveHash, isCondensed, isHomeHero, () => route.path],
   () => {
@@ -175,6 +188,7 @@ watch(
               :class="{ 'nav-link--active': isNavActive(item.path) }"
               :aria-current="isNavActive(item.path) ? 'location' : undefined"
               @click="onInPageHashLinkClick($event, item.path)"
+              @pointermove="onNavPointerMove"
             >
               {{ item.title }}
             </NuxtLink>
@@ -388,6 +402,41 @@ watch(
     opacity 0.2s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
 }
 
+/* Cursor-driven ink underline: grows from where the pointer entered. */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  left: 0.5rem;
+  right: 0.5rem;
+  bottom: 0.32rem;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.55;
+  transform: scaleX(0);
+  transform-origin: var(--nav-hover-origin, 50%) center;
+  transition:
+    transform 320ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    opacity 200ms var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
+  pointer-events: none;
+}
+
+@media (min-width: 640px) {
+  .nav-link::after {
+    left: 0.85rem;
+    right: 0.85rem;
+  }
+}
+
+.nav-link:hover::after,
+.nav-link:focus-visible::after {
+  transform: scaleX(1);
+}
+
+/* Active link already has a marker bar — suppress hover underline overlap. */
+.nav-link--active::after {
+  display: none;
+}
+
 @media (min-width: 640px) {
   .nav-link {
     min-height: 0;
@@ -548,6 +597,10 @@ watch(
   .navbar-inner,
   .nav-link,
   .navbar-inpage__marker {
+    transition: none;
+  }
+
+  .nav-link::after {
     transition: none;
   }
 

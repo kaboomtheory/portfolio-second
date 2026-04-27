@@ -6,6 +6,7 @@ const props = defineProps<{
 }>()
 
 const code = computed(() => props.error.statusCode ?? 500)
+const codeLetters = computed(() => String(code.value).split(''))
 
 const heading = computed(() => {
   if (props.error.statusCode === 404) {
@@ -34,7 +35,13 @@ function tryAgain() {
         <div class="error-panel__visual" aria-hidden="true">
           <div class="error-panel__visual-card">
             <span class="error-panel__visual-label">Lost in the archive</span>
-            <span class="error-panel__visual-code">{{ code }}</span>
+            <span class="error-panel__visual-code">
+              <span
+                v-for="(ch, i) in codeLetters"
+                :key="i"
+                class="error-panel__visual-letter"
+              >{{ ch }}</span>
+            </span>
           </div>
         </div>
 
@@ -140,6 +147,78 @@ function tryAgain() {
   font-style: italic;
   line-height: 0.9;
   letter-spacing: -0.06em;
+  display: inline-flex;
+  gap: 0.02em;
+}
+
+.error-panel__visual-letter {
+  display: inline-block;
+  transform-origin: 50% 78%;
+  animation: error-letter-drop 720ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.error-panel__visual-letter:nth-child(1) { animation-delay: 0ms; }
+.error-panel__visual-letter:nth-child(2) { animation-delay: 110ms; }
+.error-panel__visual-letter:nth-child(3) { animation-delay: 220ms; }
+.error-panel__visual-letter:nth-child(4) { animation-delay: 330ms; }
+.error-panel__visual-letter:nth-child(5) { animation-delay: 440ms; }
+
+.error-panel__visual-letter:nth-child(2) {
+  font-style: normal;
+  /* Make the middle digit feel like a misplaced object */
+  transform: rotate(-6deg) translateY(0.04em);
+}
+
+.error-panel__visual-letter:hover {
+  animation: error-letter-jiggle 480ms ease-out;
+}
+
+@keyframes error-letter-drop {
+  0% {
+    opacity: 0;
+    transform: translateY(-0.5em) rotate(-8deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0.06em) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
+  }
+}
+
+.error-panel__visual-letter:nth-child(2) {
+  animation-name: error-letter-drop-tilted;
+}
+
+@keyframes error-letter-drop-tilted {
+  0% {
+    opacity: 0;
+    transform: translateY(-0.5em) rotate(-14deg);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(0.06em) rotate(-3deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0.04em) rotate(-6deg);
+  }
+}
+
+@keyframes error-letter-jiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-4deg) scale(1.04); }
+  75% { transform: rotate(4deg) scale(1.04); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .error-panel__visual-letter,
+  .error-panel__visual-letter:nth-child(2) {
+    animation: none;
+    transform: none;
+  }
 }
 
 .error-panel__copy {

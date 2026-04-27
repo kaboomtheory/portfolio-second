@@ -159,7 +159,7 @@ onUnmounted(() => {
 
 const headlineTiltHostRef = ref<HTMLElement | null>(null)
 const headlineTiltRef = ref<HTMLElement | null>(null)
-useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
+useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
 </script>
 
 <template>
@@ -279,7 +279,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
 
 .intro-bento {
   --intro-bento-gap: clamp(0.65rem, 1.25vw, 1.05rem);
-  --intro-bento-radius: clamp(0.85rem, 1.4vw, 1.2rem);
+  --intro-bento-radius: var(--radius-card, 0);
   position: relative;
   width: 100%;
   min-width: 0;
@@ -544,7 +544,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
   color: var(--pastel-ink);
   background: var(--pastel-sky);
   border: none;
-  border-radius: var(--radius-control, 0.35rem);
+  border-radius: var(--radius-control, 0);
   padding: 0.65rem 1.4rem;
   outline-offset: 4px;
   box-shadow: none;

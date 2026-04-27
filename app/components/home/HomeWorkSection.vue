@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onUnmounted, watch } from 'vue'
 import type { ProjectItem } from '~/types/project'
 
 const props = defineProps<{
@@ -7,6 +8,39 @@ const props = defineProps<{
 }>()
 
 const filterTag = ref<string>('all')
+
+/* Rotating skeleton verb — small typographic personality during loading. */
+const SKELETON_VERBS = ['composing', 'fetching pixels', 'arranging', 'developing'] as const
+const skeletonVerb = ref(SKELETON_VERBS[0])
+let skeletonTimer: ReturnType<typeof setInterval> | null = null
+
+function startSkeletonRotation() {
+  if (skeletonTimer || !import.meta.client) return
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+  let i = 0
+  skeletonTimer = setInterval(() => {
+    i = (i + 1) % SKELETON_VERBS.length
+    skeletonVerb.value = SKELETON_VERBS[i]!
+  }, 1600)
+}
+
+function stopSkeletonRotation() {
+  if (skeletonTimer) {
+    clearInterval(skeletonTimer)
+    skeletonTimer = null
+  }
+}
+
+watch(
+  () => props.loading,
+  (loading) => {
+    if (loading) startSkeletonRotation()
+    else stopSkeletonRotation()
+  },
+  { immediate: true },
+)
+
+onUnmounted(stopSkeletonRotation)
 
 const tagOptions = computed(() => {
   const set = new Set<string>()
@@ -94,6 +128,12 @@ const filterAnnouncement = computed(() => {
           aria-busy="true"
           aria-label="Loading projects"
         >
+          <p class="work-skeleton-status" role="status" aria-live="polite">
+            <Transition name="skeleton-verb" mode="out-in">
+              <span :key="skeletonVerb" class="work-skeleton-verb">{{ skeletonVerb }}</span>
+            </Transition>
+            <span class="work-skeleton-ellipsis" aria-hidden="true">…</span>
+          </p>
           <div v-for="i in 6" :key="i" class="work-skeleton-card" />
         </div>
 
@@ -265,6 +305,61 @@ const filterAnnouncement = computed(() => {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--home-card-stack-gap);
+}
+
+.work-skeleton-status {
+  margin: 0 0 0.5rem;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.15rem;
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  font-weight: 500;
+  letter-spacing: var(--label-tracking-mono);
+  text-transform: lowercase;
+  color: var(--fg-muted);
+}
+
+.work-skeleton-verb {
+  display: inline-block;
+  min-width: 8ch;
+  font-style: italic;
+  font-family: var(--font-serif);
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--fg-secondary);
+}
+
+.work-skeleton-ellipsis {
+  display: inline-block;
+  margin-left: 0.05rem;
+  font-family: var(--font-serif);
+  font-style: italic;
+  color: var(--fg-secondary);
+}
+
+.skeleton-verb-enter-active,
+.skeleton-verb-leave-active {
+  transition:
+    opacity 220ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform 220ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.skeleton-verb-enter-from {
+  opacity: 0;
+  transform: translateY(4px);
+}
+
+.skeleton-verb-leave-to {
+  opacity: 0;
+  transform: translateY(-4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-verb-enter-active,
+  .skeleton-verb-leave-active {
+    transition: none;
+  }
 }
 
 .work-skeleton-card {
