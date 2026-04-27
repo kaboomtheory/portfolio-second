@@ -19,16 +19,13 @@ export const homeHero = {
   taglines: [
     {
       segments: [
-        { text: 'Multidisciplinary graphic designer in Los Angeles, focused on ' },
-        { text: 'brand identity', em: true },
-        { text: ', packaging, and digital experiences.' },
-      ],
-    },
-    {
-      segments: [
-        { text: 'Especially ' },
-        { text: 'bold typography', em: true },
-        { text: ', clear systems, and work that feels intentional.' },
+        { text: 'Bryan Mendez is a multidisciplinary designer with a sharp eye for ' },
+        { text: 'branding', em: true },
+        { text: ', hands-on experience across ' },
+        { text: 'digital marketing, web, print, and packaging', em: true },
+        { text: ', and a natural pull toward wherever the ' },
+        { text: 'most interesting visual problem', em: true },
+        { text: ' is.' },
       ],
     },
   ] satisfies HomeHeroTaglineLine[],

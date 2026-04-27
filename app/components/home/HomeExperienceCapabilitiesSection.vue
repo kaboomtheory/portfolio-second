@@ -23,7 +23,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
   <RevealOnScroll :delay="240" class="resume-section-outer">
     <div class="resume-grid grid-12">
       <div class="resume-marker">
-        <SectionMarker index="05" word="Background" />
+        <SectionMarker index="04" word="Background" />
       </div>
 
       <div class="resume-cols">

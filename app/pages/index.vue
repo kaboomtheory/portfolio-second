@@ -17,10 +17,12 @@ const { statusItems } = useSanityStatus()
 const { aboutPage } = useSanityAbout()
 const cspNonce = useState<string>('csp-nonce', () => '')
 
-const heroTitle = computed(() => cmsHome.value?.hero.title || homeHero.title)
-const heroTaglines = computed(() =>
-  cmsHome.value?.hero.taglines?.length ? cmsHome.value.hero.taglines : homeHero.taglines,
-)
+/**
+ * Hero copy is intentionally local-only (not CMS-driven) so typography/content
+ * refinements are stable and predictable across responsive breakpoints.
+ */
+const heroTitle = computed(() => homeHero.title)
+const heroTaglines = computed(() => homeHero.taglines)
 
 const linkedinHref = computed(() => {
   const list = cmsHome.value?.socialLinks?.length ? cmsHome.value.socialLinks : socialLinks

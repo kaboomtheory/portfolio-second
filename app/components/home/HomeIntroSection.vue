@@ -9,6 +9,29 @@ function joinTaglineLine(line: HomeHeroTaglineLine | undefined) {
   return line?.segments?.map((s) => s.text).join('')?.trim() ?? ''
 }
 
+function startsWithWordChar(value: string) {
+  return /^[\p{L}\p{N}]/u.test(value)
+}
+
+function endsWithWordChar(value: string) {
+  return /[\p{L}\p{N}]$/u.test(value)
+}
+
+function normalizeTaglineSegments(line: HomeHeroTaglineLine): HomeHeroTaglineLine {
+  const source = line?.segments ?? []
+  const segments: { text: string; em?: boolean }[] = []
+
+  for (const seg of source) {
+    const prev = segments[segments.length - 1]
+    let text = seg.text
+    if (prev && text && endsWithWordChar(prev.text) && startsWithWordChar(text))
+      text = ` ${text}`
+    segments.push({ ...seg, text })
+  }
+
+  return { segments }
+}
+
 /** True when the line is only a location byline (already shown under Location). */
 function isLocationOnlyByline(text: string, location: string) {
   const t = text.trim().toLowerCase().replace(/\.+$/, '').replace(/,$/, '').replace(/\u2026$/, '')
@@ -17,12 +40,6 @@ function isLocationOnlyByline(text: string, location: string) {
   if (t === loc) return true
   const based = `based in ${loc}`.replace(/\s+/g, ' ')
   return t === based || t === `${based}.`
-}
-
-function stripLeadingLocationByline(text: string, location: string) {
-  if (!location) return text
-  const esc = location.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-  return text.replace(new RegExp(`^\\s*Based in\\s+${esc}\\.?\\s*`, 'i'), '').trim()
 }
 
 const NBSP = '\u00a0'
@@ -120,36 +137,9 @@ const { styleAttr: heroLeadStyleAttr, styleId: heroLeadStyleId } = useCspTargetS
 const heroTaglinesDisplay = computed(() => {
   const lines = props.heroTaglines ?? []
   const loc = locationLabel.value
-  return lines.filter((line) => !isLocationOnlyByline(joinTaglineLine(line), loc))
-})
-
-/**
- * Rail "Focus": prefer the second tagline (specialties) so we do not repeat line 1 or Location.
- * With a single tagline, omit the row unless the parent one-liner adds non-location detail.
- */
-const focusRailValue = computed(() => {
-  const lines = props.heroTaglines ?? []
-  const loc = locationLabel.value
-
-  if (lines.length >= 2) {
-    const second = joinTaglineLine(lines[1])
-    if (!second) return ''
-    return second.length > 200 ? `${second.slice(0, 197)}\u2026` : second
-  }
-
-  const parentOne = props.taglineOneLine?.trim()
-  if (!parentOne) return ''
-
-  if (isLocationOnlyByline(parentOne, loc)) return ''
-
-  const stripped = stripLeadingLocationByline(parentOne, loc)
-  if (stripped && stripped !== parentOne)
-    return stripped.length > 140 ? `${stripped.slice(0, 137)}\u2026` : stripped
-
-  const first = joinTaglineLine(lines[0])
-  if (first && parentOne === first) return ''
-
-  return parentOne.length > 140 ? `${parentOne.slice(0, 137)}\u2026` : parentOne
+  return lines
+    .filter((line) => !isLocationOnlyByline(joinTaglineLine(line), loc))
+    .map(normalizeTaglineSegments)
 })
 
 function syncMotionPreference() {
@@ -187,23 +177,6 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
           class="intro-bento__tile intro-bento__tile--headline hero-fade-in"
         >
           <div ref="headlineTiltRef" class="intro-headline-tilt">
-            <h1 class="hero-title" lang="en">
-              <span
-                v-if="heroTitleParts.lead"
-                class="hero-title-lead"
-                v-bind:[heroLeadStyleAttr]="heroLeadStyleId"
-              >{{ heroTitleParts.lead }}</span>
-              <span
-                v-if="heroTitleParts.lead && heroTitleParts.accent"
-                class="hero-title-sep"
-                aria-hidden="true"
-              >{{ ' ' }}</span>
-              <span
-                v-if="heroTitleParts.accent"
-                class="hero-title-accent"
-                :class="{ 'hero-title-accent--after-lead': !!heroTitleParts.lead }"
-              >{{ heroTitleParts.accent }}</span>
-            </h1>
             <div
               v-if="heroTaglinesDisplay.length"
               class="hero-tagline"
@@ -245,10 +218,6 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
               {{ statusLine }}
             </span>
           </p>
-          <p v-if="focusRailValue" class="intro-rail-line">
-            <span class="intro-rail-key">Focus</span>
-            <span class="intro-rail-val">{{ focusRailValue }}</span>
-          </p>
         </aside>
 
         <div class="intro-bento__tile intro-bento__tile--cta hero-fade-in hero-delay-1">
@@ -288,6 +257,14 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
   --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--pastel-blush));
   --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, var(--pastel-blush));
   --btn-attention-bg: var(--pastel-peach);
+  --hero-title-size: clamp(1.75rem, 2.4vw + 0.85rem, 3.25rem);
+  --hero-title-leading: 1.08;
+  --hero-title-max: min(100%, 24em);
+  --hero-accent-tracking: -0.032em;
+  --hero-tagline-size: clamp(1.55rem, 1.05vw + 1.15rem, 2.05rem);
+  --hero-tagline-leading: 1.36;
+  --hero-tagline-gap: 0.45rem;
+  --hero-tagline-max: 56ch;
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -297,7 +274,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
   width: 100%;
   min-width: 0;
   padding-top: clamp(0.8rem, 1.6vw, 1.4rem);
-  padding-bottom: clamp(1rem, 2.2vw, 1.85rem);
+  padding-bottom: clamp(0.45rem, 1.15vw, 0.95rem);
 }
 
 .intro-bento {
@@ -317,10 +294,14 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
   display: flex;
   flex-direction: column;
   gap: var(--home-stack-gap-comfortable);
+  align-self: start;
   min-width: 0;
   background-color: var(--pastel-mint);
   border-radius: var(--intro-bento-radius);
-  padding: clamp(1.1rem, 2.1vw, 1.85rem) clamp(1.2rem, 2.5vw, 2rem);
+  padding:
+    clamp(0.95rem, 1.7vw, 1.35rem)
+    clamp(1.2rem, 2.5vw, 2rem)
+    clamp(0.38rem, 0.85vw, 0.62rem);
   box-sizing: border-box;
 }
 
@@ -399,6 +380,17 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
 }
 
 @media (min-width: 768px) {
+  .home-intro {
+    --hero-title-size: clamp(1.95rem, 2.05vw + 1rem, 3.1rem);
+    --hero-title-leading: 1.07;
+    --hero-title-max: min(100%, 23.5em);
+    --hero-accent-tracking: -0.03em;
+    --hero-tagline-size: clamp(1.62rem, 0.72vw + 1.28rem, 2.15rem);
+    --hero-tagline-leading: 1.34;
+    --hero-tagline-gap: 0.38rem;
+    --hero-tagline-max: 54ch;
+  }
+
   .intro-bento__tile--headline {
     grid-column: 1 / span 8;
     grid-row: 1;
@@ -425,6 +417,17 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
 }
 
 @media (min-width: 1024px) {
+  .home-intro {
+    --hero-title-size: clamp(2.18rem, 1.7vw + 1.1rem, 3.3rem);
+    --hero-title-leading: 1.06;
+    --hero-title-max: min(100%, 23.2em);
+    --hero-accent-tracking: -0.028em;
+    --hero-tagline-size: clamp(1.72rem, 0.62vw + 1.38rem, 2.32rem);
+    --hero-tagline-leading: 1.32;
+    --hero-tagline-gap: 0.34rem;
+    --hero-tagline-max: 52ch;
+  }
+
   .intro-bento {
     --intro-bento-gap: clamp(0.75rem, 1.4vw, 1.2rem);
   }
@@ -442,16 +445,15 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
 .hero-title {
   margin: 0;
   font-family: var(--font-display);
-  /* Slightly under global H1 scale; still fluid so line breaks track across breakpoints */
-  font-size: clamp(1.75rem, 2.4vw + 0.85rem, 3.25rem);
+  font-size: var(--hero-title-size);
   font-weight: 500;
-  line-height: 1.08;
+  line-height: var(--hero-title-leading);
   letter-spacing: 0;
   color: var(--fg-primary);
   background: none;
   padding: 0;
   width: 100%;
-  max-width: min(100%, 24em);
+  max-width: var(--hero-title-max);
   box-sizing: border-box;
   hyphens: none;
   -webkit-hyphens: none;
@@ -465,21 +467,12 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
   transition: letter-spacing 140ms linear;
 }
 
-.hero-title-sep {
-  white-space: pre;
-  user-select: none;
-}
-
-.hero-title-accent--after-lead {
-  margin-inline-start: 0.08em;
-}
-
 .hero-title-accent {
   font-family: var(--font-serif);
   font-style: italic;
   /* 400+ reads sharper on a tinted tile than 300 (less “mush” at color edges) */
   font-weight: 400;
-  letter-spacing: -0.04em;
+  letter-spacing: var(--hero-accent-tracking);
   /* Solid ink: hue animation between green/brown smears through muddy sRGB midpoints on mint */
   color: var(--pastel-ink);
   position: relative;
@@ -510,46 +503,27 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 0.8, lerp: 0.08 })
 
 .hero-tagline-line {
   margin: 0;
-  font-size: var(--text-body-lg);
+  font-size: var(--hero-tagline-size);
   font-weight: 400;
-  line-height: 1.55;
-  color: var(--fg-secondary);
+  line-height: var(--hero-tagline-leading);
+  color: color-mix(in srgb, var(--fg-primary) 82%, transparent);
   letter-spacing: 0;
   font-family: var(--font-sans);
-  max-width: 68ch;
+  text-wrap: pretty;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  max-width: var(--hero-tagline-max);
 }
 
 .hero-tagline-line + .hero-tagline-line {
-  margin-top: 0.45rem;
-}
-
-/* Pilcrow ornament — editorial mark at end of last tagline */
-.hero-tagline-line:last-child::after {
-  content: ' ¶';
-  font-family: var(--font-serif);
-  font-style: italic;
-  font-weight: 400;
-  font-size: 0.9em;
-  color: var(--signal-coral-ink);
-  opacity: 0;
-  animation: pilcrow-fade-in 600ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)) 0.55s both;
-  pointer-events: none;
-}
-
-@keyframes pilcrow-fade-in {
-  from { opacity: 0; transform: translateX(-4px); }
-  to   { opacity: 0.45; transform: translateX(0); }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hero-tagline-line:last-child::after {
-    animation: none;
-    opacity: 0.45;
-  }
+  margin-top: var(--hero-tagline-gap);
 }
 
 .hero-tagline-em {
+  font-family: var(--font-serif);
+  font-style: italic;
   font-weight: 600;
+  letter-spacing: -0.01em;
   color: var(--fg-primary);
 }
 

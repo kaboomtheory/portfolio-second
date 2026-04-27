@@ -2,19 +2,10 @@
 import { activeSectionSignalKey, useActiveSectionSignal } from '~/composables/useActiveSectionSignal'
 
 const route = useRoute()
-const router = useRouter()
 const { ambientTone } = useTimeOfDay()
 
 const activeSectionSignal = useActiveSectionSignal()
 provide(activeSectionSignalKey, activeSectionSignal)
-
-const transitionName = ref('layout-page')
-
-router.beforeEach((to, from) => {
-  const involvesProject =
-    to.path.startsWith('/projects/') || from.path.startsWith('/projects/')
-  transitionName.value = involvesProject ? 'project-blur' : 'layout-page'
-})
 
 useHead(() => ({
   htmlAttrs: {
@@ -44,7 +35,7 @@ useHead(() => ({
           class="layout-main-shell relative z-[1] container mx-auto flex min-h-screen w-full min-w-0 max-w-full flex-col px-0 pb-6 md:max-w-[82rem]"
         >
           <main id="main-content" class="relative min-w-0 w-full" tabindex="-1">
-            <Transition :name="transitionName" mode="default">
+            <Transition name="page" mode="out-in">
               <div
                 :key="route.path"
                 class="layout-page-frame min-w-0 w-full"
@@ -127,96 +118,23 @@ useHead(() => ({
   );
 }
 
-.layout-page-enter-active {
-  transition:
-    opacity 0.32s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1)),
-    transform 0.32s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
+.page-leave-active {
+  transition: all 0.4s;
 }
 
-.layout-page-frame--home-landing.layout-page-enter-active {
-  /* Shorter than generic layout enter so it does not stack awkwardly with scroll reveals */
-  transition-duration: 0.26s;
-  transition-timing-function: var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
-}
-
-.layout-page-leave-active {
-  transition:
-    opacity 0.16s var(--motion-ease-in, cubic-bezier(0.7, 0, 0.84, 0)),
-    transform 0.16s var(--motion-ease-in, cubic-bezier(0.7, 0, 0.84, 0));
-}
-
-.layout-page-enter-from,
-.layout-page-leave-to {
+.page-leave-to {
+  filter: blur(1rem);
   opacity: 0;
-  transform: translate3d(0, 8px, 0) scale(0.995);
-}
-
-.layout-page-frame--home-landing.layout-page-enter-from {
-  transform: translate3d(0, 5px, 0) scale(0.997);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .layout-page-enter-active,
-  .layout-page-leave-active {
+  .page-leave-active {
     transition-duration: 0.01ms;
   }
 
-  .layout-page-frame--home-landing.layout-page-enter-active {
-    transition-duration: 0.01ms;
-  }
-
-  .layout-page-enter-from,
-  .layout-page-leave-to {
-    opacity: 1;
-    transform: none;
-  }
-
-  .layout-page-frame--home-landing.layout-page-enter-from {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-.project-blur-enter-active,
-.project-blur-leave-active {
-  will-change: opacity, filter, transform;
-}
-
-.project-blur-leave-active {
-  position: absolute;
-  inset: 0;
-  transition:
-    opacity 0.28s cubic-bezier(0.7, 0, 0.84, 0),
-    filter 0.28s cubic-bezier(0.7, 0, 0.84, 0);
-}
-
-.project-blur-enter-active {
-  transition:
-    opacity 0.34s cubic-bezier(0.16, 1, 0.3, 1),
-    filter 0.34s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.project-blur-leave-to {
-  opacity: 0;
-  filter: blur(6px);
-}
-
-.project-blur-enter-from {
-  opacity: 0;
-  filter: blur(6px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .project-blur-leave-active,
-  .project-blur-enter-active {
-    transition-duration: 0.01ms;
-    position: static;
-  }
-
-  .project-blur-leave-to,
-  .project-blur-enter-from {
-    opacity: 1;
+  .page-leave-to {
     filter: none;
+    opacity: 1;
   }
 }
 </style>

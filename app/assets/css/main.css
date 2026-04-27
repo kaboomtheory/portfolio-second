@@ -445,6 +445,11 @@ html.dark .layout-circuit-bg {
   border-radius: 4px;
 }
 
+/* app.vue focuses #main-content programmatically after route/hash changes; hide that ring only. */
+#main-content:focus-visible {
+  outline: none;
+}
+
 :root.dark *:focus-visible {
   outline-color: var(--emphasis-soft);
 }
@@ -1191,16 +1196,6 @@ pre,
   border-bottom-color: color-mix(in srgb, var(--pastel-ink) 30%, var(--project-card-surface, var(--pastel-mint)));
 }
 
-.page-enter-active,
-.page-leave-active {
-  transition: opacity 280ms ease;
-}
-
-.page-enter-from,
-.page-leave-to {
-  opacity: 0;
-}
-
 @keyframes reveal-up {
   from {
     opacity: 0;
@@ -1280,11 +1275,6 @@ pre,
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto !important;
-  }
-
-  .page-enter-active,
-  .page-leave-active {
-    transition-duration: 0.01ms !important;
   }
 
   .page-content--home > section::before {

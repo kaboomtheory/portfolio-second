@@ -55,9 +55,6 @@ const tickerCells = computed(() => {
     class="status-band ticker-section full-bleed"
   >
     <div class="full-bleed-inner">
-      <div class="ticker-header">
-        <SectionMarker index="04" word="Right Now" />
-      </div>
       <div class="ticker-wrapper">
         <div
           class="ticker-track"
@@ -140,11 +137,6 @@ const tickerCells = computed(() => {
   letter-spacing: 0.04em;
   color: var(--fg-primary);
   line-height: 1.35;
-}
-
-.ticker-header {
-  padding: 0 clamp(0.5rem, 2vw, 1.25rem) clamp(0.85rem, 1.6vw, 1.2rem);
-  opacity: 0.7;
 }
 
 .ticker-section {

@@ -133,13 +133,10 @@ async function onSubmit() {
       <div class="closing-band__inner">
         <div class="closing-grid grid-12">
           <div class="closing-marker">
-            <SectionMarker index="06" word="Contact" />
+            <SectionMarker index="05" word="Contact" />
           </div>
 
           <div class="closing-main">
-            <p class="closing-kicker">
-              Next
-            </p>
             <div ref="closingHeadingHostRef" class="closing-heading-tilt-host">
               <h2
                 id="closing-cta-heading"
@@ -154,10 +151,7 @@ async function onSubmit() {
               </h2>
             </div>
             <p class="closing-lede">
-              For new work, send a short brief: goals, timeline, audience, and links. I usually reply within a few business days and can share additional case studies under NDA when that helps your review.
-            </p>
-            <p class="closing-meta">
-              Based in {{ profile.location }} · Open to remote-friendly collaborations
+              Feel free to reach out—I'm open to new opportunities, collaborations, and conversations.
             </p>
 
             <p
@@ -280,7 +274,7 @@ async function onSubmit() {
 .closing-cta-section {
   --signal: var(--ink);
   --rule: color-mix(in srgb, var(--fg-primary) 16%, var(--bg-primary));
-  --btn-attention-bg: var(--pastel-blush);
+  --btn-attention-bg: var(--pastel-peach);
   background-color: transparent;
   padding-top: 0;
   padding-bottom: clamp(0.75rem, 2vw, 1.5rem);
@@ -295,6 +289,9 @@ async function onSubmit() {
   --fg-primary: var(--pastel-ink);
   --fg-secondary: var(--pastel-ink-muted);
   --fg-muted: color-mix(in srgb, var(--pastel-ink) 52%, var(--bg-tertiary));
+  --closing-field-bg: color-mix(in srgb, #ffffff 92%, var(--bg-tertiary));
+  --closing-field-fg: var(--pastel-ink);
+  --closing-field-label: color-mix(in srgb, var(--pastel-ink) 78%, var(--bg-tertiary));
   --signal: var(--signal-mint);
   --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--bg-tertiary));
 }
@@ -314,6 +311,19 @@ async function onSubmit() {
 
 .closing-marker {
   grid-column: 1 / -1;
+  display: flex;
+  align-items: flex-start;
+  align-self: start;
+}
+
+/* Keep this section marker optically pinned to the row start. */
+.closing-marker :deep(.section-marker) {
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.closing-marker :deep(.section-marker-word) {
+  line-height: 1;
 }
 
 .closing-main {
@@ -323,35 +333,26 @@ async function onSubmit() {
   align-items: flex-start;
   gap: var(--home-stack-gap-tight);
   min-width: 0;
+  max-width: min(42rem, 100%);
+  align-self: start;
 }
 
 @media (min-width: 768px) {
   .closing-marker {
     grid-column: 1 / span 3;
+    grid-row: 1;
   }
 
   .closing-main {
     grid-column: 4 / span 9;
+    grid-row: 1;
+  }
+
+  .closing-heading-tilt-host {
+    margin-top: -0.15rem;
   }
 }
 
-@media (min-width: 1024px) {
-  .closing-marker {
-    position: sticky;
-    top: 6.5rem;
-    align-self: start;
-  }
-}
-
-.closing-kicker {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--label-size);
-  font-weight: 500;
-  letter-spacing: var(--label-tracking-mono);
-  text-transform: uppercase;
-  color: var(--fg-muted);
-}
 
 .closing-heading-tilt-host {
   width: fit-content;
@@ -456,8 +457,13 @@ async function onSubmit() {
   font-weight: 500;
   letter-spacing: var(--label-tracking-mono);
   text-transform: uppercase;
-  color: var(--fg-muted);
-  background: linear-gradient(to right, var(--bg-primary) 0%, var(--bg-primary) 88%, transparent 100%);
+  color: var(--closing-field-label);
+  background: linear-gradient(
+    to right,
+    var(--closing-field-bg) 0%,
+    var(--closing-field-bg) 88%,
+    transparent 100%
+  );
   padding-inline: 0.08rem 0.2rem;
   pointer-events: none;
   transform-origin: left top;
@@ -482,12 +488,13 @@ async function onSubmit() {
   font-family: var(--font-sans);
   font-size: var(--text-body);
   line-height: 1.45;
-  color: var(--fg-primary);
-  background-color: var(--bg-primary);
+  color: var(--closing-field-fg);
+  background-color: var(--closing-field-bg);
   outline: none;
   transition:
     border-color 180ms ease,
     box-shadow 180ms ease;
+  caret-color: var(--closing-field-fg);
 }
 
 .closing-input::placeholder,
@@ -499,6 +506,17 @@ async function onSubmit() {
 .closing-textarea:focus-visible {
   border-color: color-mix(in srgb, var(--signal) 55%, var(--rule));
   box-shadow: 0 0 0 2px color-mix(in srgb, var(--emphasis) 35%, transparent);
+}
+
+.closing-input:-webkit-autofill,
+.closing-input:-webkit-autofill:hover,
+.closing-input:-webkit-autofill:focus,
+.closing-textarea:-webkit-autofill,
+.closing-textarea:-webkit-autofill:hover,
+.closing-textarea:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--closing-field-fg);
+  box-shadow: 0 0 0 1000px var(--closing-field-bg) inset;
+  transition: background-color 99999s ease-out 0s;
 }
 
 .closing-input:focus-visible + .closing-label,
@@ -595,7 +613,7 @@ async function onSubmit() {
   border-radius: var(--radius-control, 0.35rem);
   background: var(--btn-attention-bg);
   color: var(--pastel-ink);
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 14%, var(--btn-attention-bg));
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, var(--btn-attention-bg));
   box-shadow: var(--shadow-sm);
   transition:
     transform 200ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
@@ -636,7 +654,7 @@ async function onSubmit() {
   font-weight: 500;
   letter-spacing: var(--label-tracking-mono);
   text-transform: uppercase;
-  color: var(--signal);
+  color: #fff;
   text-decoration: none;
   padding-bottom: 0.1rem;
   position: relative;
@@ -652,14 +670,14 @@ async function onSubmit() {
   left: 0;
   width: 100%;
   height: 1px;
-  background: var(--signal);
+  background: #fff;
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 240ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .closing-linkedin:hover {
-  color: var(--fg-primary);
+  color: #fff;
   transform: translateY(-1px);
 }
 
