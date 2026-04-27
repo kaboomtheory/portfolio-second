@@ -7,12 +7,142 @@ const { ambientTone } = useTimeOfDay()
 const activeSectionSignal = useActiveSectionSignal()
 provide(activeSectionSignalKey, activeSectionSignal)
 
+const { scrollTo } = useSmoothScroll()
+
 useHead(() => ({
   htmlAttrs: {
     'data-home-landing': route.path === '/' ? 'true' : undefined,
     'data-ambient-tone': ambientTone.value,
   },
 }))
+
+/* ── JS-driven page transition ── */
+/*
+ * Performance strategy:
+ * 1. Primary motion via transform (scale) + opacity — GPU-composited, zero paint.
+ * 2. Very light blur (0.6rem) as seasoning — small radius = cheap rasterization.
+ * 3. will-change promoted just before animation, cleaned up after.
+ * 4. Styles batched inside rAF to avoid forced synchronous layout.
+ * 5. Scroll-to-top runs in parallel but defers to native smooth scroll.
+ */
+const LEAVE_MS  = 550
+const ENTER_MS  = 380
+const EASE_OUT  = 'cubic-bezier(0.16, 1, 0.3, 1)'   // expo-out — decisive, confident
+const EASE_IN   = 'cubic-bezier(0.55, 0, 1, 0.45)'   // ease-in for exit opacity
+
+// Leave: scale + blur lead, opacity follows with a slight delay
+const LEAVE_TRANSITION = [
+  `transform ${LEAVE_MS}ms ${EASE_OUT}`,
+  `filter ${LEAVE_MS}ms ${EASE_OUT}`,
+  `opacity ${Math.round(LEAVE_MS * 0.45)}ms ${EASE_IN} ${Math.round(LEAVE_MS * 0.4)}ms`,
+].join(', ')
+
+// Enter: everything together with a snappy expo-out
+const ENTER_TRANSITION = [
+  `transform ${ENTER_MS}ms ${EASE_OUT}`,
+  `filter ${ENTER_MS}ms ${EASE_OUT}`,
+  `opacity ${ENTER_MS}ms ${EASE_OUT}`,
+].join(', ')
+
+function isReducedMotion() {
+  return import.meta.client && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
+
+/** Leave: scale-down + light blur + fade WHILE smooth-scrolling to top. */
+function onLeave(el: Element, done: () => void) {
+  if (!import.meta.client || isReducedMotion()) {
+    window.scrollTo(0, 0)
+    done()
+    return
+  }
+
+  const htmlEl = el as HTMLElement
+
+  // Promote to own compositor layer before animating
+  htmlEl.style.willChange = 'transform, opacity, filter'
+
+  // Frame 1: apply transition + initial state lock
+  requestAnimationFrame(() => {
+    htmlEl.style.transition = LEAVE_TRANSITION
+    // Frame 2: apply target state (guarantees the transition property was committed)
+    requestAnimationFrame(() => {
+      htmlEl.style.opacity = '0'
+      htmlEl.style.transform = 'scale(0.97) translateZ(0)'
+      htmlEl.style.filter = 'blur(0.6rem)'
+
+      // Kick off smooth scroll in parallel, perfectly synced to the transition duration
+      const scrollPromise = new Promise<void>(resolve => {
+        if (window.scrollY > 1) {
+          scrollTo(0, { 
+            duration: LEAVE_MS, 
+            preset: 'default', 
+            onComplete: resolve 
+          })
+        } else {
+          resolve()
+        }
+      })
+
+      // Done when both animation and scroll settle
+      Promise.all([
+        new Promise<void>(r => setTimeout(r, LEAVE_MS + 20)),
+        scrollPromise,
+      ]).then(() => {
+        // Clean up promotion
+        htmlEl.style.willChange = ''
+        done()
+      })
+    })
+  })
+}
+
+/** Set initial hidden state before enter — prevents flash of unstyled content. */
+function onBeforeEnter(el: Element) {
+  if (!import.meta.client) return
+  const htmlEl = el as HTMLElement
+  // Start state: invisible, slightly scaled up, lightly blurred
+  htmlEl.style.willChange = 'transform, opacity, filter'
+  htmlEl.style.opacity = '0'
+  htmlEl.style.transform = 'scale(1.015) translateZ(0)'
+  htmlEl.style.filter = 'blur(0.4rem)'
+}
+
+/** Enter: fade + unblur + settle into place. */
+function onEnter(el: Element, done: () => void) {
+  if (!import.meta.client || isReducedMotion()) {
+    // Instantly clear hidden state
+    const htmlEl = el as HTMLElement
+    htmlEl.style.willChange = ''
+    htmlEl.style.opacity = ''
+    htmlEl.style.transform = ''
+    htmlEl.style.filter = ''
+    done()
+    return
+  }
+
+  const htmlEl = el as HTMLElement
+
+  // Frame 1: commit the start state from onBeforeEnter, apply transition
+  requestAnimationFrame(() => {
+    htmlEl.style.transition = ENTER_TRANSITION
+    // Frame 2: animate to final state
+    requestAnimationFrame(() => {
+      htmlEl.style.opacity = '1'
+      htmlEl.style.transform = 'scale(1) translateZ(0)'
+      htmlEl.style.filter = 'blur(0)'
+
+      setTimeout(() => {
+        // Full cleanup — no lingering inline styles or layer promotion
+        htmlEl.style.transition = ''
+        htmlEl.style.willChange = ''
+        htmlEl.style.opacity = ''
+        htmlEl.style.transform = ''
+        htmlEl.style.filter = ''
+        done()
+      }, ENTER_MS + 20)
+    })
+  })
+}
 </script>
 
 <template>
@@ -35,7 +165,7 @@ useHead(() => ({
           class="layout-main-shell relative z-[1] container mx-auto flex min-h-screen w-full min-w-0 max-w-full flex-col px-0 pb-6 md:max-w-[82rem]"
         >
           <main id="main-content" class="relative min-w-0 w-full" tabindex="-1">
-            <Transition name="page" mode="out-in">
+            <Transition :css="false" mode="out-in" @leave="onLeave" @before-enter="onBeforeEnter" @enter="onEnter">
               <div
                 :key="route.path"
                 class="layout-page-frame min-w-0 w-full"
@@ -118,23 +248,5 @@ useHead(() => ({
   );
 }
 
-.page-leave-active {
-  transition: all 0.4s;
-}
-
-.page-leave-to {
-  filter: blur(1rem);
-  opacity: 0;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .page-leave-active {
-    transition-duration: 0.01ms;
-  }
-
-  .page-leave-to {
-    filter: none;
-    opacity: 1;
-  }
-}
+/* Page transition is fully JS-driven (:css="false") — see script above. */
 </style>

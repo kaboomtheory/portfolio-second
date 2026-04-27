@@ -21,7 +21,9 @@ watch(
       const main = document.getElementById('main-content')
       if (hash) {
         scrollToHashIfPresent()
-      } else if (!prev || path !== prev[0]) {
+      } else if (!prev) {
+        // Initial load only — subsequent navigations scroll via
+        // the @after-leave transition hook in default.vue.
         window.scrollTo(0, 0)
       }
       // Move focus for SR / focus order without drawing the global :focus-visible ring (e.g. Firefox).
