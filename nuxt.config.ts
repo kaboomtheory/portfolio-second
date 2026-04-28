@@ -1,4 +1,4 @@
-const siteTitle = 'Bryan X. Mendez'
+const siteTitle = 'Bryan X. Mendez Graphic Design Portfolio'
 const siteDescription =
   'Portfolio of Bryan X. Mendez — graphic designer in Los Angeles. Brand identity, packaging, and digital experiences.'
 const siteUrl = process.env.NUXT_PUBLIC_SITE_URL || 'https://bryanxmendez.com'
@@ -46,7 +46,8 @@ export default defineNuxtConfig({
     pageTransition: false,
     head: {
       htmlAttrs: { lang: 'en' },
-      titleTemplate: `%s · ${siteTitle}`,
+      title: siteTitle,
+      titleTemplate: siteTitle,
       meta: [
         {
           name: 'viewport',

@@ -1,11 +1,8 @@
 <script setup lang="ts">
 import { useHomeSectionScroll } from '~/composables/useHomeSectionScroll'
-import { usePlayfulTitle } from '~/composables/usePlayfulTitle'
 
 const { scrollToHomeHash } = useHomeSectionScroll()
 const route = useRoute()
-
-usePlayfulTitle()
 
 function scrollToHashIfPresent() {
   if (!import.meta.client || !route.hash) return

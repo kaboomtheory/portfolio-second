@@ -135,8 +135,8 @@ const homeStructuredDataJsonLd = computed(() => {
 })
 
 useHead(() => ({
-  title: 'Bryan X. Mendez',
-  /** Avoid “Name · Name” from the global `titleTemplate`. */
+  title: 'Bryan X. Mendez Graphic Design Portfolio',
+  /** Keep the exact browser tab title on the homepage. */
   titleTemplate: '%s',
   link: [{ rel: 'canonical', href: homeCanonicalUrl }],
   script: [
