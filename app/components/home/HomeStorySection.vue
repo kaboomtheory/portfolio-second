@@ -38,6 +38,25 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 
       <!-- One `4 / span 9` block so the split matches Work + Background (marker 1–3, main 4–12) -->
       <div class="story-main">
+        <div class="story-aside">
+          <figure class="story-avatar">
+            <div
+              ref="avatarRef"
+              class="story-avatar-frame"
+              v-bind:[avatarStyleAttr]="avatarStyleId"
+            >
+              <SanityImage
+                :src="avatar"
+                :alt="name"
+                sizes="(max-width: 767px) 40vw, 22rem"
+                class="story-avatar-image"
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </figure>
+        </div>
+
         <div class="story-body">
           <div ref="storyProseRef" class="story-body-prose">
             <p
@@ -61,25 +80,6 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
               <template #icon><AppIcon icon="lucide:download" class="text-sm" /></template>
             </CtaButton>
           </div>
-        </div>
-
-        <div class="story-aside">
-          <figure class="story-avatar">
-            <div
-              ref="avatarRef"
-              class="story-avatar-frame"
-              v-bind:[avatarStyleAttr]="avatarStyleId"
-            >
-              <SanityImage
-                :src="avatar"
-                :alt="name"
-                sizes="(max-width: 767px) 100vw, 22rem"
-                class="story-avatar-image"
-                loading="lazy"
-                decoding="async"
-              />
-            </div>
-          </figure>
         </div>
       </div>
     </div>
@@ -108,9 +108,10 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 
 .story-main {
   grid-column: 1 / -1;
-  display: flex;
-  flex-direction: column;
-  gap: var(--home-stack-gap-comfortable);
+  display: grid;
+  grid-template-columns: minmax(5.75rem, 34vw) minmax(0, 1fr);
+  column-gap: clamp(0.75rem, 3vw, 1.25rem);
+  align-items: start;
   min-width: 0;
 }
 
@@ -123,13 +124,13 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 }
 
 .story-body-prose {
-  padding: clamp(1.25rem, 2.5vw, 1.75rem) clamp(1.25rem, 3vw, 2rem);
+  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(0.65rem, 2vw, 1rem);
   display: flex;
   flex-direction: column;
   gap: var(--home-stack-gap-tight);
   min-width: 0;
   border-radius: 0.25rem;
-  max-width: min(42rem, 68ch);
+  max-width: none;
   width: 100%;
   box-sizing: border-box;
 }
@@ -139,6 +140,7 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   flex-direction: column;
   gap: var(--home-stack-gap-comfortable);
   min-width: 0;
+  width: 100%;
 }
 
 .story-avatar-frame {
@@ -156,14 +158,9 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   .story-main {
     grid-column: 4 / span 9;
     grid-row: 1;
-    display: grid;
-    grid-template-columns: minmax(0, 1.12fr) minmax(0, 0.88fr);
+    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
     column-gap: clamp(1.25rem, 2.5vw, 2.25rem);
-    align-items: start;
-  }
-
-  .story-body {
-    grid-column: 1;
+    row-gap: 0;
   }
 
   .story-body-prose {
@@ -172,10 +169,13 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   }
 
   .story-aside {
-    grid-column: 2;
-    justify-self: end;
+    justify-self: start;
     width: 100%;
     max-width: 22rem;
+  }
+
+  .story-cta-row {
+    margin-top: clamp(0.75rem, 1.5vw, 1.25rem);
   }
 }
 
@@ -225,7 +225,7 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
-  margin-top: clamp(0.75rem, 1.5vw, 1.25rem);
+  margin-top: 0;
 }
 
 .story-avatar {

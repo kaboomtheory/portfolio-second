@@ -20,7 +20,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 </script>
 
 <template>
-  <RevealOnScroll :delay="240" class="resume-section-outer">
+  <RevealOnScroll :delay="240" class="page-section resume-section-outer content-flow">
     <div class="resume-grid grid-12">
       <div class="resume-marker">
         <SectionMarker index="04" word="Background" />
@@ -116,8 +116,9 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 .resume-grid {
   row-gap: var(--home-grid-gap-resume);
   align-items: start;
-  padding-top: clamp(1.35rem, 3vw, 2.65rem);
-  padding-bottom: clamp(1.35rem, 3vw, 2.65rem);
+  /* Match Work / Story inner grids: vertical rhythm comes from `.page-content--home` gap + section hairlines */
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .resume-marker {
@@ -290,12 +291,13 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
   flex-shrink: 0;
   width: 2.2rem;
   height: 0.7em;
+  /* Use fg, not section --signal (mint), so bars stay visible on dark shells */
   background-image:
-    linear-gradient(to top, var(--signal) 100%, transparent 0%),
-    linear-gradient(to top, var(--signal) 70%, transparent 0%),
-    linear-gradient(to top, var(--signal) 45%, transparent 0%),
-    linear-gradient(to top, var(--signal) 88%, transparent 0%),
-    linear-gradient(to top, var(--signal) 55%, transparent 0%);
+    linear-gradient(to top, var(--fg-primary) 100%, transparent 0%),
+    linear-gradient(to top, var(--fg-primary) 70%, transparent 0%),
+    linear-gradient(to top, var(--fg-primary) 45%, transparent 0%),
+    linear-gradient(to top, var(--fg-primary) 88%, transparent 0%),
+    linear-gradient(to top, var(--fg-primary) 55%, transparent 0%);
   background-size: 3px 100%, 3px 100%, 3px 100%, 3px 100%, 3px 100%;
   background-position: 0 0, 6px 0, 12px 0, 18px 0, 24px 0;
   background-repeat: no-repeat;
@@ -345,6 +347,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 
 /* ── A2: Capability tag hover + stagger ──────────────────────────────── */
 .capability-tag {
+  --tag-pastel: var(--pastel-peach);
   padding: 0.35rem 0.65rem;
   font-family: var(--font-mono);
   font-size: var(--label-size);
@@ -360,7 +363,28 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
     transform 180ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
     border-color 180ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
     background-color 180ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
-    color 180ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+    color 180ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    box-shadow 180ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.capability-tag:nth-child(5n + 1) {
+  --tag-pastel: var(--pastel-peach);
+}
+
+.capability-tag:nth-child(5n + 2) {
+  --tag-pastel: var(--pastel-mint);
+}
+
+.capability-tag:nth-child(5n + 3) {
+  --tag-pastel: var(--pastel-sky);
+}
+
+.capability-tag:nth-child(5n + 4) {
+  --tag-pastel: var(--pastel-blush);
+}
+
+.capability-tag:nth-child(5n + 5) {
+  --tag-pastel: var(--pastel-lemon);
 }
 
 .reveal-on-scroll--visible .capability-tag {
@@ -398,17 +422,17 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 
 .capability-tag:hover {
   transform: translateY(-2px) scale(1.06);
-  border-color: var(--signal);
-  background-color: color-mix(in srgb, var(--signal) 8%, var(--bg-primary));
-  color: var(--fg-primary);
-  box-shadow: 0 2px 8px -2px color-mix(in srgb, var(--signal) 22%, transparent);
+  border-color: color-mix(in srgb, var(--pastel-ink) 26%, var(--tag-pastel));
+  background-color: color-mix(in srgb, var(--tag-pastel) 52%, var(--bg-primary));
+  color: var(--pastel-ink);
+  box-shadow: 0 2px 10px -2px color-mix(in srgb, var(--tag-pastel) 36%, transparent);
 }
 
 /* Subtle neighbor pull — sibling tags shift slightly toward the hovered tag */
 @supports selector(:has(*)) {
   .capability-tags:has(.capability-tag:hover) .capability-tag:not(:hover) {
     transform: translateY(-0.5px) scale(1.02);
-    border-color: color-mix(in srgb, var(--signal) 28%, var(--rule-soft));
+    border-color: color-mix(in srgb, var(--tag-pastel) 26%, var(--rule-soft));
   }
 }
 
@@ -420,7 +444,11 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 @media (prefers-reduced-motion: reduce) {
   .capability-tag {
     opacity: 1;
-    transition: border-color 150ms ease, background-color 150ms ease, color 150ms ease;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease,
+      color 150ms ease,
+      box-shadow 150ms ease;
   }
 
   .capability-tag:hover {

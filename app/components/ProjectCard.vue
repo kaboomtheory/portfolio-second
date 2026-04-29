@@ -77,7 +77,7 @@ function handleImageLoad() {
 
         <ul v-if="visibleTags.length" class="project-card__tags" aria-label="Project tags">
           <li v-for="tag in visibleTags" :key="tag">
-            <span class="tag-chip">{{ tag }}</span>
+            <span class="project-card__tag-chip">{{ tag }}</span>
           </li>
         </ul>
         <span class="project-card__cta" aria-hidden="true">
@@ -429,22 +429,33 @@ function handleImageLoad() {
   color: var(--emphasis);
 }
 
+/* Match Work section `.filter-pill` (inactive) — same tokens as [main.css] pill/filter-pill */
 .project-card__tags {
   margin: 0;
   padding: 0;
   list-style: none;
   display: flex;
   flex-wrap: wrap;
-  gap: 0 0.7rem;
-  row-gap: 0.2rem;
+  align-items: center;
+  gap: 0.5rem 0.65rem;
 }
 
-.project-card__tags .tag-chip {
-  padding: 0;
-  background: transparent;
-  border: 0;
-  color: color-mix(in srgb, var(--fg-primary) 76%, var(--project-card-surface, var(--paper)));
-  font-size: calc(var(--label-size) * 0.95);
+.project-card__tag-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding: 0.35rem 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  white-space: nowrap;
+  color: var(--pastel-ink);
+  background-color: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 16%, var(--paper));
+  box-shadow: none;
 }
 
 .project-card__summary {
@@ -568,5 +579,18 @@ function handleImageLoad() {
   .project-card__media-skeleton {
     animation: none;
   }
+}
+</style>
+
+<style lang="css">
+/* Dark: match inactive `.filter-pill` ([main.css] :root.dark .filter-pill). Base chip uses
+   `pastel-ink` + `paper`; in dark, `paper` is already navy while `pastel-ink` stays #000,
+   so we must override. Use `ink-mid` not `fg-secondary`: `.work-list` remaps `--fg-*` on
+   cards for tile type, which would diverge from the filter row above. */
+html.dark a.project-card-link .project-card__tag-chip,
+html[data-theme='dark'] a.project-card-link .project-card__tag-chip {
+  color: var(--ink-mid);
+  background-color: var(--paper-sunk);
+  border-color: color-mix(in srgb, var(--pastel-ink) 36%, var(--paper-sunk));
 }
 </style>
