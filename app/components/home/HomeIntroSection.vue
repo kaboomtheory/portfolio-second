@@ -171,8 +171,9 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     class="page-section home-intro"
   >
     <div class="home-hero-band">
-      <h1 class="hero-name" aria-label="Bryan X. Mendez">
-        Bryan X. Mendez
+      <h1 class="hero-name" aria-label="Howdy! I'm Bryan">
+        <span class="hero-name-greeting">Howdy!</span>
+        <span class="hero-name-main">I'm Bryan</span>
       </h1>
       <div class="intro-bento intro-grid grid-12">
         <div
@@ -394,7 +395,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     --hero-tagline-max: 54ch;
   }
 
-  .hero-name {
+  .hero-name-main {
     font-size: clamp(3rem, 4vw + 1rem, 5rem);
   }
 
@@ -435,7 +436,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     --hero-tagline-max: 52ch;
   }
 
-  .hero-name {
+  .hero-name-main {
     font-size: clamp(3.2rem, 3.5vw + 1.2rem, 5.5rem);
   }
 
@@ -508,17 +509,28 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
 }
 
 .hero-name {
-  margin: 0 0 0.25em;
+  margin: 0 0 0.08em;
   padding-inline: clamp(2.25rem, 5vw, 4rem);
   font-family: var(--font-serif);
-  font-size: clamp(2.8rem, 5.5vw + 0.8rem, 5.5rem);
   font-weight: 400;
   line-height: 1.05;
   letter-spacing: -0.025em;
   color: var(--ink);
+  display: flex;
+  flex-direction: column;
   opacity: 0;
   filter: blur(12px);
   transform: scale(1.04);
+}
+
+.hero-name-greeting {
+  font-size: clamp(2rem, 3.5vw + 0.7rem, 3.5rem);
+  line-height: 1.2;
+}
+
+.hero-name-main {
+  font-size: clamp(3.5rem, 7vw + 1rem, 7rem);
+  line-height: 1.05;
 }
 
 .reveal-on-scroll--visible .hero-name {

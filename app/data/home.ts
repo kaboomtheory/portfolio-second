@@ -19,7 +19,7 @@ export const homeHero = {
   taglines: [
     {
       segments: [
-        { text: 'Bryan Mendez is a multidisciplinary designer with a sharp eye for ' },
+        { text: 'A multidisciplinary designer with a sharp eye for ' },
         { text: 'branding', em: true },
         { text: ', hands-on experience across ' },
         { text: 'digital marketing, web, print, and packaging', em: true },
