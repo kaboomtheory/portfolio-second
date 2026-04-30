@@ -59,6 +59,10 @@
   --ornament-rule-weight: 1px;
   --ornament-index-size: 0.72rem;
   --ornament-index-tracking: 0.14em;
+  --dotted-rule-weight: 1px;
+  --dotted-rule-gap: 2px;
+  --dotted-rule-dot: 2px;
+  --dotted-rule-color: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
 
   /* Pastel tiles (same peach / mint / sky / blush / lemon in light and dark; dark differs in shell + ink) */
   --pastel-peach: #ffd4b3;
@@ -156,7 +160,7 @@ html[data-theme='light'] {
 
 html[data-theme='dark'] {
   color-scheme: dark;
-  background-color: #000000;
+  background-color: #181818;
 }
 
 :root.dark,
@@ -191,7 +195,7 @@ html[data-theme='dark'] {
   --signal-blush: #6b2a52;
   --signal-lemon: #5c4a1f;
 
-  --shell-ui-bg: var(--paper);
+  --shell-ui-bg: #181818;
   --shell-ui-bg-deep: #000000;
   --bg-primary: var(--paper);
   --bg-secondary: var(--paper-sunk);
@@ -248,10 +252,11 @@ html[data-theme='dark'] {
   --theme-toggle-knob-fg: var(--paper);
   --theme-toggle-rail-emphasis: var(--ink);
   --theme-toggle-rail-muted: var(--ink-mid);
+  --dotted-rule-color: color-mix(in srgb, var(--ink) 36%, var(--paper));
 }
 
 html[data-theme='dark'] body {
-  background-color: #000000;
+  background-color: #181818;
 }
 
 html[data-theme='light'] body {
@@ -776,25 +781,24 @@ html[data-home-landing='true'] .layout-main-shell::before {
   bottom: 0;
   --home-rail-width: 20px;
   width: var(--home-rail-width);
-  --home-section-dot: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
   background-image:
     repeating-linear-gradient(
       180deg,
-      transparent 0 2px,
-      var(--home-section-dot) 2px 4px
+      transparent 0 var(--dotted-rule-gap),
+      var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
     ),
     repeating-linear-gradient(
       180deg,
-      transparent 0 2px,
-      var(--home-section-dot) 2px 4px
+      transparent 0 var(--dotted-rule-gap),
+      var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
     );
   background-position:
     left top,
     right top;
   background-repeat: repeat-y;
   background-size:
-    1px 100%,
-    1px 100%;
+    var(--dotted-rule-weight) 100%,
+    var(--dotted-rule-weight) 100%;
   pointer-events: none;
   z-index: 1;
 }
@@ -810,19 +814,17 @@ html[data-home-landing='true'] .layout-main-shell::before {
 .page-content--home > section + section::before {
   content: '';
   display: block;
-  /* Editorial full-bleed dotted section divider (reference-inspired). */
-  --home-section-dot: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
   width: 100vw;
   max-width: none;
   margin-inline: calc(50% - 50vw);
-  height: 1px;
+  height: var(--dotted-rule-weight);
   margin-top: 0;
   margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
   background:
     repeating-linear-gradient(
       90deg,
-      transparent 0 2px,
-      var(--home-section-dot) 2px 4px
+      transparent 0 var(--dotted-rule-gap),
+      var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
     );
   transform: scaleX(0);
   transform-origin: center;
@@ -836,18 +838,16 @@ html[data-home-landing='true'] .layout-main-shell::before {
 .page-content--home > section::after {
   content: '';
   display: block;
-  /* Editorial full-bleed dotted section divider (reference-inspired). */
-  --home-section-dot: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
   width: 100vw;
   max-width: none;
-  height: 1px;
+  height: var(--dotted-rule-weight);
   margin-inline: calc(50% - 50vw);
   margin-top: clamp(0.75rem, 2vw, 1.25rem);
   background:
     repeating-linear-gradient(
       90deg,
-      transparent 0 2px,
-      var(--home-section-dot) 2px 4px
+      transparent 0 var(--dotted-rule-gap),
+      var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
     );
   transform: scaleX(0);
   transform-origin: center;
@@ -863,27 +863,23 @@ html[data-home-landing='true'] .layout-main-shell::before {
   max-width: none;
   margin-inline: calc(50% - 50vw);
   margin-bottom: clamp(0.95rem, 2.2vw, 1.5rem);
-  --home-section-dot: color-mix(in srgb, var(--signal-mint) 24%, var(--paper));
 }
 
 .page-content--home > section.story-section-outer::after {
   margin-top: clamp(0.95rem, 2.2vw, 1.5rem);
-  --home-section-dot: color-mix(in srgb, var(--signal-mint) 24%, var(--paper));
 }
 
 .page-content--home > section.resume-section-outer::before {
   width: 100vw;
   max-width: none;
   margin-inline: calc(50% - 50vw);
-  height: 1px;
+  height: var(--dotted-rule-weight);
   margin-bottom: clamp(1rem, 2.4vw, 1.6rem);
-  --home-section-dot: color-mix(in srgb, var(--signal-peach) 22%, var(--paper));
 }
 
 .page-content--home > section.resume-section-outer::after {
-  height: 1px;
+  height: var(--dotted-rule-weight);
   margin-top: clamp(1rem, 2.4vw, 1.6rem);
-  --home-section-dot: color-mix(in srgb, var(--signal-peach) 22%, var(--paper));
 }
 
 /* §04 ticker: a touch more air below the inbound hairline so the marker clears the rule cleanly */
@@ -909,12 +905,10 @@ html[data-home-landing='true'] .layout-main-shell::before {
   max-width: none;
   margin-inline: calc(50% - 50vw);
   margin-bottom: clamp(1rem, 2.6vw, 1.65rem);
-  --home-section-dot: color-mix(in srgb, var(--signal-sky) 22%, var(--paper));
 }
 
 .page-content--home > section.closing-cta-section::after {
   margin-top: clamp(1rem, 2.6vw, 1.65rem);
-  --home-section-dot: color-mix(in srgb, var(--signal-sky) 22%, var(--paper));
 }
 
 .page-section {
@@ -1329,7 +1323,7 @@ html[data-home-landing='true'] .layout-main-shell::before {
   }
 }
 
-/* User-requested hard dark mode: keep all page/background surfaces true black. */
+/* User-requested dark mode shell: keep all page/background surfaces in the near-black shell. */
 html[data-theme='dark'],
 html[data-theme='dark'] body,
 html[data-theme='dark'] #__nuxt,
@@ -1338,14 +1332,12 @@ html[data-theme='dark'] .layout-main-shell,
 html[data-theme='dark'] .layout-page-frame,
 html[data-theme='dark'] main,
 html[data-theme='dark'] .page-content:not(.page-content--home),
-html[data-theme='dark'] .navbar-inner--condensed,
 html[data-theme='dark'] .theme-toggle {
-  background: #000000 !important;
-  background-color: #000000 !important;
+  background: #181818 !important;
+  background-color: #181818 !important;
   background-image: none !important;
 }
 
-html[data-theme='dark'] .navbar-inner--condensed,
 html[data-theme='dark'] .theme-toggle {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;

@@ -146,6 +146,7 @@ const tickerCells = computed(() => {
 }
 
 .ticker-section {
+  --home-section-bg: transparent;
   margin-block: 0;
   /* Symmetric vertical padding; home page trims ticker→resume stack in `main.css` */
   padding: clamp(0.4rem, 1vw, 0.75rem) 0 clamp(0.4rem, 1vw, 0.75rem);

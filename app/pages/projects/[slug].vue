@@ -636,7 +636,6 @@ useManagedCspRules(() => {
 }
 
 .project-section {
-  --project-section-dot: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
   min-width: 0;
   max-width: 100%;
   opacity: 0;
@@ -650,13 +649,13 @@ useManagedCspRules(() => {
   display: block;
   width: 100vw;
   max-width: none;
-  height: 1px;
+  height: var(--dotted-rule-weight);
   margin-inline: calc(50% - 50vw);
   background:
     repeating-linear-gradient(
       90deg,
-      transparent 0 2px,
-      var(--project-section-dot) 2px 4px
+      transparent 0 var(--dotted-rule-gap),
+      var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
     );
   transform: scaleX(0);
   transform-origin: center;

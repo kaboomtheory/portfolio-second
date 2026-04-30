@@ -124,7 +124,6 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
   /* Match Work / Story inner grids: vertical rhythm comes from `.page-content--home` gap + section hairlines */
   padding-top: 0;
   padding-bottom: clamp(2.5rem, 5vw, 4rem);
-  padding-inline: clamp(4.5rem, 10vw, 8rem);
 }
 
 .resume-marker {
@@ -136,6 +135,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
   grid-column: 1 / -1;
   display: grid;
   gap: var(--home-resume-cols-gap);
+  padding-inline: clamp(4.5rem, 10vw, 8rem);
 }
 
 @media (min-width: 768px) {
@@ -198,9 +198,6 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
   width: 48px;
   height: 48px;
   object-fit: contain;
-  padding: 4px;
-  background: color-mix(in srgb, var(--paper) 84%, var(--pastel-peach));
-  border: 1px solid var(--rule-soft);
   align-self: start;
   position: relative;
   top: 0.15rem;

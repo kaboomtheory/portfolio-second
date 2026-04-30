@@ -171,6 +171,9 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     class="page-section home-intro"
   >
     <div class="home-hero-band">
+      <h1 class="hero-name" aria-label="Bryan X. Mendez">
+        Bryan X. Mendez
+      </h1>
       <div class="intro-bento intro-grid grid-12">
         <div
           ref="headlineTiltHostRef"
@@ -391,6 +394,10 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     --hero-tagline-max: 54ch;
   }
 
+  .hero-name {
+    font-size: clamp(3rem, 4vw + 1rem, 5rem);
+  }
+
   .intro-bento__tile--headline {
     grid-column: 1 / span 8;
     grid-row: 1;
@@ -426,6 +433,10 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     --hero-tagline-leading: 1.32;
     --hero-tagline-gap: 0.34rem;
     --hero-tagline-max: 52ch;
+  }
+
+  .hero-name {
+    font-size: clamp(3.2rem, 3.5vw + 1.2rem, 5.5rem);
   }
 
   .intro-bento {
@@ -494,6 +505,37 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   transform-origin: left center;
   z-index: -1;
   pointer-events: none;
+}
+
+.hero-name {
+  margin: 0 0 0.25em;
+  padding-inline: clamp(2.25rem, 5vw, 4rem);
+  font-family: var(--font-serif);
+  font-size: clamp(2.8rem, 5.5vw + 0.8rem, 5.5rem);
+  font-weight: 400;
+  line-height: 1.05;
+  letter-spacing: -0.025em;
+  color: var(--ink);
+  opacity: 0;
+  filter: blur(12px);
+  transform: scale(1.04);
+}
+
+.reveal-on-scroll--visible .hero-name {
+  animation: hero-name-focus 800ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)) both;
+}
+
+@keyframes hero-name-focus {
+  0% {
+    opacity: 0;
+    filter: blur(12px);
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    filter: blur(0px);
+    transform: scale(1);
+  }
 }
 
 .hero-tagline {
@@ -792,6 +834,16 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   .hero-title-lead,
   .hero-title-accent {
     transition: none;
+  }
+
+  .hero-name {
+    opacity: 1;
+    filter: none;
+    transform: none;
+  }
+
+  .reveal-on-scroll--visible .hero-name {
+    animation: none;
   }
 
   .reveal-on-scroll--visible .hero-fade-in {

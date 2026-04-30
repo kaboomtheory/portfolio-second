@@ -247,11 +247,26 @@ async function onSubmit() {
   --fg-primary: var(--pastel-ink);
   --fg-secondary: var(--pastel-ink-muted);
   --fg-muted: color-mix(in srgb, var(--pastel-ink) 52%, var(--bg-tertiary));
+  --closing-form-bg: color-mix(in srgb, var(--paper) 78%, transparent);
+  --closing-form-border: color-mix(in srgb, var(--fg-primary) 12%, var(--paper));
   --closing-field-bg: color-mix(in srgb, #ffffff 92%, var(--bg-tertiary));
   --closing-field-fg: var(--pastel-ink);
   --closing-field-label: color-mix(in srgb, var(--pastel-ink) 78%, var(--bg-tertiary));
   --signal: var(--signal-mint);
   --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--bg-tertiary));
+}
+
+:global(html[data-theme='dark'] .closing-band) {
+  --fg-primary: var(--ink);
+  --fg-secondary: var(--ink-mid);
+  --fg-muted: var(--ink-muted);
+  --closing-form-bg: var(--paper-sunk);
+  --closing-form-border: color-mix(in srgb, var(--ink) 18%, var(--paper-sunk));
+  --closing-field-bg: #1d2433;
+  --closing-field-fg: var(--ink);
+  --closing-field-label: var(--ink-mid);
+  --signal: var(--signal-coral-ink);
+  --rule: color-mix(in srgb, var(--ink) 22%, var(--paper-sunk));
 }
 
 .closing-band__inner {
@@ -269,19 +284,16 @@ async function onSubmit() {
 
 .closing-marker {
   grid-column: 1 / -1;
-  display: flex;
-  align-items: flex-start;
-  align-self: start;
+  width: 100%;
+  padding-bottom: var(--home-stack-gap-tight, 1rem);
 }
 
-/* Keep this section marker optically pinned to the row start. */
 .closing-marker :deep(.section-marker) {
-  align-items: flex-start;
-  line-height: 1;
+  margin-inline-start: 0.14rem;
 }
 
 .closing-marker :deep(.section-marker-word) {
-  line-height: 1;
+  color: #000000;
 }
 
 .closing-main {
@@ -293,6 +305,7 @@ async function onSubmit() {
   min-width: 0;
   width: 100%;
   align-self: start;
+  padding-inline: clamp(4.5rem, 10vw, 8rem);
 }
 
 @media (min-width: 768px) {
@@ -313,7 +326,7 @@ async function onSubmit() {
   font-weight: 500;
   line-height: 0.98;
   letter-spacing: -0.04em;
-  color: var(--fg-primary);
+  color: #000000;
 }
 
 .closing-status {
@@ -333,9 +346,10 @@ async function onSubmit() {
   display: flex;
   flex-direction: column;
   gap: 0.65rem;
+  margin-top: clamp(0.9rem, 1.8vw, 1.4rem);
   padding: clamp(0.65rem, 1.4vw, 1rem);
-  background: color-mix(in srgb, var(--paper) 78%, transparent);
-  border: 1px solid color-mix(in srgb, var(--fg-primary) 12%, var(--paper));
+  background: var(--closing-form-bg);
+  border: 1px solid var(--closing-form-border);
   box-shadow: var(--shadow-md);
 }
 
@@ -579,6 +593,10 @@ async function onSubmit() {
     transform 200ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
+:global(html[data-theme='dark'] .closing-linkedin) {
+  color: var(--ink);
+}
+
 .closing-linkedin::after {
   content: '';
   position: absolute;
@@ -592,9 +610,17 @@ async function onSubmit() {
   transition: transform 240ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
+:global(html[data-theme='dark'] .closing-linkedin::after) {
+  background: var(--ink);
+}
+
 .closing-linkedin:hover {
   color: var(--pastel-ink);
   transform: translateY(-1px);
+}
+
+:global(html[data-theme='dark'] .closing-linkedin:hover) {
+  color: var(--ink);
 }
 
 .closing-linkedin:hover::after {

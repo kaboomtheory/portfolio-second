@@ -283,6 +283,8 @@ watch(
 :root.dark .navbar-inner--condensed {
   background-color: color-mix(in srgb, var(--shell-ui-bg) 50%, transparent);
   border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
+  backdrop-filter: blur(18px) saturate(1.28);
+  -webkit-backdrop-filter: blur(18px) saturate(1.28);
   box-shadow:
     0 1.2rem 3rem -1.7rem color-mix(in srgb, #000 72%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--ink) 15%, transparent),
@@ -298,6 +300,8 @@ watch(
 :global(html[data-theme='dark']) .navbar-inner--condensed {
   background-image: none !important;
   border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
+  backdrop-filter: blur(18px) saturate(1.28) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.28) !important;
 }
 
 .navbar-row {
