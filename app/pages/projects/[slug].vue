@@ -636,6 +636,7 @@ useManagedCspRules(() => {
 }
 
 .project-section {
+  --project-section-dot: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
   min-width: 0;
   max-width: 100%;
   opacity: 0;
@@ -643,9 +644,41 @@ useManagedCspRules(() => {
   transition: opacity 0.5s ease-out, transform 0.5s ease-out;
 }
 
+.project-section + .project-section::before,
+.project-section::after {
+  content: '';
+  display: block;
+  width: 100vw;
+  max-width: none;
+  height: 1px;
+  margin-inline: calc(50% - 50vw);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 2px,
+      var(--project-section-dot) 2px 4px
+    );
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 520ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.project-section + .project-section::before {
+  margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+}
+
+.project-section::after {
+  margin-top: clamp(0.75rem, 2vw, 1.25rem);
+}
+
 .project-section.is-visible {
   opacity: 1;
   transform: translateY(0);
+}
+
+.project-section.is-visible::before,
+.project-section.is-visible::after {
+  transform: scaleX(1);
 }
 
 .gallery-grid {
@@ -697,6 +730,12 @@ useManagedCspRules(() => {
   .project-section {
     opacity: 1 !important;
     transform: none !important;
+    transition: none !important;
+  }
+
+  .project-section + .project-section::before,
+  .project-section::after {
+    transform: scaleX(1) !important;
     transition: none !important;
   }
 }

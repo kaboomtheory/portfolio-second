@@ -105,9 +105,14 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 
 <style scoped>
 .resume-section-outer {
+  --home-section-bg: var(--pastel-mint);
   --signal: var(--signal-mint);
-  --rule: color-mix(in srgb, var(--fg-primary) 16%, var(--bg-primary));
-  --rule-soft: color-mix(in srgb, var(--fg-primary) 12%, var(--bg-primary));
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: color-mix(in srgb, var(--pastel-ink) 76%, var(--home-section-bg));
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 50%, var(--home-section-bg));
+  --bg-primary: color-mix(in srgb, var(--home-section-bg) 78%, var(--paper));
+  --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--home-section-bg));
+  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, var(--home-section-bg));
   --btn-attention-bg: var(--pastel-blush);
   padding-top: 0;
   padding-bottom: 0;
@@ -118,11 +123,13 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
   align-items: start;
   /* Match Work / Story inner grids: vertical rhythm comes from `.page-content--home` gap + section hairlines */
   padding-top: 0;
-  padding-bottom: 0;
+  padding-bottom: clamp(2.5rem, 5vw, 4rem);
+  padding-inline: clamp(4.5rem, 10vw, 8rem);
 }
 
 .resume-marker {
   grid-column: 1 / -1;
+  padding-bottom: var(--home-stack-gap-tight, 1rem);
 }
 
 .resume-cols {
@@ -133,21 +140,13 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 
 @media (min-width: 768px) {
   .resume-marker {
-    grid-column: 1 / span 3;
+    grid-column: 1 / -1;
   }
 
   .resume-cols {
-    grid-column: 4 / span 9;
+    grid-column: 1 / -1;
     grid-template-columns: minmax(0, 1fr);
     row-gap: clamp(2rem, 4vw, 3.25rem);
-  }
-}
-
-@media (min-width: 1024px) {
-  .resume-marker {
-    position: sticky;
-    top: 6.5rem;
-    align-self: start;
   }
 }
 

@@ -99,7 +99,13 @@ const tickerCells = computed(() => {
 
 <style scoped>
 .status-band {
+  --home-section-bg: var(--pastel-blush);
   --signal: var(--signal-blush);
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: color-mix(in srgb, var(--pastel-ink) 76%, var(--home-section-bg));
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 50%, var(--home-section-bg));
+  --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--home-section-bg));
+  --rule-soft: color-mix(in srgb, var(--pastel-ink) 12%, var(--home-section-bg));
 }
 
 .status-stack {
@@ -144,7 +150,6 @@ const tickerCells = computed(() => {
   /* Symmetric vertical padding; home page trims ticker→resume stack in `main.css` */
   padding: clamp(0.4rem, 1vw, 0.75rem) 0 clamp(0.4rem, 1vw, 0.75rem);
   overflow: hidden;
-  /* Inherits .story-band surface; avoids tone seam vs parent */
   background: transparent;
 }
 
@@ -244,7 +249,7 @@ const tickerCells = computed(() => {
   padding: 0.5rem 0.875rem;
   background: var(--ticker-card-bg);
   color: var(--ticker-card-ink);
-  border: var(--card-border);
+  border: none;
   box-shadow: var(--shadow-sm);
   border-radius: var(--radius-card);
   transition:

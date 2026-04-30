@@ -38,6 +38,8 @@ export default defineNuxtConfig({
       { name: 'Geist', provider: 'google', global: true },
       { name: 'Averia Serif Libre', provider: 'google', global: true },
       { name: 'Geist Mono', provider: 'google', global: true },
+      { name: 'Space Grotesk', provider: 'google', global: true },
+      { name: 'Bebas Neue', provider: 'google', global: true },
     ],
   },
 

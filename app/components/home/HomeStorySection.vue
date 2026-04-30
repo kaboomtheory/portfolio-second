@@ -104,6 +104,7 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 
 .story-marker {
   grid-column: 1 / -1;
+  padding-bottom: var(--home-stack-gap-tight, 1rem);
 }
 
 .story-main {
@@ -150,14 +151,11 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 
 @media (min-width: 768px) {
   .story-marker {
-    grid-column: 1 / span 3;
-    grid-row: 1;
+    grid-column: 1 / -1;
   }
 
-  /* Match `.work-content` / `.resume-cols`: main block starts on column 4 and spans 9. */
   .story-main {
-    grid-column: 4 / span 9;
-    grid-row: 1;
+    grid-column: 1 / -1;
     grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
     column-gap: clamp(1.25rem, 2.5vw, 2.25rem);
     row-gap: 0;
@@ -179,13 +177,6 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   }
 }
 
-@media (min-width: 1024px) {
-  .story-marker {
-    position: sticky;
-    top: 6.5rem;
-    align-self: start;
-  }
-}
 
 .story-marker-sticky {
   display: flex;

@@ -182,6 +182,7 @@ const filterAnnouncement = computed(() => {
 
 .work-marker {
   grid-column: 1 / -1;
+  padding-bottom: var(--home-stack-gap-tight, 1rem);
 }
 
 .work-content {
@@ -191,19 +192,11 @@ const filterAnnouncement = computed(() => {
 
 @media (min-width: 768px) {
   .work-marker {
-    grid-column: 1 / span 3;
+    grid-column: 1 / -1;
   }
 
   .work-content {
-    grid-column: 4 / span 9;
-  }
-}
-
-@media (min-width: 1024px) {
-  .work-marker {
-    position: sticky;
-    top: 6.5rem;
-    align-self: start;
+    grid-column: 1 / -1;
   }
 }
 
@@ -237,6 +230,12 @@ const filterAnnouncement = computed(() => {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: var(--home-card-stack-gap);
+}
+
+@media (min-width: 720px) {
+  .work-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
 .work-list :deep(.project-card) {

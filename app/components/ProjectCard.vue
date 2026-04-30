@@ -58,34 +58,6 @@ function handleImageLoad() {
       :to="projectHref"
       class="project-card-link"
     >
-      <div class="project-card__body">
-        <p
-          v-if="clientLine"
-          class="project-card__client"
-        >
-          {{ clientLine }}
-        </p>
-        <h3 class="project-card__title">
-          {{ project.name }}
-        </h3>
-        <p
-          v-if="summaryText"
-          class="project-card__summary text-muted"
-        >
-          {{ summaryText }}
-        </p>
-
-        <ul v-if="visibleTags.length" class="project-card__tags" aria-label="Project tags">
-          <li v-for="tag in visibleTags" :key="tag">
-            <span class="project-card__tag-chip">{{ tag }}</span>
-          </li>
-        </ul>
-        <span class="project-card__cta" aria-hidden="true">
-          <span class="project-card__cta-label">View project</span>
-          <AppIcon icon="lucide:arrow-up-right" class="project-card__cta-icon" />
-        </span>
-      </div>
-
       <div
         ref="mediaHostRef"
         class="project-card__media work-media-frame"
@@ -119,6 +91,34 @@ function handleImageLoad() {
         >
           <span class="project-card__index">{{ projectIndexLabel }}</span>
         </div>
+      </div>
+
+      <div class="project-card__body">
+        <p
+          v-if="clientLine"
+          class="project-card__client"
+        >
+          {{ clientLine }}
+        </p>
+        <h3 class="project-card__title">
+          {{ project.name }}
+        </h3>
+        <p
+          v-if="summaryText"
+          class="project-card__summary text-muted"
+        >
+          {{ summaryText }}
+        </p>
+
+        <ul v-if="visibleTags.length" class="project-card__tags" aria-label="Project tags">
+          <li v-for="tag in visibleTags" :key="tag">
+            <span class="project-card__tag-chip">{{ tag }}</span>
+          </li>
+        </ul>
+        <span class="project-card__cta" aria-hidden="true">
+          <span class="project-card__cta-label">View project</span>
+          <AppIcon icon="lucide:arrow-up-right" class="project-card__cta-icon" />
+        </span>
       </div>
     </NuxtLink>
   </div>
@@ -180,18 +180,16 @@ function handleImageLoad() {
     url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'%3E%3Crect x='2.5' y='2.5' width='23' height='23' fill='%23f7f4ed' stroke='%2315120f'/%3E%3Cpath d='M10 18L18 10M12 10h6v6' fill='none' stroke='%2315120f' stroke-width='1.8' stroke-linecap='square'/%3E%3C/svg%3E") 14 14,
     pointer;
   background: var(--bg-primary);
-  border: 1px solid var(--project-card-border, color-mix(in srgb, var(--rule) 58%, var(--paper)));
+  border: none;
   border-radius: 0.5rem;
   box-shadow: var(--project-card-shadow-idle, var(--shadow-sm));
   transition:
     background-color 220ms cubic-bezier(0.25, 1, 0.5, 1),
     box-shadow 260ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 260ms cubic-bezier(0.22, 1, 0.36, 1),
-    border-color 200ms cubic-bezier(0.25, 1, 0.5, 1);
+    transform 260ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .project-card-link:hover {
-  border-color: color-mix(in srgb, var(--pastel-ink) 34%, var(--project-card-surface, var(--paper)));
   box-shadow: var(--project-card-shadow-hover, var(--shadow-md));
   transform: translate3d(0, -3px, 0);
 }
@@ -227,12 +225,12 @@ function handleImageLoad() {
   min-height: 0;
   padding: 1.05rem 1rem 0.95rem;
   background: var(--project-card-surface, var(--bg-secondary));
-  border-bottom: 1px solid color-mix(in srgb, var(--pastel-ink) 10%, var(--project-card-surface, var(--bg-secondary)));
+  border-top: 1px solid color-mix(in srgb, var(--pastel-ink) 10%, var(--project-card-surface, var(--bg-secondary)));
   transition: background-color 220ms cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 :root.dark .project-card__body {
-  border-bottom-color: color-mix(in srgb, var(--pastel-ink) 22%, var(--project-card-surface, var(--bg-secondary)));
+  border-top-color: color-mix(in srgb, var(--ink) 18%, var(--project-card-surface, var(--bg-secondary)));
 }
 
 .project-card__client {
@@ -512,35 +510,6 @@ function handleImageLoad() {
   transform: translate3d(3px, -2px, 0);
 }
 
-@media (min-width: 720px) {
-  .project-card-link {
-    flex-direction: row;
-    align-items: stretch;
-  }
-
-  .project-card__body {
-    flex: 1 1 50%;
-    align-self: stretch;
-    padding: clamp(1.1rem, 2vw, 1.55rem) clamp(1rem, 2vw, 1.35rem);
-    border-bottom: none;
-  }
-
-  .project-card__title {
-    font-size: clamp(1.15rem, 1.1vw + 0.82rem, 1.45rem);
-  }
-
-  .project-card__media {
-    flex: 1 1 50%;
-    align-self: center;
-    aspect-ratio: var(--project-card-media-aspect);
-    /* Tie divider to tile ink × surface—media-bg pulls in peach-heavy bg-secondary in dark and reads orange. */
-    border-left: 1px solid color-mix(in srgb, var(--pastel-ink) 12%, var(--project-card-surface, var(--bg-secondary)));
-  }
-
-  :root.dark .project-card__media {
-    border-left-color: color-mix(in srgb, var(--pastel-ink) 28%, var(--project-card-surface, var(--bg-secondary)));
-  }
-}
 
 @media (max-width: 520px) {
   .project-card__body {
@@ -583,14 +552,11 @@ function handleImageLoad() {
 </style>
 
 <style lang="css">
-/* Dark: match inactive `.filter-pill` ([main.css] :root.dark .filter-pill). Base chip uses
-   `pastel-ink` + `paper`; in dark, `paper` is already navy while `pastel-ink` stays #000,
-   so we must override. Use `ink-mid` not `fg-secondary`: `.work-list` remaps `--fg-*` on
-   cards for tile type, which would diverge from the filter row above. */
+/* Dark: match inactive `.filter-pill` with the repaired raised surface tokens. */
 html.dark a.project-card-link .project-card__tag-chip,
 html[data-theme='dark'] a.project-card-link .project-card__tag-chip {
   color: var(--ink-mid);
-  background-color: var(--paper-sunk);
-  border-color: color-mix(in srgb, var(--pastel-ink) 36%, var(--paper-sunk));
+  background-color: var(--surface-interactive);
+  border-color: color-mix(in srgb, var(--ink) 22%, var(--surface-interactive));
 }
 </style>

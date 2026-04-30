@@ -1,6 +1,17 @@
 /* Geist + Averia Serif Libre + Geist Mono: loaded via @nuxt/fonts */
 
-/* Ambient drift: allows ScrollDriftLayer to interpolate `--blob-signal` over ~800ms */
+@font-face {
+  font-family: 'Snaga Uni Display';
+  src:
+    local('Snaga Uni Display Bold'),
+    local('Snaga Uni Display'),
+    local('Snaga Unicase Display Bold'),
+    local('Snaga Unicase Display');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 700;
+}
+
 @property --blob-signal {
   syntax: '<color>';
   inherits: true;
@@ -15,6 +26,7 @@
   color-scheme: light;
   --font-sans: 'Geist', system-ui, sans-serif;
   --font-display: 'Geist', system-ui, sans-serif;
+  --font-brand: var(--font-sans);
   --font-serif: 'Averia Serif Libre', Georgia, serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
 
@@ -139,32 +151,19 @@
 
 html[data-theme='light'] {
   color-scheme: light;
+  background-color: #ffffff;
 }
 
 html[data-theme='dark'] {
   color-scheme: dark;
+  background-color: #000000;
 }
 
-html[data-ambient-tone='morning'] {
-  --ambient-tint: oklch(0.72 0.02 240);
-}
-
-html[data-ambient-tone='evening'] {
-  --ambient-tint: oklch(0.76 0.025 55);
-}
-
-html[data-ambient-tone='night'] {
-  --ambient-tint: oklch(0.62 0.018 255);
-}
-
-html[data-ambient-tone='none'] {
-  --ambient-tint: transparent;
-}
-
-:root.dark {
+:root.dark,
+html[data-theme='dark'] {
   color-scheme: dark;
-  --paper: #212530;
-  --paper-sunk: #181B24;
+  --paper: #000000;
+  --paper-sunk: #161b27;
   /* Text/chrome: cool lavender-white primary; blue-tinted neutrals */
   --ink: #EEF2FF;
   --ink-mid: #AABCD8;
@@ -173,7 +172,7 @@ html[data-ambient-tone='none'] {
   --rule-token: color-mix(in srgb, var(--ink) 22%, var(--paper));
   --signal: #F1A06E;
   --signal-coral-ink: #F1A06E;
-  --signal-ink: #212530;
+  --signal-ink: #000000;
 
   /* Tiles — slightly punchier than light so bands read clearly on navy shell */
   --pastel-peach: #f9c095;
@@ -193,11 +192,10 @@ html[data-ambient-tone='none'] {
   --signal-lemon: #5c4a1f;
 
   --shell-ui-bg: var(--paper);
-  /* Dark shell: fade toward deeper navy (ink is light; do not use it to darken) */
-  --shell-ui-bg-deep: color-mix(in srgb, #000 42%, var(--shell-ui-bg));
+  --shell-ui-bg-deep: #000000;
   --bg-primary: var(--paper);
-  --bg-secondary: var(--pastel-peach);
-  --bg-tertiary: var(--pastel-mint);
+  --bg-secondary: var(--paper-sunk);
+  --bg-tertiary: #1d2433;
   --fg-primary: var(--ink);
   --fg-secondary: var(--ink-mid);
   --fg-muted: var(--ink-muted);
@@ -224,7 +222,7 @@ html[data-ambient-tone='none'] {
   --btn-primary-fg: var(--signal-ink);
   --btn-attention-bg: var(--pastel-peach);
   --btn-attention-fg: var(--pastel-ink);
-  --surface-interactive: var(--pastel-sky);
+  --surface-interactive: var(--paper-sunk);
   --btn-secondary-bg: transparent;
   --chrome-ring-idle: var(--ink);
   --shadow-sm:
@@ -236,9 +234,9 @@ html[data-ambient-tone='none'] {
   --shadow-lg:
     0 0 0 1px color-mix(in srgb, var(--ink) 18%, var(--paper)),
     0 1.7rem 3.7rem -2rem color-mix(in srgb, #000 50%, transparent);
-  --project-card-surface: var(--pastel-peach);
-  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 92%, var(--pastel-ink));
-  --project-card-border: color-mix(in srgb, var(--pastel-ink) 14%, var(--project-card-surface, var(--pastel-peach)));
+  --project-card-surface: var(--paper-sunk);
+  --project-card-surface-hover: var(--bg-tertiary);
+  --project-card-border: color-mix(in srgb, var(--ink) 24%, var(--paper-sunk));
   /* Flat hairlines only (no diffuse shadow)—matches light mode treatment. */
   --project-card-shadow-idle: var(--shadow-sm);
   --project-card-shadow-hover: var(--shadow-md);
@@ -250,47 +248,14 @@ html[data-ambient-tone='none'] {
   --theme-toggle-knob-fg: var(--paper);
   --theme-toggle-rail-emphasis: var(--ink);
   --theme-toggle-rail-muted: var(--ink-mid);
-  /* Layout circuit grid (see default.vue `.layout-circuit-bg`) — explicit ink alpha, no color-mix(transparent). */
-  --layout-circuit-grid-line-alpha: 0.05;
-  --layout-circuit-grid-dot-alpha: 0.08;
 }
 
-/* Shell circuit grid: global so dark overrides scoped light gradients (rgba gray on navy was invisible). */
-:root.dark .layout-circuit-bg,
-html.dark .layout-circuit-bg {
-  background-image:
-    repeating-linear-gradient(
-      0deg,
-      transparent,
-      transparent 19px,
-      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 19px,
-      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 20px,
-      transparent 20px,
-      transparent 39px,
-      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 39px,
-      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 40px
-    ),
-    repeating-linear-gradient(
-      90deg,
-      transparent,
-      transparent 19px,
-      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 19px,
-      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 20px,
-      transparent 20px,
-      transparent 39px,
-      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 39px,
-      rgb(from var(--ink) r g b / var(--layout-circuit-grid-line-alpha)) 40px
-    ),
-    radial-gradient(
-      circle at 20px 20px,
-      rgb(from var(--ink) r g b / var(--layout-circuit-grid-dot-alpha)) 2px,
-      transparent 2px
-    ),
-    radial-gradient(
-      circle at 40px 40px,
-      rgb(from var(--ink) r g b / var(--layout-circuit-grid-dot-alpha)) 2px,
-      transparent 2px
-    );
+html[data-theme='dark'] body {
+  background-color: #000000;
+}
+
+html[data-theme='light'] body {
+  background-color: #ffffff;
 }
 
 /* Swiss flat attention pill (CTA + back-to-top) — pastel fill + black label */
@@ -306,7 +271,7 @@ html.dark .layout-circuit-bg {
   font-weight: 500;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  border: 1px solid color-mix(in srgb, var(--pastel-ink) 22%, var(--btn-attention-bg, var(--pastel-peach))) !important;
+  border: none !important;
   border-radius: var(--radius-control);
   color: var(--btn-attention-fg, var(--pastel-ink));
   background: var(--btn-attention-bg, var(--pastel-peach));
@@ -465,7 +430,7 @@ html.dark .layout-circuit-bg {
 /* Pastel-ink-based hairlines — bump alpha in dark so borders stay visible on fills */
 :root.dark .cta-button.btn-attention.cta-attention-pill,
 :root.dark .back-to-top.cta-attention-pill {
-  border-color: color-mix(in srgb, var(--pastel-ink) 42%, var(--btn-attention-bg, var(--pastel-peach)))
+  border-color: color-mix(in srgb, var(--ink) 20%, var(--btn-attention-bg, var(--pastel-peach)))
     !important;
 }
 
@@ -610,7 +575,7 @@ body {
 }
 
 :root.dark body {
-  background-color: var(--shell-ui-bg, #212530);
+  background-color: var(--shell-ui-bg, #000000);
 }
 
 .font-display,
@@ -776,33 +741,89 @@ pre,
   /* Keep film-grain compositing local to the home column (reduces dark-mode veil glitches). */
   isolation: isolate;
   /* Slightly tighter than legacy --home-section-gap: more “magazine stack”, less elevator shaft */
+  --home-rail-inset: clamp(1.25rem, 3vw, 2.5rem);
   gap: clamp(2rem, 5.25vw, 3.85rem);
   padding-bottom: clamp(2.5rem, 6vw, 4.75rem);
 }
 
 .page-content--home > section {
+  --home-section-bg: transparent;
+  --home-section-ink: var(--pastel-ink);
+  --home-section-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, var(--home-section-bg));
   padding-top: 0;
   padding-bottom: 0;
+  background-color: transparent;
+  background-image: linear-gradient(var(--home-section-bg), var(--home-section-bg));
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: calc(100% - (var(--home-rail-inset) * 2)) 100%;
+  color: var(--home-section-ink);
+}
+
+.page-content--home .grid-12 {
+  padding-inline: clamp(2.25rem, 5vw, 4rem);
+}
+
+html[data-home-landing='true'] .layout-main-shell {
+  --home-rail-inset: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+html[data-home-landing='true'] .layout-main-shell::after,
+html[data-home-landing='true'] .layout-main-shell::before {
+  content: '';
+  position: absolute;
+  top: calc(-1 * var(--layout-header-clearance));
+  bottom: 0;
+  --home-rail-width: 20px;
+  width: var(--home-rail-width);
+  --home-section-dot: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 2px,
+      var(--home-section-dot) 2px 4px
+    ),
+    repeating-linear-gradient(
+      180deg,
+      transparent 0 2px,
+      var(--home-section-dot) 2px 4px
+    );
+  background-position:
+    left top,
+    right top;
+  background-repeat: repeat-y;
+  background-size:
+    1px 100%,
+    1px 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+html[data-home-landing='true'] .layout-main-shell::after {
+  left: calc(var(--home-rail-inset) - var(--home-rail-width));
+}
+
+html[data-home-landing='true'] .layout-main-shell::before {
+  right: calc(var(--home-rail-inset) - var(--home-rail-width));
 }
 
 .page-content--home > section + section::before {
   content: '';
   display: block;
-  /* Do not use inherited `var(--rule)`: Work omits a section --rule (full ink); later sections
-     re-map --rule to a soft 16% mix, which made the first bar read much darker. */
-  --home-section-hair: color-mix(in srgb, var(--fg-primary) 16%, var(--paper));
-  width: min(100%, 44rem);
+  /* Editorial full-bleed dotted section divider (reference-inspired). */
+  --home-section-dot: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
   height: 1px;
-  margin: 0 auto clamp(0.75rem, 2vw, 1.25rem);
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--home-section-hair) 50%, var(--paper)) 10%,
-    color-mix(in srgb, var(--home-section-hair) 90%, var(--paper)) 48%,
-    color-mix(in srgb, var(--home-section-hair) 90%, var(--paper)) 52%,
-    color-mix(in srgb, var(--home-section-hair) 50%, var(--paper)) 90%,
-    transparent 100%
-  );
+  margin-top: 0;
+  margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 2px,
+      var(--home-section-dot) 2px 4px
+    );
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 520ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
@@ -812,46 +833,57 @@ pre,
   transform: scaleX(1);
 }
 
-.page-content--home > section#work::before {
-  display: none;
+.page-content--home > section::after {
+  content: '';
+  display: block;
+  /* Editorial full-bleed dotted section divider (reference-inspired). */
+  --home-section-dot: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
+  width: 100vw;
+  max-width: none;
+  height: 1px;
+  margin-inline: calc(50% - 50vw);
+  margin-top: clamp(0.75rem, 2vw, 1.25rem);
+  background:
+    repeating-linear-gradient(
+      90deg,
+      transparent 0 2px,
+      var(--home-section-dot) 2px 4px
+    );
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 520ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.page-content--home > section.reveal-on-scroll--visible::after {
+  transform: scaleX(1);
 }
 
 .page-content--home > section.story-section-outer::before {
-  width: min(100%, 52rem);
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
   margin-bottom: clamp(0.95rem, 2.2vw, 1.5rem);
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--signal-mint) 24%, var(--paper)) 10%,
-    color-mix(in srgb, var(--signal-mint) 42%, var(--paper)) 50%,
-    color-mix(in srgb, var(--signal-mint) 24%, var(--paper)) 90%,
-    transparent 100%
-  );
+  --home-section-dot: color-mix(in srgb, var(--signal-mint) 24%, var(--paper));
+}
+
+.page-content--home > section.story-section-outer::after {
+  margin-top: clamp(0.95rem, 2.2vw, 1.5rem);
+  --home-section-dot: color-mix(in srgb, var(--signal-mint) 24%, var(--paper));
 }
 
 .page-content--home > section.resume-section-outer::before {
-  width: min(100%, 40rem);
-  height: 3px;
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  height: 1px;
   margin-bottom: clamp(1rem, 2.4vw, 1.6rem);
-  background:
-    linear-gradient(
-      90deg,
-      transparent 0%,
-      color-mix(in srgb, var(--signal-peach) 22%, var(--paper)) 12%,
-      color-mix(in srgb, var(--signal-peach) 34%, var(--paper)) 50%,
-      color-mix(in srgb, var(--signal-peach) 22%, var(--paper)) 88%,
-      transparent 100%
-    )
-    center / 100% 1px no-repeat,
-    linear-gradient(
-      90deg,
-      transparent 0%,
-      color-mix(in srgb, var(--signal-peach) 12%, var(--paper)) 18%,
-      color-mix(in srgb, var(--signal-peach) 20%, var(--paper)) 50%,
-      color-mix(in srgb, var(--signal-peach) 12%, var(--paper)) 82%,
-      transparent 100%
-    )
-    center calc(100% - 1px) / 100% 1px no-repeat;
+  --home-section-dot: color-mix(in srgb, var(--signal-peach) 22%, var(--paper));
+}
+
+.page-content--home > section.resume-section-outer::after {
+  height: 1px;
+  margin-top: clamp(1rem, 2.4vw, 1.6rem);
+  --home-section-dot: color-mix(in srgb, var(--signal-peach) 22%, var(--paper));
 }
 
 /* §04 ticker: a touch more air below the inbound hairline so the marker clears the rule cleanly */
@@ -873,16 +905,16 @@ pre,
 }
 
 .page-content--home > section.closing-cta-section::before {
-  width: min(100%, 48rem);
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
   margin-bottom: clamp(1rem, 2.6vw, 1.65rem);
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    color-mix(in srgb, var(--signal-sky) 14%, var(--paper)) 12%,
-    color-mix(in srgb, var(--signal-sky) 28%, var(--paper)) 50%,
-    color-mix(in srgb, var(--signal-sky) 14%, var(--paper)) 88%,
-    transparent 100%
-  );
+  --home-section-dot: color-mix(in srgb, var(--signal-sky) 22%, var(--paper));
+}
+
+.page-content--home > section.closing-cta-section::after {
+  margin-top: clamp(1rem, 2.6vw, 1.65rem);
+  --home-section-dot: color-mix(in srgb, var(--signal-sky) 22%, var(--paper));
 }
 
 .page-section {
@@ -972,7 +1004,7 @@ pre,
 .section-marker .section-marker-word {
   font-family: var(--font-serif);
   font-weight: 400;
-  font-size: 1.35rem;
+  font-size: var(--text-section-title, clamp(1.375rem, 1.2vw + 1rem, 1.75rem));
   letter-spacing: -0.01em;
   text-transform: none;
   line-height: 1;
@@ -1080,7 +1112,7 @@ pre,
 :root.dark .filter-pill {
   color: var(--fg-secondary);
   background-color: var(--paper-sunk);
-  border-color: color-mix(in srgb, var(--pastel-ink) 36%, var(--paper-sunk));
+  border-color: color-mix(in srgb, var(--ink) 22%, var(--paper-sunk));
 }
 
 .filter-pill:hover {
@@ -1090,7 +1122,7 @@ pre,
 
 :root.dark .filter-pill:hover {
   color: var(--fg-primary);
-  background-color: color-mix(in srgb, var(--pastel-ink) 10%, var(--paper-sunk));
+  background-color: color-mix(in srgb, var(--ink) 10%, var(--paper-sunk));
 }
 
 .filter-pill-active,
@@ -1249,12 +1281,6 @@ pre,
 }
 
 /* Home `/` first paint: backdrop + nav settle in with the hero (see `default.vue` `data-home-landing`). */
-@keyframes home-circuit-land {
-  to {
-    opacity: 1;
-  }
-}
-
 @keyframes home-navbar-land {
   to {
     opacity: 1;
@@ -1263,11 +1289,6 @@ pre,
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  html[data-home-landing='true'] .layout-circuit-bg {
-    opacity: 0;
-    animation: home-circuit-land 880ms var(--motion-ease-hero) 90ms forwards;
-  }
-
   html[data-home-landing='true'] .navbar.navbar--home-hero .navbar-inner {
     opacity: 0;
     transform: translate3d(0, -7px, 0);
@@ -1280,7 +1301,8 @@ pre,
     scroll-behavior: auto !important;
   }
 
-  .page-content--home > section::before {
+  .page-content--home > section::before,
+  .page-content--home > section::after {
     transform: scaleX(1) !important;
     transition: none !important;
   }
@@ -1305,4 +1327,35 @@ pre,
   .btn-attention {
     animation: none;
   }
+}
+
+/* User-requested hard dark mode: keep all page/background surfaces true black. */
+html[data-theme='dark'],
+html[data-theme='dark'] body,
+html[data-theme='dark'] #__nuxt,
+html[data-theme='dark'] .layout-root,
+html[data-theme='dark'] .layout-main-shell,
+html[data-theme='dark'] .layout-page-frame,
+html[data-theme='dark'] main,
+html[data-theme='dark'] .page-content:not(.page-content--home),
+html[data-theme='dark'] .navbar-inner--condensed,
+html[data-theme='dark'] .theme-toggle {
+  background: #000000 !important;
+  background-color: #000000 !important;
+  background-image: none !important;
+}
+
+html[data-theme='dark'] .navbar-inner--condensed,
+html[data-theme='dark'] .theme-toggle {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Home sections intentionally keep their band fills in both themes. */
+html[data-theme='dark'] .page-content--home > section {
+  background-color: transparent !important;
+  background-image: linear-gradient(var(--home-section-bg), var(--home-section-bg)) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: calc(100% - (var(--home-rail-inset) * 2)) 100% !important;
 }

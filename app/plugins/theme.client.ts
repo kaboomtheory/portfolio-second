@@ -3,7 +3,7 @@ import { getInitialTheme, hasStoredColorMode } from '~/utils/theme'
 
 const THEME_COLORS: Record<ThemeMode, string> = {
   light: '#ffffff',
-  dark: '#212530',
+  dark: '#000000',
 }
 
 function applyTheme(mode: ThemeMode) {

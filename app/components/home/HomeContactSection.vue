@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useCardTilt } from '~/composables/useCardTilt'
+import { computed, ref } from 'vue'
 import TurnstileWidget from '~/components/TurnstileWidget.vue'
-import { profile, socialLinks } from '~/data/site'
+import { socialLinks } from '~/data/site'
 
 const props = defineProps<{
   linkedinHref?: string
@@ -26,45 +25,9 @@ const submitting = ref(false)
 const success = ref(false)
 const formError = ref('')
 
-/* Word-swap heading */
-const SWAP_WORDS = ['memorable', 'useful', 'honest'] as const
-const swapIndex = ref(0)
-const swapWord = computed(() => SWAP_WORDS[swapIndex.value % SWAP_WORDS.length])
-const swapVisible = ref(true)
-const headingHovered = ref(false)
-let swapTimer: ReturnType<typeof setInterval> | null = null
-let prefersReducedMotion = false
-
-function cycleWord() {
-  if (headingHovered.value || prefersReducedMotion) return
-  swapVisible.value = false
-  setTimeout(() => {
-    swapIndex.value = (swapIndex.value + 1) % SWAP_WORDS.length
-    swapVisible.value = true
-  }, 280)
-}
-
 /* Magnetic submit button */
 const submitRef = ref<HTMLElement | null>(null)
 useMagneticHover(submitRef, { maxPx: 4, radius: 56 })
-
-const closingHeadingHostRef = ref<HTMLElement | null>(null)
-const closingHeadingTiltRef = ref<HTMLElement | null>(null)
-useCardTilt(closingHeadingHostRef, closingHeadingTiltRef, { maxDeg: 0.8, lerp: 0.08 })
-
-onMounted(() => {
-  if (!import.meta.client) return
-  const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-  prefersReducedMotion = mq.matches
-  mq.addEventListener('change', (e) => { prefersReducedMotion = e.matches })
-  if (!prefersReducedMotion) {
-    swapTimer = setInterval(cycleWord, 4000)
-  }
-})
-
-onUnmounted(() => {
-  if (swapTimer) clearInterval(swapTimer)
-})
 
 function getFetchStatus(e: unknown): number | undefined {
   return (e as { statusCode?: number })?.statusCode ?? (e as { response?: { status?: number } })?.response?.status
@@ -137,61 +100,53 @@ async function onSubmit() {
           </div>
 
           <div class="closing-main">
-            <div ref="closingHeadingHostRef" class="closing-heading-tilt-host">
-              <h2
-                id="closing-cta-heading"
-                ref="closingHeadingTiltRef"
-                class="closing-heading"
-                :aria-label="`Let's make something ${swapWord}.`"
-                @mouseenter="headingHovered = true"
-                @mouseleave="headingHovered = false"
-              >
-                Let's make something
-                <span class="closing-swap-word" :class="{ 'closing-swap-word--visible': swapVisible }">{{ swapWord }}.</span>
-              </h2>
-            </div>
-            <p class="closing-lede">
-              Feel free to reach out—I'm open to new opportunities, collaborations, and conversations.
-            </p>
+            <h2
+              id="closing-cta-heading"
+              class="closing-heading"
+            >
+              Let's work together.
+            </h2>
 
             <p
-              id="contact-form-status"
-              class="closing-status"
+              v-if="success"
+              class="closing-status closing-status--ok"
               role="status"
               aria-live="polite"
             >
-              <span v-if="success" class="closing-status--ok">Thanks — your message is on its way.</span>
+              Thanks — your message is on its way.
             </p>
 
             <form class="closing-form" novalidate @submit.prevent="onSubmit">
-              <label class="closing-field">
-                <input
-                  v-model="name"
-                  class="closing-input"
-                  type="text"
-                  name="name"
-                  autocomplete="name"
-                  placeholder=" "
-                  required
-                  maxlength="120"
-                  :disabled="submitting"
-                >
-                <span class="closing-label">Name</span>
-              </label>
-              <label class="closing-field">
-                <input
-                  v-model="email"
-                  class="closing-input"
-                  type="email"
-                  name="email"
-                  autocomplete="email"
-                  placeholder=" "
-                  required
-                  maxlength="254"
-                  :disabled="submitting"
-                >
-                <span class="closing-label">Email</span>
-              </label>
+              <div class="closing-row">
+                <label class="closing-field">
+                  <input
+                    v-model="name"
+                    class="closing-input"
+                    type="text"
+                    name="name"
+                    autocomplete="name"
+                    placeholder=" "
+                    required
+                    maxlength="120"
+                    :disabled="submitting"
+                  >
+                  <span class="closing-label">Name</span>
+                </label>
+                <label class="closing-field">
+                  <input
+                    v-model="email"
+                    class="closing-input"
+                    type="email"
+                    name="email"
+                    autocomplete="email"
+                    placeholder=" "
+                    required
+                    maxlength="254"
+                    :disabled="submitting"
+                  >
+                  <span class="closing-label">Email</span>
+                </label>
+              </div>
               <label class="closing-field">
                 <input
                   v-model="subject"
@@ -210,7 +165,7 @@ async function onSubmit() {
                   v-model="message"
                   class="closing-textarea"
                   name="message"
-                  rows="4"
+                  rows="3"
                   placeholder=" "
                   required
                   maxlength="10000"
@@ -272,20 +227,23 @@ async function onSubmit() {
 
 <style scoped>
 .closing-cta-section {
+  --home-section-bg: var(--pastel-lemon);
   --signal: var(--ink);
-  --rule: color-mix(in srgb, var(--fg-primary) 16%, var(--bg-primary));
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: color-mix(in srgb, var(--pastel-ink) 76%, var(--home-section-bg));
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 50%, var(--home-section-bg));
+  --bg-primary: var(--home-section-bg);
+  --bg-tertiary: var(--home-section-bg);
+  --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--home-section-bg));
   --btn-attention-bg: var(--pastel-peach);
   background-color: transparent;
   padding-top: 0;
-  padding-bottom: clamp(0.75rem, 2vw, 1.5rem);
+  padding-bottom: 0;
 }
 
 .closing-band {
   position: relative;
   overflow: hidden;
-  background-color: var(--bg-tertiary);
-  /* Light mint tile: always dark type (dark-mode shell uses light --fg-*; do not inherit on this band). */
-  color: var(--pastel-ink);
   --fg-primary: var(--pastel-ink);
   --fg-secondary: var(--pastel-ink-muted);
   --fg-muted: color-mix(in srgb, var(--pastel-ink) 52%, var(--bg-tertiary));
@@ -305,8 +263,8 @@ async function onSubmit() {
 .closing-grid {
   row-gap: var(--home-grid-gap-dense);
   align-items: start;
-  padding-top: clamp(0.85rem, 1.8vw, 1.35rem);
-  padding-bottom: clamp(0.85rem, 1.8vw, 1.35rem);
+  padding-top: 0;
+  padding-bottom: clamp(2.5rem, 5vw, 4rem);
 }
 
 .closing-marker {
@@ -331,37 +289,24 @@ async function onSubmit() {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: var(--home-stack-gap-tight);
+  gap: 0.5rem;
   min-width: 0;
-  max-width: min(42rem, 100%);
+  width: 100%;
   align-self: start;
 }
 
 @media (min-width: 768px) {
   .closing-marker {
-    grid-column: 1 / span 3;
-    grid-row: 1;
+    grid-column: 1 / -1;
   }
 
   .closing-main {
-    grid-column: 4 / span 9;
-    grid-row: 1;
+    grid-column: 1 / -1;
   }
-
-  .closing-heading-tilt-host {
-    margin-top: -0.15rem;
-  }
-}
-
-
-.closing-heading-tilt-host {
-  width: fit-content;
-  max-width: 100%;
 }
 
 .closing-heading {
   margin: 0;
-  max-width: min(11ch, 100%);
   font-family: var(--font-serif);
   font-size: clamp(2rem, 3.5vw + 0.8rem, 3.6rem);
   font-style: italic;
@@ -371,52 +316,8 @@ async function onSubmit() {
   color: var(--fg-primary);
 }
 
-/* Word-swap animation — starts visible, hides before each swap */
-.closing-swap-word {
-  display: inline-block;
-  white-space: nowrap;
-  transition:
-    opacity 260ms var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1)),
-    transform 260ms var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1));
-}
-
-.closing-swap-word--visible {
-  opacity: 1;
-  transform: translateY(0);
-}
-
-.closing-swap-word:not(.closing-swap-word--visible) {
-  opacity: 0;
-  transform: translateY(6px);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .closing-swap-word,
-  .closing-swap-word:not(.closing-swap-word--visible) {
-    opacity: 1;
-    transform: none;
-    transition: none;
-  }
-}
-
-.closing-lede {
-  margin: 0;
-  max-width: min(42rem, 68ch);
-  font-size: var(--text-body);
-  line-height: 1.55;
-  color: var(--fg-secondary);
-}
-
-.closing-meta {
-  margin: 0;
-  font-size: var(--text-body);
-  line-height: 1.55;
-  color: var(--fg-secondary);
-}
-
 .closing-status {
   margin: 0;
-  min-height: 1.35em;
   font-family: var(--font-sans);
   font-size: 0.9rem;
   color: var(--fg-secondary);
@@ -429,14 +330,30 @@ async function onSubmit() {
 .closing-form {
   position: relative;
   width: 100%;
-  max-width: min(42rem, 100%);
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding: clamp(1rem, 2vw, 1.35rem);
+  gap: 0.65rem;
+  padding: clamp(0.65rem, 1.4vw, 1rem);
   background: color-mix(in srgb, var(--paper) 78%, transparent);
   border: 1px solid color-mix(in srgb, var(--fg-primary) 12%, var(--paper));
   box-shadow: var(--shadow-md);
+}
+
+.closing-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+@media (min-width: 768px) {
+  .closing-row {
+    flex-direction: row;
+    gap: 1rem;
+  }
+
+  .closing-row .closing-field {
+    flex: 1;
+  }
 }
 
 .closing-field {
@@ -552,7 +469,7 @@ async function onSubmit() {
 
 .closing-textarea {
   resize: vertical;
-  min-height: 5.5rem;
+  min-height: 4rem;
   padding-top: 1.15rem;
 }
 
@@ -584,7 +501,6 @@ async function onSubmit() {
   flex-wrap: wrap;
   align-items: center;
   gap: 1rem;
-  margin-top: 0.25rem;
 }
 
 .closing-submit {
@@ -654,7 +570,7 @@ async function onSubmit() {
   font-weight: 500;
   letter-spacing: var(--label-tracking-mono);
   text-transform: uppercase;
-  color: #fff;
+  color: var(--pastel-ink);
   text-decoration: none;
   padding-bottom: 0.1rem;
   position: relative;
@@ -670,14 +586,14 @@ async function onSubmit() {
   left: 0;
   width: 100%;
   height: 1px;
-  background: #fff;
+  background: var(--pastel-ink);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 240ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
 }
 
 .closing-linkedin:hover {
-  color: #fff;
+  color: var(--pastel-ink);
   transform: translateY(-1px);
 }
 

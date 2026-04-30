@@ -55,7 +55,8 @@ const { isDark, toggle } = useTheme()
   --theme-toggle-travel: calc(var(--theme-toggle-inner) - var(--theme-toggle-thumb));
   width: calc(2 * var(--theme-toggle-pad) + var(--theme-toggle-inner));
   background-color: var(--bg-primary);
-  border: var(--card-border);
+  border: 1px solid var(--pastel-sky);
+  border-radius: 999px;
   box-shadow: var(--card-ring);
   backdrop-filter: blur(15px) saturate(1.2);
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
@@ -95,6 +96,7 @@ const { isDark, toggle } = useTheme()
   top: 50%;
   width: var(--theme-toggle-thumb);
   height: var(--theme-toggle-thumb);
+  border-radius: 999px;
   background-color: var(--theme-toggle-knob-bg);
   box-shadow: var(--shadow-sm);
   transform: translateY(-50%) translateX(0);

@@ -27,11 +27,13 @@ function isNavActive(path: string) {
   return isInPageHashActive(route.path, route.hash || '', parsed.pathOnly, parsed.hash)
 }
 
+const GLASS_THRESHOLD = 12
 const CONDENSE_THRESHOLD = 72
 /** When intro bottom rises above this (viewport px), content behind the fixed nav is mostly light. */
 const HOME_INTRO_NAV_THRESHOLD_PX = 88
 
 const scrollY = useSharedScrollY()
+const isGlass = computed(() => scrollY.value > GLASS_THRESHOLD)
 const isCondensed = computed(() => scrollY.value > CONDENSE_THRESHOLD)
 const isHomeHero = computed(() => route.path === '/')
 
@@ -160,13 +162,17 @@ watch(
     class="navbar"
     :class="{
       'navbar--condensed': isCondensed,
+      'navbar--glass': isGlass,
       'navbar--home-hero': isHomeHero,
       'navbar--home-on-light': isHomeHero && isPastHomeIntro,
     }"
   >
     <div
-      class="navbar-inner container mx-auto w-full min-w-0 max-w-full px-[clamp(1.25rem,3vw,2.5rem)] md:max-w-[82rem]"
-      :class="{ 'navbar-inner--condensed': isCondensed }"
+      class="navbar-inner min-w-0"
+      :class="{
+        'navbar-inner--glass': isGlass,
+        'navbar-inner--condensed': isCondensed,
+      }"
     >
       <div class="navbar-row">
         <NuxtLink
@@ -174,7 +180,6 @@ watch(
           class="navbar-brand"
           @click="onInPageHashLinkClick($event, '/#intro')"
         >
-          <img :src="profile.photo" :alt="profile.name" class="navbar-brand-avatar">
           <span class="navbar-brand-name eyebrow-sans">{{ profile.name }}</span>
         </NuxtLink>
 
@@ -208,14 +213,14 @@ watch(
 <style scoped>
 .navbar {
   position: fixed;
-  top: 0;
+  top: 0.85rem;
   left: 0;
   right: 0;
   z-index: 50;
   width: 100%;
-  padding: 1.1rem 0;
+  padding: 0;
   pointer-events: none;
-  transition: padding 0.25s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
+  transition: top 0.25s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
 }
 
 .navbar--home-hero {
@@ -223,42 +228,76 @@ watch(
 }
 
 .navbar--condensed {
-  padding: 0.55rem 0;
+  top: 0.55rem;
 }
 
 @media (max-width: 767px) {
   .navbar {
-    padding: 0.75rem 0;
+    top: 0.55rem;
   }
 
   .navbar--condensed {
-    padding: 0.45rem 0;
+    top: 0.45rem;
   }
 }
 
 .navbar-inner {
   pointer-events: auto;
-  border-bottom: 1px solid var(--rule);
+  width: fit-content;
+  max-width: calc(100% - clamp(1rem, 4vw, 2.5rem));
+  margin-inline: auto;
+  padding: 0 clamp(0.45rem, 1vw, 0.7rem);
+  border: 1px solid color-mix(in srgb, var(--fg-primary) 12%, transparent);
+  border-radius: 999px;
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 86%, transparent);
+  box-shadow:
+    0 0.45rem 1.3rem -1.05rem color-mix(in srgb, var(--ink) 28%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--paper) 52%, transparent);
   transition:
     background-color 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    backdrop-filter 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
     box-shadow 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
     border-color 0.28s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
 }
 
-.navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 92%, var(--paper));
-  border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--fg-muted));
+.navbar-inner--glass {
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 58%, transparent);
+  border-color: color-mix(in srgb, var(--fg-primary) 16%, transparent);
   box-shadow:
-    var(--shadow-md),
-    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, var(--paper));
+    0 1rem 2.6rem -1.7rem color-mix(in srgb, var(--ink) 34%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--paper) 58%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--fg-primary) 7%, transparent);
+  backdrop-filter: blur(18px) saturate(1.28);
+  -webkit-backdrop-filter: blur(18px) saturate(1.28);
+}
+
+.navbar-inner--condensed {
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 52%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--fg-muted));
+  box-shadow:
+    0 1.1rem 2.8rem -1.65rem color-mix(in srgb, var(--ink) 38%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--paper) 62%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, transparent);
 }
 
 :root.dark .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 94%, var(--paper));
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 50%, transparent);
   border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
   box-shadow:
-    var(--shadow-md),
-    0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper));
+    0 1.2rem 3rem -1.7rem color-mix(in srgb, #000 72%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--ink) 15%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--ink) 9%, transparent);
+}
+
+:global(html[data-theme='dark']) .navbar-inner--glass {
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 46%, transparent) !important;
+  backdrop-filter: blur(18px) saturate(1.28) !important;
+  -webkit-backdrop-filter: blur(18px) saturate(1.28) !important;
+}
+
+:global(html[data-theme='dark']) .navbar-inner--condensed {
+  background-image: none !important;
+  border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
 }
 
 .navbar-row {
@@ -269,7 +308,7 @@ watch(
   gap: 0.5rem 1rem;
   width: 100%;
   min-height: 2.75rem;
-  padding: 0.35rem 0;
+  padding: 0.3rem 0;
 }
 
 .navbar--condensed .navbar-row {
@@ -281,6 +320,7 @@ watch(
   align-items: center;
   gap: 0.65rem;
   flex-shrink: 0;
+  padding: 0 1rem;
   text-decoration: none;
   color: var(--fg-primary);
   transition: transform 0.22s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
@@ -295,37 +335,29 @@ watch(
   transition-duration: 0.1s;
 }
 
-.navbar-brand-avatar {
-  height: 2rem;
-  width: 2rem;
-  border-radius: var(--radius-control, 0.35rem);
-  object-fit: cover;
+.navbar-brand-icon {
+  font-size: 1.1rem;
+  color: var(--accent);
   flex-shrink: 0;
-  border: 1px solid color-mix(in srgb, var(--accent) 25%, var(--paper));
-  transition:
-    border-color 0.22s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
-    box-shadow 0.24s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
+  transition: color 0.22s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
 }
 
-.navbar-brand:hover .navbar-brand-avatar {
-  border-color: color-mix(in srgb, var(--accent) 42%, var(--paper));
-  box-shadow: 0 0.35rem 1rem color-mix(in srgb, var(--fg-primary) 8%, transparent);
-}
-
-.navbar--condensed .navbar-brand-avatar {
-  height: 1.75rem;
-  width: 1.75rem;
+.navbar-brand:hover .navbar-brand-icon {
+  color: var(--fg-primary);
 }
 
 .navbar-brand-name {
-  font-size: 0.8125rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
+  font-family: var(--font-brand);
+  font-size: 1rem;
+  font-weight: 900;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
   color: var(--fg-primary);
   white-space: nowrap;
 }
 
 @media (max-width: 480px) {
+  .navbar-brand-icon,
   .navbar-brand-name {
     display: none;
   }
@@ -465,24 +497,20 @@ watch(
   color: var(--fg-primary);
 }
 
-/* Homepage: no painted bar — hero green shows through; condensed stays transparent too */
+/* Homepage: keep the pill light at rest; let the hero tint show only after glass engages. */
 .navbar--home-hero .navbar-inner:not(.navbar-inner--condensed) {
-  background-color: transparent;
-  border-bottom-color: color-mix(in srgb, var(--pastel-ink) 34%, var(--pastel-mint));
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 78%, transparent);
+  border-color: color-mix(in srgb, var(--pastel-ink) 16%, var(--pastel-mint));
 }
 
-.navbar--home-hero .navbar-inner--condensed {
-  background-color: transparent;
-  border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--fg-muted));
-  box-shadow: none;
-  backdrop-filter: blur(14px) saturate(1.2);
-  -webkit-backdrop-filter: blur(14px) saturate(1.2);
+.navbar--home-hero .navbar-inner--glass {
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 42%, transparent);
+  border-color: color-mix(in srgb, var(--pastel-ink) 14%, var(--pastel-mint));
 }
 
 :root.dark .navbar--home-hero .navbar-inner--condensed {
-  background-color: transparent;
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 50%, transparent);
   border-color: color-mix(in srgb, var(--ink) 18%, var(--paper));
-  box-shadow: none;
 }
 
 .navbar--home-hero .navbar-brand,
@@ -508,7 +536,7 @@ watch(
 
 .navbar--home-hero :deep(.theme-toggle) {
   background-color: var(--bg-primary);
-  border: var(--card-border);
+  border: 1px solid var(--pastel-sky);
   box-shadow: var(--card-ring);
   backdrop-filter: blur(15px) saturate(1.2);
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
@@ -541,7 +569,7 @@ watch(
 }
 
 .navbar--home-hero.navbar--home-on-light .navbar-inner:not(.navbar-inner--condensed) {
-  border-bottom-color: var(--rule);
+  border-color: color-mix(in srgb, var(--rule) 60%, transparent);
 }
 
 .navbar--home-hero.navbar--home-on-light .nav-link:not(.nav-link--active) {
@@ -550,7 +578,7 @@ watch(
 
 .navbar--home-hero.navbar--home-on-light :deep(.theme-toggle) {
   background-color: var(--bg-primary);
-  border: var(--card-border);
+  border: 1px solid var(--pastel-sky);
   box-shadow: var(--card-ring);
   backdrop-filter: blur(15px) saturate(1.2);
   -webkit-backdrop-filter: blur(15px) saturate(1.2);
@@ -573,21 +601,23 @@ watch(
 }
 
 .navbar--home-hero.navbar--home-on-light .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 92%, var(--paper));
-  border: 1px solid color-mix(in srgb, var(--accent) 14%, var(--fg-muted));
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 52%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 18%, var(--fg-muted));
   box-shadow:
-    var(--shadow-md),
-    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, var(--paper));
-  backdrop-filter: none;
-  -webkit-backdrop-filter: none;
+    0 1.1rem 2.8rem -1.65rem color-mix(in srgb, var(--ink) 38%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--paper) 62%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, transparent);
+  backdrop-filter: blur(18px) saturate(1.28);
+  -webkit-backdrop-filter: blur(18px) saturate(1.28);
 }
 
 :root.dark .navbar--home-hero.navbar--home-on-light .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 94%, var(--paper));
+  background-color: color-mix(in srgb, var(--shell-ui-bg) 50%, transparent);
   border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
   box-shadow:
-    var(--shadow-md),
-    0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper));
+    0 1.2rem 3rem -1.7rem color-mix(in srgb, #000 72%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--ink) 15%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--ink) 9%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {
