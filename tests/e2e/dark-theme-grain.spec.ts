@@ -12,12 +12,14 @@ test.describe('dark theme home', () => {
     await page.goto('/')
     await expect(page.locator('html')).toHaveClass(/dark/)
 
-    const blend = await page.locator('.grain-surface').evaluate((el) => getComputedStyle(el).mixBlendMode)
+    const blendTarget = page.locator('.pastel-grain-shadow').first()
+    await expect(blendTarget).toBeVisible()
+    const blend = await blendTarget.evaluate((el) => getComputedStyle(el).mixBlendMode)
     expect(['overlay', 'normal']).toContain(blend)
 
-    const hero = page.locator('.hero-title')
+    const hero = page.locator('.hero-name')
     await expect(hero).toBeVisible()
-    const bg = await hero.evaluate((el) => getComputedStyle(el).backgroundColor)
+    const bg = await page.locator('.intro-bento__tile--headline').evaluate((el) => getComputedStyle(el).backgroundColor)
     expect(bg).toMatch(/rgb\(\s*\d+/i)
     const m = bg.match(/rgb\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i)
     expect(m, `expected rgb() background, got ${bg}`).toBeTruthy()

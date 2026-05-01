@@ -1,5 +1,5 @@
 import type { ThemeMode } from '~/utils/theme'
-import { getInitialTheme, hasStoredColorMode } from '~/utils/theme'
+import { getInitialTheme } from '~/utils/theme'
 
 const THEME_COLORS: Record<ThemeMode, string> = {
   light: '#ffffff',
@@ -27,12 +27,4 @@ export default defineNuxtPlugin(() => {
     // layer on screen after theme toggles (looks like a black overlay).
     applyTheme(value)
   })
-
-  if (import.meta.client && !hasStoredColorMode()) {
-    const mq = window.matchMedia('(prefers-color-scheme: dark)')
-    const onSchemeChange = () => {
-      theme.value = mq.matches ? 'dark' : 'light'
-    }
-    mq.addEventListener('change', onSchemeChange)
-  }
 })
