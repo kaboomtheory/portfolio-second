@@ -110,6 +110,9 @@ export async function verifyTurnstileToken(
   event: H3Event,
   token: string | null | undefined,
 ): Promise<void> {
+  const config = useRuntimeConfig(event)
+  if (config.public?.turnstileDisabled) return
+
   const { turnstileSecretKey } = assertSecurityConfig(event)
   const trimmedToken = typeof token === 'string' ? token.trim() : ''
 

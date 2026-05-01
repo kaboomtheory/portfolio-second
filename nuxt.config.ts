@@ -114,6 +114,8 @@ export default defineNuxtConfig({
       siteDescription,
       /** Set `NUXT_PUBLIC_TURNSTILE_SITE_KEY` on the host. */
       turnstileSiteKey: process.env.NUXT_PUBLIC_TURNSTILE_SITE_KEY || '',
+      /** Set to `"true"` to disable Turnstile verification globally. */
+      turnstileDisabled: process.env.NUXT_PUBLIC_TURNSTILE_DISABLED === 'true',
     },
   },
 })

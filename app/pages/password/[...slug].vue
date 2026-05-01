@@ -11,9 +11,10 @@ const reveal = ref(false)
 const submitting = ref(false)
 const turnstileToken = ref('')
 const turnstileRef = ref<InstanceType<typeof TurnstileWidget> | null>(null)
+const turnstileDisabled = useRuntimeConfig().public.turnstileDisabled
 
 const slug = computed(() => normalizeProjectSlug(route.params.slug))
-const canSubmit = computed(() => Boolean(password.value.trim()) && Boolean(turnstileToken.value) && !submitting.value)
+const canSubmit = computed(() => Boolean(password.value.trim()) && (turnstileDisabled || Boolean(turnstileToken.value)) && !submitting.value)
 
 async function submit() {
   error.value = ''
@@ -25,7 +26,7 @@ async function submit() {
     error.value = 'Please enter a password.'
     return
   }
-  if (!turnstileToken.value) {
+  if (!turnstileDisabled && !turnstileToken.value) {
     error.value = 'Complete the verification challenge first.'
     return
   }
@@ -106,6 +107,7 @@ useSeoMeta({
         </label>
 
         <TurnstileWidget
+          v-if="!turnstileDisabled"
           ref="turnstileRef"
           v-model="turnstileToken"
           action="project_unlock"

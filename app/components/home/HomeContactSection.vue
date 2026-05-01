@@ -20,6 +20,7 @@ const message = ref('')
 const website = ref('')
 const turnstileToken = ref('')
 const turnstileRef = ref<InstanceType<typeof TurnstileWidget> | null>(null)
+const turnstileDisabled = useRuntimeConfig().public.turnstileDisabled
 
 const submitting = ref(false)
 const success = ref(false)
@@ -40,7 +41,7 @@ function getFetchMessage(e: unknown): string | undefined {
 async function onSubmit() {
   formError.value = ''
   success.value = false
-  if (!turnstileToken.value) {
+  if (!turnstileDisabled && !turnstileToken.value) {
     formError.value = 'Complete the verification challenge first.'
     return
   }
@@ -188,6 +189,7 @@ async function onSubmit() {
               <p v-if="formError" class="closing-form-error" role="alert">{{ formError }}</p>
 
               <TurnstileWidget
+                v-if="!turnstileDisabled"
                 ref="turnstileRef"
                 v-model="turnstileToken"
                 action="contact"
@@ -199,7 +201,7 @@ async function onSubmit() {
                   ref="submitRef"
                   type="submit"
                   class="closing-submit"
-                  :disabled="submitting || !turnstileToken"
+                  :disabled="submitting || (!turnstileDisabled && !turnstileToken)"
                 >
                   <span class="closing-submit__inner">
                     <AppIcon icon="lucide:send" class="closing-submit__icon text-sm" aria-hidden="true" />
