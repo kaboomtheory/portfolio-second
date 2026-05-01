@@ -172,8 +172,16 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   >
     <div class="home-hero-band">
       <h1 class="hero-name" aria-label="Howdy! I'm Bryan.">
-        <span class="hero-name-greeting">Howdy!</span>
-        <span class="hero-name-main">I'm Bryan.</span>
+        <img
+          src="/images/layer_animation.apng"
+          alt=""
+          aria-hidden="true"
+          class="hero-name-anim"
+        />
+        <span class="hero-name-text">
+          <span class="hero-name-greeting">Howdy!</span>
+          <span class="hero-name-main">I'm Bryan.</span>
+        </span>
       </h1>
       <div class="intro-bento intro-grid grid-12">
         <div
@@ -229,7 +237,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
           </p>
         </aside>
 
-        <div class="intro-bento__tile intro-bento__tile--cta hero-fade-in hero-delay-1">
+        <div class="intro-bento__tile intro-bento__tile--cta pastel-grain-shadow hero-fade-in hero-delay-1">
           <CtaButton
             :to="introCtaTo"
             :label="introCtaLabel"
@@ -531,10 +539,44 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   letter-spacing: -0.025em;
   color: var(--ink);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  gap: clamp(1rem, 3vw, 2rem);
   opacity: 0;
   filter: blur(12px);
   transform: scale(1.04);
+}
+
+.hero-name-text {
+  display: flex;
+  flex-direction: column;
+}
+
+.hero-name-anim {
+  height: clamp(5rem, 12.3vw + 1.2rem, 11.1rem);
+  width: auto;
+  flex-shrink: 0;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 640px) {
+  .hero-name {
+    flex-direction: row;
+    align-items: flex-end;
+    gap: clamp(0.5rem, 2.5vw, 1rem);
+  }
+
+  .hero-name-text {
+    min-width: 0;
+    flex: 1 1 0;
+  }
+
+  .hero-name-anim {
+    width: clamp(5rem, 28vw, 7.5rem);
+    height: auto;
+    flex-shrink: 0;
+  }
 }
 
 .hero-name-greeting {

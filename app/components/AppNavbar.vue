@@ -150,7 +150,10 @@ function squishPill() {
   setTimeout(() => { isPillSquished.value = false }, 90)
 }
 
-// On mount: snap to position instantly (no transition), then reveal
+// On mount: snap to position instantly (no transition), then reveal.
+// Also watch for resize so the pill tracks clamp()-driven layout shifts.
+let resizeOb: ResizeObserver | null = null
+
 watch(pillEl, (el) => {
   if (!el) return
   el.style.transition = 'none'
@@ -158,7 +161,22 @@ watch(pillEl, (el) => {
     snapPill()
     requestAnimationFrame(() => { el.style.transition = '' })
   })
+
+  const container = el.parentElement
+  if (container && typeof ResizeObserver !== 'undefined') {
+    resizeOb = new ResizeObserver(() => {
+      const active = readActiveLink()
+      if (!active) return
+      pillLeft.value = `${active.offsetLeft}px`
+      pillWidth.value = `${active.offsetWidth}px`
+    })
+    resizeOb.observe(container)
+  }
 }, { once: true })
+
+onBeforeUnmount(() => {
+  resizeOb?.disconnect()
+})
 
 watch(() => route.fullPath, repositionPill)
 watch(effectiveHash, repositionPill)
