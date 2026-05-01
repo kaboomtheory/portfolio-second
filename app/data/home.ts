@@ -19,13 +19,11 @@ export const homeHero = {
   taglines: [
     {
       segments: [
-        { text: 'A multidisciplinary designer with a sharp eye for ' },
-        { text: 'branding', em: true },
-        { text: ', hands-on experience across ' },
-        { text: 'digital marketing, web, print, and packaging', em: true },
-        { text: ', and a natural pull toward wherever the ' },
-        { text: 'most interesting visual problem', em: true },
-        { text: ' is.' },
+        { text: 'Multidisciplinary designer' },
+        { text: ' crafting ' },
+        { text: 'sharp brand visuals' },
+        { text: ' across ' },
+        { text: 'digital, web, print, and packaging.', em: true },
       ],
     },
   ] satisfies HomeHeroTaglineLine[],

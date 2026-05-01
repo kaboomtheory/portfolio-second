@@ -20,7 +20,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 </script>
 
 <template>
-  <RevealOnScroll :delay="240" class="page-section resume-section-outer content-flow">
+  <RevealOnScroll :delay="240" class="page-section resume-section-outer pastel-grain-shadow content-flow">
     <div class="resume-grid grid-12">
       <div class="resume-marker">
         <SectionMarker index="04" word="Background" />
@@ -89,7 +89,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
                 <span
                   v-for="item in group.items"
                   :key="item"
-                  class="capability-tag"
+                  class="capability-tag pastel-grain-shadow"
                 >{{ item }}</span>
               </div>
             </div>
@@ -106,6 +106,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 <style scoped>
 .resume-section-outer {
   --home-section-bg: var(--pastel-mint);
+  --home-rail-inset: clamp(2rem, 4vw, 4rem);
   --signal: var(--signal-mint);
   --fg-primary: var(--pastel-ink);
   --fg-secondary: color-mix(in srgb, var(--pastel-ink) 76%, var(--home-section-bg));
@@ -135,7 +136,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
   grid-column: 1 / -1;
   display: grid;
   gap: var(--home-resume-cols-gap);
-  padding-inline: clamp(4.5rem, 10vw, 8rem);
+  padding-inline: 0;
 }
 
 @media (min-width: 768px) {
@@ -147,6 +148,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
     grid-column: 1 / -1;
     grid-template-columns: minmax(0, 1fr);
     row-gap: clamp(2rem, 4vw, 3.25rem);
+    padding-inline: clamp(4.5rem, 10vw, 8rem);
   }
 }
 

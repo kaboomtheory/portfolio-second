@@ -81,6 +81,72 @@ const handleAnchorClick = (e: MouseEvent) => {
 
 <template>
   <div class="app-shell">
+    <svg aria-hidden="true" focusable="false" class="grain-shadow-defs">
+      <defs>
+        <filter
+          id="pastel-grain-shadow"
+          x="-24%"
+          y="-24%"
+          width="148%"
+          height="158%"
+          color-interpolation-filters="sRGB"
+        >
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.82"
+            numOctaves="2"
+            seed="17"
+            result="grain"
+          />
+          <feColorMatrix
+            in="grain"
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .62 0"
+            result="grain-alpha"
+          />
+          <feOffset in="SourceAlpha" dx="-5" dy="9" result="offset-alpha" />
+          <feGaussianBlur in="offset-alpha" stdDeviation="1.15" result="soft-alpha" />
+          <feComposite in="grain-alpha" in2="soft-alpha" operator="in" result="shadow-alpha" />
+          <feFlood flood-color="#000000" flood-opacity="0.76" result="shadow-color" />
+          <feComposite in="shadow-color" in2="shadow-alpha" operator="in" result="grain-shadow" />
+          <feMerge>
+            <feMergeNode in="grain-shadow" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+        <filter
+          id="pastel-grain-shadow-dark"
+          x="-24%"
+          y="-24%"
+          width="148%"
+          height="158%"
+          color-interpolation-filters="sRGB"
+        >
+          <feTurbulence
+            type="fractalNoise"
+            baseFrequency="0.82"
+            numOctaves="2"
+            seed="17"
+            result="grain"
+          />
+          <feColorMatrix
+            in="grain"
+            type="matrix"
+            values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .82 0"
+            result="grain-alpha"
+          />
+          <feOffset in="SourceAlpha" dx="-5" dy="9" result="offset-alpha" />
+          <feGaussianBlur in="offset-alpha" stdDeviation="0.9" result="soft-alpha" />
+          <feComposite in="grain-alpha" in2="soft-alpha" operator="in" result="shadow-alpha" />
+          <feFlood flood-color="#ffffff" flood-opacity="0.88" result="shadow-color" />
+          <feComposite in="shadow-color" in2="shadow-alpha" operator="in" result="grain-shadow" />
+          <feMerge>
+            <feMergeNode in="grain-shadow" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
+        </filter>
+      </defs>
+    </svg>
     <div class="app-shell-ui">
       <NuxtRouteAnnouncer />
       <NuxtLayout>
@@ -104,6 +170,14 @@ const handleAnchorClick = (e: MouseEvent) => {
   min-width: 0;
   max-width: 100%;
   background-color: var(--shell-ui-bg, var(--paper, #f4efe4));
+}
+
+.grain-shadow-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 :global(html.dark) .app-shell-ui {

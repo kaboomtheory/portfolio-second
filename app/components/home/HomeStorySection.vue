@@ -45,14 +45,16 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
               class="story-avatar-frame"
               v-bind:[avatarStyleAttr]="avatarStyleId"
             >
-              <SanityImage
-                :src="avatar"
-                :alt="name"
-                sizes="(max-width: 767px) 40vw, 22rem"
-                class="story-avatar-image"
-                loading="lazy"
-                decoding="async"
-              />
+              <div class="story-avatar-surface pastel-grain-shadow">
+                <SanityImage
+                  :src="avatar"
+                  :alt="name"
+                  sizes="(max-width: 767px) 40vw, 22rem"
+                  class="story-avatar-image"
+                  loading="lazy"
+                  decoding="async"
+                />
+              </div>
             </div>
           </figure>
         </div>
@@ -76,6 +78,7 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
               attention
               preserve-case
               target="_blank"
+              class="pastel-grain-shadow"
             >
               <template #icon><AppIcon icon="lucide:download" class="text-sm" /></template>
             </CtaButton>
@@ -110,8 +113,8 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 .story-main {
   grid-column: 1 / -1;
   display: grid;
-  grid-template-columns: minmax(5.75rem, 34vw) minmax(0, 1fr);
-  column-gap: clamp(0.75rem, 3vw, 1.25rem);
+  grid-template-columns: minmax(0, 1fr);
+  row-gap: clamp(1.35rem, 5vw, 2rem);
   align-items: start;
   min-width: 0;
 }
@@ -125,7 +128,6 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 }
 
 .story-body-prose {
-  padding: clamp(0.75rem, 2vw, 1.25rem) clamp(0.65rem, 2vw, 1rem);
   display: flex;
   flex-direction: column;
   gap: var(--home-stack-gap-tight);
@@ -142,6 +144,7 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   gap: var(--home-stack-gap-comfortable);
   min-width: 0;
   width: 100%;
+  max-width: min(12rem, 48vw);
 }
 
 .story-avatar-frame {
@@ -234,13 +237,18 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   background: transparent;
 }
 
+.story-avatar-surface {
+  width: 100%;
+  max-width: 100%;
+  background: var(--pastel-sky);
+  padding: clamp(0.45rem, 1.35vw, 0.8rem);
+  box-sizing: border-box;
+}
+
 .story-avatar-image {
   display: block;
-  max-width: 100%;
-  max-height: 100%;
-  width: auto;
+  width: 100%;
   height: auto;
   box-sizing: border-box;
-  border: clamp(0.45rem, 1.35vw, 0.8rem) solid var(--pastel-sky);
 }
 </style>

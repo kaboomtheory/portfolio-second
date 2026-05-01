@@ -171,14 +171,14 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     class="page-section home-intro"
   >
     <div class="home-hero-band">
-      <h1 class="hero-name" aria-label="Howdy! I'm Bryan">
+      <h1 class="hero-name" aria-label="Howdy! I'm Bryan.">
         <span class="hero-name-greeting">Howdy!</span>
-        <span class="hero-name-main">I'm Bryan</span>
+        <span class="hero-name-main">I'm Bryan.</span>
       </h1>
       <div class="intro-bento intro-grid grid-12">
         <div
           ref="headlineTiltHostRef"
-          class="intro-bento__tile intro-bento__tile--headline hero-fade-in"
+          class="intro-bento__tile intro-bento__tile--headline pastel-grain-shadow hero-fade-in"
         >
           <div ref="headlineTiltRef" class="intro-headline-tilt">
             <div
@@ -190,17 +190,22 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
                 :key="lineIndex"
                 class="hero-tagline-line"
               >
-                <template v-for="(seg, segIndex) in line.segments" :key="segIndex">
-                  <strong v-if="seg.em" class="hero-tagline-em">{{ seg.text }}</strong>
-                  <template v-else>{{ seg.text }}</template>
-                </template>
+                <component
+                  :is="seg.em ? 'strong' : 'span'"
+                  v-for="(seg, segIndex) in line.segments"
+                  :key="segIndex"
+                  class="hero-tagline-segment"
+                  :class="{ 'hero-tagline-em': seg.em }"
+                >
+                  {{ seg.text.trim() }}
+                </component>
               </p>
             </div>
           </div>
         </div>
 
         <aside
-          class="intro-bento__tile intro-bento__tile--rail intro-rail hero-fade-in hero-delay-1"
+          class="intro-bento__tile intro-bento__tile--rail intro-rail pastel-grain-shadow hero-fade-in hero-delay-1"
           aria-label="Profile"
         >
           <p class="intro-rail-line">
@@ -239,7 +244,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
 
         <a
           :href="linkedinHref"
-          class="intro-bento__tile intro-bento__tile--linkedin intro-linkedin hero-fade-in hero-delay-1"
+          class="intro-bento__tile intro-bento__tile--linkedin intro-linkedin pastel-grain-shadow hero-fade-in hero-delay-1"
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -265,7 +270,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   --hero-title-leading: 1.08;
   --hero-title-max: min(100%, 24em);
   --hero-accent-tracking: -0.032em;
-  --hero-tagline-size: clamp(1.55rem, 1.05vw + 1.15rem, 2.05rem);
+  --hero-tagline-size: clamp(1.38rem, 1.05vw + 1.05rem, 2.05rem);
   --hero-tagline-leading: 1.36;
   --hero-tagline-gap: 0.45rem;
   --hero-tagline-max: 56ch;
@@ -290,6 +295,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   row-gap: var(--intro-bento-gap);
   column-gap: var(--intro-bento-gap);
   align-items: stretch;
+  padding-inline: clamp(1.25rem, 5vw, 4rem);
   padding-top: clamp(1.25rem, 2.5vw, 2rem);
 }
 
@@ -298,23 +304,27 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   display: flex;
   flex-direction: column;
   gap: var(--home-stack-gap-comfortable);
-  align-self: start;
+  align-self: stretch;
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
   background-color: var(--pastel-mint);
   border-radius: var(--intro-bento-radius);
   padding:
-    clamp(0.95rem, 1.7vw, 1.35rem)
+    clamp(1.05rem, 1.9vw, 1.55rem)
     clamp(1.2rem, 2.5vw, 2rem)
-    clamp(0.38rem, 0.85vw, 0.62rem);
+    clamp(1.05rem, 1.9vw, 1.55rem);
   box-sizing: border-box;
 }
 
 .intro-headline-tilt {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   gap: var(--home-stack-gap-comfortable);
   min-width: 0;
   width: 100%;
+  flex: 1 1 auto;
   transform-origin: 50% 40%;
 }
 
@@ -389,7 +399,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     --hero-title-leading: 1.07;
     --hero-title-max: min(100%, 23.5em);
     --hero-accent-tracking: -0.03em;
-    --hero-tagline-size: clamp(1.62rem, 0.72vw + 1.28rem, 2.15rem);
+    --hero-tagline-size: clamp(1.75rem, 0.9vw + 1.35rem, 2.45rem);
     --hero-tagline-leading: 1.34;
     --hero-tagline-gap: 0.38rem;
     --hero-tagline-max: 54ch;
@@ -402,6 +412,10 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   .intro-bento__tile--headline {
     grid-column: 1 / span 8;
     grid-row: 1;
+  }
+
+  .intro-bento.grid-12 {
+    padding-inline: clamp(2.25rem, 5vw, 4rem);
   }
 
   .intro-bento__tile--rail {
@@ -430,7 +444,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     --hero-title-leading: 1.06;
     --hero-title-max: min(100%, 23.2em);
     --hero-accent-tracking: -0.028em;
-    --hero-tagline-size: clamp(1.72rem, 0.62vw + 1.38rem, 2.32rem);
+    --hero-tagline-size: clamp(2rem, 0.8vw + 1.5rem, 2.75rem);
     --hero-tagline-leading: 1.32;
     --hero-tagline-gap: 0.34rem;
     --hero-tagline-max: 52ch;
@@ -552,10 +566,16 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
 
 .hero-tagline {
   display: block;
-  max-width: 42rem;
+  width: 100%;
+  max-width: min(100%, 42rem);
+  min-width: 0;
 }
 
 .hero-tagline-line {
+  display: flex;
+  flex-wrap: wrap;
+  column-gap: 0.28em;
+  row-gap: 0;
   margin: 0;
   font-size: var(--hero-tagline-size);
   font-weight: 400;
@@ -566,7 +586,21 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   text-wrap: pretty;
   text-rendering: optimizeLegibility;
   font-feature-settings: 'kern' 1, 'liga' 1;
-  max-width: var(--hero-tagline-max);
+  width: 100%;
+  max-width: min(100%, var(--hero-tagline-max));
+  overflow-wrap: break-word;
+}
+
+@media (max-width: 640px) {
+  .hero-tagline-line {
+    text-wrap: wrap;
+  }
+}
+
+.hero-tagline-segment {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: break-word;
 }
 
 .hero-tagline-line + .hero-tagline-line {
@@ -577,7 +611,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   font-family: var(--font-serif);
   font-style: italic;
   font-weight: 600;
-  letter-spacing: -0.01em;
+  letter-spacing: 0;
   color: var(--fg-primary);
 }
 
@@ -607,6 +641,20 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
     background-color 0.18s cubic-bezier(0.25, 1, 0.5, 1),
     color 0.18s cubic-bezier(0.25, 1, 0.5, 1);
+}
+
+@media (max-width: 640px) {
+  .intro-bento__tile--cta,
+  .intro-bento__tile--linkedin {
+    grid-column: 1 / -1;
+  }
+
+  .intro-linkedin {
+    gap: 0.38rem;
+    padding-inline: 0.55rem;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+  }
 }
 
 /* Square corners for intro bento actions (overrides .intro-linkedin) */

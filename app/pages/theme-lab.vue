@@ -115,7 +115,7 @@ async function copyReport() {
 
 <template>
   <main class="theme-lab page-section">
-    <div class="theme-lab__inner card-surface">
+    <div class="theme-lab__inner card-surface pastel-grain-shadow">
       <header class="theme-lab__header">
         <div>
           <p class="eyebrow-sans">Internal</p>
@@ -350,7 +350,7 @@ async function copyReport() {
         </section>
       </div>
 
-      <section class="theme-lab__report card-surface">
+      <section class="theme-lab__report card-surface pastel-grain-shadow">
         <div class="theme-lab__report-head">
           <h2 class="theme-lab__panel-title">
             Report preview

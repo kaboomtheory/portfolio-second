@@ -50,7 +50,7 @@ function handleImageLoad() {
 
 <template>
   <div
-    class="project-card group relative"
+    class="project-card pastel-grain-shadow group relative"
     :class="paletteClass"
     v-bind:[styleAttr]="styleId"
   >

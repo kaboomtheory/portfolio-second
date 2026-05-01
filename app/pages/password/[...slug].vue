@@ -76,7 +76,7 @@ useSeoMeta({
 
 <template>
   <div class="grid min-h-[70vh] place-items-center">
-    <section class="card-surface w-full max-w-md space-y-4 p-6">
+    <section class="card-surface pastel-grain-shadow w-full max-w-md space-y-4 p-6">
       <h1 class="text-3xl">Enter Password</h1>
       <p class="text-sm">
         This case study is protected. Enter the password to view it.

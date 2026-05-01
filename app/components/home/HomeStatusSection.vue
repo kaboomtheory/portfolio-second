@@ -63,7 +63,7 @@ const tickerCells = computed(() => {
           <div class="ticker-content">
             <template v-for="cell in tickerCells" :key="cell.key">
               <div class="ticker-cluster">
-                <div class="ticker-item">
+                <div class="ticker-item pastel-grain-shadow">
                   <div class="ticker-image">
                     <img
                       v-if="cell.item.images?.length"

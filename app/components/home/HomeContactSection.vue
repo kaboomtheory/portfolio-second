@@ -89,7 +89,7 @@ async function onSubmit() {
   <RevealOnScroll
     id="contact"
     :delay="320"
-    class="closing-cta-section content-flow"
+    class="closing-cta-section pastel-grain-shadow content-flow"
     aria-labelledby="closing-cta-heading"
   >
     <div class="closing-band full-bleed">
@@ -228,6 +228,7 @@ async function onSubmit() {
 <style scoped>
 .closing-cta-section {
   --home-section-bg: var(--pastel-lemon);
+  --home-rail-inset: clamp(2rem, 4vw, 4rem);
   --signal: var(--ink);
   --fg-primary: var(--pastel-ink);
   --fg-secondary: color-mix(in srgb, var(--pastel-ink) 76%, var(--home-section-bg));
@@ -305,7 +306,7 @@ async function onSubmit() {
   min-width: 0;
   width: 100%;
   align-self: start;
-  padding-inline: clamp(4.5rem, 10vw, 8rem);
+  padding-inline: 0;
 }
 
 @media (min-width: 768px) {
@@ -315,6 +316,7 @@ async function onSubmit() {
 
   .closing-main {
     grid-column: 1 / -1;
+    padding-inline: clamp(4.5rem, 10vw, 8rem);
   }
 }
 

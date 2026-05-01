@@ -11,7 +11,7 @@ const filterTag = ref<string>('all')
 
 /* Rotating skeleton verb — small typographic personality during loading. */
 const SKELETON_VERBS = ['composing', 'fetching pixels', 'arranging', 'developing'] as const
-const skeletonVerb = ref(SKELETON_VERBS[0])
+const skeletonVerb = ref<(typeof SKELETON_VERBS)[number]>(SKELETON_VERBS[0])
 let skeletonTimer: ReturnType<typeof setInterval> | null = null
 
 function startSkeletonRotation() {

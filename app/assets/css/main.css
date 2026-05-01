@@ -765,6 +765,21 @@ pre,
   color: var(--home-section-ink);
 }
 
+.pastel-grain-shadow {
+  position: relative;
+  isolation: isolate;
+  filter: url('#pastel-grain-shadow');
+}
+
+html.dark .pastel-grain-shadow,
+html[data-theme='dark'] .pastel-grain-shadow {
+  filter: url('#pastel-grain-shadow-dark');
+}
+
+.page-content--home > section.pastel-grain-shadow {
+  overflow: visible;
+}
+
 .page-content--home .grid-12 {
   padding-inline: clamp(2.25rem, 5vw, 4rem);
 }

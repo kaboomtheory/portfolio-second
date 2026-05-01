@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { navItems, profile } from '~/data/site'
+import { navItems, type NavItem } from '~/data/site'
 import { useInPageHashLink } from '~/composables/useInPageHashLink'
 import { isInPageHashActive, parseInPageHash } from '~/utils/inPageHashNav'
 import { useSharedScrollY, useScrollLayoutSubscription } from '~/composables/useScrollLayoutBus'
 
 const route = useRoute()
 const { onInPageHashLinkClick } = useInPageHashLink()
+const { isDark } = useTheme()
 
 const effectiveHash = computed(() => {
   if (route.path !== '/') return ''
@@ -24,7 +25,14 @@ function isNavActive(path: string) {
   }
   const parsed = parseInPageHash(path)
   if (!parsed) return false
-  return isInPageHashActive(route.path, route.hash || '', parsed.pathOnly, parsed.hash)
+  const currentHash = route.path === '/' ? effectiveHash.value : route.hash || ''
+  return isInPageHashActive(route.path, currentHash, parsed.pathOnly, parsed.hash)
+}
+
+function navToneClass(item: NavItem) {
+  if (item.path.includes('#work')) return 'nav-link--work'
+  if (item.path.includes('#story')) return 'nav-link--about'
+  return 'nav-link--home'
 }
 
 const GLASS_THRESHOLD = 12
@@ -65,96 +73,96 @@ watch(
   },
 )
 
-/** Sliding accent under Home / Work / About — measured so it never fights border-radius. */
-const inPageTrackRef = ref<HTMLElement | null>(null)
-const inPageMarkerStyle = ref<Record<string, string>>({
-  left: '0px',
-  top: '0px',
-  width: '0px',
-  height: '2px',
-  opacity: '0',
+const pillEl = ref<HTMLElement | null>(null)
+const pillReady = ref(false)
+const isPillSquished = ref(false)
+const isPillStretching = ref(false)
+const pillLeft = ref('0px')
+const pillWidth = ref('0px')
+let stretchTimer: ReturnType<typeof setTimeout> | null = null
+let pillTargetIdx = -1
+
+const activePillToneClass = computed(() => {
+  const item = navItems.find(i => isNavActive(i.path))
+  return item ? navToneClass(item) : ''
 })
 
-function updateInPageMarker() {
-  if (!import.meta.client) return
-  const track = inPageTrackRef.value
-  if (!track) return
-  const active = track.querySelector<HTMLElement>('.nav-link--active')
-  if (!active) {
-    inPageMarkerStyle.value = {
-      left: '0px',
-      top: '0px',
-      width: '0px',
-      height: '2px',
-      opacity: '0',
-    }
-    return
-  }
-  const t = track.getBoundingClientRect()
-  const a = active.getBoundingClientRect()
-  const h = 2
-  inPageMarkerStyle.value = {
-    left: `${a.left - t.left}px`,
-    top: `${a.top - t.top + a.height - h}px`,
-    width: `${a.width}px`,
-    height: `${h}px`,
-    opacity: '1',
-  }
+function readActiveLink() {
+  const pill = pillEl.value
+  if (!pill) return null
+  const links = pill.parentElement?.querySelectorAll<HTMLElement>('.nav-link')
+  if (!links?.length) return null
+  const idx = navItems.findIndex(i => isNavActive(i.path))
+  if (idx < 0) return null
+  const el = links[idx]
+  return el?.offsetWidth ? el : null
 }
 
-const { styleAttr: markerStyleAttr, styleId: markerStyleId } = useCspTargetStyle(() => inPageMarkerStyle.value)
+function snapPill() {
+  const el = readActiveLink()
+  if (!el) return
+  pillLeft.value = `${el.offsetLeft}px`
+  pillWidth.value = `${el.offsetWidth}px`
+  pillTargetIdx = navItems.findIndex(i => isNavActive(i.path))
+  pillReady.value = true
+}
 
-let inPageTrackResize: ResizeObserver | null = null
+function repositionPill() {
+  nextTick(() => requestAnimationFrame(() => {
+    if (!pillReady.value) return
+    const links = pillEl.value?.parentElement?.querySelectorAll<HTMLElement>('.nav-link')
+    if (!links?.length) return
+    const newIdx = navItems.findIndex(i => isNavActive(i.path))
+    if (newIdx < 0) return
+    const el = links[newIdx]
+    if (!el?.offsetWidth) return
 
-onMounted(() => {
-  if (!import.meta.client) return
+    // Already animating toward this target — let it finish
+    if (newIdx === pillTargetIdx) return
+    pillTargetIdx = newIdx
+
+    const oldLeft = parseFloat(pillLeft.value) || 0
+    const oldWidth = parseFloat(pillWidth.value) || 0
+    const newLeft = el.offsetLeft
+    const newWidth = el.offsetWidth
+
+    if (stretchTimer) { clearTimeout(stretchTimer); stretchTimer = null }
+
+    // Phase 1: quickly stretch to span both positions
+    const spanLeft = Math.min(oldLeft, newLeft)
+    const spanRight = Math.max(oldLeft + oldWidth, newLeft + newWidth)
+    isPillStretching.value = true
+    pillLeft.value = `${spanLeft}px`
+    pillWidth.value = `${spanRight - spanLeft}px`
+
+    // Phase 2: spring-contract to target position
+    stretchTimer = setTimeout(() => {
+      isPillStretching.value = false
+      pillLeft.value = `${newLeft}px`
+      pillWidth.value = `${newWidth}px`
+      stretchTimer = null
+    }, 110)
+  }))
+}
+
+function squishPill() {
+  isPillSquished.value = true
+  setTimeout(() => { isPillSquished.value = false }, 90)
+}
+
+// On mount: snap to position instantly (no transition), then reveal
+watch(pillEl, (el) => {
+  if (!el) return
+  el.style.transition = 'none'
   nextTick(() => {
-    requestAnimationFrame(() => {
-      updateInPageMarker()
-      if (inPageTrackRef.value) {
-        inPageTrackResize = new ResizeObserver(() => updateInPageMarker())
-        inPageTrackResize.observe(inPageTrackRef.value)
-      }
-    })
+    snapPill()
+    requestAnimationFrame(() => { el.style.transition = '' })
   })
-  window.addEventListener('resize', updateInPageMarker)
-  if ('fonts' in document) {
-    void document.fonts.ready.then(() => {
-      nextTick(() => requestAnimationFrame(updateInPageMarker))
-    })
-  }
-})
+}, { once: true })
 
-onUnmounted(() => {
-  inPageTrackResize?.disconnect()
-  inPageTrackResize = null
-  if (import.meta.client) {
-    window.removeEventListener('resize', updateInPageMarker)
-  }
-})
+watch(() => route.fullPath, repositionPill)
+watch(effectiveHash, repositionPill)
 
-/**
- * Cursor-driven hover underline: each nav link's underline grows from where the
- * pointer entered, and retracts toward where it left. Pure CSS var pass-through.
- */
-function onNavPointerMove(e: PointerEvent) {
-  const target = (e.currentTarget as HTMLElement | null)
-  if (!target) return
-  const r = target.getBoundingClientRect()
-  if (r.width < 1) return
-  const pct = Math.max(0, Math.min(100, ((e.clientX - r.left) / r.width) * 100))
-  target.style.setProperty('--nav-hover-origin', `${pct.toFixed(1)}%`)
-}
-
-watch(
-  [effectiveHash, isCondensed, isHomeHero, () => route.path],
-  () => {
-    nextTick(() => {
-      requestAnimationFrame(updateInPageMarker)
-    })
-  },
-  { flush: 'post' },
-)
 </script>
 
 <template>
@@ -165,6 +173,7 @@ watch(
       'navbar--glass': isGlass,
       'navbar--home-hero': isHomeHero,
       'navbar--home-on-light': isHomeHero && isPastHomeIntro,
+      'navbar--dark': isDark,
     }"
   >
     <div
@@ -175,33 +184,26 @@ watch(
       }"
     >
       <div class="navbar-row">
-        <NuxtLink
-          :to="navTarget('/#intro')"
-          class="navbar-brand"
-          @click="onInPageHashLinkClick($event, '/#intro')"
-        >
-          <span class="navbar-brand-name eyebrow-sans">{{ profile.name }}</span>
-        </NuxtLink>
-
         <nav class="navbar-nav" aria-label="Primary">
-          <div ref="inPageTrackRef" class="navbar-inpage">
+          <div class="navbar-inpage">
+            <div
+              ref="pillEl"
+              class="nav-pill"
+              :class="[activePillToneClass, { 'nav-pill--squish': isPillSquished, 'nav-pill--stretching': isPillStretching, 'nav-pill--ready': pillReady }]"
+              :style="{ left: pillLeft, width: pillWidth }"
+              aria-hidden="true"
+            />
             <NuxtLink
               v-for="item in navItems"
               :key="item.path"
               :to="navTarget(item.path)"
               class="nav-link"
-              :class="{ 'nav-link--active': isNavActive(item.path) }"
+              :class="[navToneClass(item), { 'nav-link--active': isNavActive(item.path) }]"
               :aria-current="isNavActive(item.path) ? 'location' : undefined"
-              @click="onInPageHashLinkClick($event, item.path)"
-              @pointermove="onNavPointerMove"
+              @click="(e) => { squishPill(); onInPageHashLinkClick(e, item.path) }"
             >
               {{ item.title }}
             </NuxtLink>
-            <span
-              class="navbar-inpage__marker"
-              v-bind:[markerStyleAttr]="markerStyleId"
-              aria-hidden="true"
-            />
           </div>
           <ThemeToggle />
         </nav>
@@ -212,6 +214,10 @@ watch(
 
 <style scoped>
 .navbar {
+  --navbar-surface: #fbfbf8;
+  --navbar-ink: #10120f;
+  --navbar-border: color-mix(in srgb, var(--navbar-surface) 78%, transparent);
+
   position: fixed;
   top: 0.85rem;
   left: 0;
@@ -221,6 +227,12 @@ watch(
   padding: 0;
   pointer-events: none;
   transition: top 0.25s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
+}
+
+.navbar--dark {
+  --navbar-surface: #151515;
+  --navbar-ink: var(--fg-primary);
+  --navbar-border: color-mix(in srgb, var(--fg-primary) 46%, transparent);
 }
 
 .navbar--home-hero {
@@ -244,15 +256,16 @@ watch(
 .navbar-inner {
   pointer-events: auto;
   width: fit-content;
-  max-width: calc(100% - clamp(1rem, 4vw, 2.5rem));
+  max-width: calc(100% - clamp(1rem, 6vw, 4rem));
   margin-inline: auto;
-  padding: 0 clamp(0.45rem, 1vw, 0.7rem);
-  border: 1px solid color-mix(in srgb, var(--fg-primary) 12%, transparent);
+  padding: clamp(0.38rem, 1vw, 0.55rem);
+  border: 1px solid var(--navbar-border);
   border-radius: 999px;
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 86%, transparent);
+  background-color: color-mix(in srgb, var(--navbar-surface) 94%, transparent);
   box-shadow:
-    0 0.45rem 1.3rem -1.05rem color-mix(in srgb, var(--ink) 28%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--paper) 52%, transparent);
+    0 1.15rem 2.1rem -1.3rem color-mix(in srgb, var(--ink) 26%, transparent),
+    0 0.25rem 0.65rem -0.55rem color-mix(in srgb, var(--ink) 18%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 82%, transparent);
   transition:
     background-color 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
     backdrop-filter 0.3s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
@@ -261,28 +274,39 @@ watch(
 }
 
 .navbar-inner--glass {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 58%, transparent);
-  border-color: color-mix(in srgb, var(--fg-primary) 16%, transparent);
+  background-color: color-mix(in srgb, var(--navbar-surface) 86%, transparent);
+  border-color: color-mix(in srgb, var(--navbar-ink) 9%, transparent);
   box-shadow:
-    0 1rem 2.6rem -1.7rem color-mix(in srgb, var(--ink) 34%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--paper) 58%, transparent),
-    inset 0 -1px 0 color-mix(in srgb, var(--fg-primary) 7%, transparent);
+    0 1.2rem 2.4rem -1.35rem color-mix(in srgb, var(--ink) 32%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 76%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, var(--fg-primary) 5%, transparent);
   backdrop-filter: blur(18px) saturate(1.28);
   -webkit-backdrop-filter: blur(18px) saturate(1.28);
 }
 
 .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 52%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 18%, var(--fg-muted));
+  background-color: color-mix(in srgb, var(--navbar-surface) 82%, transparent);
+  border-color: color-mix(in srgb, var(--navbar-ink) 10%, transparent);
   box-shadow:
-    0 1.1rem 2.8rem -1.65rem color-mix(in srgb, var(--ink) 38%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--paper) 62%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, transparent);
+    0 1.2rem 2.5rem -1.35rem color-mix(in srgb, var(--ink) 34%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 72%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--fg-primary) 3%, transparent);
+}
+
+.navbar--dark .navbar-inner {
+  background-color: color-mix(in srgb, var(--navbar-surface) 92%, transparent);
+  border-color: var(--navbar-border);
+  box-shadow:
+    0 1.35rem 2.4rem -1.35rem color-mix(in srgb, #000 78%, transparent),
+    inset 0 1px 0 color-mix(in srgb, var(--fg-primary) 22%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #000 72%, transparent);
+  backdrop-filter: blur(18px) saturate(1.12);
+  -webkit-backdrop-filter: blur(18px) saturate(1.12);
 }
 
 :root.dark .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 50%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
+  background-color: color-mix(in srgb, var(--navbar-surface) 90%, transparent);
+  border-color: var(--navbar-border);
   backdrop-filter: blur(18px) saturate(1.28);
   -webkit-backdrop-filter: blur(18px) saturate(1.28);
   box-shadow:
@@ -292,168 +316,123 @@ watch(
 }
 
 :global(html[data-theme='dark']) .navbar-inner--glass {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 46%, transparent) !important;
+  background-color: color-mix(in srgb, var(--navbar-surface) 88%, transparent) !important;
+  border-color: var(--navbar-border);
   backdrop-filter: blur(18px) saturate(1.28) !important;
   -webkit-backdrop-filter: blur(18px) saturate(1.28) !important;
 }
 
 :global(html[data-theme='dark']) .navbar-inner--condensed {
   background-image: none !important;
-  border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
+  border-color: var(--navbar-border);
   backdrop-filter: blur(18px) saturate(1.28) !important;
   -webkit-backdrop-filter: blur(18px) saturate(1.28) !important;
 }
 
 .navbar-row {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  gap: 0.5rem 1rem;
+  justify-content: center;
+  gap: 0;
   width: 100%;
-  min-height: 2.75rem;
-  padding: 0.3rem 0;
+  min-height: 2.6rem;
+  padding: 0;
 }
 
 .navbar--condensed .navbar-row {
   min-height: 2.35rem;
 }
 
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.65rem;
-  flex-shrink: 0;
-  padding: 0 1rem;
-  text-decoration: none;
-  color: var(--fg-primary);
-  transition: transform 0.22s var(--motion-ease-reveal, cubic-bezier(0.16, 1, 0.3, 1));
-}
-
-.navbar-brand:hover {
-  transform: translate3d(0, -1px, 0);
-}
-
-.navbar-brand:active {
-  transform: translate3d(0, 0, 0) scale(0.99);
-  transition-duration: 0.1s;
-}
-
-.navbar-brand-icon {
-  font-size: 1.1rem;
-  color: var(--accent);
-  flex-shrink: 0;
-  transition: color 0.22s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
-}
-
-.navbar-brand:hover .navbar-brand-icon {
-  color: var(--fg-primary);
-}
-
-.navbar-brand-name {
-  font-family: var(--font-brand);
-  font-size: 1rem;
-  font-weight: 900;
-  letter-spacing: 0.02em;
-  text-transform: uppercase;
-  color: var(--fg-primary);
-  white-space: nowrap;
-}
-
-@media (max-width: 480px) {
-  .navbar-brand-icon,
-  .navbar-brand-name {
-    display: none;
-  }
-}
-
 .navbar-nav {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: flex-end;
-  gap: 0.5rem;
+  justify-content: center;
+  gap: clamp(0.3rem, 1vw, 0.6rem);
+  width: auto;
   min-width: 0;
-  flex: 1 1 auto;
-}
-
-@media (min-width: 640px) {
-  .navbar-nav {
-    gap: 0.65rem;
-  }
 }
 
 .navbar-inpage {
   position: relative;
   z-index: 0;
   display: flex;
-  flex-wrap: wrap;
+  flex: 0 1 auto;
   align-items: center;
-  justify-content: flex-end;
-  gap: 0.125rem;
+  justify-content: flex-start;
+  gap: clamp(0.25rem, 0.85vw, 0.45rem);
   min-width: 0;
 }
 
-@media (min-width: 640px) {
-  .navbar-inpage {
-    gap: 0.35rem;
-  }
-}
-
-.navbar-inpage__marker {
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 0;
-  z-index: 0;
-  box-sizing: border-box;
-  border-radius: 1px;
-  background-color: var(--fg-primary);
-  pointer-events: none;
-  transition:
-    left 0.46s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
-    top 0.46s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
-    width 0.46s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
-    opacity 0.26s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
-}
-
 .nav-link {
+  --nav-link-bg: var(--pastel-mint);
+  --nav-link-shadow: var(--signal-mint);
+
   position: relative;
   z-index: 1;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.75rem;
-  padding: 0.45rem 0.5rem;
-  border-radius: var(--radius-control, 0.35rem);
+  min-height: 2.4rem;
+  padding: 0.45rem clamp(0.72rem, 1.65vw, 1.1rem);
+  border-radius: 999px;
   font-family: var(--font-sans);
-  font-size: 0.6875rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--fg-muted);
+  font-size: clamp(0.8rem, 1.35vw, 0.9rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--navbar-ink);
   text-decoration: none;
   transition:
+    background-color 0.22s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    box-shadow 0.25s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
     color 0.2s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
-    opacity 0.2s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
+    opacity 0.2s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    transform 0.28s var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1));
 }
 
-/* Cursor-driven ink underline: grows from where the pointer entered. */
-.nav-link::after {
-  content: '';
+/* Single sliding pill — elastic stretch morph between active states */
+.nav-pill {
   position: absolute;
-  left: 0.5rem;
-  right: 0.5rem;
-  bottom: 0.32rem;
-  height: 1px;
-  background: currentColor;
-  opacity: 0.55;
-  transform: scaleX(0);
-  transform-origin: var(--nav-hover-origin, 50%) center;
-  transition:
-    transform 320ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
-    opacity 200ms var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1));
+  top: 0;
+  bottom: 0;
+  border-radius: 999px;
   pointer-events: none;
+  z-index: 0;
+  background-color: var(--nav-link-bg);
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, #fff 48%, transparent),
+    0 0.35rem 0.7rem -0.55rem color-mix(in srgb, var(--nav-link-shadow) 42%, transparent);
+  opacity: 0;
+  transform-origin: center;
+  transition:
+    left 0.55s var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1)),
+    width 0.55s var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1)),
+    background-color 0.4s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    box-shadow 0.4s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    transform 0.45s var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.nav-pill--ready {
+  opacity: 1;
+}
+
+/* Stretch phase: snappy expansion to span both positions */
+.nav-pill--stretching {
+  transition:
+    left 0.1s ease-out,
+    width 0.1s ease-out,
+    background-color 0.4s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    box-shadow 0.4s var(--motion-ease-standard, cubic-bezier(0.25, 1, 0.5, 1)),
+    transform 0.45s var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1));
+}
+
+.nav-pill--squish {
+  transform: scaleY(0.78) scaleX(0.96);
+  transition-duration: 0.07s;
+}
+
+.nav-link::after {
+  display: none;
 }
 
 @media (min-width: 640px) {
@@ -463,79 +442,84 @@ watch(
   }
 }
 
-.nav-link:hover::after,
-.nav-link:focus-visible::after {
-  transform: scaleX(1);
-}
-
-/* Active link already has a marker bar — suppress hover underline overlap. */
-.nav-link--active::after {
-  display: none;
-}
-
 @media (min-width: 640px) {
   .nav-link {
     min-height: 0;
-    padding: 0.45rem 0.85rem;
-    font-size: 0.75rem;
+    padding-block: 0.48rem;
   }
 }
 
 .nav-link:hover {
-  color: var(--fg-primary);
+  color: var(--navbar-ink);
   opacity: 0.96;
+  transform: translate3d(0, -1.5px, 0);
+  box-shadow: 0 0.25rem 0.6rem -0.35rem color-mix(in srgb, var(--nav-link-shadow) 28%, transparent);
+}
+
+.nav-link:hover:not(.nav-link--active) {
+  background-color: color-mix(in srgb, var(--nav-link-bg) 36%, transparent);
 }
 
 .nav-link:active {
-  filter: brightness(0.95);
-  transition-duration: 0.1s;
+  transform: scale(0.95);
+  transition-duration: 0.08s;
 }
 
 .nav-link--active {
-  color: var(--fg-primary);
-  font-weight: 500;
+  color: var(--pastel-ink);
+  font-weight: 900;
+}
+
+.nav-link--home {
+  --nav-link-bg: var(--pastel-mint);
+  --nav-link-shadow: var(--signal-mint);
+}
+
+.nav-link--work {
+  --nav-link-bg: var(--pastel-sky);
+  --nav-link-shadow: var(--signal-sky);
+}
+
+.nav-link--about {
+  --nav-link-bg: var(--pastel-blush);
+  --nav-link-shadow: var(--signal-blush);
+}
+
+.navbar--dark .nav-link:not(.nav-link--active) {
+  color: color-mix(in srgb, var(--navbar-ink) 94%, var(--pastel-sky));
 }
 
 :root.dark .nav-link--active,
 :root.dark .nav-link.nav-link--active:hover {
-  color: var(--fg-primary);
+  color: var(--pastel-ink);
 }
 
 /* Homepage: keep the pill light at rest; let the hero tint show only after glass engages. */
 .navbar--home-hero .navbar-inner:not(.navbar-inner--condensed) {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 78%, transparent);
-  border-color: color-mix(in srgb, var(--pastel-ink) 16%, var(--pastel-mint));
+  background-color: color-mix(in srgb, var(--navbar-surface) 94%, transparent);
+  border-color: var(--navbar-border);
 }
 
 .navbar--home-hero .navbar-inner--glass {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 42%, transparent);
-  border-color: color-mix(in srgb, var(--pastel-ink) 14%, var(--pastel-mint));
+  background-color: color-mix(in srgb, var(--navbar-surface) 86%, transparent);
+  border-color: color-mix(in srgb, var(--navbar-ink) 9%, transparent);
 }
 
 :root.dark .navbar--home-hero .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 50%, transparent);
-  border-color: color-mix(in srgb, var(--ink) 18%, var(--paper));
-}
-
-.navbar--home-hero .navbar-brand,
-.navbar--home-hero .navbar-brand-name {
-  color: var(--fg-primary);
-}
-
-.navbar--home-hero .navbar-brand-avatar {
-  border-color: color-mix(in srgb, var(--accent) 25%, var(--paper));
+  background-color: color-mix(in srgb, var(--navbar-surface) 90%, transparent);
+  border-color: var(--navbar-border);
 }
 
 .navbar--home-hero .nav-link:not(.nav-link--active) {
-  color: var(--fg-secondary);
+  color: var(--navbar-ink);
 }
 
 .navbar--home-hero .nav-link:not(.nav-link--active):hover {
-  color: var(--fg-primary);
+  color: var(--navbar-ink);
 }
 
 .navbar--home-hero .nav-link.nav-link--active {
-  color: var(--fg-primary);
+  color: var(--pastel-ink);
 }
 
 .navbar--home-hero :deep(.theme-toggle) {
@@ -563,21 +547,12 @@ watch(
 }
 
 /* Scrolled past dark hero: default ink + shell chrome so nav reads on light sections */
-.navbar--home-hero.navbar--home-on-light .navbar-brand,
-.navbar--home-hero.navbar--home-on-light .navbar-brand-name {
-  color: var(--fg-primary);
-}
-
-.navbar--home-hero.navbar--home-on-light .navbar-brand-avatar {
-  border-color: color-mix(in srgb, var(--accent) 25%, var(--paper));
-}
-
 .navbar--home-hero.navbar--home-on-light .navbar-inner:not(.navbar-inner--condensed) {
-  border-color: color-mix(in srgb, var(--rule) 60%, transparent);
+  border-color: color-mix(in srgb, var(--navbar-ink) 9%, transparent);
 }
 
 .navbar--home-hero.navbar--home-on-light .nav-link:not(.nav-link--active) {
-  color: var(--fg-muted);
+  color: var(--navbar-ink);
 }
 
 .navbar--home-hero.navbar--home-on-light :deep(.theme-toggle) {
@@ -605,19 +580,19 @@ watch(
 }
 
 .navbar--home-hero.navbar--home-on-light .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 52%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 18%, var(--fg-muted));
+  background-color: color-mix(in srgb, var(--navbar-surface) 82%, transparent);
+  border-color: color-mix(in srgb, var(--navbar-ink) 10%, transparent);
   box-shadow:
-    0 1.1rem 2.8rem -1.65rem color-mix(in srgb, var(--ink) 38%, transparent),
-    inset 0 1px 0 color-mix(in srgb, var(--paper) 62%, transparent),
-    0 0 0 1px color-mix(in srgb, var(--fg-primary) 4%, transparent);
+    0 1.2rem 2.5rem -1.35rem color-mix(in srgb, var(--ink) 34%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 72%, transparent),
+    0 0 0 1px color-mix(in srgb, var(--fg-primary) 3%, transparent);
   backdrop-filter: blur(18px) saturate(1.28);
   -webkit-backdrop-filter: blur(18px) saturate(1.28);
 }
 
 :root.dark .navbar--home-hero.navbar--home-on-light .navbar-inner--condensed {
-  background-color: color-mix(in srgb, var(--shell-ui-bg) 50%, transparent);
-  border-color: color-mix(in srgb, var(--accent) 20%, var(--fg-muted));
+  background-color: color-mix(in srgb, var(--navbar-surface) 90%, transparent);
+  border-color: var(--navbar-border);
   box-shadow:
     0 1.2rem 3rem -1.7rem color-mix(in srgb, #000 72%, transparent),
     inset 0 1px 0 color-mix(in srgb, var(--ink) 15%, transparent),
@@ -626,11 +601,9 @@ watch(
 
 @media (prefers-reduced-motion: reduce) {
   .navbar,
-  .navbar-brand,
-  .navbar-brand-avatar,
   .navbar-inner,
   .nav-link,
-  .navbar-inpage__marker {
+  .nav-pill {
     transition: none;
   }
 
@@ -638,8 +611,6 @@ watch(
     transition: none;
   }
 
-  .navbar-brand:hover,
-  .navbar-brand:active,
   .nav-link:hover,
   .nav-link:active {
     transform: none;
@@ -647,8 +618,10 @@ watch(
     filter: none;
   }
 
-  .navbar-brand:hover .navbar-brand-avatar {
-    box-shadow: none;
+  .nav-pill--squish,
+  .nav-pill--stretching {
+    transform: none;
+    transition: none;
   }
 }
 </style>
