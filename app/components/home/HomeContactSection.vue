@@ -228,7 +228,7 @@ async function onSubmit() {
 <style scoped>
 .closing-cta-section {
   --home-section-bg: var(--pastel-lemon);
-  --home-rail-inset: clamp(2rem, 4vw, 4rem);
+  --home-rail-inset: 0;
   --signal: var(--ink);
   --fg-primary: var(--pastel-ink);
   --fg-secondary: color-mix(in srgb, var(--pastel-ink) 76%, var(--home-section-bg));
@@ -237,6 +237,7 @@ async function onSubmit() {
   --bg-tertiary: var(--home-section-bg);
   --rule: color-mix(in srgb, var(--pastel-ink) 16%, var(--home-section-bg));
   --btn-attention-bg: var(--pastel-peach);
+  margin-inline: clamp(0.75rem, 2vw, 1.5rem);
   background-color: transparent;
   padding-top: 0;
   padding-bottom: 0;
