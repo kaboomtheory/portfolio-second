@@ -15,11 +15,25 @@ const { scale: avatarScale, displayedOpacity: avatarOpacity } = useScrollExpandI
   minScale: 0.9,
   maxScale: 1.04,
 })
-const avatarStyle = computed(() => ({
-  transform: `scale(${avatarScale.value})`,
-  opacity: avatarOpacity.value,
-}))
-const { styleAttr: avatarStyleAttr, styleId: avatarStyleId } = useCspTargetStyle(() => avatarStyle.value)
+
+const avatarScaleProgress = computed(() => (avatarScale.value - 0.9) / 0.14)
+const avatarOpacityProgress = computed(() => (avatarOpacity.value - 0.25) / 0.75)
+
+usePausedProgressAnimation(avatarRef, {
+  keyframes: [
+    { transform: 'scale(0.9)' },
+    { transform: 'scale(1.04)' },
+  ],
+  progress: avatarScaleProgress,
+})
+
+usePausedProgressAnimation(avatarRef, {
+  keyframes: [
+    { opacity: 0.25 },
+    { opacity: 1 },
+  ],
+  progress: avatarOpacityProgress,
+})
 
 const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollRevealGroup(
   props.story.length,
@@ -43,7 +57,6 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
             <div
               ref="avatarRef"
               class="story-avatar-frame"
-              v-bind:[avatarStyleAttr]="avatarStyleId"
             >
               <div class="story-avatar-surface pastel-grain-shadow">
                 <SanityImage
@@ -150,6 +163,10 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 .story-avatar-frame {
   transition: transform 0.1s ease-out, opacity 0.15s ease-out;
   will-change: transform, opacity;
+}
+
+:global(html.firefox) .story-avatar-frame {
+  will-change: auto;
 }
 
 @media (min-width: 768px) {

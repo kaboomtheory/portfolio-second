@@ -1,19 +1,30 @@
-import Lenis from 'lenis'
+import Lenis, { type LenisOptions } from 'lenis'
 
 export default defineNuxtPlugin((nuxtApp) => {
   const hasFinePointer = window.matchMedia('(pointer: fine)').matches
   const isDesktopViewport = window.matchMedia('(min-width: 1024px)').matches
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
+  const isFirefox = /firefox/i.test(navigator.userAgent)
+
   if (!hasFinePointer || !isDesktopViewport || prefersReducedMotion) {
     return
   }
 
-  const lenis = new Lenis({
-    duration: 1.15,
-    // Slightly cinematic default easing without feeling sluggish.
-    easing: (t: number) => 1 - Math.pow(1 - t, 3.2),
-  })
+  const lenisOptions: LenisOptions = isFirefox
+    ? {
+        // Conservative Gecko path: keep interpolation light to avoid delayed catch-up.
+        lerp: 0.075,
+        smoothWheel: true,
+        wheelMultiplier: 0.7,
+      }
+    : {
+        duration: 1.15,
+        // Slightly cinematic default easing without feeling sluggish.
+        easing: (t: number) => 1 - Math.pow(1 - t, 3.2),
+      }
+
+  const lenis = new Lenis(lenisOptions)
 
   nuxtApp.provide('lenis', lenis)
 

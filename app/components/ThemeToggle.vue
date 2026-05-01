@@ -66,6 +66,11 @@ const { isDark, toggle } = useTheme()
     transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
+:global(html.firefox) .theme-toggle {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
 .theme-toggle--motion:hover {
   box-shadow: var(--shadow-md);
   border-color: color-mix(in srgb, var(--accent) 22%, var(--rule));

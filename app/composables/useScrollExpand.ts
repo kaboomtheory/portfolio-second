@@ -1,4 +1,4 @@
-import { ref, computed, type Ref } from 'vue'
+import { ref, computed, onBeforeUnmount, onMounted, watch, type Ref } from 'vue'
 import {
   useScrollLayoutSubscription,
   useSharedScrollY,
@@ -10,6 +10,10 @@ export interface ScrollExpandOptions {
   maxScale?: number
   centerThreshold?: number
   preExpanded?: boolean
+}
+
+function isFirefoxClient(): boolean {
+  return import.meta.client && /firefox/i.test(navigator.userAgent)
 }
 
 export function useScrollExpand(
@@ -189,6 +193,17 @@ export function useScrollExpandImage(
     preExpanded = false,
   } = options
 
+  if (isFirefoxClient()) {
+    return {
+      progress: ref(1),
+      scale: computed(() => maxScale),
+      isCentered: computed(() => true),
+      displayedOpacity: computed(() => 1),
+      scrollY: useSharedScrollY(),
+      hasScrolled: ref(false),
+    }
+  }
+
   const progress = ref(preExpanded ? 1 : 0)
   const opacity = ref(preExpanded ? 1 : 0)
   const minProgress = ref(preExpanded ? 1 : 0)
@@ -224,6 +239,45 @@ export function useScrollExpandImage(
   })
 
   const isCentered = computed(() => progress.value >= 1 - centerThreshold)
+  const isLayoutActive = ref(true)
+  let observer: IntersectionObserver | null = null
+
+  const observeElement = (element: HTMLElement | null) => {
+    if (!observer || !element) return
+    observer.observe(element)
+  }
+
+  onMounted(() => {
+    if (!import.meta.client || typeof IntersectionObserver === 'undefined') return
+
+    observer = new IntersectionObserver(
+      (entries) => {
+        const nextActive = entries.some((entry) => entry.isIntersecting)
+        if (isLayoutActive.value === nextActive) return
+        isLayoutActive.value = nextActive
+        if (nextActive) {
+          updateLayout('resize')
+        }
+      },
+      {
+        rootMargin: '1200px 0px',
+        threshold: 0,
+      },
+    )
+
+    observeElement(elementRef.value)
+  })
+
+  watch(elementRef, (element, previousElement) => {
+    if (!import.meta.client || !observer) return
+    if (previousElement) observer.unobserve(previousElement)
+    observeElement(element)
+  })
+
+  onBeforeUnmount(() => {
+    observer?.disconnect()
+    observer = null
+  })
 
   const updateLayout = (source: ScrollLayoutTickSource) => {
     if (!import.meta.client || !elementRef.value) {
@@ -234,6 +288,10 @@ export function useScrollExpandImage(
 
     if (source === 'scroll') {
       hasScrolled.value = true
+    }
+
+    if (!isLayoutActive.value) {
+      return
     }
 
     const rect = elementRef.value.getBoundingClientRect()

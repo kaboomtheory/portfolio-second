@@ -608,6 +608,17 @@ watch(effectiveHash, repositionPill)
   -webkit-backdrop-filter: blur(18px) saturate(1.28);
 }
 
+:root.firefox .navbar-inner--glass,
+:root.firefox .navbar--dark .navbar-inner,
+:root.firefox.dark .navbar-inner--condensed,
+:root.firefox[data-theme='dark'] .navbar-inner--glass,
+:root.firefox[data-theme='dark'] .navbar-inner--condensed,
+:root.firefox .navbar--home-hero.navbar--home-on-light .navbar-inner--condensed {
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  background-color: color-mix(in srgb, var(--navbar-surface) 93%, transparent);
+}
+
 :root.dark .navbar--home-hero.navbar--home-on-light .navbar-inner--condensed {
   background-color: color-mix(in srgb, var(--navbar-surface) 90%, transparent);
   border-color: var(--navbar-border);

@@ -49,6 +49,8 @@ function onImageLoad(event: Event) {
 }
 
 const elementRef = ref<HTMLElement | null>(null)
+const frameRef = ref<HTMLElement | null>(null)
+const captionRef = ref<HTMLElement | null>(null)
 
 onMounted(() => {
   const img = elementRef.value?.querySelector('img') ?? null
@@ -61,13 +63,37 @@ const { scale, displayedOpacity } = useScrollExpandImage(elementRef, {
   preExpanded: props.preExpanded,
 })
 
-const { styleAttr: containerStyleAttr, styleId: containerStyleId } = useCspTargetStyle(() => ({
-  opacity: displayedOpacity.value,
-  transform: `scale(${scale.value})`,
-}))
-const { styleAttr: captionStyleAttr, styleId: captionStyleId } = useCspTargetStyle(() => ({
-  opacity: displayedOpacity.value,
-}))
+const scaleProgress = computed(() => {
+  const range = props.maxScale - props.minScale
+  if (Math.abs(range) < 0.0001) return 1
+  return (scale.value - props.minScale) / range
+})
+
+const opacityProgress = computed(() => (displayedOpacity.value - 0.25) / 0.75)
+
+usePausedProgressAnimation(frameRef, {
+  keyframes: computed(() => [
+    { transform: `scale(${props.minScale})` },
+    { transform: `scale(${props.maxScale})` },
+  ]),
+  progress: scaleProgress,
+})
+
+usePausedProgressAnimation(frameRef, {
+  keyframes: [
+    { opacity: 0.25 },
+    { opacity: 1 },
+  ],
+  progress: opacityProgress,
+})
+
+usePausedProgressAnimation(captionRef, {
+  keyframes: [
+    { opacity: 0.25 },
+    { opacity: 1 },
+  ],
+  progress: opacityProgress,
+})
 
 const layoutClass = computed(() => {
   if (props.fitMode === 'fillBox') {
@@ -105,8 +131,8 @@ const innerFrameClass = computed(() => {
     :class="['scroll-expand-image', layoutClass]"
   >
     <div
+      ref="frameRef"
       :class="['scroll-expand-image__frame', innerFrameClass]"
-      v-bind:[containerStyleAttr]="containerStyleId"
     >
       <SanityImage
         :src="src"
@@ -120,8 +146,8 @@ const innerFrameClass = computed(() => {
     </div>
     <p
       v-if="caption"
+      ref="captionRef"
       class="scroll-expand-image__caption mt-3 text-center text-sm"
-      v-bind:[captionStyleAttr]="captionStyleId"
     >
       {{ caption }}
     </p>
@@ -138,6 +164,10 @@ const innerFrameClass = computed(() => {
 <style scoped>
 .scroll-expand-image {
   will-change: transform, opacity;
+}
+
+:global(html.firefox) .scroll-expand-image {
+  will-change: auto;
 }
 
 .scroll-expand-image__frame {

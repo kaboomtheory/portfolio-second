@@ -1,9 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, ref } from 'vue'
 import { useCardTilt } from '~/composables/useCardTilt'
 import { profile } from '~/data/site'
 import type { HomeHeroTaglineLine } from '~/data/home'
-import { useSharedScrollY } from '~/composables/useScrollLayoutBus'
 
 function joinTaglineLine(line: HomeHeroTaglineLine | undefined) {
   return line?.segments?.map((s) => s.text).join('')?.trim() ?? ''
@@ -115,23 +114,6 @@ const roleLabel = computed(() => props.role ?? profile.role)
 const locationLabel = computed(() => props.location ?? profile.location)
 const statusLine = computed(() => (props.availabilityLine ?? '').trim() || 'Open to new projects')
 const isAvailable = computed(() => /\b(open|available|accepting|hiring)\b/i.test(statusLine.value))
-const sharedScrollY = useSharedScrollY()
-const prefersReducedMotion = ref(false)
-
-let motionQuery: MediaQueryList | null = null
-
-const heroLeadTracking = computed(() => {
-  if (prefersReducedMotion.value) return '-0.035em'
-  const progress = Math.min(1, Math.max(0, sharedScrollY.value / 400))
-  const base = -0.035
-  const target = -0.055
-  return `${(base + (target - base) * progress).toFixed(4)}em`
-})
-
-const heroLeadStyle = computed(() => ({
-  letterSpacing: heroLeadTracking.value,
-}))
-const { styleAttr: heroLeadStyleAttr, styleId: heroLeadStyleId } = useCspTargetStyle(() => heroLeadStyle.value)
 
 /** Hero paragraphs: drop lines that only repeat the Location rail. */
 const heroTaglinesDisplay = computed(() => {
@@ -140,21 +122,6 @@ const heroTaglinesDisplay = computed(() => {
   return lines
     .filter((line) => !isLocationOnlyByline(joinTaglineLine(line), loc))
     .map(normalizeTaglineSegments)
-})
-
-function syncMotionPreference() {
-  prefersReducedMotion.value = motionQuery?.matches ?? false
-}
-
-onMounted(() => {
-  if (!import.meta.client) return
-  motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)')
-  syncMotionPreference()
-  motionQuery.addEventListener('change', syncMotionPreference)
-})
-
-onUnmounted(() => {
-  motionQuery?.removeEventListener('change', syncMotionPreference)
 })
 
 const headlineTiltHostRef = ref<HTMLElement | null>(null)

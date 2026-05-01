@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import {
   useSharedScrollY,
   useSharedScrollMax,
   useScrollLayoutSubscription,
 } from '~/composables/useScrollLayoutBus'
 
+const progressRef = ref<HTMLElement | null>(null)
 const scrollY = useSharedScrollY()
 const maxScroll = useSharedScrollMax()
 
@@ -13,16 +14,22 @@ useScrollLayoutSubscription(() => {})
 
 const progress = computed(() => Math.min(1, Math.max(0, scrollY.value / maxScroll.value)))
 const visible = computed(() => progress.value > 0.03)
-const { styleAttr, styleId } = useCspTargetStyle(() => ({
-  transform: `scaleX(${progress.value})`,
-}))
+
+usePausedProgressAnimation(progressRef, {
+  keyframes: [
+    { transform: 'scaleX(0)' },
+    { transform: 'scaleX(1)' },
+  ],
+  progress,
+  respectReducedMotion: false,
+})
 </script>
 
 <template>
   <div
+    ref="progressRef"
     class="scroll-progress"
     :class="{ 'scroll-progress--visible': visible }"
-    v-bind:[styleAttr]="styleId"
     aria-hidden="true"
   />
 </template>
