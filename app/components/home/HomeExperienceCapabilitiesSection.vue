@@ -131,6 +131,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 .resume-marker {
   grid-column: 1 / -1;
   padding-bottom: var(--home-stack-gap-tight, 1rem);
+  margin-inline-start: calc(-1 * clamp(0.75rem, 2vw, 1.5rem));
 }
 
 .resume-cols {
