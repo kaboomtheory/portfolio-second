@@ -264,8 +264,8 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   position: relative;
   width: 100%;
   min-width: 0;
-  padding-top: clamp(0.8rem, 1.6vw, 1.4rem);
-  padding-bottom: clamp(0.45rem, 1.15vw, 0.95rem);
+  padding-top: clamp(1.6rem, 3.2vw, 2.8rem);
+  padding-bottom: clamp(0rem, 0.25vw, 0.2rem);
 }
 
 .intro-bento {
@@ -278,7 +278,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   column-gap: var(--intro-bento-gap);
   align-items: stretch;
   padding-inline: clamp(1.25rem, 5vw, 4rem);
-  padding-top: clamp(1.25rem, 2.5vw, 2rem);
+  padding-top: clamp(0.4rem, 1vw, 0.9rem);
 }
 
 .intro-bento__tile--headline {
@@ -505,8 +505,10 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
 }
 
 .hero-name {
-  margin: 0 0 0.08em;
+  position: relative;
+  margin: 0 0 0.02em;
   padding-inline: clamp(2.25rem, 5vw, 4rem);
+  padding-bottom: clamp(0.45rem, 1vw, 0.7rem);
   font-family: var(--font-serif);
   font-weight: 400;
   line-height: 1.05;
@@ -516,9 +518,30 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   flex-direction: row;
   align-items: center;
   gap: clamp(1rem, 3vw, 2rem);
+  width: 100%;
+  max-width: 100%;
   opacity: 0;
   filter: blur(12px);
   transform: scale(1.04);
+}
+
+.hero-name::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  width: 100vw;
+  transform: translateX(-50%);
+  bottom: 0;
+  height: var(--dotted-rule-weight);
+  background:
+    linear-gradient(
+      90deg,
+      transparent 0 var(--dotted-rule-gap),
+      var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
+    );
+  background-repeat: repeat-x;
+  background-size: var(--dotted-rule-stride) var(--dotted-rule-weight);
+  pointer-events: none;
 }
 
 .hero-name-text {

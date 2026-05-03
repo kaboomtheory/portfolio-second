@@ -62,6 +62,7 @@
   --dotted-rule-weight: 1px;
   --dotted-rule-gap: 2px;
   --dotted-rule-dot: 2px;
+  --dotted-rule-stride: calc(var(--dotted-rule-gap) + var(--dotted-rule-dot));
   --dotted-rule-color: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
 
   /* Pastel tiles (same peach / mint / sky / blush / lemon in light and dark; dark differs in shell + ink) */
@@ -860,12 +861,12 @@ html[data-home-landing='true'] .layout-main-shell::before {
   --home-rail-width: 20px;
   width: var(--home-rail-width);
   background-image:
-    repeating-linear-gradient(
+    linear-gradient(
       180deg,
       transparent 0 var(--dotted-rule-gap),
       var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
     ),
-    repeating-linear-gradient(
+    linear-gradient(
       180deg,
       transparent 0 var(--dotted-rule-gap),
       var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
@@ -875,8 +876,8 @@ html[data-home-landing='true'] .layout-main-shell::before {
     right top;
   background-repeat: repeat-y;
   background-size:
-    var(--dotted-rule-weight) 100%,
-    var(--dotted-rule-weight) 100%;
+    var(--dotted-rule-weight) var(--dotted-rule-stride),
+    var(--dotted-rule-weight) var(--dotted-rule-stride);
   pointer-events: none;
   z-index: 1;
 }
@@ -899,11 +900,13 @@ html[data-home-landing='true'] .layout-main-shell::before {
   margin-top: 0;
   margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
   background:
-    repeating-linear-gradient(
+    linear-gradient(
       90deg,
       transparent 0 var(--dotted-rule-gap),
       var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
     );
+  background-repeat: repeat-x;
+  background-size: var(--dotted-rule-stride) var(--dotted-rule-weight);
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 520ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
@@ -916,17 +919,29 @@ html[data-home-landing='true'] .layout-main-shell::before {
 .page-content--home > section::after {
   content: '';
   display: block;
+  position: static;
+  inset: auto;
+  z-index: auto;
+  pointer-events: auto;
+  border-radius: 0;
+  clip-path: none;
+  -webkit-mask: none;
+  mask: none;
+  opacity: 1;
+  mix-blend-mode: normal;
   width: 100vw;
   max-width: none;
   height: var(--dotted-rule-weight);
   margin-inline: calc(50% - 50vw);
   margin-top: clamp(0.75rem, 2vw, 1.25rem);
   background:
-    repeating-linear-gradient(
+    linear-gradient(
       90deg,
       transparent 0 var(--dotted-rule-gap),
       var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
     );
+  background-repeat: repeat-x;
+  background-size: var(--dotted-rule-stride) var(--dotted-rule-weight);
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 520ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
@@ -1412,14 +1427,11 @@ html[data-home-landing='true'] .layout-main-shell::before {
   }
 }
 
-/* User-requested dark mode shell: keep all page/background surfaces in the near-black shell. */
+/* User-requested dark mode shell: keep global/page surfaces near-black without painting inner home frames. */
 html[data-theme='dark'],
 html[data-theme='dark'] body,
 html[data-theme='dark'] #__nuxt,
 html[data-theme='dark'] .layout-root,
-html[data-theme='dark'] .layout-main-shell,
-html[data-theme='dark'] .layout-page-frame,
-html[data-theme='dark'] main,
 html[data-theme='dark'] .page-content:not(.page-content--home),
 html[data-theme='dark'] .theme-toggle {
   background: #181818 !important;

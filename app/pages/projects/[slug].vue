@@ -652,11 +652,13 @@ useManagedCspRules(() => {
   height: var(--dotted-rule-weight);
   margin-inline: calc(50% - 50vw);
   background:
-    repeating-linear-gradient(
+    linear-gradient(
       90deg,
       transparent 0 var(--dotted-rule-gap),
       var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))
     );
+  background-repeat: repeat-x;
+  background-size: var(--dotted-rule-stride) var(--dotted-rule-weight);
   transform: scaleX(0);
   transform-origin: center;
   transition: transform 520ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));

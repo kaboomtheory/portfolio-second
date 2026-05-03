@@ -237,7 +237,7 @@ watch(effectiveHash, repositionPill)
   --navbar-border: color-mix(in srgb, var(--navbar-surface) 78%, transparent);
 
   position: fixed;
-  top: 0.85rem;
+  top: 1.7rem;
   left: 0;
   right: 0;
   z-index: 50;
