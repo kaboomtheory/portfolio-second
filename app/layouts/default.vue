@@ -41,11 +41,26 @@ function isReducedMotion() {
   return import.meta.client && window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+function resetPageTransitionStyles(el: HTMLElement) {
+  el.style.transition = ''
+  el.style.willChange = ''
+  el.style.opacity = ''
+  el.style.transform = ''
+  el.style.filter = ''
+}
+
 /** Leave: scale-down + light blur + fade WHILE smooth-scrolling to top. */
 function onLeave(el: Element, done: () => void) {
-  if (!import.meta.client || isReducedMotion()) {
-    window.scrollTo(0, 0)
+  if (!import.meta.client) {
+    resetPageTransitionStyles(el as HTMLElement)
     done()
+    return
+  }
+
+  if (isReducedMotion()) {
+    window.scrollTo(0, 0)
+    resetPageTransitionStyles(el as HTMLElement)
+    requestAnimationFrame(done)
     return
   }
 
@@ -64,27 +79,18 @@ function onLeave(el: Element, done: () => void) {
       htmlEl.style.filter = 'blur(0.6rem)'
 
       // Kick off smooth scroll in parallel, perfectly synced to the transition duration
-      const scrollPromise = new Promise<void>(resolve => {
-        if (window.scrollY > 1) {
-          scrollTo(0, { 
-            duration: LEAVE_MS, 
-            preset: 'default', 
-            onComplete: resolve 
-          })
-        } else {
-          resolve()
-        }
-      })
+      if (window.scrollY > 1) {
+        scrollTo(0, {
+          duration: LEAVE_MS,
+          preset: 'default',
+        })
+      }
 
-      // Done when both animation and scroll settle
-      Promise.all([
-        new Promise<void>(r => setTimeout(r, LEAVE_MS + 20)),
-        scrollPromise,
-      ]).then(() => {
-        // Clean up promotion
-        htmlEl.style.willChange = ''
+      // Route completion must not depend on Lenis' onComplete firing.
+      setTimeout(() => {
+        resetPageTransitionStyles(htmlEl)
         done()
-      })
+      }, LEAVE_MS + 20)
     })
   })
 }
@@ -102,14 +108,16 @@ function onBeforeEnter(el: Element) {
 
 /** Enter: fade + unblur + settle into place. */
 function onEnter(el: Element, done: () => void) {
-  if (!import.meta.client || isReducedMotion()) {
-    // Instantly clear hidden state
-    const htmlEl = el as HTMLElement
-    htmlEl.style.willChange = ''
-    htmlEl.style.opacity = ''
-    htmlEl.style.transform = ''
-    htmlEl.style.filter = ''
+  if (!import.meta.client) {
+    resetPageTransitionStyles(el as HTMLElement)
     done()
+    return
+  }
+
+  if (isReducedMotion()) {
+    // Instantly clear hidden state
+    resetPageTransitionStyles(el as HTMLElement)
+    requestAnimationFrame(done)
     return
   }
 
@@ -126,11 +134,7 @@ function onEnter(el: Element, done: () => void) {
 
       setTimeout(() => {
         // Full cleanup — no lingering inline styles or layer promotion
-        htmlEl.style.transition = ''
-        htmlEl.style.willChange = ''
-        htmlEl.style.opacity = ''
-        htmlEl.style.transform = ''
-        htmlEl.style.filter = ''
+        resetPageTransitionStyles(htmlEl)
         done()
       }, ENTER_MS + 20)
     })

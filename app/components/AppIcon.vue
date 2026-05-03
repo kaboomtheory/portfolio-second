@@ -1,26 +1,9 @@
 <script setup lang="ts">
-import lucideIcons from '@iconify-json/lucide/icons.json'
-import remixIcons from '@iconify-json/ri/icons.json'
-import { buildIcon, replaceIDs } from '@iconify/vue'
+import { iconRegistry } from '~/data/iconRegistry'
 
 defineOptions({
   inheritAttrs: false,
 })
-
-type IconCollection = {
-  width?: number
-  height?: number
-  icons: Record<string, {
-    body: string
-    width?: number
-    height?: number
-    left?: number
-    top?: number
-    hFlip?: boolean
-    vFlip?: boolean
-    rotate?: number
-  }>
-}
 
 const props = defineProps<{
   icon: string
@@ -28,39 +11,23 @@ const props = defineProps<{
 
 const attrs = useAttrs()
 
-const collections: Record<string, IconCollection> = {
-  lucide: lucideIcons as IconCollection,
-  ri: remixIcons as IconCollection,
-}
-
 const renderedIcon = computed(() => {
-  const [prefix, name] = props.icon.split(':')
-  if (!prefix || !name) return null
+  const icon = iconRegistry[props.icon as keyof typeof iconRegistry]
 
-  const collection = collections[prefix]
-  const icon = collection?.icons?.[name]
-
-  if (!collection || !icon) {
+  if (!icon) {
     if (import.meta.dev) {
       console.warn(`[AppIcon] Unknown icon: ${props.icon}`)
     }
     return null
   }
 
-  const built = buildIcon({
-    ...icon,
-    width: icon.width || collection.width || 24,
-    height: icon.height || collection.height || 24,
-    left: icon.left || 0,
-    top: icon.top || 0,
-  }, {
-    width: '1em',
-    height: '1em',
-  })
-
   return {
-    body: replaceIDs(built.body),
-    attrs: built.attributes,
+    body: icon.body,
+    attrs: {
+      width: '1em',
+      height: '1em',
+      viewBox: `${icon.left ?? 0} ${icon.top ?? 0} ${icon.width} ${icon.height}`,
+    },
   }
 })
 

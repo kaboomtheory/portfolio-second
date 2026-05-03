@@ -7,7 +7,7 @@ export type SanityImageSize =
   | 'card'
   | 'content'
   | 'hero'
-  /** Homepage / grid project cards — wide enough for retina multi-column layouts */
+  /** Homepage / grid project cards — tuned to avoid oversized first-scroll decodes */
   | 'grid'
 
 const SIZE_PRESETS: Record<
@@ -18,7 +18,7 @@ const SIZE_PRESETS: Record<
   card: { width: 720, quality: 82 },
   content: { width: 1600, quality: 85 },
   hero: { width: 2200, quality: 85 },
-  grid: { width: 2800, quality: 92 },
+  grid: { width: 960, quality: 82 },
 }
 
 const SANITY_CDN_HOST = 'cdn.sanity.io'

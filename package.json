@@ -13,12 +13,10 @@
     "upload:project-images": "node scripts/upload-sanity-project-images.mjs"
   },
   "dependencies": {
-    "@iconify-json/lucide": "^1.2.103",
-    "@iconify-json/ri": "^1.2.10",
-    "@iconify/vue": "^5.0.0",
     "@nuxt/fonts": "^0.14.0",
     "@nuxt/image": "^2.0.0",
     "@nuxtjs/sanity": "^1.12.2",
+    "@nuxtjs/sitemap": "^8.0.15",
     "@sanity/image-url": "^2.0.3",
     "@upstash/ratelimit": "^2.0.8",
     "@upstash/redis": "^1.37.0",

@@ -72,7 +72,7 @@ function handleImageLoad() {
             v-if="hasThumbnail"
             :src="project.thumbnail"
             :alt="project.name"
-            sizes="(max-width: 719px) 100vw, 50vw"
+            sizes="(max-width: 719px) calc(100vw - 2rem), (max-width: 1120px) calc((100vw - 4rem) / 3), 21rem"
             loading="lazy"
             decoding="async"
             class="project-card__image"
@@ -304,7 +304,6 @@ function handleImageLoad() {
   height: 100%;
   min-height: 0;
   transform-style: preserve-3d;
-  will-change: transform;
 }
 
 :root.dark .project-card__media {

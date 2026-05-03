@@ -139,12 +139,19 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   >
     <div class="home-hero-band">
       <h1 class="hero-name" aria-label="Howdy! I'm Bryan.">
-        <img
-          src="/images/layer_animation.apng"
-          alt=""
-          aria-hidden="true"
+        <picture
           class="hero-name-anim"
-        />
+          aria-hidden="true"
+        >
+          <source srcset="/images/layer_animation.webp" type="image/webp">
+          <img
+            src="/images/layer_animation.apng"
+            width="356"
+            height="456"
+            alt=""
+            decoding="async"
+          >
+        </picture>
         <span class="hero-name-text">
           <span class="hero-name-greeting">Howdy!</span>
           <span class="hero-name-main">I'm Bryan.</span>
@@ -282,7 +289,7 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
   align-self: stretch;
   min-width: 0;
   max-width: 100%;
-  overflow: hidden;
+  overflow: visible;
   background-color: var(--pastel-mint);
   border-radius: var(--intro-bento-radius);
   padding:
@@ -520,11 +527,18 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
 }
 
 .hero-name-anim {
+  display: block;
   height: clamp(5rem, 12.3vw + 1.2rem, 11.1rem);
   width: auto;
   flex-shrink: 0;
   pointer-events: none;
   user-select: none;
+}
+
+.hero-name-anim img {
+  display: block;
+  width: auto;
+  height: 100%;
 }
 
 @media (max-width: 640px) {
@@ -543,6 +557,11 @@ useCardTilt(headlineTiltHostRef, headlineTiltRef, { maxDeg: 1.5, lerp: 0.12 })
     width: clamp(5rem, 28vw, 7.5rem);
     height: auto;
     flex-shrink: 0;
+  }
+
+  .hero-name-anim img {
+    width: 100%;
+    height: auto;
   }
 }
 

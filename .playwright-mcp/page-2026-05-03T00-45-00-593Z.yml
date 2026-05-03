@@ -1,0 +1,228 @@
+- generic [ref=e6]:
+  - link "Skip to main content" [ref=e7] [cursor=pointer]:
+    - /url: "#main-content"
+  - banner:
+    - navigation "Primary" [ref=e10]:
+      - generic [ref=e11]:
+        - link "Home" [ref=e12] [cursor=pointer]:
+          - /url: /#intro
+        - link "Work" [ref=e13] [cursor=pointer]:
+          - /url: /#work
+        - link "About" [ref=e14] [cursor=pointer]:
+          - /url: /#story
+      - switch "Switch to dark theme" [ref=e15] [cursor=pointer]:
+        - generic:
+          - img
+          - img
+        - generic:
+          - generic:
+            - img
+  - generic [ref=e17]:
+    - main [ref=e18]:
+      - generic [ref=e20]:
+        - generic [ref=e22]:
+          - heading "Howdy! I'm Bryan." [level=1] [ref=e23]:
+            - generic [ref=e24]:
+              - generic [ref=e25]: Howdy!
+              - generic [ref=e26]: I'm Bryan.
+          - generic [ref=e27]:
+            - paragraph [ref=e31]:
+              - generic [ref=e32]: Multidisciplinary designer
+              - generic [ref=e33]: crafting
+              - generic [ref=e34]: sharp brand visuals
+              - generic [ref=e35]: across
+              - strong [ref=e36]: digital, web, print, and packaging.
+            - complementary "Profile" [ref=e37]:
+              - paragraph [ref=e38]:
+                - generic [ref=e39]: Role
+                - generic [ref=e40]: Visual Designer
+              - paragraph [ref=e41]:
+                - generic [ref=e42]: Location
+                - generic [ref=e43]: Los Angeles, CA
+              - paragraph [ref=e44]:
+                - generic [ref=e45]: Status
+                - generic [ref=e46]: Open to Work
+            - link "Resume" [ref=e49] [cursor=pointer]:
+              - /url: /#story
+              - generic [ref=e50]:
+                - img [ref=e52]
+                - text: Resume
+            - link "LinkedIn (opens in new tab)" [ref=e54] [cursor=pointer]:
+              - /url: https://linkedin.com/
+              - img [ref=e55]
+              - text: LinkedIn
+              - generic [ref=e57]: (opens in new tab)
+        - generic [ref=e58]:
+          - paragraph [ref=e59]: Showing 8 projects.
+          - generic [ref=e60]:
+            - generic [ref=e62]:
+              - generic [ref=e63]: §
+              - generic [ref=e64]: "02"
+              - generic [ref=e65]: —
+              - generic [ref=e66]: Work
+            - generic [ref=e67]:
+              - paragraph [ref=e68]: Case studies and client projects—filtered by tag when available.
+              - group "Filter projects by tag" [ref=e69]:
+                - generic [ref=e70]: Filter
+                - button "All" [pressed] [ref=e71] [cursor=pointer]
+                - button "3D Modeling" [ref=e72] [cursor=pointer]
+                - button "Branding" [ref=e73] [cursor=pointer]
+                - button "Digital" [ref=e74] [cursor=pointer]
+                - button "Logo Design" [ref=e75] [cursor=pointer]
+                - button "Marketing" [ref=e76] [cursor=pointer]
+                - button "Packaging Design" [ref=e77] [cursor=pointer]
+                - button "UI Design" [ref=e78] [cursor=pointer]
+                - button "User Experience" [ref=e79] [cursor=pointer]
+                - button "UX Design" [ref=e80] [cursor=pointer]
+        - generic [ref=e82]:
+          - generic [ref=e85]:
+            - generic [ref=e86]: §
+            - generic [ref=e87]: "03"
+            - generic [ref=e88]: —
+            - generic [ref=e89]: Story
+          - generic [ref=e90]:
+            - figure [ref=e92]:
+              - img "Bryan X. Mendez" [ref=e95]
+            - generic [ref=e96]:
+              - generic [ref=e97]:
+                - paragraph [ref=e98]: I studied Graphic Design at Cal State Northridge, where I got my first taste of collaborative creative work developing print, digital, and social media campaigns at IntersectLA alongside a team of 20+ creatives. From there I spent several years honing my craft across branding, packaging, and visual identity before landing at NAXA Electronics, where I now lead brand design for the Victor and Emerson product lines. My work spans marketing assets for major retail platforms, product packaging, Shopify storefronts, and sales materials for events like CES.
+                - paragraph [ref=e99]: test
+              - link "Download résumé (opens in new tab)" [ref=e101] [cursor=pointer]:
+                - /url: https://drive.google.com/file/d/1fDexujfmkMeus-m_AFPl6WzeEsFvWCM5/view
+                - generic [ref=e102]:
+                  - img [ref=e104]
+                  - text: Download résumé
+                - generic [ref=e108]: (opens in new tab)
+        - generic [ref=e113]:
+          - generic [ref=e117]:
+            - generic [ref=e118]: Last Watched
+            - generic [ref=e119]: A Knight of the Seven Kingdoms
+          - generic [ref=e123]:
+            - generic [ref=e124]: Currently Playing
+            - generic [ref=e125]: Arc Raiders
+          - generic [ref=e129]:
+            - generic [ref=e130]: Currently Watching
+            - generic [ref=e131]: The Pitt
+          - generic [ref=e135]:
+            - generic [ref=e136]: Currently Listening
+            - generic [ref=e137]: Grace
+          - generic [ref=e141]:
+            - generic [ref=e142]: Last Watched
+            - generic [ref=e143]: A Knight of the Seven Kingdoms
+          - generic [ref=e147]:
+            - generic [ref=e148]: Currently Playing
+            - generic [ref=e149]: Arc Raiders
+          - generic [ref=e153]:
+            - generic [ref=e154]: Currently Watching
+            - generic [ref=e155]: The Pitt
+          - generic [ref=e159]:
+            - generic [ref=e160]: Currently Listening
+            - generic [ref=e161]: Grace
+        - generic [ref=e163]:
+          - generic [ref=e165]:
+            - generic [ref=e166]: §
+            - generic [ref=e167]: "04"
+            - generic [ref=e168]: —
+            - generic [ref=e169]: Background
+          - generic [ref=e170]:
+            - region "Experience" [ref=e171]:
+              - heading "Experience" [level=2] [ref=e172]
+              - generic [ref=e173]:
+                - article [ref=e174]:
+                  - img "NAXA Electronics" [ref=e175]
+                  - generic [ref=e176]:
+                    - paragraph [ref=e177]:
+                      - generic [ref=e178]: NAXA Electronics
+                      - generic [ref=e179]: ·
+                      - generic [ref=e180]: 2024 - Present
+                    - heading "Graphic Designer" [level=3] [ref=e181]
+                    - paragraph [ref=e182]: Led brand and marketing asset design for the Victor and Emerson product lines, including packaging for 20+ new products, retail materials for Amazon and Walmart, redesigned Shopify landing and product pages, and catalogs and sales sheets for CES 2025.
+                - article [ref=e183]:
+                  - generic [ref=e184]:
+                    - paragraph [ref=e185]:
+                      - generic [ref=e186]: Freelance
+                      - generic [ref=e187]: ·
+                      - generic [ref=e188]: 2018 - 2023
+                    - heading "Freelance Designer" [level=3] [ref=e189]
+                    - paragraph [ref=e190]: Freelance graphic design on client projects spanning branding, logo design, packaging, print layout, and brochures for small businesses, YouTube creators, and companies in cosmetics and finance.
+                - article [ref=e191]:
+                  - img "IntersectLA" [ref=e192]
+                  - generic [ref=e193]:
+                    - paragraph [ref=e194]:
+                      - generic [ref=e195]: IntersectLA
+                      - generic [ref=e196]: ·
+                      - generic [ref=e197]: 2017 - 2018
+                    - heading "Graphic Designer" [level=3] [ref=e198]
+                    - paragraph [ref=e199]: Collaborated with a team of 20+ creatives to execute strategies across 10+ projects with a 100% client satisfaction rate. Developed print, digital, and social media assets spanning posters, banners, and branded content.
+            - region "Capabilities" [ref=e200]:
+              - heading "Capabilities" [level=2] [ref=e201]
+              - paragraph [ref=e202]: Disciplines I practice day-to-day, plus the software I use to ship work.
+              - generic [ref=e203]:
+                - generic [ref=e204]:
+                  - heading "Design" [level=3] [ref=e205]
+                  - generic [ref=e206]:
+                    - generic [ref=e207]: Branding
+                    - generic [ref=e208]: Print Design
+                    - generic [ref=e209]: Logo Design
+                    - generic [ref=e210]: Visual Design
+                    - generic [ref=e211]: Web Design
+                    - generic [ref=e212]: UX Design
+                    - generic [ref=e213]: CSS/HTML
+                    - generic [ref=e214]: Vibecoding
+                    - generic [ref=e215]: Photo Manipulation
+                    - generic [ref=e216]: Prompt Engineering
+                - generic [ref=e217]:
+                  - heading "Software" [level=3] [ref=e218]
+                  - generic [ref=e219]:
+                    - generic [ref=e220]: Adobe Photoshop
+                    - generic [ref=e221]: Adobe Photoshop
+                    - generic [ref=e222]: Adobe Illustrator
+                    - generic [ref=e223]: Adobe InDesign
+                    - generic [ref=e224]: Figma
+                    - generic [ref=e225]: Framer
+                    - generic [ref=e226]: Easy Catalog
+                    - generic [ref=e227]: Nano Banana Pro
+                    - generic [ref=e228]: Claude Code
+        - region "Let's work together." [ref=e229]:
+          - generic [ref=e232]:
+            - generic [ref=e234]:
+              - generic [ref=e235]: §
+              - generic [ref=e236]: "05"
+              - generic [ref=e237]: —
+              - generic [ref=e238]: Contact
+            - generic [ref=e239]:
+              - heading "Let's work together." [level=2] [ref=e240]
+              - generic [ref=e241]:
+                - generic [ref=e242]:
+                  - generic [ref=e243]:
+                    - textbox "Name ✓" [ref=e244]:
+                      - /placeholder: " "
+                    - generic: Name ✓
+                  - generic [ref=e245]:
+                    - textbox "Email ✓" [ref=e246]:
+                      - /placeholder: " "
+                    - generic: Email ✓
+                - generic [ref=e247]:
+                  - textbox "Subject (optional) ✓" [ref=e248]:
+                    - /placeholder: " "
+                  - generic: Subject (optional) ✓
+                - generic [ref=e249]:
+                  - textbox "Message ✓" [ref=e250]:
+                    - /placeholder: " "
+                  - generic: Message ✓
+                - generic [ref=e251]:
+                  - text: Website
+                  - textbox [ref=e252]
+                - paragraph [ref=e254]: Security verification is not configured.
+                - generic [ref=e255]:
+                  - button "Send message" [disabled] [ref=e256]:
+                    - generic [ref=e257]:
+                      - img [ref=e258]
+                      - text: Send message
+                  - link "LinkedIn (opens in new tab)" [ref=e260] [cursor=pointer]:
+                    - /url: https://linkedin.com/
+                    - img [ref=e261]
+                    - text: LinkedIn
+                    - generic [ref=e263]: (opens in new tab)
+    - contentinfo [ref=e265]:
+      - paragraph [ref=e266]: © 2026 Bryan X. Mendez · Made with care in Los Angeles

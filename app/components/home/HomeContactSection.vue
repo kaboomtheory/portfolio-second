@@ -93,6 +93,7 @@ async function onSubmit() {
     class="closing-cta-section pastel-grain-shadow content-flow"
     aria-labelledby="closing-cta-heading"
   >
+    <div class="section-grain-shadow" aria-hidden="true" />
     <div class="closing-band full-bleed">
       <div class="closing-band__inner">
         <div class="closing-grid grid-12">
@@ -230,7 +231,7 @@ async function onSubmit() {
 <style scoped>
 .closing-cta-section {
   --home-section-bg: var(--pastel-lemon);
-  --home-rail-inset: 0;
+  --home-rail-inset: calc(clamp(1.25rem, 3vw, 2.5rem) - clamp(0.75rem, 2vw, 1.5rem));
   --signal: var(--ink);
   --fg-primary: var(--pastel-ink);
   --fg-secondary: color-mix(in srgb, var(--pastel-ink) 76%, var(--home-section-bg));

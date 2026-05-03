@@ -770,35 +770,19 @@ pre,
   --grain-shadow-y: 9px;
   --grain-shadow-left: 5px;
   --grain-shadow-bottom: 9px;
-  --grain-shadow-color: rgba(0, 0, 0, 0.18);
+  --grain-shadow-color: rgba(0, 0, 0, 0.24);
+  --grain-shadow-mask: url('/images/shadow-grain.png');
+  --grain-shadow-mask-size: 56px 56px;
   position: relative;
   isolation: isolate;
-  filter: url('#pastel-grain-shadow');
 }
 
 html.dark .pastel-grain-shadow,
 html[data-theme='dark'] .pastel-grain-shadow {
-  filter: url('#pastel-grain-shadow-dark');
+  --grain-shadow-color: rgba(255, 255, 255, 1);
 }
 
-html.firefox .pastel-grain-shadow {
-  --grain-shadow-color: rgba(0, 0, 0, 0.24);
-  --grain-shadow-mask: url('/images/shadow-grain.png');
-  --grain-shadow-mask-size: 56px 56px;
-  filter: none;
-}
-
-html.firefox.dark .pastel-grain-shadow,
-html.firefox[data-theme='dark'] .pastel-grain-shadow {
-  filter: none;
-  --grain-shadow-color: rgba(255, 255, 255, 0.28);
-}
-
-html.firefox .pastel-grain-shadow:not(section) {
-  overflow: visible;
-}
-
-html.firefox .pastel-grain-shadow:not(section)::after {
+.pastel-grain-shadow::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -825,26 +809,10 @@ html.firefox .pastel-grain-shadow:not(section)::after {
   mask-mode: alpha;
 }
 
-html.firefox .capability-tag.pastel-grain-shadow {
-  display: inline-block;
-}
-
-html.firefox .resume-section-outer.pastel-grain-shadow > .resume-grid,
-html.firefox .closing-cta-section.pastel-grain-shadow .closing-band {
-  position: relative;
-  isolation: isolate;
-}
-
-html.firefox .closing-cta-section.pastel-grain-shadow .closing-band {
-  overflow: visible;
-}
-
-html.firefox .resume-section-outer.pastel-grain-shadow > .resume-grid::after,
-html.firefox .closing-cta-section.pastel-grain-shadow .closing-band::after {
-  content: '';
+.page-content--home > section.pastel-grain-shadow > .section-grain-shadow {
   position: absolute;
-  inset: 0;
-  z-index: -1;
+  inset: 0 var(--home-rail-inset, 0);
+  z-index: 0;
   pointer-events: none;
   background-color: var(--grain-shadow-color);
   transform: translate(var(--grain-shadow-x), var(--grain-shadow-y));
@@ -866,8 +834,13 @@ html.firefox .closing-cta-section.pastel-grain-shadow .closing-band::after {
   mask-mode: alpha;
 }
 
-.page-content--home > section.pastel-grain-shadow {
-  overflow: visible;
+.page-content--home > section.pastel-grain-shadow > :not(.section-grain-shadow) {
+  position: relative;
+  z-index: 1;
+}
+
+.capability-tag.pastel-grain-shadow {
+  display: inline-block;
 }
 
 .page-content--home .grid-12 {
@@ -974,17 +947,22 @@ html[data-home-landing='true'] .layout-main-shell::before {
   margin-top: clamp(0.95rem, 2.2vw, 1.5rem);
 }
 
+.page-content--home > section.resume-section-outer {
+  --home-section-before-gap: clamp(1rem, 2.4vw, 1.6rem);
+  --home-section-after-gap: clamp(1rem, 2.4vw, 1.6rem);
+}
+
 .page-content--home > section.resume-section-outer::before {
   width: 100vw;
   max-width: none;
   margin-inline: calc(50% - 50vw);
   height: var(--dotted-rule-weight);
-  margin-bottom: clamp(1rem, 2.4vw, 1.6rem);
+  margin-bottom: var(--home-section-before-gap);
 }
 
 .page-content--home > section.resume-section-outer::after {
   height: var(--dotted-rule-weight);
-  margin-top: clamp(1rem, 2.4vw, 1.6rem);
+  margin-top: var(--home-section-after-gap);
 }
 
 /* §04 ticker: a touch more air below the inbound hairline so the marker clears the rule cleanly */
@@ -994,26 +972,32 @@ html[data-home-landing='true'] .layout-main-shell::before {
 
 /* §04 → §05: avoid stacking flex section-gap + thick ticker bottom pad + resume rule + resume grid top */
 .page-content--home > section.status-band.ticker-section + section.resume-section-outer {
+  --home-section-before-gap: clamp(0.75rem, 1.9vw, 1.2rem);
   margin-top: calc(-1 * clamp(0.65rem, 1.75vw, 1.35rem));
 }
 
 .page-content--home > section.status-band.ticker-section + section.resume-section-outer::before {
-  margin-bottom: clamp(0.75rem, 1.9vw, 1.2rem);
+  margin-bottom: var(--home-section-before-gap);
 }
 
 .page-content--home > section.status-band.ticker-section + section.resume-section-outer .resume-grid {
   padding-top: clamp(0.95rem, 2.1vw, 1.85rem);
 }
 
+.page-content--home > section.closing-cta-section {
+  --home-section-before-gap: clamp(1rem, 2.6vw, 1.65rem);
+  --home-section-after-gap: clamp(1rem, 2.6vw, 1.65rem);
+}
+
 .page-content--home > section.closing-cta-section::before {
   width: 100vw;
   max-width: none;
   margin-inline: calc(50% - 50vw);
-  margin-bottom: clamp(1rem, 2.6vw, 1.65rem);
+  margin-bottom: var(--home-section-before-gap);
 }
 
 .page-content--home > section.closing-cta-section::after {
-  margin-top: clamp(1rem, 2.6vw, 1.65rem);
+  margin-top: var(--home-section-after-gap);
 }
 
 .page-section {

@@ -21,6 +21,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 
 <template>
   <RevealOnScroll :delay="240" class="page-section resume-section-outer pastel-grain-shadow content-flow">
+    <div class="section-grain-shadow" aria-hidden="true" />
     <div class="resume-grid grid-12">
       <div class="resume-marker">
         <SectionMarker index="04" word="Background" />
@@ -106,7 +107,7 @@ const { containerRef: xpListRef, visibleItems: xpVisible } = useScrollRevealGrou
 <style scoped>
 .resume-section-outer {
   --home-section-bg: var(--pastel-mint);
-  --home-rail-inset: 0;
+  --home-rail-inset: calc(clamp(1.25rem, 3vw, 2.5rem) - clamp(0.75rem, 2vw, 1.5rem));
   --signal: var(--signal-mint);
   --fg-primary: var(--pastel-ink);
   --fg-secondary: color-mix(in srgb, var(--pastel-ink) 76%, var(--home-section-bg));
