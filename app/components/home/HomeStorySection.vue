@@ -50,7 +50,7 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
         </div>
       </div>
 
-      <!-- One `4 / span 9` block so the split matches Work + Background (marker 1–3, main 4–12) -->
+      <!-- Portrait aside + prose: fixed first column from md up, reading measure on prose -->
       <div class="story-main">
         <div class="story-aside">
           <figure class="story-avatar">
@@ -135,7 +135,7 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 .story-body {
   display: flex;
   flex-direction: column;
-  gap: var(--home-stack-gap-comfortable);
+  gap: 0;
   min-width: 0;
   width: 100%;
 }
@@ -157,7 +157,8 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   gap: var(--home-stack-gap-comfortable);
   min-width: 0;
   width: 100%;
-  max-width: min(12rem, 48vw);
+  max-width: min(13rem, 48vw);
+  align-self: start;
 }
 
 .story-avatar-frame {
@@ -176,24 +177,33 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 
   .story-main {
     grid-column: 1 / -1;
-    grid-template-columns: minmax(0, 0.88fr) minmax(0, 1.12fr);
-    column-gap: clamp(1.25rem, 2.5vw, 2.25rem);
+    grid-template-columns: clamp(10rem, 24vw, 13rem) minmax(0, 1fr);
+    column-gap: clamp(1.25rem, 2vw, 1.75rem);
     row-gap: 0;
+    align-items: start;
   }
 
   .story-body-prose {
-    max-width: none;
+    max-width: min(58ch, 100%);
     padding: 0;
   }
 
   .story-aside {
-    justify-self: start;
     width: 100%;
-    max-width: 22rem;
+    max-width: none;
   }
 
   .story-cta-row {
-    margin-top: clamp(0.75rem, 1.5vw, 1.25rem);
+    margin-top: clamp(1.5rem, 3vw, 2.25rem);
+    padding-top: clamp(1rem, 2vw, 1.5rem);
+    border-top: 1px solid var(--rule-soft);
+  }
+}
+
+@media (min-width: 1024px) {
+  .story-main {
+    grid-template-columns: clamp(11rem, 18vw, 15rem) minmax(0, 1fr);
+    column-gap: clamp(1.5rem, 2.5vw, 2.5rem);
   }
 }
 
@@ -236,7 +246,7 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   flex-wrap: wrap;
   align-items: center;
   gap: 0.75rem;
-  margin-top: 0;
+  margin-top: 1.25rem;
 }
 
 .story-avatar {
@@ -245,7 +255,7 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 
 .story-avatar-frame {
   position: relative;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 4 / 5;
   width: 100%;
   max-width: 100%;
   display: flex;
