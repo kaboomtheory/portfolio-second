@@ -10,7 +10,10 @@
     "postinstall": "nuxt prepare",
     "studio": "npm run dev --prefix sanity-studio",
     "hash:project-password": "node scripts/hash-project-password.mjs",
-    "upload:project-images": "node scripts/upload-sanity-project-images.mjs"
+    "upload:project-images": "node scripts/upload-sanity-project-images.mjs",
+    "optimize:local": "node scripts/optimize-local-images.mjs",
+    "optimize:sanity": "node scripts/optimize-sanity-images.mjs",
+    "optimize:verify": "node scripts/verify-optimization.mjs"
   },
   "dependencies": {
     "@nuxt/fonts": "^0.14.0",
@@ -34,6 +37,7 @@
     "@vue/language-core": "^3.0.0",
     "dotenv": "^16.4.7",
     "sanity": "^3.68.4",
+    "sharp": "^0.34.5",
     "typescript": "^5.9.0",
     "vue-tsc": "^3.0.0"
   },

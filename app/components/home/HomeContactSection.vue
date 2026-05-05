@@ -10,7 +10,7 @@ const props = defineProps<{
 const resolvedLinkedin = computed(() => {
   if (props.linkedinHref) return props.linkedinHref
   const found = socialLinks.find((l) => /linkedin/i.test(l.label))
-  return found?.href ?? 'https://www.linkedin.com/'
+  return found?.href ?? 'https://www.linkedin.com/in/bryan-mendez/'
 })
 
 const name = ref('')

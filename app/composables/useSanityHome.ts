@@ -57,17 +57,3 @@ export function homePageDataFromSanityRaw(
     })),
   }
 }
-
-export function useSanityHome() {
-  const { data: raw, pending: loading, error, refresh } = useFetch<SanityHomePageRaw | null>(
-    '/api/sanity-home',
-    {
-      key: 'sanity-home',
-      getCachedData: (key, nuxtApp) => nuxtApp.payload.data[key] ?? nuxtApp.static.data[key],
-    },
-  )
-
-  const homePage = computed<HomePageData | null>(() => homePageDataFromSanityRaw(raw.value))
-
-  return { homePage, loading, error, refresh }
-}

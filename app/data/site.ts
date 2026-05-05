@@ -9,7 +9,7 @@ export const profile = {
   name: 'Bryan X. Mendez',
   role: 'Visual Designer',
   location: 'Los Angeles, CA',
-  photo: '/profile-photo.jpg',
+  photo: '/profile-photo.webp',
 }
 
 export const navItems: NavItem[] = [
@@ -19,5 +19,5 @@ export const navItems: NavItem[] = [
 ]
 
 export const socialLinks = [
-  { label: 'LinkedIn', icon: 'ri:linkedin-fill', href: 'https://linkedin.com/' },
+  { label: 'LinkedIn', icon: 'ri:linkedin-fill', href: 'https://www.linkedin.com/in/bryan-mendez/' },
 ]

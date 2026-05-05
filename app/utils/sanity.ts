@@ -1,4 +1,4 @@
-import { createImageUrlBuilder, type SanityImageSource } from '@sanity/image-url'
+import { createImageUrlBuilder, type FitMode, type SanityImageSource } from '@sanity/image-url'
 import type { SanityImage } from '~/types/project'
 
 /** Tuned widths for CDN resizing (Sanity Image API). */
@@ -22,6 +22,8 @@ const SIZE_PRESETS: Record<
 }
 
 const SANITY_CDN_HOST = 'cdn.sanity.io'
+const RESPONSIVE_IMAGE_WIDTHS = [400, 720, 960, 1200, 1600, 2200]
+const SANITY_DIMENSION_PATTERN = /-(\d+)x(\d+)\.[a-z0-9]+(?:$|\?)/
 
 function isValidString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0
@@ -46,12 +48,19 @@ export function buildImageUrl(
 ): string {
   if (!canBuildImageSource(source)) return ''
   const { width, quality } = SIZE_PRESETS[size]
-  return buildImageUrlWithProps(source, { width, quality, auto: 'format' })
+  return buildImageUrlWithProps(source, { width, quality, auto: 'format', fit: 'max' })
 }
 
 export function buildImageUrlWithProps(
   source: SanityImageSource,
-  props: { width?: number; height?: number; quality?: number; format?: 'jpg' | 'png' | 'webp'; auto?: 'format' }
+  props: {
+    width?: number
+    height?: number
+    quality?: number
+    format?: 'jpg' | 'png' | 'webp'
+    auto?: 'format'
+    fit?: FitMode
+  },
 ): string {
   if (!canBuildImageSource(source)) return ''
 
@@ -71,10 +80,57 @@ export function buildImageUrlWithProps(
     if (props.quality) builder = builder.quality(props.quality)
     if (props.format) builder = builder.format(props.format)
     if (props.auto) builder = builder.auto(props.auto)
+    if (props.fit) builder = builder.fit(props.fit)
 
     return builder.url() || ''
   } catch {
     return ''
+  }
+}
+
+export function buildSanitySrcset(url: string | null | undefined): string {
+  if (!isValidString(url) || !isSanityCdnUrl(url)) return ''
+
+  try {
+    const parsedUrl = new URL(url)
+    const sourceWidth = Number(parsedUrl.searchParams.get('w'))
+    const maxWidth = Number.isFinite(sourceWidth) && sourceWidth > 0
+      ? sourceWidth
+      : RESPONSIVE_IMAGE_WIDTHS.at(-1) || 2200
+
+    return RESPONSIVE_IMAGE_WIDTHS
+      .filter((width) => width <= maxWidth)
+      .map((width) => {
+        const candidateUrl = new URL(parsedUrl)
+        candidateUrl.searchParams.set('w', String(width))
+        return `${candidateUrl.toString()} ${width}w`
+      })
+      .join(', ')
+  } catch {
+    return ''
+  }
+}
+
+export function getSanityImageDimensions(url: string | null | undefined): {
+  width: number
+  height: number
+} | null {
+  if (!isValidString(url) || !isSanityCdnUrl(url)) return null
+
+  try {
+    const { pathname } = new URL(url)
+    const match = pathname.match(SANITY_DIMENSION_PATTERN)
+    if (!match) return null
+
+    const width = Number(match[1])
+    const height = Number(match[2])
+    if (!Number.isFinite(width) || !Number.isFinite(height) || width <= 0 || height <= 0) {
+      return null
+    }
+
+    return { width, height }
+  } catch {
+    return null
   }
 }
 

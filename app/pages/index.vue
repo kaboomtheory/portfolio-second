@@ -25,7 +25,7 @@ const heroTaglines = computed(() => homeHero.taglines)
 const linkedinHref = computed(() => {
   const list = cmsHome.value?.socialLinks?.length ? cmsHome.value.socialLinks : socialLinks
   const found = list.find((l) => /linkedin/i.test(l.label))
-  return found?.href ?? 'https://www.linkedin.com/'
+  return found?.href ?? 'https://www.linkedin.com/in/bryan-mendez/'
 })
 
 const hero = computed(() => {

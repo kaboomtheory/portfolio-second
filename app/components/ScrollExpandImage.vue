@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { getSanityImageDimensions } from '~/utils/sanity'
+
 interface Props {
   src: string
   alt?: string
@@ -7,7 +9,7 @@ interface Props {
   maxScale?: number
   caption?: string
   layout?: 'full' | 'large' | 'medium'
-  /** Passed to `<NuxtImg sizes>` for responsive srcset */
+  /** Passed to image `sizes` for responsive source selection */
   imgSizes?: string
   /**
    * When true and `caption` is empty, still reserves one caption line of vertical space
@@ -51,11 +53,50 @@ function onImageLoad(event: Event) {
 const elementRef = ref<HTMLElement | null>(null)
 const frameRef = ref<HTMLElement | null>(null)
 const captionRef = ref<HTMLElement | null>(null)
+const imageLoaded = ref(false)
+const imageFailed = ref(false)
+const hasImageSource = computed(() => typeof props.src === 'string' && props.src.trim().length > 0)
+
+const sanityDimensions = computed(() => getSanityImageDimensions(props.src))
+const intrinsicWidth = computed(() => sanityDimensions.value?.width)
+const intrinsicHeight = computed(() => sanityDimensions.value?.height)
+const intrinsicAspect = computed(() => {
+  const width = intrinsicWidth.value
+  const height = intrinsicHeight.value
+  if (!width || !height) return null
+  return width / height
+})
 
 onMounted(() => {
   const img = elementRef.value?.querySelector('img') ?? null
-  if (img?.complete) emitAspectFromImg(img)
+  if (img?.complete) {
+    imageLoaded.value = img.naturalWidth > 0
+    imageFailed.value = img.naturalWidth === 0
+    emitAspectFromImg(img)
+  } else if (intrinsicAspect.value) {
+    emit('aspect', intrinsicAspect.value)
+  }
 })
+
+watch(
+  () => props.src,
+  () => {
+    imageLoaded.value = false
+    imageFailed.value = false
+    if (intrinsicAspect.value) emit('aspect', intrinsicAspect.value)
+  },
+)
+
+function markImageLoaded(event: Event) {
+  imageLoaded.value = true
+  imageFailed.value = false
+  onImageLoad(event)
+}
+
+function markImageFailed() {
+  imageLoaded.value = false
+  imageFailed.value = true
+}
 
 const { scale, displayedOpacity } = useScrollExpandImage(elementRef, {
   minScale: props.minScale,
@@ -132,17 +173,33 @@ const innerFrameClass = computed(() => {
   >
     <div
       ref="frameRef"
-      :class="['scroll-expand-image__frame', innerFrameClass]"
+      :class="[
+        'scroll-expand-image__frame',
+        innerFrameClass,
+        { 'scroll-expand-image__frame--fallback': imageFailed || !hasImageSource },
+      ]"
     >
       <SanityImage
+        v-if="hasImageSource"
         :src="src"
         :alt="alt"
         :sizes="imgSizes"
-        :class="imageClass"
+        :width="intrinsicWidth"
+        :height="intrinsicHeight"
+        :class="[imageClass, { 'scroll-expand-image__img--loaded': imageLoaded && !imageFailed }]"
         loading="lazy"
         decoding="async"
-        @load="onImageLoad"
+        @load="markImageLoaded"
+        @error="markImageFailed"
       />
+      <div
+        v-if="imageFailed || !hasImageSource"
+        class="scroll-expand-image__fallback"
+        role="img"
+        :aria-label="alt || 'Image unavailable'"
+      >
+        Image unavailable
+      </div>
     </div>
     <p
       v-if="caption"
@@ -171,7 +228,34 @@ const innerFrameClass = computed(() => {
 }
 
 .scroll-expand-image__frame {
+  position: relative;
+  background: var(--bg-secondary);
   transition: transform 0.1s ease-out, opacity 0.15s ease-out;
+}
+
+.scroll-expand-image__frame--fallback {
+  min-height: clamp(12rem, 45vw, 36rem);
+}
+
+.scroll-expand-image__frame :deep(img) {
+  color: transparent;
+  opacity: 0;
+  transition: opacity 0.2s ease-out;
+}
+
+.scroll-expand-image__frame :deep(.scroll-expand-image__img--loaded) {
+  opacity: 1;
+}
+
+.scroll-expand-image__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  color: var(--fg-muted);
+  font-size: 0.875rem;
+  text-align: center;
 }
 
 .scroll-expand-image__caption {

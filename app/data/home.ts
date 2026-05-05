@@ -73,30 +73,3 @@ export const aboutMe: AboutMeData = {
     { icon: 'lucide:coffee', label: 'Specialty Coffee' },
   ],
 }
-
-export const currentStatus: StatusItem[] = [
-  {
-    type: 'Games',
-    label: 'Currently Watching',
-    title: 'A Knight of the Seven Kingdoms',
-    content: '',
-    link: '',
-    images: ['/KOTSK.jpg'],
-  },
-  {
-    type: 'Games',
-    label: 'Currently Playing',
-    title: 'Arc Raiders',
-    content: '',
-    link: '',
-    images: ['/arc-raiders.jpg'],
-  },
-  {
-    type: 'Music',
-    label: 'Currently Listening',
-    title: 'Grace',
-    content: 'Jeff Buckley',
-    link: '',
-    images: ['https://upload.wikimedia.org/wikipedia/en/thumb/e/e4/Jeff_Buckley_grace.jpg/250px-Jeff_Buckley_grace.jpg'],
-  },
-]
