@@ -106,6 +106,24 @@ export function getClientIp(event: H3Event): string {
   return getRequestIP(event, { xForwardedFor: true }) || 'unknown'
 }
 
+interface TurnstileVerifyResult {
+  success?: boolean
+  'error-codes'?: string[]
+}
+
+function turnstileErrorMessage(codes: string[]): string {
+  if (codes.includes('invalid-input-secret')) {
+    return 'Turnstile secret key is invalid. In Cloudflare Turnstile, copy the secret for the same widget as NUXT_PUBLIC_TURNSTILE_SITE_KEY into TURNSTILE_SECRET_KEY in .env, then restart npm run dev.'
+  }
+  if (codes.includes('timeout-or-duplicate')) {
+    return 'Verification expired. Complete the challenge again and submit.'
+  }
+  if (codes.includes('invalid-input-response')) {
+    return 'Verification failed. Complete the challenge again and submit.'
+  }
+  return 'Verification failed'
+}
+
 export async function verifyTurnstileToken(
   event: H3Event,
   token: string | null | undefined,
@@ -129,30 +147,54 @@ export async function verifyTurnstileToken(
     remoteip: getClientIp(event),
   })
 
-  const response = await fetch(
-    'https://challenges.cloudflare.com/turnstile/v0/siteverify',
-    {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
+  let response: Response
+  try {
+    response = await fetch(
+      'https://challenges.cloudflare.com/turnstile/v0/siteverify',
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body,
       },
-      body,
-    },
-  )
-
-  if (!response.ok) {
+    )
+  } catch {
     throw createError({
       statusCode: 502,
-      statusMessage: 'Verification service failed',
+      statusMessage: 'Verification service unreachable',
     })
   }
 
-  const result = await response.json() as { success?: boolean }
+  let result: TurnstileVerifyResult = {}
+  try {
+    result = await response.json() as TurnstileVerifyResult
+  } catch {
+    throw createError({
+      statusCode: 502,
+      statusMessage: 'Verification service returned an invalid response',
+    })
+  }
+
+  const codes = result['error-codes'] ?? []
+
+  if (!response.ok) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[turnstile] siteverify HTTP', response.status, codes)
+    }
+    throw createError({
+      statusCode: codes.includes('invalid-input-secret') ? 503 : 502,
+      statusMessage: turnstileErrorMessage(codes),
+    })
+  }
 
   if (!result.success) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error('[turnstile] siteverify rejected token', codes)
+    }
     throw createError({
       statusCode: 403,
-      statusMessage: 'Verification failed',
+      statusMessage: turnstileErrorMessage(codes),
     })
   }
 }

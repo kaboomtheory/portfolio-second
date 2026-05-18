@@ -25,6 +25,14 @@ const turnstileDisabled = useRuntimeConfig().public.turnstileDisabled
 const submitting = ref(false)
 const success = ref(false)
 const formError = ref('')
+const sentName = ref('')
+const nameInputRef = ref<HTMLInputElement | null>(null)
+
+const thankYouFirstName = computed(() => {
+  const raw = sentName.value.trim()
+  if (!raw) return ''
+  return raw.split(/\s+/)[0] ?? ''
+})
 
 /* Magnetic submit button */
 const submitRef = ref<HTMLElement | null>(null)
@@ -35,7 +43,17 @@ function getFetchStatus(e: unknown): number | undefined {
 }
 
 function getFetchMessage(e: unknown): string | undefined {
-  return (e as { statusMessage?: string })?.statusMessage
+  const err = e as {
+    statusMessage?: string
+    message?: string
+    data?: { statusMessage?: string, message?: string }
+  }
+  return (
+    err.data?.statusMessage
+    || err.data?.message
+    || err.statusMessage
+    || err.message
+  )
 }
 
 async function onSubmit() {
@@ -58,6 +76,7 @@ async function onSubmit() {
         turnstileToken: turnstileToken.value,
       },
     })
+    sentName.value = name.value.trim()
     success.value = true
     name.value = ''
     email.value = ''
@@ -72,9 +91,7 @@ async function onSubmit() {
       formError.value = 'Too many attempts. Please wait a moment and try again.'
     } else if (status === 403) {
       formError.value = 'Verification failed. Please complete the challenge again.'
-    } else if (status === 503) {
-      formError.value = msg || 'This form is not set up yet. Please use LinkedIn for now.'
-    } else if (status === 502) {
+    } else if (status === 503 || status === 502) {
       formError.value = msg || 'Could not send your message. Check Resend domain verification and try again.'
     } else if (status === 400) {
       formError.value = msg || 'Please check the fields and try again.'
@@ -84,6 +101,24 @@ async function onSubmit() {
     turnstileRef.value?.reset()
   } finally {
     submitting.value = false
+  }
+}
+
+async function sendAnother() {
+  formError.value = ''
+  sentName.value = ''
+  success.value = false
+  turnstileRef.value?.reset()
+}
+
+function onContactSwapAfterEnter(el: Element) {
+  if (!(el instanceof HTMLElement)) return
+  if (el.classList.contains('closing-success')) {
+    el.focus()
+    return
+  }
+  if (el.tagName === 'FORM') {
+    nameInputRef.value?.focus()
   }
 }
 </script>
@@ -112,19 +147,18 @@ async function onSubmit() {
               Let's work together.
             </h2>
 
-            <p
-              v-if="success"
-              class="closing-status closing-status--ok"
-              role="status"
-              aria-live="polite"
-            >
-              Thanks — your message is on its way.
-            </p>
-
-            <form class="closing-form" novalidate @submit.prevent="onSubmit">
+            <Transition name="contact-swap" mode="out-in" @after-enter="onContactSwapAfterEnter">
+              <form
+                v-if="!success"
+                key="contact-form"
+                class="closing-form"
+                novalidate
+                @submit.prevent="onSubmit"
+              >
               <div class="closing-row">
                 <label class="closing-field">
                   <input
+                    ref="nameInputRef"
                     v-model="name"
                     class="closing-input"
                     type="text"
@@ -224,7 +258,39 @@ async function onSubmit() {
                   <span class="sr-only">(opens in new tab)</span>
                 </a>
               </div>
-            </form>
+              </form>
+
+              <div
+                v-else
+                key="contact-success"
+                class="closing-form closing-success"
+                role="status"
+                aria-live="assertive"
+                tabindex="-1"
+              >
+                <div class="closing-success__icon-wrap" aria-hidden="true">
+                  <AppIcon icon="lucide:circle-check" class="closing-success__icon" />
+                </div>
+                <h3 class="closing-success__title">
+                  Message sent
+                </h3>
+                <p v-if="thankYouFirstName" class="closing-success__lead">
+                  Thanks, {{ thankYouFirstName }}.
+                </p>
+                <p class="closing-success__body">
+                  Thanks for reaching out. I'll reply as soon as I can.
+                </p>
+                <div class="closing-success__actions">
+                  <button
+                    type="button"
+                    class="closing-success__again"
+                    @click="sendAnother"
+                  >
+                    Send another message
+                  </button>
+                </div>
+              </div>
+            </Transition>
           </div>
         </div>
       </div>
@@ -340,15 +406,191 @@ async function onSubmit() {
   color: #000000;
 }
 
-.closing-status {
-  margin: 0;
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  color: var(--fg-secondary);
+.contact-swap-enter-active,
+.contact-swap-leave-active {
+  transition:
+    opacity 0.26s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-.closing-status--ok {
+.contact-swap-leave-active {
+  transition:
+    opacity 0.18s cubic-bezier(0.7, 0, 0.84, 0),
+    transform 0.18s cubic-bezier(0.7, 0, 0.84, 0);
+}
+
+.contact-swap-enter-from,
+.contact-swap-leave-to {
+  opacity: 0;
+  transform: translate3d(0, 10px, 0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .contact-swap-enter-active,
+  .contact-swap-leave-active {
+    transition: none;
+  }
+
+  .contact-swap-enter-from,
+  .contact-swap-leave-to {
+    transform: none;
+  }
+}
+
+.closing-success {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  outline: none;
+}
+
+.closing-success:focus-visible {
+  box-shadow:
+    var(--shadow-md),
+    0 0 0 2px color-mix(in srgb, var(--emphasis) 35%, transparent);
+}
+
+.closing-success__icon-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.15rem;
+}
+
+.closing-success__icon {
+  width: 2.25rem;
+  height: 2.25rem;
   color: var(--signal);
+  flex-shrink: 0;
+  transition: transform 0.26s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.contact-swap-enter-from .closing-success__icon {
+  transform: scale(0.9);
+}
+
+.contact-swap-enter-to .closing-success__icon {
+  transform: scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .closing-success__icon {
+    transition: none;
+  }
+
+  .contact-swap-enter-from .closing-success__icon {
+    transform: none;
+  }
+}
+
+.closing-success__title {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: clamp(1.2rem, 1vw + 1rem, 1.45rem);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  line-height: 1.15;
+  color: var(--pastel-ink);
+}
+
+:global(html[data-theme='dark'] .closing-success__title) {
+  color: var(--ink);
+}
+
+.closing-success__lead,
+.closing-success__body {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.5;
+  color: var(--fg-secondary);
+  max-width: 36rem;
+}
+
+.closing-success__lead {
+  font-weight: 500;
+  color: var(--fg-primary);
+}
+
+.closing-success__actions {
+  margin-top: 0.35rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.closing-success__again {
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  font-weight: 500;
+  letter-spacing: var(--label-tracking-mono);
+  text-transform: uppercase;
+  color: var(--pastel-ink);
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.35rem 0;
+  position: relative;
+  text-decoration: none;
+  transition:
+    color 200ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
+    transform 200ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+:global(html[data-theme='dark'] .closing-success__again) {
+  color: var(--ink);
+}
+
+.closing-success__again::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: var(--pastel-ink);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 240ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+:global(html[data-theme='dark'] .closing-success__again::after) {
+  background: var(--ink);
+}
+
+.closing-success__again:hover {
+  color: var(--pastel-ink);
+  transform: translateY(-1px);
+}
+
+:global(html[data-theme='dark'] .closing-success__again:hover) {
+  color: var(--ink);
+}
+
+.closing-success__again:hover::after {
+  transform: scaleX(1);
+}
+
+.closing-success__again:focus-visible {
+  outline: 2px solid var(--emphasis);
+  outline-offset: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .closing-success__again {
+    transition: color 150ms ease;
+  }
+
+  .closing-success__again::after {
+    transition: none;
+  }
+
+  .closing-success__again:hover {
+    transform: none;
+  }
 }
 
 .closing-form {

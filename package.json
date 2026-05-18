@@ -14,7 +14,8 @@
     "optimize:local": "node scripts/optimize-local-images.mjs",
     "optimize:sanity": "node scripts/optimize-sanity-images.mjs",
     "optimize:verify": "node scripts/verify-optimization.mjs",
-    "check:contact": "node scripts/check-contact-env.mjs"
+    "check:contact": "node scripts/check-contact-env.mjs",
+    "test:contact-resend": "node scripts/test-contact-resend.mjs"
   },
   "dependencies": {
     "@nuxt/fonts": "^0.14.0",

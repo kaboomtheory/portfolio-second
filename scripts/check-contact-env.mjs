@@ -83,6 +83,16 @@ if (turnstileOff) {
   console.log('\n  ℹ NUXT_PUBLIC_TURNSTILE_DISABLED=true — captcha skipped locally')
 }
 
+const fromRaw = env.NUXT_CONTACT_FROM_EMAIL ?? ''
+const fromMatch = fromRaw.match(/<([^>]+)>$/) || fromRaw.match(/^([^\s]+@[^\s]+)$/)
+const fromEmail = fromMatch ? (fromMatch[1] || fromMatch[0]).trim().toLowerCase() : ''
+const expectedDomain = 'bryanxmendez.com'
+
+if (fromEmail && !fromEmail.endsWith(`@${expectedDomain}`)) {
+  console.log(`\n  ⚠ FROM uses @${fromEmail.split('@')[1]} — Resend domain is ${expectedDomain}`)
+  console.log(`    Use contact@${expectedDomain} (no extra quotes in Vercel unless the whole value is quoted once).`)
+}
+
 console.log('')
 
 if (failed) {

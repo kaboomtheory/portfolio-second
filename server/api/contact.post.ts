@@ -39,6 +39,12 @@ interface ResendErrorBody {
   name?: string
 }
 
+function trimResendMessage(message: string, max = 240): string {
+  const trimmed = message.trim()
+  if (!trimmed) return ''
+  return trimmed.length > max ? `${trimmed.slice(0, max)}…` : trimmed
+}
+
 function mapResendFailure(status: number, body: ResendErrorBody): { statusCode: number; statusMessage: string } {
   const message = String(body.message || '')
   const lower = message.toLowerCase()
@@ -46,21 +52,22 @@ function mapResendFailure(status: number, body: ResendErrorBody): { statusCode: 
   if (status === 403 && (lower.includes('domain') || lower.includes('verify'))) {
     return {
       statusCode: 503,
-      statusMessage: 'Sender domain is not verified in Resend yet. Check Resend → Domains.',
+      statusMessage: 'Sender domain is not verified in Resend yet. Open Resend → Domains and wait until bryanxmendez.com shows Verified.',
     }
   }
 
-  if (status === 422 && lower.includes('from')) {
+  if (status === 422 && (lower.includes('from') || lower.includes('domain') || lower.includes('verify'))) {
     return {
       statusCode: 503,
-      statusMessage: 'Sender address is invalid. Use contact@bryanxmendez.com or "Portfolio <contact@bryanxmendez.com>" in NUXT_CONTACT_FROM_EMAIL.',
+      statusMessage:
+        'Resend rejected the sender address. In Vercel, set NUXT_CONTACT_FROM_EMAIL to contact@bryanxmendez.com (domain must be Verified in Resend).',
     }
   }
 
   if (status === 401 || status === 403) {
     return {
       statusCode: 503,
-      statusMessage: 'Email service rejected the request. Check NUXT_RESEND_API_KEY and Resend domain verification.',
+      statusMessage: 'Email service rejected the request. Check NUXT_RESEND_API_KEY and that it belongs to the same Resend account as bryanxmendez.com.',
     }
   }
 
@@ -69,6 +76,11 @@ function mapResendFailure(status: number, body: ResendErrorBody): { statusCode: 
       statusCode: 429,
       statusMessage: 'Too many emails sent. Please try again later.',
     }
+  }
+
+  const detail = trimResendMessage(message)
+  if (detail) {
+    return { statusCode: 503, statusMessage: detail }
   }
 
   return { statusCode: 502, statusMessage: 'Failed to send message' }
@@ -155,7 +167,7 @@ export default defineEventHandler(async (event) => {
     body: JSON.stringify({
       from,
       to: [to],
-      reply_to: [email],
+      reply_to: email,
       subject: subjectLine,
       text,
     }),

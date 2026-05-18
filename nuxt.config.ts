@@ -113,9 +113,9 @@ export default defineNuxtConfig({
    * - NUXT_CONTACT_FROM_EMAIL (verified sender in Resend, e.g. "Portfolio <hello@yourdomain.com>")
    */
   runtimeConfig: {
-    resendApiKey: '',
-    contactToEmail: '',
-    contactFromEmail: '',
+    resendApiKey: process.env.NUXT_RESEND_API_KEY || '',
+    contactToEmail: process.env.NUXT_CONTACT_TO_EMAIL || '',
+    contactFromEmail: process.env.NUXT_CONTACT_FROM_EMAIL || '',
     /** Prefer `TURNSTILE_SECRET_KEY` / `NUXT_TURNSTILE_SECRET_KEY` (Nuxt override). */
     turnstileSecretKey:
       process.env.TURNSTILE_SECRET_KEY || process.env.NUXT_TURNSTILE_SECRET_KEY || '',
