@@ -24,8 +24,9 @@ function buildContentSecurityPolicy(nonce: string, relaxedStyleRoute: boolean): 
     `style-src-attr ${styleAttr}`,
     "img-src 'self' data: blob: https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com " + CLARITY_IMG_SRC,
     "font-src 'self' data: blob:",
-    "connect-src 'self' https://*.api.sanity.io https://*.apicdn.sanity.io https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com https://challenges.cloudflare.com " + CLARITY_CONNECT_SRC,
-    "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://challenges.cloudflare.com",
+    "connect-src 'self' https://*.api.sanity.io https://*.apicdn.sanity.io https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com https://challenges.cloudflare.com https://*.challenges.cloudflare.com " + CLARITY_CONNECT_SRC,
+    "child-src 'self' blob: https://challenges.cloudflare.com",
+    "frame-src 'self' https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://challenges.cloudflare.com",
     "media-src 'self' blob:",
     "worker-src 'self' blob:",
   ].join('; ')

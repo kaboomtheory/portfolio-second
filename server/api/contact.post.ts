@@ -11,9 +11,67 @@ const MAX_SUBJECT = 200
 
 /** Pragmatic check — not exhaustive RFC validation. */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+const FROM_RE = /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/
+const FROM_WITH_NAME_RE = /^[^<>]+<[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+>$/
 
 function str(v: unknown): string {
   return typeof v === 'string' ? v.trim() : ''
+}
+
+/** Strip wrapping quotes Vercel/env files sometimes add around display-name addresses. */
+function normalizeFromAddress(raw: string): string {
+  let value = raw.trim()
+  if (
+    (value.startsWith('"') && value.endsWith('"'))
+    || (value.startsWith('\'') && value.endsWith('\''))
+  ) {
+    value = value.slice(1, -1).trim()
+  }
+  return value
+}
+
+function isValidResendFrom(value: string): boolean {
+  return FROM_RE.test(value) || FROM_WITH_NAME_RE.test(value)
+}
+
+interface ResendErrorBody {
+  message?: string
+  name?: string
+}
+
+function mapResendFailure(status: number, body: ResendErrorBody): { statusCode: number; statusMessage: string } {
+  const message = String(body.message || '')
+  const lower = message.toLowerCase()
+
+  if (status === 403 && (lower.includes('domain') || lower.includes('verify'))) {
+    return {
+      statusCode: 503,
+      statusMessage: 'Sender domain is not verified in Resend yet. Check Resend → Domains.',
+    }
+  }
+
+  if (status === 422 && lower.includes('from')) {
+    return {
+      statusCode: 503,
+      statusMessage: 'Sender address is invalid. Use contact@bryanxmendez.com or "Portfolio <contact@bryanxmendez.com>" in NUXT_CONTACT_FROM_EMAIL.',
+    }
+  }
+
+  if (status === 401 || status === 403) {
+    return {
+      statusCode: 503,
+      statusMessage: 'Email service rejected the request. Check NUXT_RESEND_API_KEY and Resend domain verification.',
+    }
+  }
+
+  if (status === 429) {
+    return {
+      statusCode: 429,
+      statusMessage: 'Too many emails sent. Please try again later.',
+    }
+  }
+
+  return { statusCode: 502, statusMessage: 'Failed to send message' }
 }
 
 export default defineEventHandler(async (event) => {
@@ -58,13 +116,27 @@ export default defineEventHandler(async (event) => {
 
   const config = useRuntimeConfig(event)
   const apiKey = config.resendApiKey
-  const to = config.contactToEmail
-  const from = config.contactFromEmail
+  const to = str(config.contactToEmail)
+  const from = normalizeFromAddress(str(config.contactFromEmail))
 
   if (!apiKey || !to || !from) {
     throw createError({
       statusCode: 503,
       statusMessage: 'Contact form is not configured',
+    })
+  }
+
+  if (!EMAIL_RE.test(to)) {
+    throw createError({
+      statusCode: 503,
+      statusMessage: 'Contact inbox email is invalid. Check NUXT_CONTACT_TO_EMAIL.',
+    })
+  }
+
+  if (!isValidResendFrom(from)) {
+    throw createError({
+      statusCode: 503,
+      statusMessage: 'Sender address is invalid. Use contact@bryanxmendez.com or "Portfolio <contact@bryanxmendez.com>".',
     })
   }
 
@@ -83,21 +155,29 @@ export default defineEventHandler(async (event) => {
     body: JSON.stringify({
       from,
       to: [to],
-      reply_to: email,
+      reply_to: [email],
       subject: subjectLine,
       text,
     }),
   })
 
   if (!res.ok) {
-    let detail = ''
+    let body: ResendErrorBody = {}
     try {
-      detail = JSON.stringify(await res.json())
+      body = (await res.json()) as ResendErrorBody
     } catch {
-      detail = await res.text()
+      try {
+        body = { message: await res.text() }
+      } catch {
+        body = {}
+      }
     }
-    console.error('[contact] Resend failed', res.status, detail)
-    throw createError({ statusCode: 502, statusMessage: 'Failed to send message' })
+    console.error('[contact] Resend failed', res.status, JSON.stringify(body))
+    const mapped = mapResendFailure(res.status, body)
+    throw createError({
+      statusCode: mapped.statusCode,
+      statusMessage: mapped.statusMessage,
+    })
   }
 
   return { ok: true }

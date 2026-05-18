@@ -73,7 +73,9 @@ async function onSubmit() {
     } else if (status === 403) {
       formError.value = 'Verification failed. Please complete the challenge again.'
     } else if (status === 503) {
-      formError.value = 'This form is not set up yet. Please use LinkedIn for now.'
+      formError.value = msg || 'This form is not set up yet. Please use LinkedIn for now.'
+    } else if (status === 502) {
+      formError.value = msg || 'Could not send your message. Check Resend domain verification and try again.'
     } else if (status === 400) {
       formError.value = msg || 'Please check the fields and try again.'
     } else {

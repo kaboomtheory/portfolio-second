@@ -13,7 +13,8 @@
     "upload:project-images": "node scripts/upload-sanity-project-images.mjs",
     "optimize:local": "node scripts/optimize-local-images.mjs",
     "optimize:sanity": "node scripts/optimize-sanity-images.mjs",
-    "optimize:verify": "node scripts/verify-optimization.mjs"
+    "optimize:verify": "node scripts/verify-optimization.mjs",
+    "check:contact": "node scripts/check-contact-env.mjs"
   },
   "dependencies": {
     "@nuxt/fonts": "^0.14.0",

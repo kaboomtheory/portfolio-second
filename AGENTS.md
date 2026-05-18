@@ -99,6 +99,7 @@ A step-by-step production checklist (including post-deploy smoke tests) lives in
 - Generate static output: `npm run generate`
 - Preview production build: `npm run preview`
 - Dependency audit (ad-hoc, before release): `npm audit`
+- Verify contact form env (Resend keys in `.env`): `npm run check:contact`
 - Hash a protected-project password for Sanity: `npm run hash:project-password -- "your-password"`
 - Bulk-upload local project images to Sanity (requires `SANITY_API_TOKEN` in `.env`): `npm run upload:project-images`
 - Sanity Studio lives in `sanity-studio/` (separate `package-lock.json`). After dependency changes there: `npm audit --prefix sanity-studio`.

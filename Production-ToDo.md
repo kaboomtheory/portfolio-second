@@ -44,6 +44,8 @@ Use this before or right after you push the portfolio to production. Check items
 - [ ] Confirm the Turnstile widget renders on both `/#contact` and `/password/<slug>`.
 - [ ] Confirm the email arrives and that **Reply** in your mail client addresses the **visitor’s** email (Reply-To).
 - [ ] If nothing arrives, check **Resend** logs and spam folder.
+- [ ] If the form returns **502** or **503**, open **Vercel → Deployment → Functions → Logs** and search for `[contact] Resend failed`. Common fixes: verify `bryanxmendez.com` in Resend (green), set `NUXT_CONTACT_FROM_EMAIL` to `contact@bryanxmendez.com` (or quoted `"Portfolio <contact@bryanxmendez.com>"`), confirm `NUXT_RESEND_API_KEY` is the production key.
+- [ ] Console **TrustedHTML** / **about:srcdoc** CSP noise from Turnstile is usually harmless if the widget completes; **401** on `challenge-platform/.../pat/` is often Cloudflare PAT and can be ignored.
 - [ ] If you use **password-protected** case studies: open one, confirm redirect to `/password/...`, unlock with the expected password, confirm the project loads and reload still works (cookie + `SANITY_READ_TOKEN` + `PROJECT_UNLOCK_SECRET` on the host).
 - [ ] Open the browser console on a public page and confirm there are **no CSP violations** (Turnstile `api.js` must load with the page CSP nonce — see `TurnstileWidget.vue` and `server/middleware/securityHeaders.ts`).
 
