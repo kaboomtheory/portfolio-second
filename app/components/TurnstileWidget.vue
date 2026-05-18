@@ -20,6 +20,7 @@ const emit = defineEmits<{
 }>()
 
 const { turnstileSiteKey } = useRuntimeConfig().public
+const cspNonce = useState<string>('csp-nonce', () => '')
 const containerRef = ref<HTMLElement | null>(null)
 const widgetId = ref<string | number | null>(null)
 const loading = ref(false)
@@ -57,6 +58,9 @@ function loadTurnstileScript(): Promise<void> {
     script.async = true
     script.defer = true
     script.setAttribute('data-turnstile-script', 'true')
+    if (cspNonce.value) {
+      script.nonce = cspNonce.value
+    }
     script.addEventListener('load', () => resolve(), { once: true })
     script.addEventListener('error', () => reject(new Error('Turnstile failed to load')), {
       once: true,
@@ -90,6 +94,7 @@ async function renderWidget() {
       sitekey: turnstileSiteKey,
       theme: props.theme,
       action: props.action,
+      ...(cspNonce.value ? { nonce: cspNonce.value } : {}),
       callback(token: string) {
         emit('update:modelValue', token)
       },

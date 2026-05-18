@@ -18,7 +18,7 @@ function buildContentSecurityPolicy(nonce: string, relaxedStyleRoute: boolean): 
     "form-action 'self'",
     "frame-ancestors 'none'",
     "object-src 'none'",
-    "script-src 'self' 'nonce-" + nonce + "' https://challenges.cloudflare.com " + CLARITY_SCRIPT_SRC,
+    "script-src 'self' 'nonce-" + nonce + "' 'strict-dynamic' https://challenges.cloudflare.com " + CLARITY_SCRIPT_SRC,
     "script-src-attr 'none'",
     `style-src ${styleSrc.join(' ')}`,
     `style-src-attr ${styleAttr}`,

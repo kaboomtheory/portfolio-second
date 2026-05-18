@@ -1,6 +1,8 @@
 declare global {
   interface TurnstileRenderOptions {
     sitekey: string
+    /** CSP nonce; must match the nonce on the Turnstile `api.js` script tag. */
+    nonce?: string
     theme?: 'auto' | 'light' | 'dark'
     action?: string
     callback?: (token: string) => void

@@ -45,7 +45,7 @@ Use this before or right after you push the portfolio to production. Check items
 - [ ] Confirm the email arrives and that **Reply** in your mail client addresses the **visitor’s** email (Reply-To).
 - [ ] If nothing arrives, check **Resend** logs and spam folder.
 - [ ] If you use **password-protected** case studies: open one, confirm redirect to `/password/...`, unlock with the expected password, confirm the project loads and reload still works (cookie + `SANITY_READ_TOKEN` + `PROJECT_UNLOCK_SECRET` on the host).
-- [ ] Open the browser console on a public page and confirm there are **no CSP violations**.
+- [ ] Open the browser console on a public page and confirm there are **no CSP violations** (Turnstile `api.js` must load with the page CSP nonce — see `TurnstileWidget.vue` and `server/middleware/securityHeaders.ts`).
 
 ## Privacy and content (optional follow-ups)
 
