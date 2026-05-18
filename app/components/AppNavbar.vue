@@ -79,6 +79,10 @@ const isPillSquished = ref(false)
 const isPillStretching = ref(false)
 const pillLeft = ref('0px')
 const pillWidth = ref('0px')
+const { styleAttr, styleId } = useCspTargetStyle(() => ({
+  left: pillLeft.value,
+  width: pillWidth.value,
+}))
 let stretchTimer: ReturnType<typeof setTimeout> | null = null
 let pillTargetIdx = -1
 
@@ -156,10 +160,10 @@ let resizeOb: ResizeObserver | null = null
 
 watch(pillEl, (el) => {
   if (!el) return
-  el.style.transition = 'none'
+  el.classList.add('nav-pill--snap')
   nextTick(() => {
     snapPill()
-    requestAnimationFrame(() => { el.style.transition = '' })
+    requestAnimationFrame(() => { el.classList.remove('nav-pill--snap') })
   })
 
   const container = el.parentElement
@@ -208,7 +212,7 @@ watch(effectiveHash, repositionPill)
               ref="pillEl"
               class="nav-pill"
               :class="[activePillToneClass, { 'nav-pill--squish': isPillSquished, 'nav-pill--stretching': isPillStretching, 'nav-pill--ready': pillReady }]"
-              :style="{ left: pillLeft, width: pillWidth }"
+              v-bind:[styleAttr]="styleId"
               aria-hidden="true"
             />
             <NuxtLink
@@ -432,6 +436,10 @@ watch(effectiveHash, repositionPill)
 
 .nav-pill--ready {
   opacity: 1;
+}
+
+.nav-pill--snap {
+  transition: none !important;
 }
 
 /* Stretch phase: snappy expansion to span both positions */

@@ -1,6 +1,11 @@
 import { randomBytes } from 'node:crypto'
 import { getRequestURL, setResponseHeader } from 'h3'
 
+/** https://learn.microsoft.com/en-us/clarity/setup-and-installation/clarity-csp */
+const CLARITY_SCRIPT_SRC = 'https://www.clarity.ms https://*.clarity.ms'
+const CLARITY_CONNECT_SRC = 'https://*.clarity.ms'
+const CLARITY_IMG_SRC = 'https://c.bing.com https://*.clarity.ms'
+
 function buildContentSecurityPolicy(nonce: string, relaxedStyleRoute: boolean): string {
   const styleSrc = relaxedStyleRoute
     ? [`'self'`, `'nonce-${nonce}'`, `'unsafe-inline'`]
@@ -13,13 +18,13 @@ function buildContentSecurityPolicy(nonce: string, relaxedStyleRoute: boolean): 
     "form-action 'self'",
     "frame-ancestors 'none'",
     "object-src 'none'",
-    "script-src 'self' 'nonce-" + nonce + "' https://challenges.cloudflare.com",
+    "script-src 'self' 'nonce-" + nonce + "' https://challenges.cloudflare.com " + CLARITY_SCRIPT_SRC,
     "script-src-attr 'none'",
     `style-src ${styleSrc.join(' ')}`,
     `style-src-attr ${styleAttr}`,
-    "img-src 'self' data: blob: https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com",
+    "img-src 'self' data: blob: https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com " + CLARITY_IMG_SRC,
     "font-src 'self' data: blob:",
-    "connect-src 'self' https://*.api.sanity.io https://*.apicdn.sanity.io https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com https://challenges.cloudflare.com",
+    "connect-src 'self' https://*.api.sanity.io https://*.apicdn.sanity.io https://cdn.sanity.io https://api.iconify.design https://api.simplesvg.com https://api.unisvg.com https://challenges.cloudflare.com " + CLARITY_CONNECT_SRC,
     "frame-src https://www.youtube.com https://www.youtube-nocookie.com https://player.vimeo.com https://challenges.cloudflare.com",
     "media-src 'self' blob:",
     "worker-src 'self' blob:",

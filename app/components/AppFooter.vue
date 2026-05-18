@@ -24,6 +24,10 @@ const greeting = computed(() =>
     <p class="footer-content mx-auto max-w-[82rem] px-[clamp(1.25rem,3vw,2.5rem)]">
       <span class="footer-brand">&copy; 2026 Bryan X. Mendez</span>
       <span aria-hidden="true"> · </span>
+      <NuxtLink to="/privacy" class="footer-link">
+        Privacy Policy
+      </NuxtLink>
+      <span aria-hidden="true"> · </span>
       <span class="footer-meta">{{ greeting }}</span>
     </p>
   </footer>
@@ -44,6 +48,16 @@ const greeting = computed(() =>
   text-align: center;
   font-size: var(--label-size);
   letter-spacing: 0.02em;
+}
+
+.footer-link {
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+  transition: color 150ms ease;
+}
+
+.footer-link:hover {
+  color: var(--accent);
 }
 
 .footer-meta {
