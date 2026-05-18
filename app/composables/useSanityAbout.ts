@@ -1,4 +1,5 @@
 import type { SanityImage } from '~/types/project'
+import type { AboutStory } from '~/utils/aboutStory'
 import { buildImageUrl } from '~/utils/sanity'
 
 interface SanityAboutHero {
@@ -22,7 +23,7 @@ interface SanityCapability {
 
 interface SanityAboutPage {
   hero?: SanityAboutHero
-  story?: string[]
+  story?: AboutStory
   experiences?: SanityExperienceEntry[]
   capabilities?: SanityCapability[]
   resumeUrl?: string

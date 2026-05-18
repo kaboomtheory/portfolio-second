@@ -34,10 +34,10 @@ export const aboutPage = defineType({
     }),
     defineField({
       name: 'story',
-      type: 'array',
+      type: 'blockContent',
       title: 'Background Story',
-      description: 'Paragraphs for the background section',
-      of: [{ type: 'text', rows: 4 }],
+      description:
+        'Rich text for the background section. Press Enter for a new paragraph; use the toolbar for bold, links, and lists.',
     }),
     defineField({
       name: 'experiences',

@@ -2,13 +2,22 @@
 import { ref, computed } from 'vue'
 import { useScrollExpandImage } from '~/composables/useScrollExpand'
 import { useScrollRevealGroup } from '~/composables/useScrollReveal'
+import type { PortableTextBlock } from '@portabletext/types'
+import type { AboutStory } from '~/utils/aboutStory'
+import { isPortableTextStory, portableTextBlockKey } from '~/utils/aboutStory'
 
 const props = defineProps<{
   name: string
   avatar: string
-  story: string[]
+  story: AboutStory
   resumeHref: string
 }>()
+
+const isRichStory = computed(() => isPortableTextStory(props.story))
+const legacyParagraphs = computed(() => (isRichStory.value ? [] : (props.story as string[])))
+const portableBlocks = computed(() =>
+  isRichStory.value ? (props.story as PortableTextBlock[]) : [],
+)
 
 const avatarRef = ref<HTMLElement | null>(null)
 const { scale: avatarScale, displayedOpacity: avatarOpacity } = useScrollExpandImage(avatarRef, {
@@ -70,19 +79,6 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
               </div>
             </div>
           </figure>
-        </div>
-
-        <div class="story-body">
-          <div ref="storyProseRef" class="story-body-prose">
-            <p
-              v-for="(paragraph, index) in story"
-              :key="index"
-              class="story-paragraph"
-              :class="{ 'para--visible': paraVisible[index] }"
-            >
-              {{ paragraph }}
-            </p>
-          </div>
 
           <div class="story-cta-row">
             <CtaButton
@@ -95,6 +91,31 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
             >
               <template #icon><AppIcon icon="lucide:download" class="text-sm" /></template>
             </CtaButton>
+          </div>
+        </div>
+
+        <div class="story-body">
+          <div ref="storyProseRef" class="story-body-prose">
+            <template v-if="isRichStory">
+              <div
+                v-for="(block, index) in portableBlocks"
+                :key="portableTextBlockKey(block, index)"
+                class="story-paragraph"
+                :class="{ 'para--visible': paraVisible[index] }"
+              >
+                <StoryPortableText :value="[block]" />
+              </div>
+            </template>
+            <template v-else>
+              <p
+                v-for="(paragraph, index) in legacyParagraphs"
+                :key="index"
+                class="story-paragraph"
+                :class="{ 'para--visible': paraVisible[index] }"
+              >
+                {{ paragraph }}
+              </p>
+            </template>
           </div>
         </div>
       </div>
@@ -154,10 +175,12 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 .story-aside {
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: var(--home-stack-gap-comfortable);
   min-width: 0;
   width: 100%;
   max-width: min(13rem, 48vw);
+  margin-inline: auto;
   align-self: start;
 }
 
@@ -191,12 +214,15 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   .story-aside {
     width: 100%;
     max-width: none;
+    margin-inline: 0;
+    align-items: stretch;
   }
 
   .story-cta-row {
-    margin-top: clamp(1.5rem, 3vw, 2.25rem);
-    padding-top: clamp(1rem, 2vw, 1.5rem);
+    margin-top: clamp(0.75rem, 2vw, 1rem);
+    padding-top: clamp(1rem, 2vw, 1.25rem);
     border-top: 1px solid var(--rule-soft);
+    justify-content: flex-start;
   }
 }
 
@@ -215,17 +241,23 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
 }
 
 .story-paragraph {
-  font-family: var(--font-sans);
-  font-size: var(--text-body);
-  line-height: 1.55;
-  color: var(--fg-primary);
-  margin: 0;
-  letter-spacing: 0;
   opacity: 0;
   transform: translateY(6px);
   transition:
     opacity 360ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)),
     transform 360ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.story-paragraph,
+.story-paragraph :deep(p),
+.story-paragraph :deep(ul),
+.story-paragraph :deep(ol),
+.story-paragraph :deep(blockquote) {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.55;
+  color: var(--fg-primary);
+  letter-spacing: 0;
 }
 
 .story-paragraph.para--visible {
@@ -245,12 +277,14 @@ const { containerRef: storyProseRef, visibleItems: paraVisible } = useScrollReve
   display: flex;
   flex-wrap: wrap;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
-  margin-top: 1.25rem;
+  width: 100%;
 }
 
 .story-avatar {
   margin: 0;
+  width: 100%;
 }
 
 .story-avatar-frame {
