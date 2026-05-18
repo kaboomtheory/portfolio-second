@@ -65,12 +65,15 @@ const tickerCells = computed(() => {
               <div class="ticker-cluster">
                 <div class="ticker-item pastel-grain-shadow">
                   <div class="ticker-image">
-                    <img
+                    <SanityImage
                       v-if="cell.item.images?.length"
-                      :src="cell.item.images[0]"
+                      :src="cell.item.images[0] || ''"
                       alt=""
-                    >
-                    <AppIcon v-else-if="cell.item.icon" :icon="cell.item.icon" class="ticker-icon h-5 w-5" />
+                      sizes="48px"
+                      loading="lazy"
+                      decoding="async"
+                    />
+                    <AppIcon v-else-if="cell.item.icon" :icon="cell.item.icon || ''" class="ticker-icon h-5 w-5" />
                   </div>
                   <div class="ticker-info">
                     <span class="ticker-label">{{ cell.item.label }}</span>

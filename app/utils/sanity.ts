@@ -3,6 +3,7 @@ import type { SanityImage } from '~/types/project'
 
 /** Tuned widths for CDN resizing (Sanity Image API). */
 export type SanityImageSize =
+  | 'icon'
   | 'thumbnail'
   | 'card'
   | 'content'
@@ -14,6 +15,7 @@ const SIZE_PRESETS: Record<
   SanityImageSize,
   { width: number; quality: number }
 > = {
+  icon: { width: 160, quality: 78 },
   thumbnail: { width: 400, quality: 80 },
   card: { width: 720, quality: 82 },
   content: { width: 1600, quality: 85 },

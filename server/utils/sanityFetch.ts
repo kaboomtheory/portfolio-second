@@ -23,10 +23,10 @@ export async function sanityQuery<T>(
     }
   }
 
-  const url = `https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}?${searchParams.toString()}`
-
   const headers: Record<string, string> = { Accept: 'application/json' }
   const token = options.useToken ? process.env.SANITY_READ_TOKEN : undefined
+  const host = token ? 'api.sanity.io' : 'apicdn.sanity.io'
+  const url = `https://${projectId}.${host}/v${apiVersion}/data/query/${dataset}?${searchParams.toString()}`
   if (token) {
     headers.Authorization = `Bearer ${token}`
   }

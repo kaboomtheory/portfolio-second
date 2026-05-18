@@ -208,6 +208,16 @@ function isMediaSection(section: ProjectStorySection): boolean {
 const twoColImageSizes
   = '(max-width: 639px) 100vw, (max-width: 1023px) 50vw, min(50vw, 48rem)'
 
+const threeColImageSizes = '(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 33vw'
+const fourColImageSizes = '(max-width: 639px) 100vw, (max-width: 1023px) 50vw, 25vw'
+const imageTextBlockImageSizes = '(max-width: 767px) 100vw, 50vw'
+
+function galleryImageSizes(layout: ProjectStorySection['layout']) {
+  if (layout === 'four-col') return fourColImageSizes
+  if (layout === 'three-col' || layout === 'masonry') return threeColImageSizes
+  return undefined
+}
+
 function chunkImagePairs<T>(items: T[]): T[][] {
   const rows: T[][] = []
   for (let i = 0; i < items.length; i += 2) {
@@ -422,6 +432,7 @@ useManagedCspRules(() => {
                 :src="img.image"
                 :alt="img.alt || `Gallery image ${imgIndex + 1}`"
                 :caption="img.caption"
+                :img-sizes="galleryImageSizes(section.layout)"
                 :pre-expanded="index === firstImageSectionIndex && imgIndex === 0"
               />
             </div>
@@ -433,6 +444,7 @@ useManagedCspRules(() => {
               <ScrollExpandImage
                 :src="section.image || ''"
                 :alt="section.heading || `Image ${index + 1}`"
+                :img-sizes="imageTextBlockImageSizes"
                 :pre-expanded="index === firstImageSectionIndex"
               />
             </div>

@@ -70,7 +70,7 @@ export function useSanityAbout() {
         : null,
       story: raw.value.story || [],
       experiences: (raw.value.experiences || []).map((exp) => {
-        const image = exp.logo ? buildImageUrl(exp.logo, 'thumbnail') : ''
+        const image = exp.logo ? buildImageUrl(exp.logo, 'icon') : ''
         return {
           title: exp.title,
           company: exp.company,

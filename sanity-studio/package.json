@@ -3,7 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "sanity dev"
+    "dev": "sanity dev",
+    "build": "sanity build",
+    "start": "sanity start"
   },
   "dependencies": {
     "sanity": "^3.68.4",

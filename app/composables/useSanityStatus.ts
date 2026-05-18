@@ -22,7 +22,7 @@ export function useSanityStatus() {
     if (!rawStatus.value || !Array.isArray(rawStatus.value)) return []
 
     return rawStatus.value.map((item: SanityStatusItem) => {
-      const image = item.image ? buildImageUrl(item.image, 'thumbnail') : ''
+      const image = item.image ? buildImageUrl(item.image, 'icon') : ''
       return {
         type: 'Logo',
         label: item.label || '',
