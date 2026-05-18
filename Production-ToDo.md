@@ -33,6 +33,7 @@ Use this before or right after you push the portfolio to production. Check items
 - [ ] Hosting must run **Nitro server routes** (for example Vercel / Netlify / Cloudflare with serverless functions). A **static-only** host with no `/api/*` will not run `POST /api/contact`.
 - [ ] Create an **Upstash Redis** database and copy the REST URL/token into the host environment.
 - [ ] Create a **Cloudflare Turnstile** widget for the production domain and set both the site key and secret.
+- [ ] **Turnstile hostnames (fixes console `110200`):** In [Turnstile → your widget → Hostname management](https://dash.cloudflare.com/?to=/:account/turnstile), add the **exact** hostname from the browser bar (e.g. `bryanxmendez.com` — no `https://`, no path). The site key in Vercel must be from **that same widget**. If `110200` persists, create a **new** widget with `bryanxmendez.com` as the only hostname, paste the new site key + secret into Vercel **Production**, and redeploy. For Vercel preview URLs, add each `*.vercel.app` hostname you use (wildcards are not supported — add the full preview hostname). Temporary bypass: `NUXT_PUBLIC_TURNSTILE_DISABLED=true` (contact form works without captcha; use only while debugging).
 - [ ] Re-enter each protected-project password as a **bcrypt hash** in Sanity. Use `npm run hash:project-password "your-password"` locally and paste the output into `passwordHash`.
 
 - [ ] Local smoke before push: `npm run build` (and optionally `npx nuxi typecheck` if your toolchain is clean).

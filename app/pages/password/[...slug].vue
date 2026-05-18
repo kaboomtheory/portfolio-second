@@ -111,7 +111,7 @@ useSeoMeta({
           ref="turnstileRef"
           v-model="turnstileToken"
           action="project_unlock"
-          @error="error = 'Verification failed to load. Refresh and try again.'"
+          @error="error = $event"
         />
 
         <p v-if="error" class="password-page__error text-xs">{{ error }}</p>

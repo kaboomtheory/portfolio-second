@@ -5,23 +5,31 @@ const props = withDefaults(defineProps<{
   modelValue?: string
   theme?: TurnstileTheme
   action?: string
+  /** Wait until true before loading Turnstile (e.g. after scroll-reveal). */
+  ready?: boolean
 }>(), {
   modelValue: '',
   theme: 'auto',
   action: 'submit',
+  ready: true,
 })
 
 const emit = defineEmits<{
   'update:modelValue': [token: string]
-  error: []
+  error: [message: string]
 }>()
 
 const { turnstileSiteKey } = useRuntimeConfig().public
 const containerRef = ref<HTMLElement | null>(null)
 const widgetId = ref<string | number | null>(null)
 const loading = ref(false)
-
 let loadPromise: Promise<void> | null = null
+
+function turnstileHostErrorMessage(): string {
+  const host = window.location.hostname
+  const keyHint = turnstileSiteKey ? `${turnstileSiteKey.slice(0, 12)}…` : 'your site key'
+  return `Security check failed for “${host}”. In Cloudflare Turnstile → widget (${keyHint}) → Hostname management, add ${host} (hostname only, no https://), save, then refresh.`
+}
 
 function getTurnstile(): Turnstile | undefined {
   return window.turnstile
@@ -64,7 +72,7 @@ function clearToken() {
 }
 
 async function renderWidget() {
-  if (!import.meta.client || !containerRef.value || !turnstileSiteKey) return
+  if (!import.meta.client || !containerRef.value || !turnstileSiteKey || widgetId.value != null) return
 
   loading.value = true
 
@@ -90,7 +98,7 @@ async function renderWidget() {
       },
       'error-callback'() {
         clearToken()
-        emit('error')
+        emit('error', turnstileHostErrorMessage())
       },
     })
   } finally {
@@ -108,10 +116,16 @@ function reset() {
 
 defineExpose({ reset })
 
-onMounted(() => {
-  if (!turnstileSiteKey) return
-  renderWidget().catch(() => emit('error'))
-})
+watch(
+  () => props.ready,
+  async (ready) => {
+    if (!ready || !turnstileSiteKey) return
+    await nextTick()
+    if (!containerRef.value) return
+    renderWidget().catch(() => emit('error', turnstileHostErrorMessage()))
+  },
+  { immediate: true },
+)
 
 onBeforeUnmount(() => {
   const turnstile = getTurnstile()

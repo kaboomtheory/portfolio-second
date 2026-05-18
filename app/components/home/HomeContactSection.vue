@@ -93,6 +93,7 @@ async function onSubmit() {
     class="closing-cta-section pastel-grain-shadow content-flow"
     aria-labelledby="closing-cta-heading"
   >
+    <template #default="{ visible }">
     <div class="section-grain-shadow" aria-hidden="true" />
     <div class="closing-band full-bleed">
       <div class="closing-band__inner">
@@ -194,7 +195,8 @@ async function onSubmit() {
                 ref="turnstileRef"
                 v-model="turnstileToken"
                 action="contact"
-                @error="formError = 'Verification failed to load. Refresh and try again.'"
+                :ready="visible"
+                @error="formError = $event"
               />
 
               <div class="closing-actions">
@@ -225,6 +227,7 @@ async function onSubmit() {
         </div>
       </div>
     </div>
+    </template>
   </RevealOnScroll>
 </template>
 

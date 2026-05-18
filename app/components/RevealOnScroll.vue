@@ -27,6 +27,6 @@ const { elementRef, isVisible } = useScrollReveal({
     class="reveal-on-scroll"
     :class="{ 'reveal-on-scroll--visible': isVisible }"
   >
-    <slot />
+    <slot :visible="isVisible" />
   </section>
 </template>
