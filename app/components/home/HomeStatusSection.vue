@@ -45,6 +45,23 @@ const tickerCells = computed(() => {
   }
   return out
 })
+
+function isExternalStatusLink(href: string): boolean {
+  return /^https?:\/\//i.test(href.trim())
+}
+
+function statusLinkTarget(href: string): '_blank' | undefined {
+  return isExternalStatusLink(href) ? '_blank' : undefined
+}
+
+function statusLinkRel(href: string): string | undefined {
+  return isExternalStatusLink(href) ? 'noopener noreferrer' : undefined
+}
+
+function statusItemAriaLabel(item: StatusItem): string {
+  const parts = [item.label, item.title].filter(Boolean)
+  return parts.join(': ')
+}
 </script>
 
 <template>
@@ -63,7 +80,14 @@ const tickerCells = computed(() => {
           <div class="ticker-content">
             <template v-for="cell in tickerCells" :key="cell.key">
               <div class="ticker-cluster">
-                <div class="ticker-item pastel-grain-shadow">
+                <component
+                  :is="cell.item.link ? 'a' : 'div'"
+                  :href="cell.item.link || undefined"
+                  :target="cell.item.link ? statusLinkTarget(cell.item.link) : undefined"
+                  :rel="cell.item.link ? statusLinkRel(cell.item.link) : undefined"
+                  :aria-label="cell.item.link ? statusItemAriaLabel(cell.item) : undefined"
+                  class="ticker-item pastel-grain-shadow"
+                >
                   <div class="ticker-image">
                     <SanityImage
                       v-if="cell.item.images?.length"
@@ -73,13 +97,18 @@ const tickerCells = computed(() => {
                       loading="lazy"
                       decoding="async"
                     />
-                    <AppIcon v-else-if="cell.item.icon" :icon="cell.item.icon || ''" class="ticker-icon h-5 w-5" />
+                    <AppIcon
+                      v-else-if="cell.item.icon"
+                      :icon="cell.item.icon"
+                      class="ticker-icon h-5 w-5"
+                      aria-hidden="true"
+                    />
                   </div>
                   <div class="ticker-info">
                     <span class="ticker-label">{{ cell.item.label }}</span>
                     <span class="ticker-title">{{ cell.item.title }}</span>
                   </div>
-                </div>
+                </component>
               </div>
             </template>
           </div>
@@ -88,15 +117,20 @@ const tickerCells = computed(() => {
     </div>
   </RevealOnScroll>
   <div v-else class="status-band status-stack" role="list">
-    <div
+    <component
+      :is="item.link ? 'a' : 'div'"
       v-for="(item, i) in statusItems"
       :key="`${item.label}-${i}`"
+      :href="item.link || undefined"
+      :target="item.link ? statusLinkTarget(item.link) : undefined"
+      :rel="item.link ? statusLinkRel(item.link) : undefined"
+      :aria-label="item.link ? statusItemAriaLabel(item) : undefined"
       class="status-stack-row"
       role="listitem"
     >
       <span class="status-stack-label">{{ item.label }}</span>
       <span class="status-stack-title">{{ item.title }}</span>
-    </div>
+    </component>
   </div>
 </template>
 
@@ -240,6 +274,28 @@ const tickerCells = computed(() => {
   color: var(--fg-muted);
   opacity: 0.45;
   user-select: none;
+}
+
+a.ticker-item {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+a.ticker-item:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--pastel-ink) 55%, transparent);
+  outline-offset: 3px;
+}
+
+a.status-stack-row {
+  text-decoration: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+a.status-stack-row:focus-visible {
+  outline: 2px solid color-mix(in srgb, var(--pastel-ink) 55%, transparent);
+  outline-offset: 2px;
 }
 
 .ticker-item {

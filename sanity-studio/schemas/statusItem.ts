@@ -41,7 +41,8 @@ export const statusItem = defineType({
       name: 'icon',
       type: 'string',
       title: 'Icon',
-      description: 'Iconify icon name (e.g., lucide:music). If provided, image is hidden.',
+      description:
+        'Bundled icon key (e.g. lucide:music, lucide:gamepad-2). If set, the image field is ignored on the site. See app/data/iconRegistry.ts for allowed values.',
     }),
     defineField({
       name: 'order',

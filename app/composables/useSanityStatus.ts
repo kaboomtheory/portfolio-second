@@ -1,4 +1,5 @@
 import type { StatusItem } from '~/data/home'
+import { resolveRegistryIcon } from '~/data/iconRegistry'
 import { buildImageUrl } from '~/utils/sanity'
 
 interface SanityStatusItem {
@@ -22,15 +23,17 @@ export function useSanityStatus() {
     if (!rawStatus.value || !Array.isArray(rawStatus.value)) return []
 
     return rawStatus.value.map((item: SanityStatusItem) => {
-      const image = item.image ? buildImageUrl(item.image, 'icon') : ''
+      const icon = resolveRegistryIcon(item.icon)
+      const image =
+        !icon && item.image ? buildImageUrl(item.image, 'icon') : ''
       return {
         type: 'Logo',
         label: item.label || '',
         title: item.title || '',
         content: item.content || '',
-        link: item.link || '',
+        link: item.link?.trim() || '',
         images: image ? [image] : [],
-        icon: item.icon,
+        icon,
       }
     })
   })
