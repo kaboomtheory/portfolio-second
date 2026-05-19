@@ -1,5 +1,31 @@
+import { tryUseNuxtApp } from '#app'
 import { createImageUrlBuilder, type FitMode, type SanityImageSource } from '@sanity/image-url'
 import type { SanityImage } from '~/types/project'
+
+const DEFAULT_SANITY_PROJECT_ID = 'ns0czoug'
+const DEFAULT_SANITY_DATASET = 'production'
+
+function getSanityImageConfig(): { projectId: string; dataset: string } {
+  const publicConfig = tryUseNuxtApp()?.runtimeConfig?.public as
+    | { sanityProjectId?: string; sanityDataset?: string }
+    | undefined
+
+  const projectId = (
+    publicConfig?.sanityProjectId
+    || process.env.SANITY_PROJECT_ID
+    || process.env.NUXT_PUBLIC_SANITY_PROJECT_ID
+    || DEFAULT_SANITY_PROJECT_ID
+  ).trim()
+
+  const dataset = (
+    publicConfig?.sanityDataset
+    || process.env.SANITY_DATASET
+    || process.env.NUXT_PUBLIC_SANITY_DATASET
+    || DEFAULT_SANITY_DATASET
+  ).trim()
+
+  return { projectId, dataset }
+}
 
 /** Tuned widths for CDN resizing (Sanity Image API). */
 export type SanityImageSize =
@@ -66,9 +92,7 @@ export function buildImageUrlWithProps(
 ): string {
   if (!canBuildImageSource(source)) return ''
 
-  const config = useRuntimeConfig()
-  const projectId = (config.public.sanityProjectId as string)?.trim()
-  const dataset = (config.public.sanityDataset as string)?.trim()
+  const { projectId, dataset } = getSanityImageConfig()
   if (!projectId || !dataset) return ''
 
   try {

@@ -105,7 +105,7 @@ const { styleAttr, styleId } = useCspTargetStyle(() => accentStyle.value)
           {{ metaLine }}
         </p>
         <div class="construction-icon-wrap" aria-hidden="true">
-          <AppIcon icon="lucide:hard-hat" class="construction-icon" />
+          <AppIcon icon="lucide:hammer" class="construction-icon" />
         </div>
         <p class="construction-eyebrow">
           Under construction
