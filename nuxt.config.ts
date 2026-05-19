@@ -22,6 +22,7 @@ export default defineNuxtConfig({
     '@nuxt/image',
     '@nuxt/fonts',
     '@nuxtjs/sitemap',
+    '@vercel/analytics',
     '@vercel/speed-insights',
   ],
   css: ['~/assets/css/main.css'],
