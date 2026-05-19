@@ -16,6 +16,7 @@ export default defineEventHandler(async (event) => {
   const project = await sanityQuery<{
     _id: string
     protected?: boolean
+    underConstruction?: boolean
     slug: { current: string }
     sections?: unknown
   } | null>(
@@ -27,8 +28,9 @@ export default defineEventHandler(async (event) => {
       summary,
       thumbnail,
       protected,
+      underConstruction,
       tags,
-      sections,
+      "sections": select(underConstruction == true => null, sections),
       client,
       role,
       projectUrl,
@@ -42,6 +44,10 @@ export default defineEventHandler(async (event) => {
 
   if (!project) {
     throw createError({ statusCode: 404, statusMessage: 'Project not found' })
+  }
+
+  if (project.underConstruction) {
+    return { ...project, sections: null }
   }
 
   if (project.protected && !unlocked.includes(slug)) {

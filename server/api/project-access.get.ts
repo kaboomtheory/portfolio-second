@@ -14,14 +14,16 @@ export default defineEventHandler(async (event) => {
     return { slugs: unlocked }
   }
 
-  const row = await sanityQuery<{ protected?: boolean } | null>(
-    `*[_type == "project" && slug.current == $slug][0]{ protected }`,
+  const row = await sanityQuery<{ protected?: boolean; underConstruction?: boolean } | null>(
+    `*[_type == "project" && slug.current == $slug][0]{ protected, underConstruction }`,
     { params: { slug } },
   )
 
+  const isProtected = Boolean(row?.protected) && !row?.underConstruction
+
   return {
     slug,
-    protected: Boolean(row?.protected),
+    protected: isProtected,
     unlocked: unlocked.includes(slug),
   }
 })

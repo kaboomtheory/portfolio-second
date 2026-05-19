@@ -320,6 +320,16 @@ export const project = defineType({
       ],
     }),
 
+    // === Visibility ===
+    defineField({
+      name: 'underConstruction',
+      type: 'boolean',
+      title: 'Under Construction',
+      description:
+        'Shows a placeholder case study page instead of content blocks. Project still appears in the work grid.',
+      initialValue: false,
+    }),
+
     // === Protection ===
     defineField({
       name: 'protected',
@@ -342,10 +352,14 @@ export const project = defineType({
       tags: 'tags',
       client: 'client',
       media: 'thumbnail',
+      underConstruction: 'underConstruction',
     },
-    prepare({ title, tags, client, media }) {
+    prepare({ title, tags, client, media, underConstruction }) {
       const tagList = Array.isArray(tags) ? tags.filter(Boolean).slice(0, 3).join(', ') : ''
-      const subtitle = client?.trim() || tagList || undefined
+      let subtitle = client?.trim() || tagList || undefined
+      if (underConstruction) {
+        subtitle = subtitle ? `${subtitle} · Under construction` : 'Under construction'
+      }
       return { title, subtitle, media }
     },
   },

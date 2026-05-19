@@ -16,7 +16,14 @@ export default defineNuxtConfig({
   devtools: { enabled: process.env.NODE_ENV !== 'production' },
   /** Server-render marketing pages so first paint and social crawlers get real HTML. */
   ssr: true,
-  modules: ['@nuxtjs/tailwindcss', '@nuxtjs/sanity', '@nuxt/image', '@nuxt/fonts', '@nuxtjs/sitemap'],
+  modules: [
+    '@nuxtjs/tailwindcss',
+    '@nuxtjs/sanity',
+    '@nuxt/image',
+    '@nuxt/fonts',
+    '@nuxtjs/sitemap',
+    '@vercel/speed-insights',
+  ],
   css: ['~/assets/css/main.css'],
 
   site: {

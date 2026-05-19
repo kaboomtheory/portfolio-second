@@ -134,6 +134,7 @@ export interface SanityProjectItem {
   summary?: string
   thumbnail?: SanityImage
   protected?: boolean
+  underConstruction?: boolean
   passwordHash?: string
   tags?: string[]
   sections?: ContentBlock[]
@@ -154,6 +155,7 @@ export interface ProjectItem {
   summary?: string
   thumbnail: string
   protected?: boolean
+  underConstruction?: boolean
   tags?: string[]
   sections: ProjectStorySection[]
   order?: number
@@ -204,6 +206,7 @@ export function sanityProjectToLegacy(
     summary: project.summary,
     thumbnail: project.thumbnail ? buildImageUrl(project.thumbnail) : '',
     protected: project.protected,
+    underConstruction: project.underConstruction,
     tags: project.tags,
     sections: (project.sections || []).map((section) => {
       if (section._type === 'textSection') {

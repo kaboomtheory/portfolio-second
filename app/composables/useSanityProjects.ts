@@ -108,6 +108,7 @@ export function projectItemsFromSanityRaw(
       summary: project.summary || '',
       thumbnail,
       protected: project.protected || false,
+      underConstruction: project.underConstruction || false,
       tags: project.tags || [],
       sections: (project.sections || []).map(mapSection),
       order: project.order,

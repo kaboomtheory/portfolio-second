@@ -44,9 +44,14 @@ async function fetchProtected(targetSlug: string) {
 }
 
 watch(
-  [() => listProject.value?.protected, slug],
-  ([isProtected, currentSlug]) => {
-    if (isProtected && currentSlug && protectedRaw.value?.slug?.current !== currentSlug) {
+  [() => listProject.value?.protected, () => listProject.value?.underConstruction, slug],
+  ([isProtected, isUnderConstruction, currentSlug]) => {
+    if (
+      isProtected
+      && !isUnderConstruction
+      && currentSlug
+      && protectedRaw.value?.slug?.current !== currentSlug
+    ) {
       fetchProtected(currentSlug)
     }
   },
@@ -65,7 +70,12 @@ const project = computed<ProjectItem | undefined>(() =>
 const loading = computed(
   () =>
     loadingList.value
-    || (Boolean(listProject.value?.protected) && !protectedProject.value && loadingProtected.value),
+    || (
+      Boolean(listProject.value?.protected)
+      && !listProject.value?.underConstruction
+      && !protectedProject.value
+      && loadingProtected.value
+    ),
 )
 
 const projectIndex = computed(() =>
@@ -262,7 +272,7 @@ function twoColItemId(sectionIndex: number, rowIndex: number, itemIndex: number)
 }
 
 useManagedCspRules(() => {
-  if (!project.value?.sections) return []
+  if (project.value?.underConstruction || !project.value?.sections) return []
 
   const rules: Array<{
     id: string
@@ -316,6 +326,20 @@ useManagedCspRules(() => {
         <div class="h-20 max-w-2xl rounded bg-[var(--bg-tertiary)]" />
         <div class="mt-10 aspect-[4/3] max-w-4xl rounded-xl bg-[var(--bg-tertiary)]" />
       </div>
+    </div>
+  </div>
+  <div
+    v-else-if="project?.underConstruction"
+    class="page-content content-flow min-w-0 [overflow-x:clip]"
+  >
+    <div class="project-viewport-frame mx-auto w-full min-w-0 max-w-full px-4 sm:px-[clamp(1.1rem,3.2vw,2.5rem)]">
+      <section class="page-section">
+        <ProjectUnderConstruction
+          :project="project"
+          :prev-project="prevProject"
+          :next-project="nextProject"
+        />
+      </section>
     </div>
   </div>
   <div

@@ -14,8 +14,13 @@ export default defineCachedEventHandler(async () => {
     summary,
     thumbnail,
     protected,
+    underConstruction,
     tags,
-    "sections": select(protected == true => null, sections),
+    "sections": select(
+      protected == true => null,
+      underConstruction == true => null,
+      sections
+    ),
     client,
     role,
     projectUrl,
