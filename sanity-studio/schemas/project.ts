@@ -326,7 +326,7 @@ export const project = defineType({
       type: 'boolean',
       title: 'Under Construction',
       description:
-        'Shows a placeholder case study page instead of content blocks. Project still appears in the work grid.',
+        'Shows a placeholder case study page instead of content blocks. Project still appears in the work grid. The Summary field is shown as the placeholder message on that page.',
       initialValue: false,
     }),
 

@@ -91,6 +91,12 @@ function handleImageLoad() {
         >
           <span class="project-card__index">{{ projectIndexLabel }}</span>
         </div>
+        <span
+          v-if="project.underConstruction"
+          class="project-card__progress-badge"
+        >
+          In progress
+        </span>
       </div>
 
       <div class="project-card__body">
@@ -381,6 +387,26 @@ function handleImageLoad() {
 
 .project-card:hover .project-card__media-meta::after {
   width: clamp(2rem, 4vw, 3.5rem);
+}
+
+.project-card__progress-badge {
+  position: absolute;
+  top: 0.72rem;
+  right: 0.72rem;
+  z-index: 1;
+  padding: 0.26rem 0.52rem;
+  border-radius: 9999px;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-primary);
+  background: color-mix(in srgb, var(--bg-primary) 88%, transparent);
+  border: 1px solid color-mix(in srgb, var(--project-accent, var(--accent)) 35%, transparent);
+  backdrop-filter: blur(6px);
+  pointer-events: none;
 }
 
 .project-card__index {

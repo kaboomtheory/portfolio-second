@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import ProjectUnderConstruction from '~/components/projects/ProjectUnderConstruction.vue'
 import { useScrollRevealGroup } from '~/composables/useScrollReveal'
 import { projectItemsFromSanityRaw, useSanityProjects } from '~/composables/useSanityProjects'
 import type { ProjectItem, ProjectStorySection, SanityProjectItem } from '~/types/project'
@@ -63,9 +64,13 @@ const protectedProject = computed<ProjectItem | undefined>(() => {
   return projectItemsFromSanityRaw([protectedRaw.value])[0]
 })
 
-const project = computed<ProjectItem | undefined>(() =>
-  listProject.value?.protected ? protectedProject.value : listProject.value,
-)
+const project = computed<ProjectItem | undefined>(() => {
+  const list = listProject.value
+  if (!list) return undefined
+  if (list.underConstruction) return list
+  if (list.protected) return protectedProject.value
+  return list
+})
 
 const loading = computed(
   () =>
@@ -332,7 +337,7 @@ useManagedCspRules(() => {
     v-else-if="project?.underConstruction"
     class="page-content content-flow min-w-0 [overflow-x:clip]"
   >
-    <div class="project-viewport-frame mx-auto w-full min-w-0 max-w-full px-4 sm:px-[clamp(1.1rem,3.2vw,2.5rem)]">
+    <div class="project-viewport-frame project-detail-page mx-auto w-full min-w-0 max-w-full px-4 sm:px-[clamp(1.1rem,3.2vw,2.5rem)]">
       <section class="page-section">
         <ProjectUnderConstruction
           :project="project"
