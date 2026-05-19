@@ -49,6 +49,9 @@
   "overrides": {
     "glob": "^13.0.0",
     "prismjs": "^1.30.0",
-    "uuid": "^14.0.0"
+    "uuid": "^14.0.0",
+    "@vercel/speed-insights": {
+      "vue-router": "$vue-router"
+    }
   }
 }
