@@ -26,6 +26,18 @@ export default defineNuxtConfig({
   ],
   css: ['~/assets/css/main.css'],
 
+  vite: {
+    optimizeDeps: {
+      include: [
+        '@vue/devtools-core',
+        '@vue/devtools-kit',
+        'lenis',
+        '@portabletext/vue',
+        '@sanity/image-url',
+      ],
+    },
+  },
+
   site: {
     url: siteUrl,
     name: siteTitle,
