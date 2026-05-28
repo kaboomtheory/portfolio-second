@@ -16,6 +16,20 @@ function isFirefoxClient(): boolean {
   return import.meta.client && /firefox/i.test(navigator.userAgent)
 }
 
+function getCenterDistance(rect: DOMRect, viewportHeight: number): number {
+  const elementCenter = rect.top + rect.height / 2
+  const viewportCenter = viewportHeight / 2
+  return elementCenter - viewportCenter
+}
+
+function getTallAwareMaxDistance(
+  rect: DOMRect,
+  viewportHeight: number,
+  viewportFactor: number,
+): number {
+  return Math.max(viewportHeight * viewportFactor, rect.height / 2)
+}
+
 export function useScrollExpand(
   elementRef: Ref<HTMLElement | null>,
   options: ScrollExpandOptions = {},
@@ -59,10 +73,8 @@ export function useScrollExpand(
 
     const rect = elementRef.value.getBoundingClientRect()
     const viewportHeight = window.innerHeight
-    const elementCenter = rect.top + rect.height / 2
-    const viewportCenter = viewportHeight / 2
-    const distanceFromCenter = elementCenter - viewportCenter
-    const maxDistance = viewportHeight * 0.95
+    const distanceFromCenter = getCenterDistance(rect, viewportHeight)
+    const maxDistance = getTallAwareMaxDistance(rect, viewportHeight, 0.95)
     const normalizedDistance = Math.abs(distanceFromCenter) / maxDistance
     const easedDistance = normalizedDistance * normalizedDistance
 
@@ -134,10 +146,8 @@ export function useScrollOpacity(
 
     const rect = elementRef.value.getBoundingClientRect()
     const viewportHeight = window.innerHeight
-    const elementCenter = rect.top + rect.height / 2
-    const viewportCenter = viewportHeight / 2
-    const distanceFromCenter = elementCenter - viewportCenter
-    const maxDistance = viewportHeight * 0.85
+    const distanceFromCenter = getCenterDistance(rect, viewportHeight)
+    const maxDistance = getTallAwareMaxDistance(rect, viewportHeight, 0.85)
     const bufferZone = maxDistance * 0.4
 
     if (Math.abs(distanceFromCenter) < bufferZone) {
@@ -296,16 +306,14 @@ export function useScrollExpandImage(
 
     const rect = elementRef.value.getBoundingClientRect()
     const viewportHeight = window.innerHeight
-    const elementCenter = rect.top + rect.height / 2
-    const viewportCenter = viewportHeight / 2
-    const distanceFromCenter = elementCenter - viewportCenter
+    const distanceFromCenter = getCenterDistance(rect, viewportHeight)
 
-    const maxExpand = viewportHeight * 0.95
+    const maxExpand = getTallAwareMaxDistance(rect, viewportHeight, 0.95)
     const normExpand = Math.abs(distanceFromCenter) / maxExpand
     const easedExpand = normExpand * normExpand
     progress.value = Math.max(0, Math.min(1, 1 - easedExpand))
 
-    const maxOp = viewportHeight * 0.85
+    const maxOp = getTallAwareMaxDistance(rect, viewportHeight, 0.85)
     const bufferZone = maxOp * 0.4
     if (Math.abs(distanceFromCenter) < bufferZone) {
       opacity.value = 1
