@@ -1,5 +1,8 @@
 import type { ThemeMode } from '~/utils/theme'
-import { getInitialTheme } from '~/utils/theme'
+import { readStoredTheme, themeInjectKey } from '~/utils/theme'
+
+const THEME_STATE_KEY = 'theme-mode'
+const THEME_PAYLOAD_KEY = `$s${THEME_STATE_KEY}`
 
 const THEME_COLORS: Record<ThemeMode, string> = {
   light: '#ffffff',
@@ -17,14 +20,23 @@ function applyTheme(mode: ThemeMode) {
   }
 }
 
-export default defineNuxtPlugin(() => {
-  const theme = useState<ThemeMode>('theme-mode', () => getInitialTheme())
+export default defineNuxtPlugin({
+  enforce: 'pre',
+  setup(nuxtApp) {
+    const stored = readStoredTheme()
+    if (stored && nuxtApp.payload.state) {
+      nuxtApp.payload.state[THEME_PAYLOAD_KEY] = stored
+    }
 
-  applyTheme(theme.value)
+    const theme = ref<ThemeMode>(stored ?? 'light')
+    nuxtApp.vueApp.provide(themeInjectKey, theme)
 
-  watch(theme, (value) => {
-    // Avoid document.startViewTransition: some Chromium builds leave a dark snapshot
-    // layer on screen after theme toggles (looks like a black overlay).
-    applyTheme(value)
-  })
+    applyTheme(theme.value)
+
+    watch(theme, (value) => {
+      // Avoid document.startViewTransition: some Chromium builds leave a dark snapshot
+      // layer on screen after theme toggles (looks like a black overlay).
+      applyTheme(value)
+    })
+  },
 })

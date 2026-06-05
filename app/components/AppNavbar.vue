@@ -227,7 +227,9 @@ watch(effectiveHash, repositionPill)
               {{ item.title }}
             </NuxtLink>
           </div>
-          <ThemeToggle />
+          <ClientOnly>
+            <ThemeToggle />
+          </ClientOnly>
         </nav>
       </div>
     </div>

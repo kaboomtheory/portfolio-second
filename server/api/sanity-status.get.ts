@@ -10,9 +10,9 @@ export default defineCachedEventHandler(async () => {
     order
   }`) || []
 }, {
-  maxAge: 5,
+  maxAge: 60 * 60 * 24,
   swr: true,
-  staleMaxAge: 3600,
+  staleMaxAge: 60 * 60 * 24,
   name: 'sanity-status',
   group: 'sanity',
 })

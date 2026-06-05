@@ -36,7 +36,7 @@ export default defineCachedEventHandler(async () => {
     ...projectUrls,
   ]
 }, {
-  maxAge: 60 * 60,
+  maxAge: 60 * 60 * 24,
   swr: true,
   staleMaxAge: 60 * 60 * 24,
   name: 'sitemap-urls',
