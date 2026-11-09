@@ -47,22 +47,25 @@ export const aboutMe: AboutMeData = {
     'I work on brand identities, packaging, and digital experiences, with a focus on craft, clarity, and work that feels intentional.',
   story: [
     'I studied Graphic Design at Cal State Northridge, where I got my first taste of collaborative creative work developing print, digital, and social media campaigns at IntersectLA alongside a team of 20+ creatives.',
-    'From there I spent several years honing my craft across branding, packaging, and visual identity before landing at NAXA Electronics, where I now lead brand design for the Victor and Emerson product lines. My work spans marketing assets for major retail platforms, product packaging, Shopify storefronts, and sales materials for events like CES.',
+    'From there I spent several years freelancing across branding, packaging, and visual identity, then joined NAXA Electronics, where I designed marketing assets, packaging, Shopify storefronts, and CES sales materials for the Victor and Emerson product lines.',
+    'Today I\u2019m a designer at Citrus Studios in Los Angeles, building brands, websites, and social media assets for small businesses and organizations, with a focus on accessibility, SEO, and site performance.',
   ],
   skills: [
-    { category: 'Design', items: ['Branding', 'Logo Design', 'Print Design', 'Packaging Design', 'Visual Design'] },
-    { category: 'Digital', items: ['Web Design', 'UX Design', 'CSS/HTML', 'Photo Manipulation', 'Stable Diffusion'] },
+    { category: 'Design', items: ['Branding', 'Logo Design', 'Packaging Design', 'Print Design', 'Photo Manipulation'] },
+    { category: 'Web', items: ['Web Design', 'UX Design', 'WordPress', 'Shopify', 'Wix', 'Framer', 'CSS/HTML', 'WCAG/ADA Accessibility', 'SEO'] },
   ],
   /** Software only (disciplines live under skills) */
   tools: [
+    'Figma',
     'Adobe Photoshop',
     'Adobe Illustrator',
     'Adobe InDesign',
-    'Adobe Creative Suite',
-    'Figma',
-    'Framer',
+    'Adobe After Effects',
     'Blender',
     'Easy Catalog',
+    'Airtable',
+    'Claude',
+    'ComfyUI',
   ],
   interests: [
     { icon: 'lucide:camera', label: 'Film Photography' },
