@@ -58,7 +58,7 @@ fallback because it is read at build time.
 | `/` | `app/pages/index.vue` | Edge cached for a day |
 | `/projects/[slug]` | `app/pages/projects/[slug].vue` | Protected projects redirect to `/password/[slug]` unless `getUnlockedProject` (`src/lib/projectAccess.ts`) returns the project |
 | `/about` | `app/pages/about/index.vue` | |
-| `/privacy` | `app/pages/privacy.vue` | Prerendered |
+| `/privacy` | `app/pages/privacy.vue` | Edge cached |
 | `/password/[slug]` | `app/pages/password/[...slug].vue` | Posts to `/api/project-unlock` |
 | `/404`, `/500` | `app/error.vue` | |
 
