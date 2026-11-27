@@ -1,12 +1,17 @@
 ---
-/** Privacy policy, ported from app/pages/privacy.vue. Static, so it is prerendered. */
+/**
+ * Privacy policy, ported from app/pages/privacy.vue. Rendered on demand and
+ * edge cached: a prerendered /privacy/index.html is not served for /privacy
+ * by the Vercel output config, so the URL 404'd.
+ */
 import BaseLayout from '~/layouts/BaseLayout.astro'
-
-export const prerender = true
 
 const siteUrl = (import.meta.env.PUBLIC_SITE_URL || 'https://bryanxmendez.com').replace(/\/$/, '')
 const description = 'How this portfolio uses Microsoft Clarity for analytics, heatmaps, and session replays.'
 const microsoftPrivacyUrl = 'https://privacy.microsoft.com/en-us/privacystatement'
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate')
+Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=86400')
 ---
 
 <BaseLayout
