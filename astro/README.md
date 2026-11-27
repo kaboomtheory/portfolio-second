@@ -14,7 +14,7 @@ npm run dev      # http://localhost:4321
 npm run build    # Vercel output in .vercel/output
 ```
 
-On Vercel, create a project with **Root Directory** set to `astro`.
+On Vercel, the bryanxmendez.com project (portfolio-second) builds this folder: **Root Directory** is set to `astro` and the framework preset to Astro.
 
 ## Environment variables
 
