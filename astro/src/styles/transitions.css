@@ -1,0 +1,64 @@
+/*
+ * Page transitions between documents, standing in for the JS transition in
+ * the Nuxt layout (app/layouts/default.vue). Same feel: the old page scales
+ * down slightly, blurs and fades; the new one settles in from a touch larger.
+ * Browsers without cross-document view transitions just navigate normally.
+ */
+@view-transition {
+  navigation: auto;
+}
+
+/* The navbar and scroll bar stay put; only the page frame animates. */
+.navbar {
+  view-transition-name: site-navbar;
+}
+
+.layout-page-frame {
+  view-transition-name: page-frame;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+}
+
+::view-transition-old(page-frame) {
+  animation:
+    page-leave-transform 550ms cubic-bezier(0.16, 1, 0.3, 1) both,
+    page-leave-fade 248ms cubic-bezier(0.55, 0, 1, 0.45) 220ms both;
+}
+
+::view-transition-new(page-frame) {
+  animation: page-enter 380ms cubic-bezier(0.16, 1, 0.3, 1) 300ms both;
+}
+
+::view-transition-group(page-frame) {
+  animation-duration: 0s;
+}
+
+@keyframes page-leave-transform {
+  to {
+    transform: scale(0.97);
+    filter: blur(0.6rem);
+  }
+}
+
+@keyframes page-leave-fade {
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes page-enter {
+  from {
+    opacity: 0;
+    transform: scale(1.015);
+    filter: blur(0.4rem);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  @view-transition {
+    navigation: none;
+  }
+}

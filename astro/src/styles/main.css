@@ -1,0 +1,1452 @@
+/* Geist + Averia Serif Libre + Geist Mono: self-hosted from @fontsource packages (imported in src/styles/fonts.css) */
+
+@font-face {
+  font-family: 'Snaga Uni Display';
+  src:
+    local('Snaga Uni Display Bold'),
+    local('Snaga Uni Display'),
+    local('Snaga Unicase Display Bold'),
+    local('Snaga Unicase Display');
+  font-display: swap;
+  font-style: normal;
+  font-weight: 700;
+}
+
+@property --blob-signal {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #1a4a6e;
+}
+
+/*
+  Swiss neo-grid: canonical --paper / --ink / --signal plus legacy aliases
+  (--bg-primary, --accent, …) for existing components.
+*/
+:root {
+  color-scheme: light;
+  --font-sans: 'Geist', system-ui, sans-serif;
+  --font-display: 'Geist', system-ui, sans-serif;
+  --font-brand: var(--font-sans);
+  --font-serif: 'Averia Serif Libre', Georgia, serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+
+  /* Modular type scale (1.25 ratio baseline) */
+  --text-mono-label: 0.6875rem;
+  --text-body: 1rem;
+  --text-body-lg: 1.1875rem;
+  --text-h3: 1.5rem;
+  --text-h2: 2.25rem;
+  --text-h1: clamp(3rem, 5vw + 1rem, 5.5rem);
+  --text-display: clamp(4rem, 8vw + 1rem, 8rem);
+  --label-size: var(--text-mono-label);
+  --label-tracking-sans: 0.12em;
+  --label-tracking-mono: 0.12em;
+  /* Aliases for older rules */
+  --text-display-xl: var(--text-h1);
+  --text-h2-display: var(--text-h2);
+  --text-section-title: clamp(1.375rem, 1.2vw + 1rem, 1.75rem);
+  --text-project-title: clamp(1.0625rem, 0.6vw + 0.95rem, 1.25rem);
+  --text-closing-title: clamp(2rem, 4vw + 0.5rem, 3.25rem);
+  --text-body-fluid: var(--text-body);
+
+  /* Motion */
+  --motion-ease-reveal: cubic-bezier(0.2, 0.6, 0.2, 1);
+  --motion-ease-hero: cubic-bezier(0.16, 1, 0.3, 1);
+  --motion-ease-out: var(--motion-ease-reveal);
+  --motion-ease-standard: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  --duration-reveal: 320ms;
+  --flourish-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --ornament-rule-weight: 1px;
+  --ornament-index-size: 0.72rem;
+  --ornament-index-tracking: 0.14em;
+  --dotted-rule-weight: 1px;
+  --dotted-rule-gap: 2px;
+  --dotted-rule-dot: 2px;
+  --dotted-rule-stride: calc(var(--dotted-rule-gap) + var(--dotted-rule-dot));
+  --dotted-rule-color: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
+
+  /* Pastel tiles (same peach / mint / sky / blush / lemon in light and dark; dark differs in shell + ink) */
+  --pastel-peach: #ffd4b3;
+  --pastel-mint: #c5f0bd;
+  --pastel-sky: #b0e6ff;
+  --pastel-blush: #ffcaf3;
+  --pastel-lemon: #fef0c8;
+  --pastel-pink: var(--pastel-blush);
+  --pastel-ink: #000000;
+  --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, var(--paper));
+  /* Dark accent inks on pastel bands (section markers, links) */
+  --signal-sky: #1a4a6e;
+  --signal-mint: #1f5c42;
+  --signal-peach: #5c3d26;
+  --signal-blush: #6b2a52;
+  --signal-lemon: #5c4a1f;
+
+  /* Light: white page; semantic surfaces = pastels (peach / mint / sky) */
+  --paper: #ffffff;
+  --paper-sunk: #f7f7f6;
+  --ink: #15120f;
+  --ink-mid: #6b645b;
+  --ink-muted: #a69c8e;
+  --rule-token: #15120f;
+  --signal: #d4522f;
+  --signal-coral-ink: #d4522f;
+  --signal-ink: #ffffff;
+
+  --shell-ui-bg: var(--paper);
+  /* Layout shell: gradient toward slightly deeper base */
+  --shell-ui-bg-deep: color-mix(in srgb, var(--ink) 14%, var(--shell-ui-bg));
+  --bg-primary: var(--paper);
+  /* Box surfaces: peach → mint → sky (project cards, etc.) */
+  --bg-secondary: var(--pastel-peach);
+  --bg-tertiary: var(--pastel-mint);
+  --fg-primary: var(--ink);
+  --fg-secondary: var(--ink-mid);
+  --fg-muted: var(--ink-muted);
+  --border: var(--rule-token);
+  --accent: var(--signal);
+  --accent-soft: color-mix(in srgb, var(--signal) 88%, var(--ink));
+  --accent-2: var(--signal);
+  --accent-2-soft: var(--accent-soft);
+  --on-accent: var(--signal-ink);
+  --on-accent-muted: var(--paper);
+  --emphasis: var(--signal);
+  --emphasis-soft: var(--accent-soft);
+  --on-emphasis: var(--signal-ink);
+  --on-emphasis-muted: var(--on-accent-muted);
+  /* Neutral “available” — no second hue */
+  --status-available: var(--ink-mid);
+  /* Saturated “online / open” indicator (dots, presence) */
+  --status-online: #22c55e;
+  --danger: #c44a34;
+  --neon: var(--signal);
+  --neon-mid: var(--accent-soft);
+  --neon-soft: var(--ink-mid);
+  --neon-frost: var(--ink);
+  --muted-neon: color-mix(in srgb, var(--ink) 70%, var(--paper));
+  --btn-primary-bg: var(--signal);
+  --btn-primary-fg: var(--signal-ink);
+  --btn-attention-bg: var(--pastel-peach);
+  --btn-attention-fg: var(--pastel-ink);
+  --surface-interactive: var(--pastel-sky);
+  --btn-secondary-bg: transparent;
+  --chrome-ring-idle: var(--ink);
+  --shadow-sm:
+    0 0 0 1px color-mix(in srgb, var(--ink) 8%, var(--paper)),
+    0 0.35rem 0.9rem -0.6rem color-mix(in srgb, var(--ink) 16%, transparent);
+  --shadow-md:
+    0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper)),
+    0 0.9rem 2rem -1.15rem color-mix(in srgb, var(--ink) 22%, transparent);
+  --shadow-lg:
+    0 0 0 1px color-mix(in srgb, var(--ink) 12%, var(--paper)),
+    0 1.5rem 3.25rem -1.9rem color-mix(in srgb, var(--ink) 28%, transparent);
+  --project-card-surface: var(--pastel-peach);
+  --project-card-surface-hover: color-mix(in srgb, var(--pastel-peach) 92%, var(--pastel-ink));
+  --project-card-border: color-mix(in srgb, var(--pastel-ink) 14%, var(--project-card-surface, var(--pastel-peach)));
+  --project-card-shadow-idle: var(--shadow-sm);
+  --project-card-shadow-hover: var(--shadow-md);
+  --card-border: 1px solid var(--rule-token);
+  --card-ring: none;
+  --rule: var(--rule-token);
+  --rule-soft: color-mix(in srgb, var(--ink) 18%, var(--paper));
+  --theme-toggle-knob-bg: var(--paper);
+  --theme-toggle-knob-fg: var(--ink);
+  --theme-toggle-rail-emphasis: var(--ink);
+  --theme-toggle-rail-muted: var(--ink-mid);
+}
+
+html[data-theme='light'] {
+  color-scheme: light;
+  background-color: #ffffff;
+}
+
+html[data-theme='dark'] {
+  color-scheme: dark;
+  background-color: #181818;
+}
+
+:root.dark,
+html[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: #000000;
+  --paper-sunk: #161b27;
+  /* Text/chrome: cool lavender-white primary; blue-tinted neutrals */
+  --ink: #EEF2FF;
+  --ink-mid: #AABCD8;
+  --ink-muted: #8092B3;
+  /* Hairlines: ink stepped up for legibility vs dark navy shell */
+  --rule-token: color-mix(in srgb, var(--ink) 22%, var(--paper));
+  --signal: #F1A06E;
+  --signal-coral-ink: #F1A06E;
+  --signal-ink: #000000;
+
+  /* Tiles — slightly punchier than light so bands read clearly on navy shell */
+  --pastel-peach: #f9c095;
+  --pastel-mint: #a8ec9c;
+  --pastel-sky: #9edaf5;
+  --pastel-blush: #fbbcec;
+  --pastel-lemon: #f5e8a8;
+  --pastel-pink: var(--pastel-blush);
+  /* Type on pastel tiles (same as light) */
+  --pastel-ink: #000000;
+  --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, #ffffff);
+  /* Accent inks on pastel bands (same as light) */
+  --signal-sky: #1a4a6e;
+  --signal-mint: #1f5c42;
+  --signal-peach: #5c3d26;
+  --signal-blush: #6b2a52;
+  --signal-lemon: #5c4a1f;
+
+  --shell-ui-bg: #181818;
+  --shell-ui-bg-deep: #000000;
+  --bg-primary: var(--paper);
+  --bg-secondary: var(--paper-sunk);
+  --bg-tertiary: #1d2433;
+  --fg-primary: var(--ink);
+  --fg-secondary: var(--ink-mid);
+  --fg-muted: var(--ink-muted);
+  --border: var(--rule-token);
+  --accent: var(--signal);
+  --accent-soft: color-mix(in srgb, var(--signal) 78%, var(--paper-sunk));
+  --accent-2: var(--signal);
+  --accent-2-soft: var(--accent-soft);
+  --on-accent: var(--signal-ink);
+  --on-accent-muted: var(--paper-sunk);
+  --emphasis: var(--signal);
+  --emphasis-soft: var(--accent-soft);
+  --on-emphasis: var(--signal-ink);
+  --on-emphasis-muted: var(--on-accent-muted);
+  --status-available: var(--ink-mid);
+  --status-online: #22c55e;
+  --danger: #ef7b65;
+  --neon: var(--signal);
+  --neon-mid: var(--accent-soft);
+  --neon-soft: var(--ink-mid);
+  --neon-frost: var(--ink);
+  --muted-neon: color-mix(in srgb, var(--ink) 65%, var(--paper));
+  --btn-primary-bg: var(--signal);
+  --btn-primary-fg: var(--signal-ink);
+  --btn-attention-bg: var(--pastel-peach);
+  --btn-attention-fg: var(--pastel-ink);
+  --surface-interactive: var(--paper-sunk);
+  --btn-secondary-bg: transparent;
+  --chrome-ring-idle: var(--ink);
+  --shadow-sm:
+    0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper)),
+    0 0.4rem 1rem -0.6rem color-mix(in srgb, #000 34%, transparent);
+  --shadow-md:
+    0 0 0 1px color-mix(in srgb, var(--ink) 14%, var(--paper)),
+    0 1rem 2.25rem -1.2rem color-mix(in srgb, #000 42%, transparent);
+  --shadow-lg:
+    0 0 0 1px color-mix(in srgb, var(--ink) 18%, var(--paper)),
+    0 1.7rem 3.7rem -2rem color-mix(in srgb, #000 50%, transparent);
+  --project-card-surface: var(--paper-sunk);
+  --project-card-surface-hover: var(--bg-tertiary);
+  --project-card-border: color-mix(in srgb, var(--ink) 24%, var(--paper-sunk));
+  /* Flat hairlines only (no diffuse shadow)—matches light mode treatment. */
+  --project-card-shadow-idle: var(--shadow-sm);
+  --project-card-shadow-hover: var(--shadow-md);
+  --card-border: 1px solid var(--rule-token);
+  --card-ring: none;
+  --rule: var(--rule-token);
+  --rule-soft: color-mix(in srgb, var(--ink) 18%, var(--paper));
+  --theme-toggle-knob-bg: var(--ink);
+  --theme-toggle-knob-fg: var(--paper);
+  --theme-toggle-rail-emphasis: var(--ink);
+  --theme-toggle-rail-muted: var(--ink-mid);
+  --dotted-rule-color: color-mix(in srgb, var(--ink) 36%, var(--paper));
+}
+
+html[data-theme='dark'] body {
+  background-color: #181818;
+}
+
+html[data-theme='light'] body {
+  background-color: #ffffff;
+}
+
+/* Swiss flat attention pill (CTA + back-to-top) — pastel fill + black label */
+.cta-button.btn-attention.cta-attention-pill,
+.back-to-top.cta-attention-pill {
+  isolation: isolate;
+  cursor: pointer;
+  outline-offset: 4px;
+  padding: 0.65rem 1.4rem;
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  line-height: 1.2;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  border: none !important;
+  border-radius: var(--radius-control);
+  color: var(--btn-attention-fg, var(--pastel-ink));
+  background: var(--btn-attention-bg, var(--pastel-peach));
+  box-shadow: none;
+  transform: translateZ(0);
+  transition:
+    transform 0.18s cubic-bezier(0.22, 1, 0.36, 1),
+    background-color 0s linear,
+    color 0s linear,
+    border-color 0s linear;
+}
+
+.cta-button.btn-attention.cta-attention-pill .cta-attention-pill__inner,
+.back-to-top.cta-attention-pill .cta-attention-pill__inner {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cta-button.btn-attention.cta-attention-pill .cta-attention-pill__inner svg,
+.back-to-top.cta-attention-pill .cta-attention-pill__inner svg {
+  flex-shrink: 0;
+}
+
+/* Flat invert: tile-colored label on ink (no shadows / no “glow”) */
+.cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible),
+.back-to-top.cta-attention-pill:is(:hover, :focus-visible) {
+  background: var(--pastel-ink);
+  border-color: var(--pastel-ink) !important;
+  color: var(--btn-attention-bg, var(--pastel-peach));
+  box-shadow: none;
+}
+
+.cta-button.btn-attention.cta-attention-pill:is(:hover, :focus-visible) .cta-attention-dot,
+.back-to-top.cta-attention-pill:is(:hover, :focus-visible) .cta-attention-dot {
+  background: color-mix(in srgb, var(--btn-attention-bg, var(--pastel-peach)) 78%, var(--pastel-ink));
+}
+
+.cta-button.btn-attention.cta-attention-pill:active,
+.back-to-top.cta-attention-pill:active {
+  background: color-mix(in srgb, var(--pastel-ink) 88%, var(--btn-attention-bg, var(--pastel-peach)));
+  border-color: var(--pastel-ink) !important;
+  color: var(--btn-attention-bg, var(--pastel-peach));
+  transform: scale(0.98);
+  box-shadow: none;
+  transition-duration: 0.1s;
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  .cta-button.btn-attention.cta-attention-pill,
+  .back-to-top.cta-attention-pill {
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      border-color 0.15s ease;
+  }
+
+  .cta-button.btn-attention.cta-attention-pill:active,
+  .back-to-top.cta-attention-pill:active {
+    transform: none;
+  }
+}
+
+.back-to-top.cta-attention-pill {
+  position: relative;
+  padding: 0;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  width: 2.75rem;
+  height: 2.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.125rem;
+  line-height: 1;
+}
+
+.back-to-top.cta-attention-pill .cta-attention-pill__inner {
+  justify-content: center;
+}
+
+/* ── Spacing scale ── */
+:root {
+  --space-xs: 0.25rem;
+  /* 4px */
+  --space-sm: 0.5rem;
+  /* 8px */
+  --space-md: 1rem;
+  /* 16px */
+  --space-lg: 1.5rem;
+  /* 24px */
+  --space-xl: 2.5rem;
+  /* 40px */
+  --space-xl-lg: 3rem;
+  /* 48px */
+  --space-2xl: 4rem;
+  /* 64px */
+  /* Vertical rhythm between stacked page sections (home, long pages) */
+  --page-content-gap: clamp(var(--space-lg), 3vw, var(--space-xl));
+  /* Homepage section rhythm: single source for section-to-section balance */
+  --home-section-gap: clamp(2.5rem, 6vw, 4.5rem);
+  /* Homepage vertical rhythm — consumed by Home* section components */
+  --home-grid-gap-hero: clamp(2rem, 4.25vw, 3.15rem);
+  --home-grid-gap-editorial: clamp(1.85rem, 3.75vw, 2.85rem);
+  --home-grid-gap-dense: clamp(1.15rem, 2.35vw, 1.95rem);
+  --home-grid-gap-resume: clamp(1.65rem, 3.25vw, 2.65rem);
+  --home-stack-gap-comfortable: clamp(1.15rem, 2.1vw, 1.75rem);
+  --home-stack-gap-tight: clamp(0.85rem, 1.5vw, 1.35rem);
+  --home-card-stack-gap: clamp(1.35rem, 2.4vw, 2rem);
+  --home-resume-cols-gap: clamp(2.2rem, 5vw, 3.75rem);
+  /* Swiss: sharp corners. Keep tokens as 0 so existing .radius usage flattens automatically. */
+  --radius-card: 0;
+  --radius-inner: 0;
+  /* Nav + attention CTAs — same cornering as .nav-link / active home */
+  --radius-control: 0;
+  /* Fixed header: align layout top padding, anchor scroll-margin, skip-link, and JS hash offset */
+  --layout-header-clearance: 6rem;
+  --scroll-anchor-offset: 6.5rem;
+}
+
+@media (min-width: 768px) {
+  :root {
+    --layout-header-clearance: 5rem;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+/* Global focus-visible ring: accent tuned to meet ~3:1 vs page bg for non-text UI */
+*:focus-visible {
+  outline: 2px solid var(--emphasis);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* app.vue focuses #main-content programmatically after route/hash changes; hide that ring only. */
+#main-content:focus-visible {
+  outline: none;
+}
+
+:root.dark *:focus-visible {
+  outline-color: var(--emphasis-soft);
+}
+
+/* Calmer focus on pills / tag chips / CTAs (dark): coral-tinged ring vs plain emphasis */
+:root.dark .filter-pill:focus-visible,
+:root.dark .tag-chip:focus-visible,
+:root.dark .cta-button.btn-attention.cta-attention-pill:focus-visible,
+:root.dark .back-to-top.cta-attention-pill:focus-visible {
+  outline-color: color-mix(in srgb, var(--signal) 45%, var(--ink));
+}
+
+/* Pastel-ink-based hairlines — bump alpha in dark so borders stay visible on fills */
+:root.dark .cta-button.btn-attention.cta-attention-pill,
+:root.dark .back-to-top.cta-attention-pill {
+  border-color: color-mix(in srgb, var(--ink) 20%, var(--btn-attention-bg, var(--pastel-peach))) !important;
+}
+
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: var(--accent);
+  color: var(--on-accent);
+  padding: 8px 16px;
+  z-index: 100;
+  text-decoration: none;
+  font-size: 0.875rem;
+  font-weight: 500;
+  border-radius: 0 0 4px 0;
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  /* Sit just below reserved header band (matches legacy ~5.75rem at 16px root) */
+  top: calc(var(--scroll-anchor-offset) - 0.75rem);
+}
+
+#main-content {
+  scroll-margin-top: var(--scroll-anchor-offset);
+}
+
+section[id] {
+  position: relative;
+  scroll-margin-top: var(--scroll-anchor-offset);
+}
+
+@keyframes section-nav-spotlight-pulse {
+
+  /* Inset ring only — no section opacity (avoids flashing children). */
+  0% {
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+
+  18% {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, var(--paper)),
+      0 0 0.65rem color-mix(in srgb, var(--accent) 5%, transparent);
+  }
+
+  44% {
+    box-shadow:
+      inset 0 0 0 1px color-mix(in srgb, var(--accent) 12%, var(--paper)),
+      0 0 0.65rem color-mix(in srgb, var(--accent) 5%, transparent);
+  }
+
+  100% {
+    box-shadow: inset 0 0 0 0 transparent;
+  }
+}
+
+section[id].section-nav-spotlight {
+  animation: section-nav-spotlight-pulse 840ms cubic-bezier(0.22, 1, 0.36, 1) 60ms both;
+}
+
+.layout-header-pad {
+  padding-top: var(--layout-header-clearance);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border-width: 0;
+}
+
+html {
+  /* JS handles cinematic section navigation; avoid double-smoothing. */
+  scroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  overflow-x: clip;
+  scrollbar-gutter: stable;
+  background-color: var(--shell-ui-bg, #f6f4f0);
+}
+
+/* Homepage hero: match shell gutter + status bar to hero green */
+html[data-home-landing='true'] {
+  background-color: var(--shell-ui-bg, var(--paper));
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+html.lenis.lenis-smooth {
+  scroll-behavior: auto;
+}
+
+html.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+html,
+body,
+#__nuxt {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--text-body);
+  line-height: 1.55;
+  background-color: var(--shell-ui-bg, var(--paper));
+  color: var(--fg-primary);
+  font-feature-settings: 'kern' 1, 'liga' 1;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: clip;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    transition:
+      background-color 0.65s ease,
+      color 0.65s ease;
+  }
+}
+
+/* Do not animate root view transitions (theme plugin no longer uses them). */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none !important;
+}
+
+#__nuxt {
+  position: relative;
+  z-index: 1;
+}
+
+:root.dark body {
+  background-color: var(--shell-ui-bg, #000000);
+}
+
+.font-display,
+h1,
+h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  margin: 0;
+  color: var(--fg-primary);
+  hyphens: none;
+  text-wrap: pretty;
+}
+
+h1 {
+  font-size: var(--text-h1);
+  letter-spacing: -0.05em;
+  line-height: 1.02;
+}
+
+h2 {
+  font-size: var(--text-h2);
+  letter-spacing: -0.035em;
+  line-height: 1.08;
+}
+
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans);
+  font-weight: 500;
+  letter-spacing: -0.012em;
+  margin: 0;
+  color: var(--fg-primary);
+  hyphens: none;
+  text-wrap: pretty;
+}
+
+h3 {
+  font-size: var(--text-h3);
+  letter-spacing: -0.02em;
+}
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+p {
+  margin: 0;
+  color: var(--fg-secondary);
+  text-wrap: pretty;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Body-copy links: wrap prose blocks with .content-flow (see pages: about, index hero, project sections) */
+.content-flow a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.2em;
+  transition: color 150ms ease, text-decoration-color 150ms ease;
+}
+
+.content-flow a:hover {
+  color: var(--accent-soft);
+  text-decoration-color: var(--accent-soft);
+}
+
+.content-flow a.cta-button,
+.content-flow a.project-row,
+.content-flow a.project-card-link,
+.content-flow a.nav-link,
+.content-flow a.navbar-brand {
+  color: inherit;
+  text-decoration: none;
+}
+
+.content-flow a.cta-button:hover {
+  text-decoration: none;
+}
+
+/* ── Typography utilities ── */
+.muted,
+.text-muted {
+  color: var(--fg-muted);
+}
+
+/* Use sparingly: same hue family as attention CTA / nav active */
+.text-emphasis {
+  color: var(--emphasis);
+}
+
+.text-meta {
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--label-tracking-mono);
+  color: var(--fg-muted);
+}
+
+/* Uppercase label without mono (navbar brand, section eyebrows) */
+.eyebrow-sans {
+  font-family: var(--font-sans);
+  font-size: var(--label-size);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: var(--label-tracking-sans);
+  color: var(--fg-muted);
+}
+
+.text-section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-section-title);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--fg-primary);
+  hyphens: none;
+}
+
+.text-body-lg {
+  font-size: var(--text-body-lg);
+  line-height: 1.55;
+  max-width: 68ch;
+  color: var(--fg-secondary);
+}
+
+.text-caption {
+  font-size: 0.875rem;
+  line-height: 1.5;
+  color: var(--fg-secondary);
+}
+
+code,
+pre,
+.mono {
+  font-family: var(--font-mono);
+}
+
+.page-shell {
+  width: 100%;
+}
+
+.page-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--page-content-gap);
+  min-width: 0;
+  max-width: 100%;
+  padding-bottom: var(--space-sm);
+  overflow-anchor: none;
+}
+
+.page-content--home {
+  /* Stacking context so `GrainBackdrop` can use z-index: -1 and sit *under* sections (Chromium
+     paints fixed z-index:0 above in-flow siblings, which made mix-blend read as a full-page veil). */
+  position: relative;
+  z-index: 0;
+  /* Keep film-grain compositing local to the home column (reduces dark-mode veil glitches). */
+  isolation: isolate;
+  /* Slightly tighter than legacy --home-section-gap: more “magazine stack”, less elevator shaft */
+  --home-rail-inset: clamp(1.25rem, 3vw, 2.5rem);
+  gap: clamp(2rem, 5.25vw, 3.85rem);
+  padding-bottom: clamp(2.5rem, 6vw, 4.75rem);
+}
+
+.page-content--home>section {
+  --home-section-bg: transparent;
+  --home-section-ink: var(--pastel-ink);
+  --home-section-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, var(--home-section-bg));
+  padding-top: 0;
+  padding-bottom: 0;
+  background-color: transparent;
+  background-image: linear-gradient(var(--home-section-bg), var(--home-section-bg));
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: calc(100% - (var(--home-rail-inset) * 2)) 100%;
+  color: var(--home-section-ink);
+}
+
+.pastel-grain-shadow {
+  --grain-shadow-x: -5px;
+  --grain-shadow-y: 9px;
+  --grain-shadow-left: 5px;
+  --grain-shadow-bottom: 9px;
+  --grain-shadow-color: rgba(0, 0, 0, 0.24);
+  --grain-shadow-mask: url('/images/shadow-grain.png');
+  --grain-shadow-mask-size: 56px 56px;
+  position: relative;
+  isolation: isolate;
+}
+
+html.dark .pastel-grain-shadow,
+html[data-theme='dark'] .pastel-grain-shadow {
+  --grain-shadow-color: rgba(255, 255, 255, 1);
+}
+
+.pastel-grain-shadow::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: inherit;
+  background-color: var(--grain-shadow-color);
+  transform: translate(var(--grain-shadow-x), var(--grain-shadow-y));
+  clip-path: polygon(0 0,
+      var(--grain-shadow-left) 0,
+      var(--grain-shadow-left) calc(100% - var(--grain-shadow-bottom)),
+      100% calc(100% - var(--grain-shadow-bottom)),
+      100% 100%,
+      0 100%);
+  -webkit-mask-image: var(--grain-shadow-mask);
+  mask-image: var(--grain-shadow-mask);
+  -webkit-mask-size: var(--grain-shadow-mask-size);
+  mask-size: var(--grain-shadow-mask-size);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
+}
+
+.page-content--home>section.pastel-grain-shadow>.section-grain-shadow {
+  position: absolute;
+  inset: 0 var(--home-rail-inset, 0);
+  z-index: 0;
+  pointer-events: none;
+  background-color: var(--grain-shadow-color);
+  transform: translate(var(--grain-shadow-x), var(--grain-shadow-y));
+  clip-path: polygon(0 0,
+      var(--grain-shadow-left) 0,
+      var(--grain-shadow-left) calc(100% - var(--grain-shadow-bottom)),
+      100% calc(100% - var(--grain-shadow-bottom)),
+      100% 100%,
+      0 100%);
+  -webkit-mask-image: var(--grain-shadow-mask);
+  mask-image: var(--grain-shadow-mask);
+  -webkit-mask-size: var(--grain-shadow-mask-size);
+  mask-size: var(--grain-shadow-mask-size);
+  -webkit-mask-repeat: repeat;
+  mask-repeat: repeat;
+  -webkit-mask-mode: alpha;
+  mask-mode: alpha;
+}
+
+.page-content--home>section.pastel-grain-shadow> :not(.section-grain-shadow) {
+  position: relative;
+  z-index: 1;
+}
+
+.capability-tag.pastel-grain-shadow {
+  display: inline-block;
+}
+
+.page-content--home .grid-12 {
+  padding-inline: clamp(2.25rem, 5vw, 4rem);
+}
+
+html[data-home-landing='true'] .layout-main-shell {
+  --home-rail-inset: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+html[data-home-landing='true'] .layout-main-shell::after,
+html[data-home-landing='true'] .layout-main-shell::before {
+  content: '';
+  position: absolute;
+  top: calc(-1 * var(--layout-header-clearance));
+  bottom: 0;
+  --home-rail-width: 20px;
+  width: var(--home-rail-width);
+  background-image:
+    linear-gradient(180deg,
+      transparent 0 var(--dotted-rule-gap),
+      var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot))),
+    linear-gradient(180deg,
+      transparent 0 var(--dotted-rule-gap),
+      var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot)));
+  background-position:
+    left top,
+    right top;
+  background-repeat: repeat-y;
+  background-size:
+    var(--dotted-rule-weight) var(--dotted-rule-stride),
+    var(--dotted-rule-weight) var(--dotted-rule-stride);
+  pointer-events: none;
+  z-index: 1;
+}
+
+html[data-home-landing='true'] .layout-main-shell::after {
+  left: calc(var(--home-rail-inset) - var(--home-rail-width));
+}
+
+html[data-home-landing='true'] .layout-main-shell::before {
+  right: calc(var(--home-rail-inset) - var(--home-rail-width));
+}
+
+.page-content--home>section+section::before {
+  content: '';
+  display: block;
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  height: var(--dotted-rule-weight);
+  margin-top: 0;
+  margin-bottom: clamp(0.75rem, 2vw, 1.25rem);
+  background:
+    linear-gradient(90deg,
+      transparent 0 var(--dotted-rule-gap),
+      var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot)));
+  background-repeat: repeat-x;
+  background-size: var(--dotted-rule-stride) var(--dotted-rule-weight);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 520ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.page-content--home>section+section.reveal-on-scroll--visible::before {
+  transform: scaleX(1);
+}
+
+.page-content--home>section::after {
+  content: '';
+  display: block;
+  position: static;
+  inset: auto;
+  z-index: auto;
+  pointer-events: auto;
+  border-radius: 0;
+  clip-path: none;
+  -webkit-mask: none;
+  mask: none;
+  opacity: 1;
+  mix-blend-mode: normal;
+  width: 100vw;
+  max-width: none;
+  height: var(--dotted-rule-weight);
+  margin-inline: calc(50% - 50vw);
+  margin-top: clamp(0.75rem, 2vw, 1.25rem);
+  background:
+    linear-gradient(90deg,
+      transparent 0 var(--dotted-rule-gap),
+      var(--dotted-rule-color) var(--dotted-rule-gap) calc(var(--dotted-rule-gap) + var(--dotted-rule-dot)));
+  background-repeat: repeat-x;
+  background-size: var(--dotted-rule-stride) var(--dotted-rule-weight);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 520ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1));
+}
+
+.page-content--home>section.reveal-on-scroll--visible::after {
+  transform: scaleX(1);
+}
+
+.page-content--home>section.story-section-outer::before {
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  margin-bottom: clamp(0.95rem, 2.2vw, 1.5rem);
+}
+
+.page-content--home>section.story-section-outer::after {
+  margin-top: clamp(0.95rem, 2.2vw, 1.5rem);
+}
+
+.page-content--home>section.resume-section-outer {
+  --home-section-before-gap: clamp(1rem, 2.4vw, 1.6rem);
+  --home-section-after-gap: clamp(1rem, 2.4vw, 1.6rem);
+}
+
+.page-content--home>section.resume-section-outer::before {
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  height: var(--dotted-rule-weight);
+  margin-bottom: var(--home-section-before-gap);
+}
+
+.page-content--home>section.resume-section-outer::after {
+  height: var(--dotted-rule-weight);
+  margin-top: var(--home-section-after-gap);
+}
+
+/* §04 ticker: a touch more air below the inbound hairline so the marker clears the rule cleanly */
+.page-content--home>section.story-section-outer+section.status-band.ticker-section::before {
+  margin-bottom: clamp(1rem, 2.25vw, 1.45rem);
+}
+
+/* §04 → §05: avoid stacking flex section-gap + thick ticker bottom pad + resume rule + resume grid top */
+.page-content--home>section.status-band.ticker-section+section.resume-section-outer {
+  --home-section-before-gap: clamp(0.75rem, 1.9vw, 1.2rem);
+  margin-top: calc(-1 * clamp(0.65rem, 1.75vw, 1.35rem));
+}
+
+.page-content--home>section.status-band.ticker-section+section.resume-section-outer::before {
+  margin-bottom: var(--home-section-before-gap);
+}
+
+.page-content--home>section.status-band.ticker-section+section.resume-section-outer .resume-grid {
+  padding-top: clamp(0.95rem, 2.1vw, 1.85rem);
+}
+
+.page-content--home>section.closing-cta-section {
+  --home-section-before-gap: clamp(1rem, 2.6vw, 1.65rem);
+  --home-section-after-gap: clamp(1rem, 2.6vw, 1.65rem);
+}
+
+.page-content--home>section.closing-cta-section::before {
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+  margin-bottom: var(--home-section-before-gap);
+}
+
+.page-content--home>section.closing-cta-section::after {
+  margin-top: var(--home-section-after-gap);
+}
+
+.page-section {
+  padding: var(--space-md) 0;
+}
+
+.page-content>.page-section:first-child,
+.page-content>section:first-child {
+  padding-top: 0;
+}
+
+/* Escape the 72rem column for editorial moments; inner content stays capped.
+   max-width: none overrides .page-content's `max-width: 100%` so the bleed
+   actually reaches the viewport edges instead of being capped at the parent
+   container width (which would leave the element left-offset asymmetrically). */
+.full-bleed {
+  width: 100vw;
+  max-width: none;
+  margin-inline: calc(50% - 50vw);
+}
+
+@supports (width: 100dvw) {
+  .full-bleed {
+    width: 100dvw;
+    margin-inline: calc(50% - 50dvw);
+  }
+}
+
+/* Descendant: story/resume wrap .full-bleed-inner in .story-band / .resume-band */
+.full-bleed .full-bleed-inner,
+.ticker-section>.full-bleed-inner {
+  width: 100%;
+  max-width: 82rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 3vw, 2.5rem);
+}
+
+@media (min-width: 640px) {
+
+  .full-bleed .full-bleed-inner,
+  .ticker-section>.full-bleed-inner {
+    padding-inline: 1.5rem;
+  }
+}
+
+@media (min-width: 768px) {
+
+  .full-bleed .full-bleed-inner,
+  .ticker-section>.full-bleed-inner {
+    padding-inline: 2rem;
+  }
+}
+
+/* ── Swiss 12-column grid primitive ── */
+.grid-12 {
+  display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  column-gap: clamp(1rem, 1.5vw, 1.5rem);
+  max-width: 82rem;
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 3vw, 2.5rem);
+  width: 100%;
+}
+
+.section-rule {
+  border-top: 1px solid var(--rule);
+  margin: 0;
+}
+
+.section-marker {
+  font-family: var(--font-mono);
+  font-size: var(--label-size);
+  font-weight: 500;
+  letter-spacing: var(--label-tracking-mono);
+  text-transform: uppercase;
+  color: var(--fg-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+/* Brand coral — not the contextual `--signal` (pastel-band inks) parents set */
+.section-marker .section-marker-num {
+  color: var(--signal-coral-ink, var(--accent));
+  font-size: var(--ornament-index-size, 0.72rem);
+  letter-spacing: var(--ornament-index-tracking, 0.14em);
+}
+
+.section-marker .section-marker-word {
+  font-family: var(--font-serif);
+  font-weight: 400;
+  font-size: var(--text-section-title, clamp(1.375rem, 1.2vw + 1rem, 1.75rem));
+  letter-spacing: -0.01em;
+  text-transform: none;
+  line-height: 1;
+}
+
+.eyebrow-link {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  text-decoration: none;
+  text-underline-offset: 0.2em;
+  transition: color 180ms ease, text-decoration-color 180ms ease;
+}
+
+.eyebrow-link:hover {
+  color: var(--fg-secondary);
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, var(--fg-primary) 45%, var(--paper));
+}
+
+.eyebrow-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: var(--fg-primary);
+}
+
+/* ── Pill / tag tokens (single source of truth) ── */
+.pill,
+.filter-pill {
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 0.35rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  white-space: nowrap;
+  color: var(--pastel-ink);
+}
+
+/* Read-only mono labels keep uppercase styling */
+.pill {
+  background: var(--pastel-mint);
+  font-family: var(--font-mono);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* Interactive filter pills: quieter, sans, sentence-case */
+.filter-pill {
+  font-family: var(--font-sans);
+  letter-spacing: 0.01em;
+  text-transform: none;
+}
+
+/* Read-only tags: aligned with capability-tag treatment */
+.tag-chip {
+  font-family: var(--font-mono);
+  display: inline-block;
+  border-radius: 9999px;
+  padding: 0.35rem 0.65rem;
+  font-size: var(--label-size);
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--fg-secondary);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--rule-soft);
+}
+
+/* Interactive variant (filter buttons) — neutral surface, matches page paper */
+.filter-pill {
+  cursor: pointer;
+  font-weight: 500;
+  color: var(--pastel-ink);
+  background-color: var(--paper);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 16%, var(--paper));
+  box-shadow: none;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  transition:
+    color 200ms var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1)),
+    border-color 200ms var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1)),
+    box-shadow 180ms ease;
+}
+
+/* Ink-sweep fill — scaleX 0→1 left-to-right on active */
+.filter-pill::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--ink);
+  transform: scaleX(0);
+  transform-origin: left center;
+  transition: transform 260ms var(--flourish-ease, cubic-bezier(0.22, 1, 0.36, 1));
+  z-index: -1;
+}
+
+.filter-pill:active {
+  transform: none;
+}
+
+:root.dark .filter-pill {
+  color: var(--fg-secondary);
+  background-color: var(--paper-sunk);
+  border-color: color-mix(in srgb, var(--ink) 22%, var(--paper-sunk));
+}
+
+.filter-pill:hover {
+  color: var(--pastel-ink);
+  background-color: color-mix(in srgb, var(--pastel-ink) 6%, var(--paper));
+}
+
+:root.dark .filter-pill:hover {
+  color: var(--fg-primary);
+  background-color: color-mix(in srgb, var(--ink) 10%, var(--paper-sunk));
+}
+
+.filter-pill-active,
+.filter-pill--active {
+  color: var(--paper);
+  font-weight: 600;
+  background-color: transparent;
+  border-color: var(--ink);
+  transform: none;
+  box-shadow: none;
+}
+
+.filter-pill-active::before,
+.filter-pill--active::before {
+  transform: scaleX(1);
+}
+
+.filter-pill-active:hover,
+.filter-pill--active:hover {
+  color: var(--paper);
+  background-color: transparent;
+}
+
+:root.dark .filter-pill-active,
+:root.dark .filter-pill--active {
+  color: var(--paper);
+  background-color: transparent;
+  border-color: var(--ink);
+}
+
+:root.dark .filter-pill::before {
+  background: var(--ink);
+}
+
+:root.dark .filter-pill-active:hover,
+:root.dark .filter-pill--active:hover {
+  color: var(--paper);
+  background-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .filter-pill::before {
+    transition: none;
+  }
+
+  .filter-pill-active::before,
+  .filter-pill--active::before {
+    transform: scaleX(1);
+  }
+}
+
+.section-header {
+  margin-bottom: var(--space-lg);
+}
+
+.section-number {
+  font-size: var(--label-size);
+  font-weight: 500;
+  letter-spacing: var(--label-tracking-mono);
+  color: var(--signal);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+.section-header>.section-title {
+  margin-top: 0.25rem;
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: var(--text-section-title);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-md);
+  hyphens: none;
+}
+
+.card-surface {
+  --fg-primary: var(--pastel-ink);
+  --fg-secondary: var(--pastel-ink-muted);
+  --fg-muted: color-mix(in srgb, var(--pastel-ink) 48%, var(--pastel-peach));
+  background: var(--pastel-peach);
+  color: var(--pastel-ink);
+  border-radius: var(--radius-card);
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 14%, var(--pastel-peach));
+  box-shadow: var(--card-ring), var(--shadow-sm);
+}
+
+.card-surface .text-muted,
+.card-surface .muted {
+  color: var(--pastel-ink-muted);
+}
+
+:root.dark .card-surface {
+  border: 1px solid color-mix(in srgb, var(--pastel-ink) 36%, var(--pastel-peach));
+  box-shadow: var(--card-ring), var(--project-card-shadow-idle);
+}
+
+/* Reusable project/work card primitives */
+.work-media-frame {
+  background: var(--project-card-surface, var(--pastel-mint));
+  border-bottom: 1px solid color-mix(in srgb, var(--pastel-ink) 12%, var(--project-card-surface, var(--pastel-mint)));
+}
+
+:root.dark .work-media-frame {
+  border-bottom-color: color-mix(in srgb, var(--pastel-ink) 30%, var(--project-card-surface, var(--pastel-mint)));
+}
+
+@keyframes reveal-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.reveal-up {
+  animation: reveal-up var(--duration-reveal) var(--motion-ease-reveal) both;
+}
+
+/* Scroll-triggered section entrance (IntersectionObserver toggles --visible) */
+.reveal-on-scroll {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity var(--duration-reveal) var(--motion-ease-reveal),
+    transform var(--duration-reveal) var(--motion-ease-reveal);
+}
+
+.reveal-on-scroll--visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* A5: Section marker slide-in when parent section reveals */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal-on-scroll--visible .section-marker {
+    animation: marker-slide-in 380ms var(--motion-ease-hero, cubic-bezier(0.16, 1, 0.3, 1)) both;
+    animation-delay: 80ms;
+  }
+
+  @keyframes marker-slide-in {
+    from {
+      opacity: 0;
+      transform: translateX(-8px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+}
+
+/* Home `/` first paint: backdrop + nav settle in with the hero (see `default.vue` `data-home-landing`). */
+@keyframes home-navbar-land {
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html[data-home-landing='true'] .navbar.navbar--home-hero .navbar-inner {
+    opacity: 0;
+    transform: translate3d(0, -7px, 0);
+    animation: home-navbar-land 560ms var(--motion-ease-hero) 45ms forwards;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto !important;
+  }
+
+  .page-content--home>section::before,
+  .page-content--home>section::after {
+    transform: scaleX(1) !important;
+    transition: none !important;
+  }
+
+  .reveal-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .reveal-on-scroll,
+  .reveal-on-scroll--visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  section[id].section-nav-spotlight {
+    animation: none;
+  }
+
+  .btn-attention {
+    animation: none;
+  }
+}
+
+/* User-requested dark mode shell: keep global/page surfaces near-black without painting inner home frames. */
+html[data-theme='dark'],
+html[data-theme='dark'] body,
+html[data-theme='dark'] #__nuxt,
+html[data-theme='dark'] .layout-root,
+html[data-theme='dark'] .page-content:not(.page-content--home),
+html[data-theme='dark'] .theme-toggle {
+  background: #181818 !important;
+  background-color: #181818 !important;
+  background-image: none !important;
+}
+
+html[data-theme='dark'] .theme-toggle {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+html.firefox .theme-toggle {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Home sections intentionally keep their band fills in both themes. */
+html[data-theme='dark'] .page-content--home>section {
+  background-color: transparent !important;
+  background-image: linear-gradient(var(--home-section-bg), var(--home-section-bg)) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: calc(100% - (var(--home-rail-inset) * 2)) 100% !important;
+}
