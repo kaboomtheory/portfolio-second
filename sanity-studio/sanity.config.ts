@@ -2,6 +2,9 @@ import { defineConfig } from 'sanity'
 import { structureTool } from 'sanity/structure'
 import { schemaTypes } from './schemas'
 
+/** Singleton types: no create/duplicate/delete, one fixed document id each. */
+const singletonTypes = new Set(['siteSettings', 'homePage', 'aboutPage'])
+
 export default defineConfig({
   projectId: 'ns0czoug',
   dataset: 'production',
@@ -12,6 +15,16 @@ export default defineConfig({
         S.list()
           .title('Content')
           .items([
+            S.listItem()
+              .title('Site Settings')
+              .id('siteSettings')
+              .child(
+                S.editor()
+                  .id('siteSettings')
+                  .schemaType('siteSettings')
+                  .documentId('siteSettings'),
+              ),
+            S.divider(),
             S.listItem()
               .title('Home Page')
               .id('homePage')
@@ -39,5 +52,13 @@ export default defineConfig({
 
   schema: {
     types: schemaTypes,
+    templates: (templates) => templates.filter(({ schemaType }) => !singletonTypes.has(schemaType)),
+  },
+
+  document: {
+    actions: (input, context) =>
+      singletonTypes.has(context.schemaType)
+        ? input.filter(({ action }) => action && ['publish', 'discardChanges', 'restore'].includes(action))
+        : input,
   },
 })
