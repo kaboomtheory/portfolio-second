@@ -1,5 +1,4 @@
 import { onBeforeUnmount, onMounted, useId, watchEffect } from 'vue'
-import { useState } from '~/shims/nuxt'
 import type { MaybeRefOrGetter } from 'vue'
 import { toValue } from 'vue'
 
@@ -10,28 +9,20 @@ interface StyleRuleDefinition {
 }
 
 const STYLE_ATTR = 'data-csp-style'
-let styleEl: HTMLStyleElement | null = null
 let sheet: CSSStyleSheet | null = null
 const ruleIndexes = new Map<string, number>()
 
-function getNonce(): string {
-  return useState<string>('csp-nonce', () => '').value
-}
-
+/**
+ * Rules live in a constructed stylesheet adopted by the document. Unlike a
+ * script-created <style> element, it is not subject to CSP `style-src`, so it
+ * works with the hash-based policy (no nonce needed).
+ */
 function ensureStyleSheet(): CSSStyleSheet | null {
   if (import.meta.env.SSR) return null
   if (sheet) return sheet
 
-  styleEl = document.createElement('style')
-  styleEl.setAttribute('data-csp-dynamic-styles', 'true')
-
-  const nonce = getNonce()
-  if (nonce) {
-    styleEl.setAttribute('nonce', nonce)
-  }
-
-  document.head.appendChild(styleEl)
-  sheet = styleEl.sheet as CSSStyleSheet | null
+  sheet = new CSSStyleSheet()
+  document.adoptedStyleSheets = [...document.adoptedStyleSheets, sheet]
   return sheet
 }
 
