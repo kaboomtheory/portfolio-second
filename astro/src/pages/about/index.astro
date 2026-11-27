@@ -1,8 +1,7 @@
 ---
 /** About page, ported from app/pages/about/index.vue. */
 import BaseLayout from '~/layouts/BaseLayout.astro'
-import HomeStorySection from '~/components/home/HomeStorySection.vue'
-import HomeExperienceCapabilitiesSection from '~/components/home/HomeExperienceCapabilitiesSection.vue'
+import AboutPage from '~/components/pages/AboutPage.vue'
 import { getAboutPage } from '~/lib/content'
 import { aboutMe as fallbackAboutMe } from '~/data/home'
 import { experiences as fallbackExperiences } from '~/data/resume'
@@ -29,8 +28,13 @@ Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=86400, stale-w
   canonical={`${siteUrl}/about`}
   ogTitle="About — Bryan X. Mendez"
 >
-  <div class="page-content content-flow">
-    <HomeStorySection client:visible name={hero.name} avatar={hero.avatar ?? ''} story={story} resumeHref={resumeHref} />
-    <HomeExperienceCapabilitiesSection client:visible experienceItems={experienceItems} groups={groupedCapabilities} />
-  </div>
+  <AboutPage
+    client:load
+    heroName={hero.name}
+    heroAvatar={hero.avatar ?? ''}
+    story={story}
+    resumeHref={resumeHref}
+    experienceItems={experienceItems}
+    groups={groupedCapabilities}
+  />
 </BaseLayout>

@@ -4,12 +4,7 @@
  * on the server and handed to the Vue islands as props.
  */
 import BaseLayout from '~/layouts/BaseLayout.astro'
-import HomeIntroSection from '~/components/home/HomeIntroSection.vue'
-import HomeWorkSection from '~/components/home/HomeWorkSection.vue'
-import HomeStorySection from '~/components/home/HomeStorySection.vue'
-import HomeStatusSection from '~/components/home/HomeStatusSection.vue'
-import HomeExperienceCapabilitiesSection from '~/components/home/HomeExperienceCapabilitiesSection.vue'
-import HomeContactSection from '~/components/home/HomeContactSection.vue'
+import HomePage from '~/components/pages/HomePage.vue'
 import { getHomeContent } from '~/lib/content'
 import { groupCapabilities, resolveHero } from '~/lib/about'
 import { aboutMe as fallbackAboutMe, homeHero } from '~/data/home'
@@ -84,21 +79,20 @@ Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=86400, stale-w
 >
   <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
-  <div class="page-content page-content--home content-flow">
-    <HomeIntroSection
-      client:load
-      heroTitle={heroTitle}
-      heroTaglines={heroTaglines}
-      linkedinHref={linkedinHref}
-      introCtaTo="/#story"
-      introCtaLabel="Resume"
-      availabilityLine={hero.availabilityText}
-      taglineOneLine={heroTaglineOneLine}
-    />
-    <HomeWorkSection client:visible projects={projects} loading={false} />
-    <HomeStorySection client:visible name={hero.name} avatar={hero.avatar} story={story} resumeHref={resumeHref} />
-    {statusItems.length > 0 && <HomeStatusSection client:visible statusItems={statusItems} layout="ticker" />}
-    <HomeExperienceCapabilitiesSection client:visible experienceItems={experienceItems} groups={groupedCapabilities} />
-    <HomeContactSection client:visible linkedinHref={linkedinHref} />
-  </div>
+  <HomePage
+    client:load
+    heroTitle={heroTitle}
+    heroTaglines={heroTaglines}
+    linkedinHref={linkedinHref}
+    availabilityLine={hero.availabilityText}
+    taglineOneLine={heroTaglineOneLine}
+    projects={projects}
+    heroName={hero.name}
+    heroAvatar={hero.avatar}
+    story={story}
+    resumeHref={resumeHref}
+    statusItems={statusItems}
+    experienceItems={experienceItems}
+    groups={groupedCapabilities}
+  />
 </BaseLayout>
