@@ -66,9 +66,29 @@ fallback because it is read at build time.
   so they need no JavaScript. Browsers without support navigate instantly.
 - Fonts are self-hosted from `@fontsource` packages (`src/styles/fonts.css`).
 
+## Server features
+
+- `POST /api/contact` (Resend, Turnstile, Upstash rate limit) and
+  `POST /api/project-unlock` (bcrypt hash from Sanity, signed `project_access`
+  cookie) in `src/pages/api/`, with helpers in `src/lib/server/`. Request and
+  response shapes, limits and Redis key prefixes match the Nuxt routes.
+- `src/lib/projectAccess.ts` gates protected case studies on the cookie.
+- CSP is hash-based (`security.csp` in `astro.config.mjs`) and only applies to
+  production builds. Inline `<script is:inline>` blocks are not hashed, so
+  scripts that must run before paint live in `public/` as files.
+- Other security headers are set in `src/middleware.ts`.
+- `/sitemap.xml` is built from Sanity and leaves out protected projects.
+
+### Env vars
+
+Server: `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL`,
+`TURNSTILE_SECRET_KEY`, `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN`,
+`PROJECT_UNLOCK_SECRET` (16+ chars, keep the Nuxt value so existing unlocks
+still work), `SANITY_READ_TOKEN`. The old `NUXT_*` names are read as fallbacks.
+Public: `PUBLIC_TURNSTILE_SITE_KEY`, `PUBLIC_TURNSTILE_DISABLED`.
+In production, contact and unlock return 503 until the Turnstile and Upstash
+vars are all set. In dev they are skipped when missing.
+
 ## Not ported yet
 
-- Server pieces: `/api/contact`, `/api/project-unlock` and the unlock cookie
-  check, CSP headers, sitemap and robots. These are being built on a separate
-  branch that merges into this one.
 - `/theme-lab` (internal tool, left out on purpose).

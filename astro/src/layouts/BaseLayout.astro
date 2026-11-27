@@ -68,25 +68,11 @@ const {
     <link rel="manifest" href="/manifest.webmanifest" />
 
     <!-- Apply the saved theme before first paint (was public/theme-init.js). -->
-    <script is:inline>
-      (function () {
-        try {
-          var saved = localStorage.getItem('color-mode')
-          var el = document.documentElement
-          var mode = saved === 'dark' ? 'dark' : 'light'
-          el.classList.toggle('dark', mode === 'dark')
-          el.dataset.theme = mode
-          var meta = document.querySelector('meta[name="theme-color"]')
-          if (meta) meta.setAttribute('content', mode === 'dark' ? '#000000' : '#ffffff')
-        } catch (e) {}
-      })()
-    </script>
+    <script is:inline src="/theme-init.js"></script>
 
     <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
 
-    <script is:inline>
-      (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "wmgwi9b4hr");
-    </script>
+    <script is:inline src="/clarity.js" async></script>
     <slot name="head" />
   </head>
   <body>
