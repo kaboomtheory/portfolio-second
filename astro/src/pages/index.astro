@@ -11,6 +11,7 @@ import HomeStatusSection from '~/components/home/HomeStatusSection.vue'
 import HomeExperienceCapabilitiesSection from '~/components/home/HomeExperienceCapabilitiesSection.vue'
 import HomeContactSection from '~/components/home/HomeContactSection.vue'
 import { getHomeContent } from '~/lib/content'
+import { groupCapabilities, resolveHero } from '~/lib/about'
 import { aboutMe as fallbackAboutMe, homeHero } from '~/data/home'
 import { experiences as fallbackExperiences } from '~/data/resume'
 import { profile, socialLinks } from '~/data/site'
@@ -24,27 +25,12 @@ const heroTaglines = homeHero.taglines
 const linkList = homePage?.socialLinks?.length ? homePage.socialLinks : socialLinks
 const linkedinHref = linkList.find((l) => /linkedin/i.test(l.label))?.href ?? 'https://www.linkedin.com/in/bryan-mendez/'
 
-const hero = aboutPage?.hero
-  ? {
-      name: aboutPage.hero.name,
-      avatar: aboutPage.hero.avatar ?? fallbackAboutMe.avatar,
-      availabilityText: aboutPage.hero.availabilityText || 'Available for freelance',
-    }
-  : { name: fallbackAboutMe.name, avatar: fallbackAboutMe.avatar, availabilityText: 'Available for freelance' }
+const hero = resolveHero(aboutPage)
 
 const story = aboutPage?.story?.length ? aboutPage.story : fallbackAboutMe.story
 const experienceItems = aboutPage?.experiences?.length ? aboutPage.experiences : fallbackExperiences
 
-const capabilities = aboutPage?.capabilities?.length
-  ? aboutPage.capabilities
-  : [
-      ...fallbackAboutMe.skills.flatMap((g) => g.items.map((name) => ({ name, category: g.category }))),
-      ...fallbackAboutMe.tools.map((name) => ({ name, category: 'Software' })),
-    ]
-
-const groupMap: Record<string, string[]> = {}
-for (const cap of capabilities) (groupMap[cap.category] ??= []).push(cap.name)
-const groupedCapabilities = Object.entries(groupMap).map(([category, items]) => ({ category, items }))
+const groupedCapabilities = groupCapabilities(aboutPage)
 
 const resumeHref = aboutPage?.resumeUrl || '/Bryan_Mendez_resume_2026-1.pdf'
 

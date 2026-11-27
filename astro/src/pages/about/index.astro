@@ -1,0 +1,36 @@
+---
+/** About page, ported from app/pages/about/index.vue. */
+import BaseLayout from '~/layouts/BaseLayout.astro'
+import HomeStorySection from '~/components/home/HomeStorySection.vue'
+import HomeExperienceCapabilitiesSection from '~/components/home/HomeExperienceCapabilitiesSection.vue'
+import { getAboutPage } from '~/lib/content'
+import { aboutMe as fallbackAboutMe } from '~/data/home'
+import { experiences as fallbackExperiences } from '~/data/resume'
+import { profile } from '~/data/site'
+import { groupCapabilities, resolveHero } from '~/lib/about'
+
+const aboutPage = await getAboutPage()
+const hero = resolveHero(aboutPage)
+const story = aboutPage?.story?.length ? aboutPage.story : fallbackAboutMe.story
+const experienceItems = aboutPage?.experiences?.length ? aboutPage.experiences : fallbackExperiences
+const groupedCapabilities = groupCapabilities(aboutPage)
+const resumeHref = aboutPage?.resumeUrl || '/Bryan_Mendez_resume_2026-1.pdf'
+
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL || 'https://bryanxmendez.com').replace(/\/$/, '')
+const description = `The story, experience, and capabilities behind ${profile.name} — Visual Designer based in ${profile.location}.`
+
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate')
+Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=86400')
+---
+
+<BaseLayout
+  title="About — Bryan X. Mendez"
+  description={description}
+  canonical={`${siteUrl}/about`}
+  ogTitle="About — Bryan X. Mendez"
+>
+  <div class="page-content content-flow">
+    <HomeStorySection client:visible name={hero.name} avatar={hero.avatar ?? ''} story={story} resumeHref={resumeHref} />
+    <HomeExperienceCapabilitiesSection client:visible experienceItems={experienceItems} groups={groupedCapabilities} />
+  </div>
+</BaseLayout>

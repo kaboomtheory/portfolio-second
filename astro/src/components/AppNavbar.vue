@@ -11,7 +11,9 @@ import { useInPageHashLink } from '~/composables/useInPageHashLink'
 import { isInPageHashActive, parseInPageHash } from '~/utils/inPageHashNav'
 import { useSharedScrollY, useScrollLayoutSubscription } from '~/composables/useScrollLayoutBus'
 
-const route = useRoute()
+/** Request path for server rendering; the browser uses the live location. */
+const props = defineProps<{ currentPath?: string }>()
+const route = useRoute(props.currentPath)
 const { onInPageHashLinkClick } = useInPageHashLink()
 const { isDark } = useTheme()
 

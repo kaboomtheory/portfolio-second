@@ -1,0 +1,17 @@
+---
+/** Password gate for protected case studies, ported from app/pages/password/[...slug].vue. */
+import BaseLayout from '~/layouts/BaseLayout.astro'
+import PasswordForm from '~/components/pages/PasswordForm.vue'
+
+const slug = Astro.params.slug ?? ''
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL || 'https://bryanxmendez.com').replace(/\/$/, '')
+Astro.response.headers.set('Cache-Control', 'private, no-store')
+---
+
+<BaseLayout
+  title="Password Protected Project — Bryan X. Mendez"
+  canonical={`${siteUrl}/password/${slug}`}
+  noindex
+>
+  <PasswordForm client:load slug={slug} />
+</BaseLayout>

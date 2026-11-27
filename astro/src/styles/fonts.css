@@ -1,0 +1,14 @@
+/*
+ * Self-hosted fonts (replaces @nuxt/fonts). Latin subset only, the weights
+ * the site uses. Files are bundled from the @fontsource packages, so nothing
+ * loads from Google at runtime or at build time.
+ */
+@import '@fontsource/geist/latin-400.css';
+@import '@fontsource/geist/latin-500.css';
+@import '@fontsource/geist/latin-600.css';
+@import '@fontsource/geist-mono/latin-400.css';
+@import '@fontsource/geist-mono/latin-500.css';
+@import '@fontsource/geist-mono/latin-600.css';
+@import '@fontsource/averia-serif-libre/latin-400.css';
+@import '@fontsource/averia-serif-libre/latin-400-italic.css';
+@import '@fontsource/averia-serif-libre/latin-700.css';
