@@ -1,0 +1,12 @@
+---
+import BaseLayout from '~/layouts/BaseLayout.astro'
+import ErrorPanel from '~/components/ErrorPanel.astro'
+
+interface Props {
+  error: unknown
+}
+---
+
+<BaseLayout title="Something went wrong — Bryan X. Mendez" noindex>
+  <ErrorPanel code={500} heading="Something went wrong" detail="An unexpected error occurred." retryHref={Astro.url.pathname} />
+</BaseLayout>

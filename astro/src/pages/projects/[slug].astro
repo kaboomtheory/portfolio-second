@@ -1,0 +1,71 @@
+---
+/**
+ * Project case study, ported from app/pages/projects/[slug].vue.
+ * Protected projects need an unlock cookie; without one, visitors go to
+ * /password/[slug]. The check itself lives in ~/lib/projectAccess.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro'
+import ProjectDetail from '~/components/pages/ProjectDetail.vue'
+import { getProjects } from '~/lib/content'
+import { getUnlockedProject } from '~/lib/projectAccess'
+import { projectItemsFromSanityRaw } from '~/lib/projects'
+
+const slug = Astro.params.slug ?? ''
+const projects = await getProjects()
+const index = projects.findIndex((p) => p.slug === slug)
+const listed = projects[index]
+
+if (!listed) {
+  return Astro.rewrite('/404')
+}
+
+let project = listed
+if (listed.protected && !listed.underConstruction) {
+  const unlocked = await getUnlockedProject(slug, Astro.cookies)
+  if (!unlocked) return Astro.redirect(`/password/${encodeURIComponent(slug)}`, 302)
+  project = projectItemsFromSanityRaw([unlocked])[0] ?? listed
+}
+
+const prevProject = index > 0 ? projects[index - 1] ?? null : null
+const nextProject = index < projects.length - 1 ? projects[index + 1] ?? null : null
+
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL || 'https://bryanxmendez.com').replace(/\/$/, '')
+const siteDescription =
+  'Portfolio of Bryan X. Mendez — graphic designer in Los Angeles. Brand identity, packaging, and digital experiences.'
+const canonical = `${siteUrl}/projects/${slug}`
+const description = project.summary?.trim() || siteDescription
+const thumb = project.thumbnail?.trim()
+const ogImage = thumb ? (thumb.startsWith('http') ? thumb : `${siteUrl}${thumb}`) : `${siteUrl}/og-default.png`
+
+const creativeWork: Record<string, unknown> = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: project.name,
+  description,
+  image: ogImage,
+  url: canonical,
+  author: { '@type': 'Person', name: 'Bryan X. Mendez', url: `${siteUrl}/` },
+}
+if (project.tags?.length) creativeWork.keywords = project.tags.join(', ')
+if (project.client?.trim()) creativeWork.publisher = { '@type': 'Organization', name: project.client.trim() }
+
+// Public case studies share the home page's edge cache. Unlocked ones are per visitor.
+if (listed.protected) {
+  Astro.response.headers.set('Cache-Control', 'private, no-store')
+} else {
+  Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate')
+  Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=86400')
+}
+---
+
+<BaseLayout
+  title={`${project.name} — Bryan X. Mendez`}
+  description={description}
+  canonical={canonical}
+  ogTitle={`${project.name} — Bryan X. Mendez`}
+  ogImage={ogImage}
+  noindex={listed.protected}
+>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(creativeWork)} />
+  <ProjectDetail client:load project={project} prevProject={prevProject} nextProject={nextProject} />
+</BaseLayout>

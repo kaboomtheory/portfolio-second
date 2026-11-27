@@ -35,15 +35,17 @@ export function useRuntimeConfig() {
 }
 
 /**
- * Minimal route: path + hash. During SSR the path comes from `setSsrPath`
- * (called by the page before rendering); in the browser it is live.
+ * Minimal route: path, hash and fullPath. In the browser it is live. During
+ * SSR there is no location, so components that care pass the request path in
+ * (see AppNavbar's `currentPath` prop); it defaults to "/".
  */
-let ssrPath = '/'
-export function setSsrPath(path: string) {
-  ssrPath = path
-}
-
-const route = reactive({ path: isClient ? window.location.pathname : ssrPath, hash: isClient ? window.location.hash : '' })
+const route = reactive({
+  path: isClient ? window.location.pathname : '/',
+  hash: isClient ? window.location.hash : '',
+  get fullPath() {
+    return `${this.path}${this.hash}`
+  },
+})
 if (isClient) {
   const sync = () => {
     route.path = window.location.pathname
@@ -53,8 +55,8 @@ if (isClient) {
   window.addEventListener('popstate', sync)
 }
 
-export function useRoute() {
-  if (!isClient) return { path: ssrPath, hash: '' }
+export function useRoute(ssrPath = '/') {
+  if (!isClient) return { path: ssrPath, hash: '', fullPath: ssrPath }
   return route
 }
 

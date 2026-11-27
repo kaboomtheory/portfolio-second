@@ -103,3 +103,14 @@ export async function getHomeContent() {
     statusItems: mapStatusItems(status),
   }
 }
+
+/** Public project list, ordered as on the home page. Protected projects have no sections. */
+export async function getProjects() {
+  const raw = await sanityQuery<SanityProjectItem[] | null>(projectsIndexQuery)
+  return projectItemsFromSanityRaw(raw).sort((a, b) => (a.order ?? 999) - (b.order ?? 999))
+}
+
+/** About page content (also used by the home page story and background sections). */
+export async function getAboutPage() {
+  return mapAboutPage(await sanityQuery<SanityAboutPage | null>(aboutPageQuery))
+}

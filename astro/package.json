@@ -11,6 +11,9 @@
   "dependencies": {
     "@astrojs/vercel": "^11.0.22",
     "@astrojs/vue": "^7.1.6",
+    "@fontsource/averia-serif-libre": "^5.3.0",
+    "@fontsource/geist": "^5.3.0",
+    "@fontsource/geist-mono": "^5.3.0",
     "@portabletext/types": "^4.0.3",
     "@portabletext/vue": "^1.0.14",
     "@sanity/client": "^7.28.0",
