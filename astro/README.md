@@ -16,6 +16,26 @@ npm run build    # Vercel output in .vercel/output
 
 On Vercel, create a project with **Root Directory** set to `astro`.
 
+## Environment variables
+
+The public values default to the live site, so a build works with none set.
+
+| Name | Needed for | Default |
+| --- | --- | --- |
+| `PUBLIC_SANITY_PROJECT_ID` | Sanity reads | `ns0czoug` |
+| `PUBLIC_SANITY_DATASET` | Sanity reads | `production` |
+| `PUBLIC_SANITY_API_VERSION` | Sanity reads | `2025-01-01` |
+| `PUBLIC_SITE_URL` | Canonical URLs, sitemap | `https://bryanxmendez.com` |
+| `SANITY_READ_TOKEN` | Protected projects (read-only token, not `SANITY_API_TOKEN`) | none |
+| `PROJECT_UNLOCK_SECRET` | Signs the unlock cookie, 16+ characters | none |
+| `PUBLIC_TURNSTILE_SITE_KEY`, `TURNSTILE_SECRET_KEY` | Contact form | none |
+| `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Contact and unlock rate limits | none |
+| `RESEND_API_KEY`, `CONTACT_TO_EMAIL`, `CONTACT_FROM_EMAIL` | Contact form email | none |
+
+The server routes also accept the old `NUXT_` names for the Resend, contact,
+Turnstile secret and Upstash values. `PUBLIC_TURNSTILE_SITE_KEY` has no
+fallback because it is read at build time.
+
 ## How it is put together
 
 - `output: 'server'` with `@astrojs/vercel`. Pages render on demand; the home

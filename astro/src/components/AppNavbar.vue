@@ -91,7 +91,7 @@ const pillWidth = ref('0px')
 const { styleAttr, styleId } = useCspTargetStyle(() => ({
   left: pillLeft.value,
   width: pillWidth.value,
-}))
+}), 'nav')
 let stretchTimer: ReturnType<typeof setTimeout> | null = null
 let pillTargetIdx = -1
 

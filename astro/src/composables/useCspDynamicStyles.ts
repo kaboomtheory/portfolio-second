@@ -85,10 +85,17 @@ function upsertRule(rule: StyleRuleDefinition) {
   ruleIndexes.set(rule.id, nextIndex)
 }
 
+/**
+ * `scope` keeps ids unique across Astro islands. Each island is its own Vue
+ * app, so useId() restarts in each one, and two islands sharing this sheet
+ * would otherwise write to the same rule (the navbar pill and the first
+ * project card did). Components in different islands pass different scopes.
+ */
 export function useCspTargetStyle(
   declarations: MaybeRefOrGetter<Record<string, string | number | undefined>>,
+  scope = 'page',
 ) {
-  const styleId = useId().replace(/:/g, '')
+  const styleId = `${scope}-${useId().replace(/:/g, '')}`
 
   useManagedCspRules(() => [
     {
