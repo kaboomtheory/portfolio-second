@@ -1,0 +1,118 @@
+---
+/**
+ * Home page, ported from app/pages/index.vue. Sanity content is fetched here
+ * on the server and handed to the Vue islands as props.
+ */
+import BaseLayout from '~/layouts/BaseLayout.astro'
+import HomeIntroSection from '~/components/home/HomeIntroSection.vue'
+import HomeWorkSection from '~/components/home/HomeWorkSection.vue'
+import HomeStorySection from '~/components/home/HomeStorySection.vue'
+import HomeStatusSection from '~/components/home/HomeStatusSection.vue'
+import HomeExperienceCapabilitiesSection from '~/components/home/HomeExperienceCapabilitiesSection.vue'
+import HomeContactSection from '~/components/home/HomeContactSection.vue'
+import { getHomeContent } from '~/lib/content'
+import { aboutMe as fallbackAboutMe, homeHero } from '~/data/home'
+import { experiences as fallbackExperiences } from '~/data/resume'
+import { profile, socialLinks } from '~/data/site'
+
+const { projects, homePage, aboutPage, statusItems } = await getHomeContent()
+
+/** Hero copy stays local (not CMS-driven), same as the Nuxt page. */
+const heroTitle = homeHero.title
+const heroTaglines = homeHero.taglines
+
+const linkList = homePage?.socialLinks?.length ? homePage.socialLinks : socialLinks
+const linkedinHref = linkList.find((l) => /linkedin/i.test(l.label))?.href ?? 'https://www.linkedin.com/in/bryan-mendez/'
+
+const hero = aboutPage?.hero
+  ? {
+      name: aboutPage.hero.name,
+      avatar: aboutPage.hero.avatar ?? fallbackAboutMe.avatar,
+      availabilityText: aboutPage.hero.availabilityText || 'Available for freelance',
+    }
+  : { name: fallbackAboutMe.name, avatar: fallbackAboutMe.avatar, availabilityText: 'Available for freelance' }
+
+const story = aboutPage?.story?.length ? aboutPage.story : fallbackAboutMe.story
+const experienceItems = aboutPage?.experiences?.length ? aboutPage.experiences : fallbackExperiences
+
+const capabilities = aboutPage?.capabilities?.length
+  ? aboutPage.capabilities
+  : [
+      ...fallbackAboutMe.skills.flatMap((g) => g.items.map((name) => ({ name, category: g.category }))),
+      ...fallbackAboutMe.tools.map((name) => ({ name, category: 'Software' })),
+    ]
+
+const groupMap: Record<string, string[]> = {}
+for (const cap of capabilities) (groupMap[cap.category] ??= []).push(cap.name)
+const groupedCapabilities = Object.entries(groupMap).map(([category, items]) => ({ category, items }))
+
+const resumeHref = aboutPage?.resumeUrl || '/Bryan_Mendez_resume_2026-1.pdf'
+
+const firstLine = heroTaglines?.[0]?.segments?.map((x) => x.text).join('').trim() ?? ''
+const heroTaglineOneLine = firstLine.length <= 140 ? firstLine : `${firstLine.slice(0, 137)}…`
+
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL || 'https://bryanxmendez.com').replace(/\/$/, '')
+const siteDescription =
+  'Portfolio of Bryan X. Mendez — graphic designer in Los Angeles. Brand identity, packaging, and digital experiences.'
+const homeCanonicalUrl = `${siteUrl}/`
+
+/** Person + WebSite in one `@graph`. */
+const personId = `${siteUrl}/#person`
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'Person',
+      '@id': personId,
+      name: profile.name,
+      jobTitle: profile.role,
+      image: `${siteUrl}${profile.photo.startsWith('/') ? profile.photo : `/${profile.photo}`}`,
+      url: homeCanonicalUrl,
+      address: { '@type': 'PostalAddress', addressLocality: 'Los Angeles', addressRegion: 'CA', addressCountry: 'US' },
+      sameAs: linkedinHref ? [linkedinHref] : [],
+      contactPoint: { '@type': 'ContactPoint', contactType: 'business inquiries', url: `${homeCanonicalUrl}#contact` },
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${siteUrl}/#website`,
+      name: 'Bryan X. Mendez',
+      url: homeCanonicalUrl,
+      description: siteDescription,
+      inLanguage: 'en-US',
+      publisher: { '@id': personId },
+    },
+  ],
+}
+
+/** The Nuxt API routes cached Sanity reads for a day with SWR; do the same at the Vercel edge. */
+Astro.response.headers.set('Cache-Control', 'public, max-age=0, must-revalidate')
+Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=86400, stale-while-revalidate=86400')
+---
+
+<BaseLayout
+  title="Bryan X. Mendez Graphic Design Portfolio"
+  description={siteDescription}
+  canonical={homeCanonicalUrl}
+  ogTitle="Bryan X. Mendez"
+  homeLanding
+>
+  <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
+
+  <div class="page-content page-content--home content-flow">
+    <HomeIntroSection
+      client:load
+      heroTitle={heroTitle}
+      heroTaglines={heroTaglines}
+      linkedinHref={linkedinHref}
+      introCtaTo="/#story"
+      introCtaLabel="Resume"
+      availabilityLine={hero.availabilityText}
+      taglineOneLine={heroTaglineOneLine}
+    />
+    <HomeWorkSection client:visible projects={projects} loading={false} />
+    <HomeStorySection client:visible name={hero.name} avatar={hero.avatar} story={story} resumeHref={resumeHref} />
+    {statusItems.length > 0 && <HomeStatusSection client:visible statusItems={statusItems} layout="ticker" />}
+    <HomeExperienceCapabilitiesSection client:visible experienceItems={experienceItems} groups={groupedCapabilities} />
+    <HomeContactSection client:visible linkedinHref={linkedinHref} />
+  </div>
+</BaseLayout>

@@ -1,0 +1,4 @@
+/* Loaded before main.css, same order the Nuxt Tailwind module used. */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

@@ -1,0 +1,160 @@
+---
+/**
+ * Site shell: ports nuxt.config `app.head`, app.vue and layouts/default.vue.
+ * Page transitions from default.vue are not ported yet (Astro view transitions
+ * are the likely replacement once more pages exist).
+ */
+import '~/styles/tailwind.css'
+import '~/styles/main.css'
+import SpeedInsights from '@vercel/speed-insights/astro'
+import AppNavbar from '~/components/AppNavbar.vue'
+import AppFooter from '~/components/AppFooter.vue'
+import BackToTop from '~/components/BackToTop.vue'
+import ScrollProgress from '~/components/ScrollProgress.vue'
+import { setSsrPath } from '~/shims/nuxt'
+
+interface Props {
+  title?: string
+  description?: string
+  canonical?: string
+  ogTitle?: string
+  ogImage?: string
+  /** Sets data-home-landing on <html>, like the Nuxt layout did on "/". */
+  homeLanding?: boolean
+}
+
+const siteTitle = 'Bryan X. Mendez Graphic Design Portfolio'
+const siteDescription =
+  'Portfolio of Bryan X. Mendez — graphic designer in Los Angeles. Brand identity, packaging, and digital experiences.'
+const siteUrl = (import.meta.env.PUBLIC_SITE_URL || 'https://bryanxmendez.com').replace(/\/$/, '')
+
+const {
+  title = siteTitle,
+  description = siteDescription,
+  canonical,
+  ogTitle = siteTitle,
+  ogImage = `${siteUrl}/og-default.png`,
+  homeLanding = false,
+} = Astro.props
+
+setSsrPath(Astro.url.pathname)
+---
+
+<!doctype html>
+<html lang="en" data-home-landing={homeLanding ? 'true' : undefined}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    {canonical && <link rel="canonical" href={canonical} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteTitle} />
+    <meta property="og:title" content={ogTitle} />
+    <meta property="og:description" content={description} />
+    {canonical && <meta property="og:url" content={canonical} />}
+    <meta property="og:image" content={ogImage} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={ogTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#ffffff" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+
+    <!-- Apply the saved theme before first paint (was public/theme-init.js). -->
+    <script is:inline>
+      (function () {
+        try {
+          var saved = localStorage.getItem('color-mode')
+          var el = document.documentElement
+          var mode = saved === 'dark' ? 'dark' : 'light'
+          el.classList.toggle('dark', mode === 'dark')
+          el.dataset.theme = mode
+          var meta = document.querySelector('meta[name="theme-color"]')
+          if (meta) meta.setAttribute('content', mode === 'dark' ? '#000000' : '#ffffff')
+        } catch (e) {}
+      })()
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Averia+Serif+Libre:ital,wght@0,400;1,400&family=Bebas+Neue&family=Geist+Mono:wght@400..600&family=Geist:wght@400..600&family=Space+Grotesk:wght@400..600&display=swap"
+    />
+    <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
+
+    <script is:inline>
+      (function(c,l,a,r,i,t,y){c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);})(window, document, "clarity", "script", "wmgwi9b4hr");
+    </script>
+    <slot name="head" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <div class="app-shell-ui">
+        <div class="layout-root relative min-h-screen w-full text-[var(--fg-primary)]">
+          <ScrollProgress client:idle />
+
+          <div class="relative z-[1] flex min-h-screen flex-col">
+            <a href="#main-content" class="skip-link">Skip to main content</a>
+            <AppNavbar client:load />
+
+            <div class="layout-header-pad">
+              <div class="layout-main-shell relative z-[1] container mx-auto flex min-h-screen w-full min-w-0 max-w-full flex-col px-0 pb-6 md:max-w-[82rem]">
+                <main id="main-content" class="relative min-w-0 w-full" tabindex="-1">
+                  <div class:list={['layout-page-frame min-w-0 w-full', { 'layout-page-frame--home-landing': homeLanding }]}>
+                    <slot />
+                  </div>
+                </main>
+                <div class="mt-auto w-full min-w-0">
+                  <AppFooter client:idle />
+                </div>
+              </div>
+            </div>
+
+            <BackToTop client:idle />
+          </div>
+        </div>
+      </div>
+    </div>
+    <SpeedInsights />
+
+    <script>
+      import { initLenis } from '~/scripts/lenis'
+      import { initHashLinks, printConsoleSignature } from '~/scripts/hashLinks'
+
+      initLenis()
+      initHashLinks()
+      printConsoleSignature()
+    </script>
+  </body>
+</html>
+
+<style is:global>
+  .app-shell {
+    position: relative;
+    isolation: isolate;
+    min-height: 100%;
+  }
+
+  .app-shell-ui {
+    position: relative;
+    z-index: 1;
+    min-height: 100%;
+    min-width: 0;
+    max-width: 100%;
+    background-color: var(--shell-ui-bg, var(--paper, #f4efe4));
+  }
+
+  html.dark .app-shell-ui {
+    background-color: var(--shell-ui-bg, var(--paper, #07060f));
+  }
+
+  .layout-root {
+    background: var(--shell-ui-bg, var(--paper));
+    color: var(--fg-primary);
+  }
+</style>
