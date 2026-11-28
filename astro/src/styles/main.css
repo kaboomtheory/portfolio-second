@@ -24,10 +24,10 @@
 */
 :root {
   color-scheme: light;
-  --font-sans: 'Geist', system-ui, sans-serif;
-  --font-display: 'Geist', system-ui, sans-serif;
+  --font-sans: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-display: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-brand: var(--font-sans);
-  --font-serif: 'Averia Serif Libre', Georgia, serif;
+  --font-serif: 'Inter Tight', 'Helvetica Neue', Helvetica, Arial, sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
 
   /* Modular type scale (1.25 ratio baseline) */
@@ -66,13 +66,13 @@
   --dotted-rule-color: color-mix(in srgb, var(--fg-primary) 20%, var(--paper));
 
   /* Pastel tiles (same peach / mint / sky / blush / lemon in light and dark; dark differs in shell + ink) */
-  --pastel-peach: #ffd4b3;
-  --pastel-mint: #c5f0bd;
+  --pastel-peach: #cfe0ff;
+  --pastel-mint: #c8f0e8;
   --pastel-sky: #b0e6ff;
-  --pastel-blush: #ffcaf3;
+  --pastel-blush: #e2dcff;
   --pastel-lemon: #fef0c8;
   --pastel-pink: var(--pastel-blush);
-  --pastel-ink: #000000;
+  --pastel-ink: #101a2c;
   --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, var(--paper));
   /* Dark accent inks on pastel bands (section markers, links) */
   --signal-sky: #1a4a6e;
@@ -82,14 +82,14 @@
   --signal-lemon: #5c4a1f;
 
   /* Light: white page; semantic surfaces = pastels (peach / mint / sky) */
-  --paper: #ffffff;
-  --paper-sunk: #f7f7f6;
-  --ink: #15120f;
-  --ink-mid: #6b645b;
-  --ink-muted: #a69c8e;
-  --rule-token: #15120f;
-  --signal: #d4522f;
-  --signal-coral-ink: #d4522f;
+  --paper: #f3f7fb;
+  --paper-sunk: #e9eff6;
+  --ink: #101a2c;
+  --ink-mid: #4f5b6e;
+  --ink-muted: #7d8798;
+  --rule-token: rgba(16, 26, 44, 0.18);
+  --signal: #2a55c9;
+  --signal-coral-ink: #2a55c9;
   --signal-ink: #ffffff;
 
   --shell-ui-bg: var(--paper);
@@ -154,115 +154,7 @@
   --theme-toggle-rail-muted: var(--ink-mid);
 }
 
-html[data-theme='light'] {
-  color-scheme: light;
-  background-color: #ffffff;
-}
-
-html[data-theme='dark'] {
-  color-scheme: dark;
-  background-color: #181818;
-}
-
-:root.dark,
-html[data-theme='dark'] {
-  color-scheme: dark;
-  --paper: #000000;
-  --paper-sunk: #161b27;
-  /* Text/chrome: cool lavender-white primary; blue-tinted neutrals */
-  --ink: #EEF2FF;
-  --ink-mid: #AABCD8;
-  --ink-muted: #8092B3;
-  /* Hairlines: ink stepped up for legibility vs dark navy shell */
-  --rule-token: color-mix(in srgb, var(--ink) 22%, var(--paper));
-  --signal: #F1A06E;
-  --signal-coral-ink: #F1A06E;
-  --signal-ink: #000000;
-
-  /* Tiles — slightly punchier than light so bands read clearly on navy shell */
-  --pastel-peach: #f9c095;
-  --pastel-mint: #a8ec9c;
-  --pastel-sky: #9edaf5;
-  --pastel-blush: #fbbcec;
-  --pastel-lemon: #f5e8a8;
-  --pastel-pink: var(--pastel-blush);
-  /* Type on pastel tiles (same as light) */
-  --pastel-ink: #000000;
-  --pastel-ink-muted: color-mix(in srgb, var(--pastel-ink) 62%, #ffffff);
-  /* Accent inks on pastel bands (same as light) */
-  --signal-sky: #1a4a6e;
-  --signal-mint: #1f5c42;
-  --signal-peach: #5c3d26;
-  --signal-blush: #6b2a52;
-  --signal-lemon: #5c4a1f;
-
-  --shell-ui-bg: #181818;
-  --shell-ui-bg-deep: #000000;
-  --bg-primary: var(--paper);
-  --bg-secondary: var(--paper-sunk);
-  --bg-tertiary: #1d2433;
-  --fg-primary: var(--ink);
-  --fg-secondary: var(--ink-mid);
-  --fg-muted: var(--ink-muted);
-  --border: var(--rule-token);
-  --accent: var(--signal);
-  --accent-soft: color-mix(in srgb, var(--signal) 78%, var(--paper-sunk));
-  --accent-2: var(--signal);
-  --accent-2-soft: var(--accent-soft);
-  --on-accent: var(--signal-ink);
-  --on-accent-muted: var(--paper-sunk);
-  --emphasis: var(--signal);
-  --emphasis-soft: var(--accent-soft);
-  --on-emphasis: var(--signal-ink);
-  --on-emphasis-muted: var(--on-accent-muted);
-  --status-available: var(--ink-mid);
-  --status-online: #22c55e;
-  --danger: #ef7b65;
-  --neon: var(--signal);
-  --neon-mid: var(--accent-soft);
-  --neon-soft: var(--ink-mid);
-  --neon-frost: var(--ink);
-  --muted-neon: color-mix(in srgb, var(--ink) 65%, var(--paper));
-  --btn-primary-bg: var(--signal);
-  --btn-primary-fg: var(--signal-ink);
-  --btn-attention-bg: var(--pastel-peach);
-  --btn-attention-fg: var(--pastel-ink);
-  --surface-interactive: var(--paper-sunk);
-  --btn-secondary-bg: transparent;
-  --chrome-ring-idle: var(--ink);
-  --shadow-sm:
-    0 0 0 1px color-mix(in srgb, var(--ink) 10%, var(--paper)),
-    0 0.4rem 1rem -0.6rem color-mix(in srgb, #000 34%, transparent);
-  --shadow-md:
-    0 0 0 1px color-mix(in srgb, var(--ink) 14%, var(--paper)),
-    0 1rem 2.25rem -1.2rem color-mix(in srgb, #000 42%, transparent);
-  --shadow-lg:
-    0 0 0 1px color-mix(in srgb, var(--ink) 18%, var(--paper)),
-    0 1.7rem 3.7rem -2rem color-mix(in srgb, #000 50%, transparent);
-  --project-card-surface: var(--paper-sunk);
-  --project-card-surface-hover: var(--bg-tertiary);
-  --project-card-border: color-mix(in srgb, var(--ink) 24%, var(--paper-sunk));
-  /* Flat hairlines only (no diffuse shadow)—matches light mode treatment. */
-  --project-card-shadow-idle: var(--shadow-sm);
-  --project-card-shadow-hover: var(--shadow-md);
-  --card-border: 1px solid var(--rule-token);
-  --card-ring: none;
-  --rule: var(--rule-token);
-  --rule-soft: color-mix(in srgb, var(--ink) 18%, var(--paper));
-  --theme-toggle-knob-bg: var(--ink);
-  --theme-toggle-knob-fg: var(--paper);
-  --theme-toggle-rail-emphasis: var(--ink);
-  --theme-toggle-rail-muted: var(--ink-mid);
-  --dotted-rule-color: color-mix(in srgb, var(--ink) 36%, var(--paper));
-}
-
-html[data-theme='dark'] body {
-  background-color: #181818;
-}
-
-html[data-theme='light'] body {
-  background-color: #ffffff;
-}
+html { color-scheme: light; background-color: #f3f7fb; }
 
 /* Swiss flat attention pill (CTA + back-to-top) — pastel fill + black label */
 .cta-button.btn-attention.cta-attention-pill,

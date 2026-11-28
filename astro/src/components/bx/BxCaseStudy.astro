@@ -1,0 +1,1204 @@
+---
+/**
+ * Case study, Redline edition. The first images from Sanity play as a pinned
+ * scroll sequence with the site's marks (crop marks, a dimension line in the
+ * image's real pixel width, a quoted word per step). The rest of the sections
+ * follow as the write-up: text, figures, quotes, results and video.
+ */
+import type { ProjectItem, ProjectStorySection } from '~/types/project'
+import { pad, sanityDims, shortLabel, sized, srcset } from '~/lib/bx'
+import { sanitizeEmbedUrl } from '~/utils/embed'
+
+interface Props {
+  project: ProjectItem
+  index: number
+  total: number
+  nextProject: ProjectItem | null
+  prevProject: ProjectItem | null
+}
+
+const { project, index, total, nextProject, prevProject } = Astro.props
+
+interface Fig {
+  src: string
+  alt: string
+  caption?: string
+}
+
+/* Flatten every image, in order, so the stage can take the first few. */
+const allFigs: Fig[] = []
+for (const s of project.sections) {
+  if (s.images?.length) {
+    for (const img of s.images) allFigs.push({ src: img.image, alt: img.alt || '', caption: img.caption })
+  } else if (s.image) {
+    allFigs.push({ src: s.image, alt: '', caption: s.caption })
+  }
+}
+const stageFigs = allFigs.length >= 2 ? allFigs.slice(0, 4) : []
+const stageSet = new Set(stageFigs.map((f) => f.src))
+const hero = stageFigs.length ? null : allFigs[0] ?? (project.thumbnail ? { src: project.thumbnail, alt: '' } : null)
+if (hero) stageSet.add(hero.src)
+
+/* One quoted word per step, from the project's own tags. */
+const tags = (project.tags ?? []).map(shortLabel).filter(Boolean)
+const stepWord = (i: number) => tags[i] ?? `Fig ${pad(i + 1)}`
+
+/* Body: drop images the stage already showed, and sections left empty. */
+type Block = ProjectStorySection & { figs?: Fig[] }
+const blocks: Block[] = project.sections
+  .map((s): Block => {
+    if (s.images?.length) {
+      const figs = s.images
+        .filter((img) => !stageSet.has(img.image))
+        .map((img) => ({ src: img.image, alt: img.alt || '', caption: img.caption }))
+      return { ...s, figs }
+    }
+    if (s.image && stageSet.has(s.image)) return { ...s, image: undefined }
+    return s
+  })
+  .filter((s) => {
+    if (s.type === 'spacer') return false
+    if (s.figs) return s.figs.length > 0
+    return Boolean(s.image || s.heading || s.body || s.url || s.stats?.length || (s.type === 'quote' && s.body))
+  })
+
+let figNo = stageFigs.length
+const nextFig = () => pad(++figNo)
+
+const firstWord = project.name.split(/\s+/)[0] ?? project.name
+const client = project.client?.trim() || 'Concept'
+const color = project.color && /^#[0-9a-f]{6}$/i.test(project.color) ? project.color : null
+const hasWriteup = blocks.length > 0
+
+/** Long email and A+ strips read better at a column width than full bleed. */
+function isTall(src: string) {
+  const d = sanityDims(src)
+  return d ? d.h / d.w > 1.4 : false
+}
+---
+
+<article class="cs" data-cs>
+  <!-- Header -->
+  <header class="bx-page cs-head">
+    <div class="bx-wrap cs-head__grid">
+      <div class="cs-head__text">
+        <p class="bx-sec">
+          § {pad(index + 1)} · <span class="bx-q">Case study</span>
+          <span class="cs-head__of">{pad(index + 1)} / {pad(total)}</span>
+        </p>
+        <h1 class="cs-head__h">{project.name}</h1>
+        <p class="bx-spec" aria-hidden="true">INTER TIGHT BOLD · <span data-bx-size>96</span> PX</p>
+        {project.summary && <p class="cs-head__sum">{project.summary}</p>}
+        <a href="#work" class="bx-pill bx-pill--ink cs-head__cta">See the work ↓</a>
+      </div>
+
+      <aside class="tag" aria-label="Project details">
+        <span class="tag__hole" aria-hidden="true"></span>
+        <div class="tag__top">
+          <span class="bx-q">{firstWord}</span>
+          <span class="bx-mono">No. {pad(index + 1)} / {pad(total)}</span>
+        </div>
+        <dl class="tag__dl">
+          <div>
+            <dt class="bx-label">Client</dt>
+            <dd>{client}</dd>
+          </div>
+          {
+            project.role && (
+              <div>
+                <dt class="bx-label">Role</dt>
+                <dd>{project.role}</dd>
+              </div>
+            )
+          }
+          {
+            project.tags?.length ? (
+              <div>
+                <dt class="bx-label">Discipline</dt>
+                <dd>{project.tags.join(', ')}</dd>
+              </div>
+            ) : null
+          }
+          <div>
+            <dt class="bx-label">Plates</dt>
+            <dd><span class="bx-mono tag__num">{pad(allFigs.length)}</span></dd>
+          </div>
+          {
+            color && (
+              <div>
+                <dt class="bx-label">Key color</dt>
+                <dd>
+                  <span class="bx-hex">
+                    <span class="bx-hex__sw" data-swatch={color} aria-hidden="true" />
+                    {color.toUpperCase()}
+                  </span>
+                </dd>
+              </div>
+            )
+          }
+          {
+            project.projectUrl && (
+              <div>
+                <dt class="bx-label">Live</dt>
+                <dd>
+                  <a href={project.projectUrl} target="_blank" rel="noopener noreferrer">
+                    Visit site<span class="bx-sr"> (opens in new tab)</span> ↗
+                  </a>
+                </dd>
+              </div>
+            )
+          }
+        </dl>
+        <p class="tag__ft">Designed by Bryan Mendez</p>
+      </aside>
+    </div>
+  </header>
+
+  <!-- Pinned sequence -->
+  {
+    stageFigs.length > 0 && (
+      <section id="work" class="story" data-story data-steps={stageFigs.length} aria-label="Project images">
+        <div class="story__stage" data-stage data-step="0">
+          <div class="story__figs">
+            {stageFigs.map((f, i) => {
+              const d = sanityDims(f.src)
+              return (
+                <figure class:list={['story__fig', `s${i}`]} data-fig={i}>
+                  <div class="story__plate" data-tilt>
+                    <button type="button" class="story__open bx-focus" data-lightbox={sized(f.src, 2200)} data-alt={f.alt}>
+                      <img
+                        src={sized(f.src, 1600)}
+                        srcset={srcset(f.src) || undefined}
+                        sizes="(min-width: 1200px) 960px, 90vw"
+                        alt={f.alt || `${project.name}, plate ${pad(i + 1)}`}
+                        loading={i === 0 ? 'eager' : 'lazy'}
+                        decoding="async"
+                        width={d?.w}
+                        height={d?.h}
+                      />
+                    </button>
+                    <div class="story__marks" aria-hidden="true">
+                      <span class="bx-crop__m bx-crop__m--tl" />
+                      <span class="bx-crop__m bx-crop__m--tr" />
+                      <span class="bx-crop__m bx-crop__m--bl" />
+                      <span class="bx-crop__m bx-crop__m--br" />
+                      {d && <span class="bx-dim story__dim">{d.w} PX</span>}
+                      {d && (
+                        <span class="story__dimv">
+                          <span>{d.h} PX</span>
+                        </span>
+                      )}
+                      {f.caption && (
+                        <p class="bx-note story__note">
+                          <span class="bx-note__n">NOTE {pad(i + 1)}</span>
+                          {f.caption}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </figure>
+              )
+            })}
+          </div>
+
+          <div class="story__words" aria-hidden="true">
+            {stageFigs.map((_, i) => (
+              <span class:list={['bx-q story__word', `s${i}`]}>{stepWord(i)}</span>
+            ))}
+          </div>
+
+          <ol class="story__rail" aria-hidden="true">
+            {stageFigs.map((_, i) => (
+              <li class:list={[`s${i}`]}>
+                <span class="bx-mono">{pad(i + 1)}</span>
+                <span class="bx-q">{stepWord(i)}</span>
+              </li>
+            ))}
+          </ol>
+
+          <div class="story__meter" aria-hidden="true">
+            <span class="bx-mono story__count">
+              <span data-count>01</span> / {pad(stageFigs.length)}
+            </span>
+            <span class="story__track">
+              <span class="story__fill" data-fill />
+            </span>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    hero && (
+      <div id="work" class="bx-page cs-hero">
+        <div class="bx-wrap">
+          <button type="button" class="cs-plate bx-focus" data-lightbox={sized(hero.src, 2200)} data-alt={hero.alt}>
+            <img src={sized(hero.src, 1600)} srcset={srcset(hero.src) || undefined} sizes="90vw" alt={hero.alt || project.name} decoding="async" />
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  <!-- Write-up -->
+  {
+    hasWriteup && (
+      <div class="bx-page cs-body">
+        <div class="bx-wrap cs-body__flow">
+          {blocks.map((b) => {
+            if (b.type === 'statsRow' && b.stats?.length)
+              return (
+                <section class="results">
+                  <p class="bx-label">
+                    <span class="bx-q">Results</span>
+                  </p>
+                  <dl>
+                    {b.stats.map((s) => (
+                      <div>
+                        <dt class="bx-label">{s.label}</dt>
+                        <dd>{s.value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </section>
+              )
+            if (b.type === 'quote')
+              return (
+                <figure class="cs-quote">
+                  <blockquote>{b.body}</blockquote>
+                  {b.author && (
+                    <figcaption>
+                      <span class="bx-label">{b.author}</span>
+                      {b.role && <span> · {b.role}</span>}
+                    </figcaption>
+                  )}
+                </figure>
+              )
+            if (b.type === 'videoEmbed') {
+              const src = sanitizeEmbedUrl(b.url)
+              return src ? (
+                <figure class="cs-video">
+                  <iframe src={src} title={b.caption || `${project.name} video`} loading="lazy" allow="autoplay; fullscreen; picture-in-picture" allowfullscreen />
+                  {b.caption && <figcaption class="cs-cap">{b.caption}</figcaption>}
+                </figure>
+              ) : null
+            }
+            if (b.figs?.length) {
+              const cols = b.layout === 'three-col' ? 3 : b.layout === 'four-col' ? 4 : 2
+              return (
+                <div class:list={['cs-gallery', `cs-gallery--${b.figs.length === 1 ? 1 : cols}`]}>
+                  {b.figs.map((f) => {
+                    const n = nextFig()
+                    return (
+                      <figure class="cs-fig bx-reveal">
+                        <button type="button" class="cs-plate bx-focus" data-lightbox={sized(f.src, 2200)} data-alt={f.alt}>
+                          <img src={sized(f.src, 1280)} srcset={srcset(f.src, 1600) || undefined} sizes="(min-width: 900px) 45vw, 90vw" alt={f.alt || `${project.name}, plate ${n}`} loading="lazy" decoding="async" />
+                        </button>
+                        <figcaption class="cs-cap">
+                          <span class="bx-mono">FIG. {n}</span>
+                          {f.caption && <span>{f.caption}</span>}
+                        </figcaption>
+                      </figure>
+                    )
+                  })}
+                </div>
+              )
+            }
+            const hasText = Boolean(b.heading || b.body)
+            const n = b.image ? nextFig() : ''
+            return (
+              <section class:list={['cs-sec', { 'cs-sec--split': b.image && hasText, 'cs-sec--flip': b.position === 'right' }]}>
+                {hasText && (
+                  <div class="cs-sec__text">
+                    {b.heading && <h2 class="cs-sec__h">{b.heading}</h2>}
+                    {b.body && b.body.split(/\n{2,}/).map((para) => <p>{para}</p>)}
+                  </div>
+                )}
+                {b.image && (
+                  <figure class:list={['cs-fig bx-reveal', `cs-fig--${b.layout || 'full'}`, { 'cs-fig--tall': isTall(b.image) }]}>
+                    <button type="button" class="cs-plate bx-focus" data-lightbox={sized(b.image, 2200)} data-alt="">
+                      <img src={sized(b.image, 1600)} srcset={srcset(b.image) || undefined} sizes="(min-width: 1300px) 1248px, 92vw" alt={`${project.name}, plate ${n}`} loading="lazy" decoding="async" />
+                    </button>
+                    <figcaption class="cs-cap">
+                      <span class="bx-mono">FIG. {n}</span>
+                      {b.caption && <span>{b.caption}</span>}
+                    </figcaption>
+                  </figure>
+                )}
+              </section>
+            )
+          })}
+        </div>
+      </div>
+    )
+  }
+
+  <!-- Next -->
+  <nav class="bx-page cs-next" aria-label="More projects">
+    <div class="bx-wrap cs-next__grid">
+      {
+        nextProject && (
+          <a href={`/projects/${nextProject.slug}`} class="next bx-focus">
+            {nextProject.thumbnail && <img src={sized(nextProject.thumbnail, 1600)} alt="" loading="lazy" decoding="async" />}
+            <span class="next__cap bx-glass">
+              <span>
+                <span class="bx-label">
+                  <span class="bx-q">Next</span> · <span class="bx-mono">{pad(index + 2)}</span>
+                </span>
+                <span class="next__name">{nextProject.name}</span>
+              </span>
+              <span class="next__go" aria-hidden="true">→</span>
+            </span>
+          </a>
+        )
+      }
+      <div class="cs-next__links">
+        {prevProject && (
+          <a href={`/projects/${prevProject.slug}`} class="bx-pill bx-pill--line bx-pill--sm">← {prevProject.name}</a>
+        )}
+        <a href="/#index" class="bx-pill bx-pill--line bx-pill--sm">All projects</a>
+      </div>
+    </div>
+  </nav>
+
+  <dialog class="lb" data-lb aria-label="Image viewer">
+    <button type="button" class="lb__close bx-pill bx-pill--ink bx-pill--sm" data-lb-close>Close</button>
+    <img data-lb-img alt="" />
+  </dialog>
+</article>
+
+<script>
+  import { initCaseStudy } from '~/scripts/bxCaseStudy'
+  import { initReveal } from '~/scripts/bxReveal'
+  initCaseStudy()
+  initReveal()
+</script>
+
+<style>
+  /* ---------- header ---------- */
+
+  .cs-head {
+    padding-top: 136px;
+    padding-bottom: 72px;
+  }
+
+  .cs-head__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+    align-items: end;
+    gap: 64px;
+  }
+
+  .cs-head__text {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    min-width: 0;
+  }
+
+  .cs-head__of {
+    margin-left: 10px;
+    color: var(--bx-mid);
+  }
+
+  .cs-head__h {
+    margin: 6px 0 0 -0.04em;
+    font-weight: 700;
+    font-size: clamp(52px, 6.7vw, 96px);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    text-wrap: balance;
+  }
+
+  .cs-head__sum {
+    margin: 10px 0 0;
+    max-width: 620px;
+    font-size: clamp(18px, 1.6vw, 22px);
+    line-height: 1.45;
+    text-wrap: pretty;
+  }
+
+  .cs-head__cta {
+    align-self: flex-start;
+    margin-top: 10px;
+  }
+
+  /* Care tag spec sheet */
+  .tag {
+    position: relative;
+    box-sizing: border-box;
+    padding: 34px 24px 20px;
+    border: 1.5px solid var(--bx-ink);
+    border-radius: 6px;
+    background: var(--bx-white);
+  }
+
+  .tag__hole {
+    position: absolute;
+    top: 12px;
+    left: 50%;
+    width: 10px;
+    height: 10px;
+    margin-left: -5px;
+    border-radius: 99px;
+    border: 1.5px solid var(--bx-ink);
+    background: var(--bx-bg);
+  }
+
+  .tag__top {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+    padding-bottom: 14px;
+    border-bottom: 1.5px solid var(--bx-ink);
+    font-size: 15px;
+  }
+
+  .tag__top .bx-mono {
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    color: var(--bx-mid);
+  }
+
+  .tag__dl {
+    margin: 0;
+  }
+
+  .tag__dl > div {
+    display: grid;
+    grid-template-columns: 96px minmax(0, 1fr);
+    gap: 12px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--bx-rule);
+  }
+
+  .tag__dl dt {
+    font-size: 11px;
+    padding-top: 2px;
+  }
+
+  .tag__dl dd {
+    margin: 0;
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1.35;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+  }
+
+  .tag__dl dd a {
+    color: var(--bx-signal);
+  }
+
+  .tag__num {
+    font-weight: 500;
+    letter-spacing: 0.06em;
+  }
+
+  .tag__ft {
+    margin: 16px 0 0;
+    font-weight: 800;
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    text-align: center;
+  }
+
+  /* ---------- pinned sequence ---------- */
+
+  .story {
+    position: relative;
+    height: calc(var(--steps, 4) * 100svh);
+    scroll-margin-top: 0;
+  }
+
+  .story[data-steps='2'] { --steps: 2; }
+  .story[data-steps='3'] { --steps: 3; }
+  .story[data-steps='4'] { --steps: 4; }
+
+  .story__stage {
+    position: sticky;
+    top: 0;
+    height: 100svh;
+    overflow: hidden;
+    display: grid;
+    place-items: center;
+    perspective: 1600px;
+  }
+
+  .story__figs {
+    position: absolute;
+    inset: 0;
+  }
+
+  .story__fig {
+    position: absolute;
+    inset: 0;
+    margin: 0;
+    display: grid;
+    place-items: center;
+    padding: 120px calc(var(--bx-gutter) + 200px) 110px;
+    perspective: 1600px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  /* The plate shrink-wraps the image, so the marks measure the real picture. */
+  .story__plate {
+    position: relative;
+    max-width: 100%;
+    transform-style: preserve-3d;
+    transform: scale(0.97) rotateX(var(--tilt, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .story__open,
+  .cs-plate {
+    display: block;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: zoom-in;
+  }
+
+  .story__open {
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--bx-white);
+    box-shadow: 0 40px 80px -40px rgba(16, 26, 44, 0.45);
+  }
+
+  .story__fig img {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: min(960px, 100%);
+    max-height: calc(100svh - 230px);
+  }
+
+  /* Marks sit in front of the tilted image, so it never hides them. */
+  .story__marks {
+    position: absolute;
+    inset: 0;
+    transform: translateZ(80px) scale(0.95);
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.5s ease 0.2s;
+  }
+
+  .story__dim {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: -40px;
+  }
+
+  /* Vertical dimension, same marks as .bx-dim turned on its side. */
+  .story__dimv {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: -40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--bx-signal);
+    font-family: var(--bx-mono);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+  }
+
+  .story__dimv::before,
+  .story__dimv::after {
+    content: '';
+    flex: 1;
+    width: 9px;
+    background: linear-gradient(currentColor, currentColor) center / 1px 100% no-repeat;
+  }
+
+  .story__dimv::before {
+    border-top: 1px solid currentColor;
+  }
+
+  .story__dimv::after {
+    border-bottom: 1px solid currentColor;
+  }
+
+  .story__dimv span {
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+    white-space: nowrap;
+  }
+
+  .story__note {
+    position: absolute;
+    right: -150px;
+    bottom: 12%;
+  }
+
+  .story__words {
+    position: absolute;
+    left: max(var(--bx-gutter), env(safe-area-inset-left, 0px));
+    top: 50%;
+    pointer-events: none;
+  }
+
+  .story__word {
+    position: absolute;
+    left: 0;
+    top: 0;
+    white-space: nowrap;
+    font-size: 13px;
+    color: var(--bx-ink);
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 0.5s ease,
+      transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+  }
+
+  .story__rail {
+    position: absolute;
+    right: max(var(--bx-gutter), env(safe-area-inset-right, 0px));
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin: 0;
+    padding: 0 0 0 16px;
+    list-style: none;
+    border-left: 1px solid var(--bx-rule);
+  }
+
+  .story__rail li {
+    display: flex;
+    gap: 10px;
+    align-items: baseline;
+    font-size: 11px;
+    color: var(--bx-mid);
+    opacity: 0.55;
+    transition: opacity 0.3s ease, color 0.3s ease;
+  }
+
+  .story__rail .bx-mono {
+    color: var(--bx-signal);
+    letter-spacing: 0.06em;
+  }
+
+  .story__meter {
+    position: absolute;
+    left: max(var(--bx-gutter), env(safe-area-inset-left, 0px));
+    bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .story__count {
+    white-space: nowrap;
+    font-size: 12px;
+    color: var(--bx-ink);
+    letter-spacing: 0.08em;
+  }
+
+  /* Ruler track: ticks every 10%, with a 3px cobalt fill. */
+  .story__track {
+    position: relative;
+    width: 180px;
+    height: 9px;
+    background:
+      repeating-linear-gradient(90deg, var(--bx-rule-strong) 0 1px, transparent 1px 18px) left bottom / 100% 5px no-repeat,
+      linear-gradient(var(--bx-rule-strong), var(--bx-rule-strong)) left bottom / 100% 1px no-repeat;
+  }
+
+  .story__fill {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--bx-signal);
+    transform-origin: left;
+    transform: scaleX(var(--p, 0));
+  }
+
+  /* Step visibility */
+  [data-step='0'] .s0,
+  [data-step='1'] .s1,
+  [data-step='2'] .s2,
+  [data-step='3'] .s3 {
+    opacity: 1;
+  }
+
+  [data-step='0'] .story__fig.s0 .story__plate,
+  [data-step='1'] .story__fig.s1 .story__plate,
+  [data-step='2'] .story__fig.s2 .story__plate,
+  [data-step='3'] .story__fig.s3 .story__plate {
+    transform: rotateX(var(--tilt, 0deg)) rotateY(var(--tilt-y, 0deg));
+    transition: transform 0.1s linear;
+  }
+
+  [data-step='0'] .story__fig.s0 .story__marks,
+  [data-step='1'] .story__fig.s1 .story__marks,
+  [data-step='2'] .story__fig.s2 .story__marks,
+  [data-step='3'] .story__fig.s3 .story__marks {
+    opacity: 1;
+  }
+
+  [data-step='0'] .story__word.s0,
+  [data-step='1'] .story__word.s1,
+  [data-step='2'] .story__word.s2,
+  [data-step='3'] .story__word.s3 {
+    transform: none;
+  }
+
+  [data-step='0'] .story__rail .s0,
+  [data-step='1'] .story__rail .s1,
+  [data-step='2'] .story__rail .s2,
+  [data-step='3'] .story__rail .s3 {
+    color: var(--bx-ink);
+  }
+
+  /* Only the current image takes clicks. */
+  [data-step='0'] .story__fig.s0,
+  [data-step='1'] .story__fig.s1,
+  [data-step='2'] .story__fig.s2,
+  [data-step='3'] .story__fig.s3 {
+    pointer-events: auto;
+  }
+
+  /* ---------- single hero ---------- */
+
+  .cs-hero .cs-plate {
+    border-radius: 18px;
+    overflow: hidden;
+    background: var(--bx-white);
+  }
+
+  .cs-hero img {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  /* ---------- write-up ---------- */
+
+  .cs-body {
+    padding-top: 96px;
+  }
+
+  .cs-body__flow {
+    display: flex;
+    flex-direction: column;
+    gap: clamp(48px, 6vw, 88px);
+  }
+
+  .cs-sec {
+    display: grid;
+    gap: 32px;
+    min-width: 0;
+  }
+
+  .cs-sec--split {
+    grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    align-items: center;
+  }
+
+  .cs-sec--flip .cs-sec__text {
+    order: 2;
+  }
+
+  .cs-sec__text {
+    max-width: 640px;
+    padding-top: 22px;
+    border-top: 1.5px solid var(--bx-ink);
+  }
+
+  .cs-sec__h {
+    margin: 0 0 14px;
+    font-weight: 700;
+    font-size: clamp(28px, 2.8vw, 38px);
+    line-height: 1.05;
+    letter-spacing: -0.03em;
+  }
+
+  .cs-sec__text p {
+    margin: 0 0 14px;
+    font-size: 18px;
+    line-height: 1.6;
+    color: #24324a;
+  }
+
+  .cs-fig {
+    margin: 0;
+    min-width: 0;
+  }
+
+  .cs-fig .cs-plate {
+    border-radius: 14px;
+    overflow: hidden;
+    background: var(--bx-white);
+  }
+
+  .cs-fig img {
+    display: block;
+    width: 100%;
+    height: auto;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .cs-plate:hover img {
+    transform: scale(1.015);
+  }
+
+  .cs-fig--medium {
+    width: min(100%, 760px);
+    margin: 0 auto;
+  }
+
+  .cs-fig--tall {
+    width: min(100%, 640px);
+    margin: 0 auto;
+  }
+
+  .cs-fig--large {
+    width: min(100%, 1040px);
+    margin: 0 auto;
+  }
+
+  .cs-cap {
+    display: flex;
+    gap: 14px;
+    margin-top: 12px;
+    font-size: 14px;
+    color: var(--bx-mid);
+  }
+
+  .cs-cap .bx-mono {
+    flex: none;
+    font-size: 11px;
+    color: var(--bx-signal);
+    padding-top: 2px;
+  }
+
+  .cs-gallery {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 24px;
+    align-items: start;
+  }
+
+  .cs-gallery--1 { grid-template-columns: 1fr; }
+  .cs-gallery--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .cs-gallery--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+  .cs-quote {
+    margin: 0;
+    max-width: 900px;
+    padding-top: 22px;
+    border-top: 1.5px solid var(--bx-ink);
+  }
+
+  .cs-quote blockquote {
+    margin: 0;
+    font-weight: 600;
+    font-size: clamp(26px, 3vw, 40px);
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+  }
+
+  .cs-quote blockquote::before { content: '"'; }
+  .cs-quote blockquote::after { content: '"'; }
+
+  .cs-quote figcaption {
+    margin-top: 14px;
+    color: var(--bx-mid);
+  }
+
+  .results {
+    padding-top: 22px;
+    border-top: 1.5px solid var(--bx-ink);
+  }
+
+  .results dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 24px;
+    margin: 18px 0 0;
+  }
+
+  .results dd {
+    margin: 6px 0 0;
+    font-family: var(--bx-mono);
+    font-size: clamp(36px, 4vw, 56px);
+    letter-spacing: -0.02em;
+    color: var(--bx-ink);
+  }
+
+  .cs-video {
+    margin: 0;
+  }
+
+  .cs-video iframe {
+    display: block;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    border: 0;
+    border-radius: 14px;
+  }
+
+  /* ---------- next ---------- */
+
+  .cs-next {
+    padding-top: clamp(80px, 9vw, 128px);
+  }
+
+  .cs-next__grid {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .next {
+    position: relative;
+    display: block;
+    height: clamp(260px, 30vw, 420px);
+    border-radius: 30px;
+    overflow: hidden;
+    background: var(--bx-white);
+    color: var(--bx-ink);
+    text-decoration: none;
+  }
+
+  .next img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .next:hover img {
+    transform: scale(1.03);
+  }
+
+  .next__cap {
+    position: absolute;
+    left: 18px;
+    bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-sizing: border-box;
+    max-width: calc(100% - 36px);
+    padding: 18px 22px;
+    border-radius: 20px;
+  }
+
+  .next__cap .bx-label {
+    display: block;
+    font-size: 11px;
+    margin-bottom: 4px;
+  }
+
+  .next__cap .bx-mono {
+    letter-spacing: 0.08em;
+    color: var(--bx-signal);
+  }
+
+  .next__name {
+    display: block;
+    font-weight: 700;
+    font-size: clamp(24px, 2.6vw, 36px);
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+  }
+
+  .next__go {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 99px;
+    background: var(--bx-ink);
+    color: var(--bx-bg);
+    font-size: 20px;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .next:hover .next__go {
+    transform: translateX(4px);
+  }
+
+  .cs-next__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .cs-next__links .bx-pill {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ---------- lightbox ---------- */
+
+  .lb {
+    width: 100vw;
+    height: 100svh;
+    max-width: none;
+    max-height: none;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: rgba(243, 247, 251, 0.94);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
+  }
+
+  .lb[open] {
+    display: grid;
+    place-items: center;
+  }
+
+  .lb::backdrop {
+    background: transparent;
+  }
+
+  .lb img {
+    max-width: calc(100vw - 48px);
+    max-height: calc(100svh - 120px);
+    object-fit: contain;
+    border-radius: 8px;
+    background: var(--bx-white);
+  }
+
+  .lb__close {
+    position: absolute;
+    top: calc(20px + env(safe-area-inset-top, 0px));
+    right: max(20px, env(safe-area-inset-right, 0px));
+  }
+
+  /* ---------- responsive ---------- */
+
+  @media (max-width: 1100px) {
+    .story__rail,
+    .story__note {
+      display: none;
+    }
+
+    .story__fig {
+      padding-left: calc(var(--bx-gutter) + 40px);
+      padding-right: calc(var(--bx-gutter) + 40px);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .cs-head__grid {
+      grid-template-columns: 1fr;
+      gap: 48px;
+    }
+
+    .tag {
+      max-width: 400px;
+    }
+
+    .cs-sec--split {
+      grid-template-columns: 1fr;
+    }
+
+    .cs-sec--flip .cs-sec__text {
+      order: 0;
+    }
+
+    .cs-gallery--3,
+    .cs-gallery--4 {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  @media (max-width: 640px) {
+    .cs-head {
+      padding-top: 112px;
+      padding-bottom: 48px;
+    }
+
+    .story__fig {
+      padding: 110px 20px 150px;
+    }
+
+    .story__fig img {
+      max-height: calc(100svh - 280px);
+    }
+
+    .story__dimv {
+      display: none;
+    }
+
+    .story__words {
+      left: 50%;
+      top: auto;
+      bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+    }
+
+    .story__word {
+      writing-mode: horizontal-tb;
+      rotate: none;
+      transform: translate(-50%, 10px);
+    }
+
+    [data-step='0'] .story__word.s0,
+    [data-step='1'] .story__word.s1,
+    [data-step='2'] .story__word.s2,
+    [data-step='3'] .story__word.s3 {
+      transform: translate(-50%, 0);
+    }
+
+    .story__meter {
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
+    .story__track {
+      width: 120px;
+    }
+
+    .cs-gallery,
+    .cs-gallery--3,
+    .cs-gallery--4 {
+      grid-template-columns: 1fr;
+    }
+
+    .next {
+      height: auto;
+      aspect-ratio: 4 / 5;
+    }
+
+    .next__cap {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      max-width: none;
+      justify-content: space-between;
+      padding: 14px 16px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .story__plate {
+      transform: none !important;
+    }
+  }
+</style>

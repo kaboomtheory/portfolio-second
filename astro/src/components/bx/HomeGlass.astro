@@ -1,0 +1,755 @@
+---
+/**
+ * Home page, glass direction: intro with the self-portrait card, selected
+ * work as glass-captioned cards, an index of every project, then contact and
+ * the "Currently" list. Server-rendered; only the contact form is an island.
+ */
+import type { ProjectItem } from '~/types/project'
+import type { StatusItem } from '~/data/home'
+import BxContact from '~/components/bx/BxContact.vue'
+import { pad, shortLabel, sized, srcset } from '~/lib/bx'
+
+interface Props {
+  projects: ProjectItem[]
+  role: string
+  location: string
+  availability: string
+  tagline: { text: string; em?: boolean }[]
+  resumeHref: string
+  linkedinHref: string
+  statusItems: StatusItem[]
+}
+
+const { projects, role, location, availability, tagline, resumeHref, linkedinHref, statusItems } = Astro.props
+
+const visible = projects.filter((p) => !p.underConstruction || p.thumbnail)
+const featured = visible.slice(0, 3)
+const year = new Date().getFullYear()
+
+function cardLabel(p: ProjectItem) {
+  return { client: p.client?.trim() || 'Concept', tag: shortLabel(p.tags?.[0]) }
+}
+
+/** "Currently Playing" reads as "Playing" next to the title. */
+function verb(label: string) {
+  return label.replace(/^currently\s+/i, '').trim() || label
+}
+
+const currently = statusItems.filter((s) => s.title).slice(0, 5)
+const external = (href: string) => /^https?:/i.test(href)
+---
+
+<div class="bx-page home">
+  <span class="home__gutter home__gutter--l" aria-hidden="true"></span>
+  <span class="home__gutter home__gutter--r" aria-hidden="true"></span>
+
+  <div class="bx-wrap">
+    <!-- § 01 Intro -->
+    <section id="intro" class="intro" aria-labelledby="intro-heading">
+      <div class="intro__text">
+        <p class="bx-sec">§ 01 · <span class="bx-q">Portfolio</span> {year}</p>
+        <h1 id="intro-heading" class="intro__h">
+          <span class="intro__hi">Howdy!</span>
+          <span class="intro__name">I'm Bryan.</span>
+        </h1>
+        <p class="bx-spec intro__spec" aria-hidden="true">INTER TIGHT BOLD · <span data-bx-size>187</span> PX</p>
+        <p class="intro__tag">
+          {tagline.map((seg) => (seg.em ? <em>{seg.text}</em> : seg.text))}
+        </p>
+        <div class="intro__ctas">
+          <a href="#work" class="bx-pill bx-pill--ink">See the work</a>
+          <a href={resumeHref} class="bx-pill bx-pill--glass" target="_blank" rel="noopener noreferrer">
+            Resume<span class="bx-sr"> (opens in new tab)</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="intro__card-wrap">
+        <p class="bx-note intro__note" aria-hidden="true">
+          <span class="bx-note__n">NOTE 01</span>Self-portrait, placed one pixel at a time.
+        </p>
+        <svg class="intro__leader" aria-hidden="true" viewBox="0 0 200 120" preserveAspectRatio="none">
+          <path d="M 150 10 C 120 30, 80 60, 30 110" fill="none" stroke="currentColor" stroke-width="1.5" vector-effect="non-scaling-stroke"></path>
+        </svg>
+        <div class="intro__card">
+          <picture>
+            <source srcset="/images/layer_animation.webp" type="image/webp" />
+            <img src="/images/layer_animation.apng" width="356" height="456" alt="Pixel-art Bryan giving a thumbs up" decoding="async" />
+          </picture>
+          <dl>
+            <div>
+              <dt class="bx-label">Role</dt>
+              <dd>{role}</dd>
+            </div>
+            <div>
+              <dt class="bx-label">Based in</dt>
+              <dd>{location}</dd>
+            </div>
+            <div class="intro__status">
+              <dt class="bx-sr">Status</dt>
+              <dd><span class="intro__dot" aria-hidden="true"></span>{availability}</dd>
+            </div>
+          </dl>
+        </div>
+      </div>
+
+      <p class="bx-label intro__scroll" aria-hidden="true">Scroll ↓</p>
+    </section>
+
+    <!-- § 02 Work -->
+    <section id="work" class="work" aria-labelledby="work-heading">
+      <div class="work__head">
+        <div class="work__title">
+          <span class="bx-sec">§ 02</span>
+          <h2 id="work-heading" class="bx-h2">Selected work</h2>
+        </div>
+        <a href="#index" class="bx-pill bx-pill--line bx-pill--sm">All {visible.length} projects</a>
+      </div>
+
+      <div class="work__grid">
+        {
+          featured.map((p, i) => {
+            const { client, tag } = cardLabel(p)
+            const wide = i === 2
+            return (
+              <a
+                href={`/projects/${p.slug}`}
+                class:list={['card bx-focus bx-reveal', { 'card--wide': wide, 'bx-crop': i === 0 }]}
+              >
+                {i === 0 && (
+                  <>
+                    <span class="bx-crop__m bx-crop__m--tl" aria-hidden="true" />
+                    <span class="bx-crop__m bx-crop__m--tr" aria-hidden="true" />
+                    <span class="bx-crop__m bx-crop__m--bl" aria-hidden="true" />
+                    <span class="bx-crop__m bx-crop__m--br" aria-hidden="true" />
+                  </>
+                )}
+                <div class:list={['card__media', `card__media--${['peach', 'mint', 'sky'][i]}`]}>
+                  {p.thumbnail && (
+                    <img
+                      src={sized(p.thumbnail, wide ? 2200 : 1280)}
+                      srcset={srcset(p.thumbnail) || undefined}
+                      sizes={wide ? '(min-width: 1440px) 1248px, 90vw' : '(min-width: 900px) 620px, 90vw'}
+                      alt=""
+                      loading={i === 0 ? 'eager' : 'lazy'}
+                      decoding="async"
+                    />
+                  )}
+                  <div class="card__cap bx-glass">
+                    <div class="card__cap-text">
+                      <p class="bx-label">
+                        {client}
+                        {tag && (
+                          <>
+                            {' · '}
+                            <span class="bx-q">{tag}</span>
+                          </>
+                        )}
+                      </p>
+                      <h3>{p.name}</h3>
+                    </div>
+                    <span class="card__go" aria-hidden="true">↗</span>
+                  </div>
+                </div>
+              </a>
+            )
+          })
+        }
+      </div>
+
+      <div id="index" class="index">
+        <p class="bx-label index__label"><span class="bx-q">Index</span></p>
+        <ol class="index__list">
+          {
+            visible.map((p, i) => (
+              <li>
+                <a href={`/projects/${p.slug}`} class="index__row bx-focus">
+                  <span class="bx-mono index__n">{pad(i + 1)}</span>
+                  <span class="index__name">{p.name}</span>
+                  <span class="index__client">{p.client?.trim() || 'Concept'}</span>
+                  <span class="index__tag bx-label">{p.tags?.[0] && <span class="bx-q">{shortLabel(p.tags[0])}</span>}</span>
+                  <span class="index__go" aria-hidden="true">↗</span>
+                </a>
+              </li>
+            ))
+          }
+        </ol>
+      </div>
+    </section>
+
+    <!-- § 03 Contact -->
+    <section id="contact" class="contact" aria-labelledby="contact-heading">
+      <div class="contact__main">
+        <BxContact client:visible linkedinHref={linkedinHref} />
+      </div>
+
+      {
+        currently.length > 0 && (
+          <div class="contact__now">
+            <p class="bx-label">
+              <span class="bx-q">Currently</span>
+            </p>
+            <ul>
+              {currently.map((s, i) => {
+                const inner = (
+                  <>
+                    {s.images[0] ? (
+                      <img src={s.images[0]} alt="" width="40" height="40" loading="lazy" decoding="async" />
+                    ) : (
+                      <span class="now__n bx-mono" aria-hidden="true">
+                        {pad(i + 1)}
+                      </span>
+                    )}
+                    <span>
+                      <span class="now__verb">{verb(s.label)}</span> {s.title}
+                    </span>
+                  </>
+                )
+                return (
+                  <li>
+                    {s.link ? (
+                      <a
+                        href={s.link}
+                        class="now__row bx-focus"
+                        target={external(s.link) ? '_blank' : undefined}
+                        rel={external(s.link) ? 'noopener noreferrer' : undefined}
+                      >
+                        {inner}
+                      </a>
+                    ) : (
+                      <div class="now__row">{inner}</div>
+                    )}
+                  </li>
+                )
+              })}
+            </ul>
+          </div>
+        )
+      }
+    </section>
+  </div>
+</div>
+
+<script>
+  import { initReveal } from '~/scripts/bxReveal'
+  import { initSpecSizes } from '~/scripts/bxCaseStudy'
+  initReveal()
+  initSpecSizes()
+</script>
+
+<style>
+  .home {
+    padding-top: 112px;
+  }
+
+  .home__gutter {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 0;
+    border-left: 1px dotted var(--bx-rule-strong);
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  .home__gutter--l {
+    left: calc(var(--bx-gutter) / 2);
+  }
+
+  .home__gutter--r {
+    right: calc(var(--bx-gutter) / 2);
+  }
+
+  /* ---------- intro ---------- */
+
+  .intro {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 400px);
+    align-items: end;
+    gap: 48px;
+    min-height: min(760px, calc(100svh - 112px));
+    padding: 40px 0 96px;
+  }
+
+  .intro__text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .intro__h {
+    margin: 28px 0 0;
+    font-weight: 700;
+  }
+
+  .intro__hi {
+    display: block;
+    font-weight: 500;
+    font-size: clamp(32px, 3.75vw, 54px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .intro__name {
+    display: block;
+    margin: 14px 0 0 -0.04em;
+    font-size: clamp(76px, 13vw, 187px);
+    line-height: 0.9;
+    letter-spacing: -0.045em;
+    white-space: nowrap;
+  }
+
+  .intro__spec {
+    margin-top: 18px;
+  }
+
+  .intro__tag {
+    margin: 36px 0 0;
+    max-width: 560px;
+    font-size: clamp(19px, 1.8vw, 26px);
+    line-height: 1.4;
+    text-wrap: pretty;
+  }
+
+  .intro__tag em {
+    font-style: normal;
+    font-weight: 700;
+  }
+
+  .intro__ctas {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 40px;
+  }
+
+  .intro__card-wrap {
+    position: relative;
+    min-width: 0;
+    padding-top: 150px;
+  }
+
+  .intro__note {
+    position: absolute;
+    top: 0;
+    right: 0;
+  }
+
+  .intro__leader {
+    position: absolute;
+    top: 58px;
+    right: 120px;
+    width: 140px;
+    height: 100px;
+    color: var(--bx-signal);
+    overflow: visible;
+  }
+
+  .intro__card {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    box-sizing: border-box;
+    padding: 22px;
+    border-radius: 6px;
+    border: 1.5px solid var(--bx-ink);
+  }
+
+  .intro__card img {
+    display: block;
+    width: 92px;
+    height: 118px;
+    object-fit: contain;
+    image-rendering: pixelated;
+  }
+
+  .intro__card dl {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    margin: 0;
+    min-width: 0;
+  }
+
+  .intro__card dt {
+    font-size: 11px;
+  }
+
+  .intro__card dd {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .intro__status dd {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+  }
+
+  .intro__dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 99px;
+    background: var(--bx-signal);
+    box-shadow: 0 0 0 4px rgba(42, 85, 201, 0.2);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .intro__dot {
+      animation: bx-pulse 2.4s ease-in-out infinite;
+    }
+  }
+
+  @keyframes bx-pulse {
+    50% {
+      box-shadow: 0 0 0 7px rgba(42, 85, 201, 0.08);
+    }
+  }
+
+  .intro__scroll {
+    position: absolute;
+    left: 0;
+    bottom: 32px;
+  }
+
+  /* ---------- work ---------- */
+
+  .work {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    scroll-margin-top: 96px;
+  }
+
+  .work__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .work__title {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+  }
+
+  .work__grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px;
+  }
+
+  .card {
+    position: relative;
+    display: block;
+    color: var(--bx-ink);
+    text-decoration: none;
+    border-radius: 30px;
+  }
+
+  .card--wide {
+    grid-column: span 2;
+  }
+
+  .card__media {
+    position: relative;
+    height: clamp(360px, 39vw, 560px);
+    border-radius: 30px;
+    overflow: hidden;
+    background: var(--bx-white);
+  }
+
+  .card--wide .card__media {
+    height: clamp(300px, 29vw, 420px);
+  }
+
+  .card__media--peach { background: var(--bx-peach); }
+  .card__media--mint { background: var(--bx-mint); }
+  .card__media--sky { background: var(--bx-sky); }
+
+  .card__media img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .card:hover .card__media img {
+    transform: scale(1.03);
+  }
+
+  .card__cap {
+    position: absolute;
+    left: 18px;
+    right: 18px;
+    bottom: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 22px;
+    border-radius: 20px;
+  }
+
+  .card--wide .card__cap {
+    right: auto;
+    width: min(520px, calc(100% - 36px));
+    box-sizing: border-box;
+  }
+
+  .card__cap-text {
+    min-width: 0;
+  }
+
+  .card__cap .bx-label {
+    margin-bottom: 4px;
+    font-size: 11px;
+  }
+
+  .card__cap h3 {
+    margin: 0;
+    font-size: clamp(20px, 1.8vw, 26px);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.15;
+  }
+
+  .card__go {
+    flex: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 99px;
+    background: var(--bx-ink);
+    color: var(--bx-bg);
+    font-size: 20px;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .card:hover .card__go {
+    transform: rotate(45deg);
+  }
+
+  /* ---------- index ---------- */
+
+  .index {
+    margin-top: 48px;
+    scroll-margin-top: 96px;
+  }
+
+  .index__label {
+    margin-bottom: 12px;
+  }
+
+  .index__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--bx-rule);
+  }
+
+  .index__row {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1.6fr) minmax(0, 1fr) minmax(0, 1fr) 24px;
+    align-items: center;
+    gap: 16px;
+    padding: 18px 4px;
+    border-top: 1px solid var(--bx-rule);
+    color: var(--bx-ink);
+    text-decoration: none;
+    transition: background-color 0.2s ease, padding 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .index__row:hover {
+    background: var(--bx-white);
+    padding-left: 14px;
+  }
+
+  .index__n {
+    font-size: 12px;
+    color: var(--bx-signal);
+  }
+
+  .index__name {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .index__client {
+    color: var(--bx-mid);
+    font-size: 15px;
+  }
+
+  .index__tag {
+    font-size: 11px;
+  }
+
+  .index__go {
+    text-align: right;
+  }
+
+  /* ---------- contact ---------- */
+
+  .contact {
+    display: grid;
+    grid-template-columns: repeat(12, minmax(0, 1fr));
+    gap: 32px;
+    align-items: start;
+    margin-top: clamp(96px, 10vw, 140px);
+    scroll-margin-top: 96px;
+  }
+
+  .contact__main {
+    grid-column: 1 / span 7;
+    min-width: 0;
+  }
+
+  .contact__now {
+    grid-column: 9 / span 4;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-top: 34px;
+    min-width: 0;
+  }
+
+  .contact__now ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .now__row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 0;
+    border-top: 1px solid var(--bx-rule);
+    color: var(--bx-ink);
+    text-decoration: none;
+    font-size: 15px;
+  }
+
+  a.now__row:hover .now__verb {
+    color: var(--bx-signal);
+  }
+
+  .now__row img,
+  .now__n {
+    flex: none;
+    width: 40px;
+    height: 40px;
+    border-radius: 99px;
+    object-fit: cover;
+  }
+
+  .now__n {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    border: 1px solid var(--bx-signal-line);
+    color: var(--bx-signal);
+    font-size: 11px;
+    letter-spacing: 0.04em;
+  }
+
+  .now__verb {
+    color: var(--bx-mid);
+  }
+
+  /* ---------- responsive ---------- */
+
+  @media (max-width: 960px) {
+    .intro {
+      grid-template-columns: 1fr;
+      min-height: 0;
+      padding-bottom: 72px;
+      gap: 40px;
+    }
+
+    .intro__card-wrap {
+      max-width: 400px;
+      padding-top: 0;
+    }
+
+    .intro__note,
+    .intro__leader {
+      display: none;
+    }
+
+    .intro__scroll {
+      display: none;
+    }
+
+    .contact__main,
+    .contact__now {
+      grid-column: 1 / -1;
+    }
+
+    .contact__now {
+      padding-top: 0;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .work__grid {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+
+    .card--wide {
+      grid-column: auto;
+    }
+
+    .card__media,
+    .card--wide .card__media {
+      height: auto;
+      aspect-ratio: 4 / 5;
+    }
+
+    .card__cap,
+    .card--wide .card__cap {
+      left: 12px;
+      right: 12px;
+      bottom: 12px;
+      width: auto;
+      padding: 14px 16px;
+      border-radius: 16px;
+    }
+
+    .card__go {
+      width: 40px;
+      height: 40px;
+      font-size: 17px;
+    }
+
+    .index__row {
+      grid-template-columns: 36px minmax(0, 1fr) 20px;
+      gap: 12px;
+    }
+
+    .index__client,
+    .index__tag {
+      display: none;
+    }
+
+    .index__name {
+      font-size: 17px;
+    }
+
+    .home__gutter {
+      display: none;
+    }
+  }
+</style>

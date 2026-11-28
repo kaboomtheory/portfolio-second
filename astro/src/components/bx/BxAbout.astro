@@ -1,0 +1,425 @@
+---
+/**
+ * About page, Redline edition: portrait card with a note, the story from
+ * Sanity, experience as a ruled list, and capabilities as outlined pills.
+ * Server-rendered only; the story's Portable Text renders through the
+ * existing Vue component without hydrating.
+ */
+import StoryPortableText from '~/components/StoryPortableText.vue'
+import { isPortableTextStory } from '~/utils/aboutStory'
+import type { AboutStory } from '~/utils/aboutStory'
+import { pad } from '~/lib/bx'
+
+interface Props {
+  name: string
+  avatar: string
+  role: string
+  location: string
+  availability: string
+  story: AboutStory
+  resumeHref: string
+  experienceItems: { title: string; company: string; year: string; description: string; image?: string | null }[]
+  groups: { category: string; items: string[] }[]
+}
+
+const { name, avatar, role, location, availability, story, resumeHref, experienceItems, groups } = Astro.props
+const rich = isPortableTextStory(story)
+---
+
+<div class="bx-page about">
+  <div class="bx-wrap">
+    <header class="ab-head">
+      <p class="bx-sec">§ 01 · <span class="bx-q">About</span></p>
+      <h1 class="ab-head__h">About Bryan.</h1>
+      <p class="bx-spec" aria-hidden="true">INTER TIGHT BOLD · <span data-bx-size>120</span> PX</p>
+    </header>
+
+    <section class="ab-story" aria-label="Story">
+      <aside class="ab-card-wrap">
+        <figure class="ab-card">
+          {avatar && <img src={avatar} alt={`Portrait of ${name}`} width="720" height="1073" decoding="async" />}
+          <figcaption>
+            <dl>
+              <div>
+                <dt class="bx-label">Role</dt>
+                <dd>{role}</dd>
+              </div>
+              <div>
+                <dt class="bx-label">Based in</dt>
+                <dd>{location}</dd>
+              </div>
+              <div class="ab-status">
+                <dt class="bx-sr">Status</dt>
+                <dd><span class="ab-dot" aria-hidden="true"></span>{availability}</dd>
+              </div>
+            </dl>
+          </figcaption>
+        </figure>
+        <a href={resumeHref} class="bx-pill bx-pill--ink" target="_blank" rel="noopener noreferrer">
+          Resume<span class="bx-sr"> (opens in new tab)</span>
+        </a>
+      </aside>
+
+      <div class="ab-text">
+        <p class="bx-label ab-text__label"><span class="bx-q">Story</span></p>
+        {rich ? <StoryPortableText value={story as any} /> : (story as string[]).map((p) => <p>{p}</p>)}
+      </div>
+    </section>
+
+    {
+      experienceItems.length > 0 && (
+        <section class="ab-sec" aria-labelledby="exp-h">
+          <div class="ab-sec__head">
+            <span class="bx-sec">§ 02</span>
+            <h2 id="exp-h" class="bx-h2">Experience</h2>
+          </div>
+          <ol class="exp">
+            {experienceItems.map((e, i) => (
+              <li class="exp__row bx-reveal">
+                <span class="bx-mono exp__n">{pad(i + 1)}</span>
+                <div class="exp__logo">{e.image && <img src={e.image} alt="" width="48" height="48" loading="lazy" decoding="async" />}</div>
+                <div class="exp__main">
+                  <p class="bx-label">
+                    {e.company}
+                  </p>
+                  <h3>{e.title}</h3>
+                  {e.description && <p class="exp__desc">{e.description}</p>}
+                </div>
+                <span class="bx-mono exp__year">{e.year}</span>
+              </li>
+            ))}
+          </ol>
+        </section>
+      )
+    }
+
+    {
+      groups.length > 0 && (
+        <section class="ab-sec" aria-labelledby="cap-h">
+          <div class="ab-sec__head">
+            <span class="bx-sec">§ 03</span>
+            <h2 id="cap-h" class="bx-h2">Capabilities</h2>
+          </div>
+          <div class="caps">
+            {groups.map((g) => (
+              <div class="caps__group bx-reveal">
+                <p class="bx-label">
+                  <span class="bx-q">{g.category}</span>
+                  <span class="bx-mono caps__count">{pad(g.items.length)}</span>
+                </p>
+                <ul>
+                  {g.items.map((item) => (
+                    <li>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </section>
+      )
+    }
+  </div>
+</div>
+
+<script>
+  import { initReveal } from '~/scripts/bxReveal'
+  import { initSpecSizes } from '~/scripts/bxCaseStudy'
+  initReveal()
+  initSpecSizes()
+</script>
+
+<style>
+  .about {
+    padding-top: 136px;
+  }
+
+  .ab-head {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding-bottom: 64px;
+  }
+
+  .ab-head__h {
+    margin: 6px 0 0 -0.04em;
+    font-weight: 700;
+    font-size: clamp(52px, 8.4vw, 120px);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+  }
+
+  .ab-story {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    gap: clamp(40px, 6vw, 96px);
+    align-items: start;
+  }
+
+  .ab-card-wrap {
+    position: sticky;
+    top: 104px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .ab-card {
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px;
+    border: 1.5px solid var(--bx-ink);
+    border-radius: 6px;
+  }
+
+  .ab-card img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 4 / 5;
+    object-fit: cover;
+    border-radius: 2px;
+  }
+
+  .ab-card dl {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin: 14px 4px 4px;
+  }
+
+  .ab-card dt {
+    font-size: 11px;
+  }
+
+  .ab-card dd {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  .ab-status dd {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 15px;
+  }
+
+  .ab-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 99px;
+    background: var(--bx-signal);
+    box-shadow: 0 0 0 4px rgba(42, 85, 201, 0.2);
+  }
+
+  .ab-text {
+    max-width: 680px;
+    padding-top: 22px;
+    border-top: 1.5px solid var(--bx-ink);
+    font-size: 19px;
+    line-height: 1.6;
+    color: #24324a;
+  }
+
+  .ab-text__label {
+    margin-bottom: 18px;
+  }
+
+  .ab-text :global(p) {
+    margin: 0 0 18px;
+  }
+
+  .ab-text :global(h2),
+  .ab-text :global(h3),
+  .ab-text :global(h4) {
+    margin: 40px 0 12px;
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    color: var(--bx-ink);
+  }
+
+  .ab-text :global(strong) {
+    color: var(--bx-ink);
+  }
+
+  .ab-text :global(em) {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--bx-ink);
+  }
+
+  .ab-text :global(ul),
+  .ab-text :global(ol) {
+    margin: 0 0 18px;
+    padding-left: 22px;
+  }
+
+  .ab-text :global(li) {
+    margin-bottom: 12px;
+  }
+
+  .ab-text :global(li::marker) {
+    color: var(--bx-signal);
+  }
+
+  .ab-text :global(a) {
+    color: var(--bx-signal);
+  }
+
+  .ab-sec {
+    margin-top: clamp(96px, 10vw, 140px);
+  }
+
+  .ab-sec__head {
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+    margin-bottom: 32px;
+  }
+
+  .exp {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    border-bottom: 1px solid var(--bx-rule);
+  }
+
+  .exp__row {
+    display: grid;
+    grid-template-columns: 48px 56px minmax(0, 1fr) auto;
+    gap: 20px;
+    align-items: start;
+    padding: 28px 0;
+    border-top: 1px solid var(--bx-rule);
+  }
+
+  .exp__n {
+    padding-top: 4px;
+    font-size: 12px;
+    color: var(--bx-signal);
+  }
+
+  .exp__logo img {
+    display: block;
+    width: 48px;
+    height: 48px;
+    object-fit: contain;
+  }
+
+  .exp__main {
+    min-width: 0;
+  }
+
+  .exp__main .bx-label {
+    font-size: 11px;
+  }
+
+  .exp__main h3 {
+    margin: 4px 0 0;
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+  }
+
+  .exp__desc {
+    margin: 10px 0 0;
+    max-width: 720px;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--bx-mid);
+  }
+
+  .exp__year {
+    padding-top: 4px;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    color: var(--bx-ink);
+    text-align: right;
+    text-transform: uppercase;
+  }
+
+  .caps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 40px 32px;
+  }
+
+  .caps__group {
+    padding-top: 18px;
+    border-top: 1.5px solid var(--bx-ink);
+  }
+
+  .caps__group .bx-label {
+    display: flex;
+    justify-content: space-between;
+    color: var(--bx-ink);
+  }
+
+  .caps__count {
+    font-size: 11px;
+    color: var(--bx-signal);
+    letter-spacing: 0.06em;
+  }
+
+  .caps ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    list-style: none;
+    margin: 18px 0 0;
+    padding: 0;
+  }
+
+  .caps li {
+    padding: 8px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--bx-rule-strong);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  @media (max-width: 900px) {
+    .ab-story {
+      grid-template-columns: 1fr;
+    }
+
+    .ab-card-wrap {
+      position: static;
+      max-width: 400px;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .about {
+      padding-top: 112px;
+    }
+
+    .exp__row {
+      grid-template-columns: 40px minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .exp__logo {
+      display: none;
+    }
+
+    .exp__year {
+      grid-column: 2;
+      grid-row: 1;
+      text-align: left;
+      padding-top: 0;
+    }
+
+    .exp__main {
+      grid-column: 2;
+    }
+
+    .exp__n {
+      grid-row: 1 / span 2;
+    }
+  }
+</style>

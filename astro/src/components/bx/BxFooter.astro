@@ -1,0 +1,57 @@
+---
+/** Site footer. The quoted line changes with the visitor's time of day. */
+---
+
+<footer class="bx-foot">
+  <span>&copy; 2026 Bryan X. Mendez</span>
+  <span aria-hidden="true">·</span>
+  <a href="/privacy">Privacy</a>
+  <span aria-hidden="true">·</span>
+  <em class="bx-q" data-bx-greeting>Made in Los Angeles</em>
+</footer>
+
+<script>
+  const el = document.querySelector<HTMLElement>('[data-bx-greeting]')
+  if (el) {
+    const h = new Date().getHours()
+    el.textContent =
+      h >= 5 && h < 12
+        ? 'Made with coffee in Los Angeles'
+        : h >= 12 && h < 18
+          ? 'Made in Los Angeles'
+          : h >= 18 && h < 23
+            ? 'Made after hours in Los Angeles'
+            : 'Made past bedtime in Los Angeles'
+  }
+</script>
+
+<style>
+  .bx-foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 6px 10px;
+    margin-top: clamp(64px, 8vw, 120px);
+    padding: 32px max(16px, env(safe-area-inset-right, 0px)) calc(32px + env(safe-area-inset-bottom, 0px))
+      max(16px, env(safe-area-inset-left, 0px));
+    border-top: 1px dotted var(--bx-rule-strong);
+    font-size: 13px;
+    color: var(--bx-mid);
+    text-align: center;
+  }
+
+  .bx-foot a {
+    color: var(--bx-mid);
+  }
+
+  .bx-foot a:hover {
+    color: var(--bx-ink);
+  }
+
+  .bx-foot em {
+    font-style: normal;
+    font-size: 12px;
+    color: var(--bx-ink);
+  }
+</style>
