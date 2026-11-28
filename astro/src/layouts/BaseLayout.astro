@@ -8,11 +8,10 @@ import '~/styles/fonts.css'
 import '~/styles/tailwind.css'
 import '~/styles/main.css'
 import '~/styles/transitions.css'
+import '~/styles/brand.css'
 import SpeedInsights from '@vercel/speed-insights/astro'
-import AppNavbar from '~/components/AppNavbar.vue'
-import AppFooter from '~/components/AppFooter.vue'
-import BackToTop from '~/components/BackToTop.vue'
-import ScrollProgress from '~/components/ScrollProgress.vue'
+import BxNav from '~/components/bx/BxNav.astro'
+import BxFooter from '~/components/bx/BxFooter.astro'
 
 interface Props {
   title?: string
@@ -24,6 +23,8 @@ interface Props {
   homeLanding?: boolean
   /** Adds robots noindex (password and protected pages). */
   noindex?: boolean
+  /** Redesigned pages own their full-width layout; older pages keep the centered container. */
+  bare?: boolean
 }
 
 const siteTitle = 'Bryan X. Mendez Graphic Design Portfolio'
@@ -39,6 +40,7 @@ const {
   ogImage = `${siteUrl}/og-default.png`,
   homeLanding = false,
   noindex = false,
+  bare = false,
 } = Astro.props
 ---
 
@@ -61,13 +63,13 @@ const {
     <meta name="twitter:title" content={ogTitle} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage} />
-    <meta name="color-scheme" content="light dark" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="color-scheme" content="light" />
+    <meta name="theme-color" content="#f3f7fb" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180" />
     <link rel="manifest" href="/manifest.webmanifest" />
 
-    <!-- Apply the saved theme before first paint (was public/theme-init.js). -->
+    <!-- Clears the old dark mode setting before first paint. -->
     <script is:inline src="/theme-init.js"></script>
 
     <link rel="preconnect" href="https://cdn.sanity.io" crossorigin />
@@ -76,33 +78,26 @@ const {
     <slot name="head" />
   </head>
   <body>
-    <div class="app-shell">
-      <div class="app-shell-ui">
-        <div class="layout-root relative min-h-screen w-full text-[var(--fg-primary)]">
-          <ScrollProgress client:idle />
-
-          <div class="relative z-[1] flex min-h-screen flex-col">
-            <a href="#main-content" class="skip-link">Skip to main content</a>
-            <AppNavbar client:load currentPath={Astro.url.pathname} />
-
-            <div class="layout-header-pad">
-              <div class="layout-main-shell relative z-[1] container mx-auto flex min-h-screen w-full min-w-0 max-w-full flex-col px-0 pb-6 md:max-w-[82rem]">
-                <main id="main-content" class="relative min-w-0 w-full" tabindex="-1">
-                  <div class:list={['layout-page-frame min-w-0 w-full', { 'layout-page-frame--home-landing': homeLanding }]}>
-                    <slot />
-                  </div>
-                </main>
-                <div class="mt-auto w-full min-w-0">
-                  <AppFooter client:idle />
-                </div>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <BxNav currentPath={Astro.url.pathname} />
+    {
+      bare ? (
+        <main id="main-content" class="bx-main" tabindex="-1">
+          <slot />
+        </main>
+      ) : (
+        <div class="layout-header-pad bx-legacy">
+          <div class="layout-main-shell relative z-[1] container mx-auto flex w-full min-w-0 max-w-full flex-col px-0 pb-6 md:max-w-[82rem]">
+            <main id="main-content" class="relative min-w-0 w-full" tabindex="-1">
+              <div class:list={['layout-page-frame min-w-0 w-full', { 'layout-page-frame--home-landing': homeLanding }]}>
+                <slot />
               </div>
-            </div>
-
-            <BackToTop client:idle />
+            </main>
           </div>
         </div>
-      </div>
-    </div>
+      )
+    }
+    <BxFooter />
     <SpeedInsights />
 
     <script>
@@ -117,27 +112,13 @@ const {
 </html>
 
 <style is:global>
-  .app-shell {
+  .bx-main {
     position: relative;
-    isolation: isolate;
-    min-height: 100%;
-  }
-
-  .app-shell-ui {
-    position: relative;
-    z-index: 1;
-    min-height: 100%;
     min-width: 0;
-    max-width: 100%;
-    background-color: var(--shell-ui-bg, var(--paper, #f4efe4));
+    outline: none;
   }
 
-  html.dark .app-shell-ui {
-    background-color: var(--shell-ui-bg, var(--paper, #07060f));
-  }
-
-  .layout-root {
-    background: var(--shell-ui-bg, var(--paper));
-    color: var(--fg-primary);
+  .bx-legacy {
+    padding-top: 112px;
   }
 </style>

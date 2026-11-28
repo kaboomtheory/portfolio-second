@@ -3,6 +3,6 @@ import BaseLayout from '~/layouts/BaseLayout.astro'
 import ErrorPanel from '~/components/ErrorPanel.astro'
 ---
 
-<BaseLayout title="Page not found — Bryan X. Mendez" noindex>
+<BaseLayout title="Page not found — Bryan X. Mendez" noindex bare>
   <ErrorPanel code={404} heading="Page not found" detail="This page doesn't exist or has moved." retryHref={Astro.url.pathname} />
 </BaseLayout>

@@ -4,7 +4,7 @@
  * on the server and handed to the Vue islands as props.
  */
 import BaseLayout from '~/layouts/BaseLayout.astro'
-import HomePage from '~/components/pages/HomePage.vue'
+import HomeGlass from '~/components/bx/HomeGlass.astro'
 import { getHomeContent } from '~/lib/content'
 import { groupCapabilities, resolveHero } from '~/lib/about'
 import { aboutMe as fallbackAboutMe, homeHero } from '~/data/home'
@@ -76,23 +76,18 @@ Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=86400, stale-w
   canonical={homeCanonicalUrl}
   ogTitle="Bryan X. Mendez"
   homeLanding
+  bare
 >
   <script slot="head" type="application/ld+json" is:inline set:html={JSON.stringify(structuredData)} />
 
-  <HomePage
-    client:load
-    heroTitle={heroTitle}
-    heroTaglines={heroTaglines}
-    linkedinHref={linkedinHref}
-    availabilityLine={hero.availabilityText}
-    taglineOneLine={heroTaglineOneLine}
+  <HomeGlass
     projects={projects}
-    heroName={hero.name}
-    heroAvatar={hero.avatar}
-    story={story}
+    role={profile.role}
+    location={profile.location}
+    availability={hero.availabilityText}
+    tagline={heroTaglines?.[0]?.segments ?? []}
     resumeHref={resumeHref}
+    linkedinHref={linkedinHref}
     statusItems={statusItems}
-    experienceItems={experienceItems}
-    groups={groupedCapabilities}
   />
 </BaseLayout>

@@ -19,9 +19,12 @@ Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=86400, stale-w
   description={description}
   canonical={`${siteUrl}/privacy`}
   ogTitle="Privacy Policy — Bryan X. Mendez"
+  bare
 >
-  <div class="page-content content-flow privacy-page">
+  <div class="bx-page privacy-page">
+   <div class="bx-wrap">
     <header class="privacy-page__header">
+      <p class="bx-sec">§ 00 · <span class="bx-q">Privacy</span></p>
       <h1 class="privacy-page__title">Privacy Policy</h1>
     </header>
     <p class="privacy-page__body">
@@ -32,25 +35,41 @@ Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=86400, stale-w
       Microsoft collects and uses your data, visit the
       <a href={microsoftPrivacyUrl} target="_blank" rel="noopener noreferrer">Microsoft Privacy Statement</a>.
     </p>
+   </div>
   </div>
 </BaseLayout>
 
 <style>
 .privacy-page {
-  max-width: 42rem;
-  margin-inline: auto;
-  padding-top: clamp(2.5rem, 6vw, 4rem);
-  padding-bottom: clamp(2rem, 5vw, 3.5rem);
+  padding-top: 160px;
+}
+
+.privacy-page__header {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+  margin-bottom: 40px;
 }
 
 .privacy-page__title {
-  font-size: var(--text-section-title);
-  letter-spacing: -0.02em;
-  color: var(--fg-primary);
+  margin: 0 0 0 -0.04em;
+  font-weight: 700;
+  font-size: clamp(48px, 7vw, 96px);
+  line-height: 0.92;
+  letter-spacing: -0.045em;
 }
 
 .privacy-page__body {
-  font-size: var(--text-body-lg);
-  line-height: 1.65;
+  max-width: 680px;
+  margin: 0;
+  padding-top: 22px;
+  border-top: 1.5px solid var(--bx-ink);
+  font-size: 19px;
+  line-height: 1.6;
+  color: #24324a;
+}
+
+.privacy-page__body a {
+  color: var(--bx-signal);
 }
 </style>

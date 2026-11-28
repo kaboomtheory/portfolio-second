@@ -1,7 +1,7 @@
 ---
 /** About page, ported from app/pages/about/index.vue. */
 import BaseLayout from '~/layouts/BaseLayout.astro'
-import AboutPage from '~/components/pages/AboutPage.vue'
+import BxAbout from '~/components/bx/BxAbout.astro'
 import { getAboutPage } from '~/lib/content'
 import { aboutMe as fallbackAboutMe } from '~/data/home'
 import { experiences as fallbackExperiences } from '~/data/resume'
@@ -27,11 +27,14 @@ Astro.response.headers.set('CDN-Cache-Control', 'public, s-maxage=86400, stale-w
   description={description}
   canonical={`${siteUrl}/about`}
   ogTitle="About — Bryan X. Mendez"
+  bare
 >
-  <AboutPage
-    client:load
-    heroName={hero.name}
-    heroAvatar={hero.avatar ?? ''}
+  <BxAbout
+    name={hero.name}
+    avatar={hero.avatar || profile.photo}
+    role={profile.role}
+    location={profile.location}
+    availability={hero.availabilityText}
     story={story}
     resumeHref={resumeHref}
     experienceItems={experienceItems}
